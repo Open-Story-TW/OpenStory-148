@@ -92,6 +92,7 @@ var defs = []Def{
 	{Key: "equip_compare", Group: groupClient, Label: "裝備能力比較", Help: "道具欄的裝備說明顯示與身上同部位裝備的能力差距。", Kind: Bool, Default: "1", Env: "MAPLEGO_EQUIP_COMPARE", Live: true, Client: true},
 	{Key: "chat_unlimited", Group: groupClient, Label: "解除洗頻限制", Help: "聊天不再有連續發言的冷卻（原本 2 秒內第 4 句會被擋），伺服器的聊天頻率限制也一併放行（一般、好友、隊伍、公會、聯盟聊天）。GM 禁言照常有效。", Kind: Bool, Default: "1", Env: "MAPLEGO_CHAT_UNLIMITED", Live: true, Client: true},
 	{Key: "chat_repeat_unlimited", Group: groupClient, Label: "解除重複發言限制", Help: "同一句話可以連續發送超過三次（原本第 4 次會被擋）。", Kind: Bool, Default: "1", Env: "MAPLEGO_CHAT_REPEAT_UNLIMITED", Live: true, Client: true},
+	{Key: "skill_any_order", Group: groupClient, Label: "解除技能加點順序限制", Help: "前一轉的技能沒點滿也能直接點二轉、三轉、四轉的技能，不再出現「一轉技能點數不足」。技能本身的前置技能、等級與上限照常有效。", Kind: Bool, Default: "1", Env: "MAPLEGO_SKILL_ANY_ORDER", Live: true, Client: true},
 
 	{Key: "ranged_no_melee", Group: groupCombat, Label: "遠攻不揮空", Help: "弓、弩、拳套、火槍一律射出，怪物貼近時不再改成近身揮擊。", Kind: Bool, Default: "0", Env: "MAPLEGO_RANGED_NO_MELEE", Live: true, Client: true},
 	{Key: "jump_attack_all_jobs", Group: groupCombat, Label: "全職業跳躍攻擊", Help: "所有職業都能在跳躍中使用攻擊技能，和盜賊、煉獄巫師一樣。", Kind: Bool, Default: "0", Env: "MAPLEGO_JUMP_ATTACK_ALL_JOBS", Live: true, Client: true},
@@ -352,6 +353,9 @@ func apply(values map[string]string, startup bool) {
 	}
 	if on(values, "chat_repeat_unlimited") {
 		ui |= protocol.ClientUIChatRepeat
+	}
+	if on(values, "skill_any_order") {
+		ui |= protocol.ClientUISkillAnyOrder
 	}
 	domain.SetChatUnlimited(on(values, "chat_unlimited"))
 	protocol.SetClientUI(ui)

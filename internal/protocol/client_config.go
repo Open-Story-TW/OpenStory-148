@@ -95,6 +95,10 @@ const (
 	// ClientUIChatRepeat lets the same line be sent more than three times in
 	// a row.
 	ClientUIChatRepeat uint32 = 1 << 12
+	// ClientUISkillAnyOrder lifts the skill window's job order rule: a skill
+	// point goes to any advancement's skills, whatever was spent on the
+	// earlier ones.
+	ClientUISkillAnyOrder uint32 = 1 << 13
 )
 
 // Client preference keys.
