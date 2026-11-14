@@ -178,6 +178,17 @@ func ReadNPCResponse(r *Reader) (NPCResponse, error) {
 	switch msgType {
 	case 0:
 		v.Kind = "say"
+	case NPCTalkSceneDelay:
+		// 0x55320D: the delay ended; two bytes follow the type.
+		v.Kind, v.Bool = "wait", true
+		r.Skip(r.Remaining())
+		return v, nil
+	case NPCTalkImages:
+		// 0x699F1E: 1 after the last page, 0xFF when the window is closed.
+		v.Kind = "image"
+		v.Bool, v.Cancel = mode == 1, mode != 1
+		r.Skip(r.Remaining())
+		return v, nil
 	case 2:
 		v.Kind = "yes_no"
 	case 0x0E:

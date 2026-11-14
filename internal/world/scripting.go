@@ -89,6 +89,9 @@ type worldScript struct {
 	// conversations opened one another, so two sources cannot loop forever.
 	openNPC int
 	chain   int
+	// scene marks a cutscene (scripts/scene); sceneLocked is true while it
+	// holds the player's controls.
+	scene, sceneLocked bool
 }
 
 func newScriptWorld() (*scriptWorld, error) {
@@ -218,6 +221,7 @@ func (a *worldScript) fail(err error) error {
 		delete(a.server.scripts.active, a.identity.CharacterID)
 	}
 	a.server.scripts.mu.Unlock()
+	a.sceneRelease()
 	slog.Warn("lua_dialog_failed", "character", a.identity.CharacterID, "npc", a.npcID, "error", err)
 	if !errors.Is(err, scripting.ErrCancelled) {
 		if a.kind == "portal" {
@@ -236,6 +240,14 @@ func (a *worldScript) deliver(event scripting.Event) error {
 			return a.fail(errors.New("map and portal scripts cannot show NPC prompts"))
 		}
 		p := event.Prompt
+		if a.scene {
+			if packet, ok := a.scenePrompt(p); ok {
+				if packet == nil {
+					return a.fail(protocol.ErrMalformed)
+				}
+				return a.sink.WritePacket(packet)
+			}
+		}
 		choices := make([]protocol.NPCMenuChoice, len(p.Choices))
 		for i, c := range p.Choices {
 			choices[i] = protocol.NPCMenuChoice{ID: c.ID, Text: c.Text}
@@ -247,6 +259,7 @@ func (a *worldScript) deliver(event scripting.Event) error {
 		return a.sink.WritePacket(packet)
 	}
 	if event.Kind == "done" {
+		a.sceneRelease()
 		a.server.scripts.mu.Lock()
 		if a.server.scripts.active[a.identity.CharacterID] == a {
 			delete(a.server.scripts.active, a.identity.CharacterID)
@@ -335,6 +348,9 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		}
 	}
 	result := func(value any) (scripting.CommandResult, error) { return scripting.CommandResult{Value: value}, nil }
+	if strings.HasPrefix(command.Kind, "scene_") {
+		return a.sceneCommand(snapshot, command)
+	}
 	switch command.Kind {
 	case "map_id":
 		return result(int64(snapshot.Character.MapID))

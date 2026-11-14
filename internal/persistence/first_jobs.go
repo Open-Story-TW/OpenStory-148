@@ -42,6 +42,8 @@ type firstJobPolicy struct {
 	// the items taken with the advancement.
 	verify  int
 	consume []firstJobReward
+	// raiseLevel lifts a lower character to this level before the checks.
+	raiseLevel int
 }
 
 func firstJobPolicyFor(r domain.JobAdvancementRequest) (firstJobPolicy, error) {
@@ -129,7 +131,7 @@ func firstJobStats(c domain.Character, operationID string, p firstJobPolicy) (do
 		hpGain = 200 + int(hpDraw%51)
 	case 200, 1200:
 		mpGain = 100 + int(hpDraw%51)
-	case 300, 400, 500, 501, 1300, 1400, 1500, 3300, 3500:
+	case 300, 400, 500, 501, 1300, 1400, 1500, 2400, 3300, 3500:
 		hpGain = 100 + int(hpDraw%51)
 		mpGain = 25 + int(mpDraw%26)
 	case 430:
@@ -240,6 +242,15 @@ func (s *Store) AdvanceFirstJob(ctx context.Context, r domain.JobAdvancementRequ
 			return domain.JobAdvancementResult{}, err
 		}
 	}
+	if p.raiseLevel > value.Level && value.Job == p.fromJob {
+		need := -value.EXP
+		for level := value.Level; level < p.raiseLevel; level++ {
+			need += content.ExperienceForLevel(level)
+		}
+		if err = applyQuestExperience(&value, max(need, 0), r.OperationID); err != nil {
+			return domain.JobAdvancementResult{}, err
+		}
+	}
 	value, err = firstJobStats(value, r.OperationID, p)
 	if err != nil {
 		return domain.JobAdvancementResult{}, err
@@ -282,7 +293,7 @@ func (s *Store) AdvanceFirstJob(ctx context.Context, r domain.JobAdvancementRequ
 			return result, err
 		}
 	}
-	if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET job=$1,str=$2,dex=$3,int_stat=$4,luk=$5,ap=$6,sp=$7 WHERE id=$8`, value.Job, value.STR, value.DEX, value.INT, value.LUK, value.AP, value.SP, value.ID); err != nil {
+	if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET job=$1,str=$2,dex=$3,int_stat=$4,luk=$5,ap=$6,sp=$7,level=$8,exp=$9 WHERE id=$10`, value.Job, value.STR, value.DEX, value.INT, value.LUK, value.AP, value.SP, value.Level, value.EXP, value.ID); err != nil {
 		return result, err
 	}
 	if err = saveJobState(ctx, tx, value); err != nil {

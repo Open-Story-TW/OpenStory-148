@@ -77,6 +77,8 @@ func (s *Server) enqueueMapEntry(channel int, live *liveCharacter, sink packetSi
 		}
 		if _, ok := entryScenePath(script, m.ID, snapshot.Character.Gender); ok {
 			name = "map/on_user_enter/" + script + ".lua"
+		} else if scene := sceneScriptName(entrySceneScripts, script, m.ID); scene != "" {
+			name = scene
 		}
 	}
 	s.scripts.mu.Lock()
@@ -152,6 +154,12 @@ func (s *Server) runMapEntries(live *liveCharacter, q *mapEntryQueue) {
 			continue
 		}
 		if _, err := scripts.Source(request.name); err != nil {
+			continue
+		}
+		if isSceneScript(request.name) {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			_ = s.startScene(ctx, request.channel, live, request.sink, request.name, "進入地圖")
+			cancel()
 			continue
 		}
 		id := scripting.Identity{SessionID: request.session.SessionID, CharacterID: request.session.CharacterID, Generation: request.session.Generation}

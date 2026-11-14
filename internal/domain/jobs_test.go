@@ -27,7 +27,7 @@ func TestCanLearnSkillFollowsLegacyAncestry(t *testing.T) {
 }
 
 func TestExtendedSPMatchesClientPredicate(t *testing.T) {
-	for job, want := range map[int]bool{0: false, 100: false, 1000: false, 2000: false, 2100: false, 2001: true, 2200: true, 2218: true, 2002: true, 2312: true, 2003: false, 2412: false, 3000: true, 3001: true, 3512: true} {
+	for job, want := range map[int]bool{0: false, 100: false, 1000: false, 2000: false, 2100: false, 2001: true, 2200: true, 2218: true, 2002: true, 2312: true, 2003: true, 2412: true, 5000: true, 5112: true, 3000: true, 3001: true, 3512: true} {
 		if ExtendedSPJob(job) != want {
 			t.Errorf("ExtendedSPJob(%d)=%v", job, !want)
 		}
@@ -60,6 +60,7 @@ func TestCreationRacesMatchClientButtons(t *testing.T) {
 	for _, tc := range []struct{ race, sub, job, mapID, family int }{
 		{RaceResistance, 0, 3000, 931000000, 3000}, {RaceExplorer, 0, 0, 10000, 0}, {RaceExplorer, SubJobCannoneer, 0, 3000600, 0},
 		{RaceCygnus, 0, 1000, 130030000, 1000}, {RaceAran, 0, 2000, 914000000, 2000}, {RaceEvan, 0, 2001, 900090004, 2001},
+		{RacePhantom, 0, 2003, 915000000, 2003},
 	} {
 		r, ok := CreationRaceFor(tc.race, tc.sub)
 		if !ok || r.Job != tc.job || r.MapID != tc.mapID || r.Family != tc.family {
@@ -69,7 +70,7 @@ func TestCreationRacesMatchClientButtons(t *testing.T) {
 			t.Errorf("family %d/%d => %+v", r.Family, r.SubJob, back)
 		}
 	}
-	for _, race := range []int{RaceMercedes, RaceDemon, 7} {
+	for _, race := range []int{RaceMercedes, RaceDemon, 8} {
 		if _, ok := CreationRaceFor(race, 0); ok {
 			t.Errorf("race %d creatable", race)
 		}

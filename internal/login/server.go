@@ -338,7 +338,13 @@ func parseCreate(r *protocol.Reader, a domain.Account, world int) (domain.Create
 	if race.Family == 3000 {
 		slots = []*int{&req.Face, &req.Hair, &req.Top, &req.Shoes, &req.Weapon}
 	}
-	if r.Err() != nil || !ok || count != len(slots) || req.Gender != a.Gender {
+	// Phantom (v148 MakeCharInfo 2003): face, hair, overall, cape, shoes,
+	// weapon. The list offers one cape, which the world equips itself.
+	cape := 0
+	if race.Family == 2003 {
+		slots = []*int{&req.Face, &req.Hair, &req.Top, &cape, &req.Shoes, &req.Weapon}
+	}
+	if r.Err() != nil || !ok || count != len(slots) || req.Gender != a.Gender && !domain.CreationGenderFree(race.Family) || req.Gender < 0 || req.Gender > 1 {
 		return req, domain.ErrInvalidInput
 	}
 	for _, slot := range slots {
@@ -346,6 +352,9 @@ func parseCreate(r *protocol.Reader, a domain.Account, world int) (domain.Create
 	}
 	if r.Err() != nil {
 		return req, r.Err()
+	}
+	if race.Family == 2003 && cape != domain.PhantomStarterCape {
+		return req, domain.ErrInvalidInput
 	}
 	return req, nil
 }

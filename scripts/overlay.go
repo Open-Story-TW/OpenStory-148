@@ -23,7 +23,7 @@ type library struct {
 var sources = &library{}
 
 // scriptDirs are the folders a source may live in, as in the embed pattern.
-var scriptDirs = []string{"npc", "quest", "portal", "map/on_user_enter"}
+var scriptDirs = []string{"npc", "quest", "portal", "map/on_user_enter", "scene"}
 
 var embeddedNames = sync.OnceValue(func() []string {
 	var names []string

@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -231,7 +230,7 @@ func MobBodyDefinition(root string, id int) (MobBodyBounds, error) {
 			return unknown("invalid or cyclic visual link")
 		}
 		seen[current] = true
-		f, err := os.Open(filepath.Join(root, "Mob.wz", fmt.Sprintf("%07d.img.xml", current)))
+		f, err := openWZ(filepath.Join(root, "Mob.wz", fmt.Sprintf("%07d.img.xml", current)))
 		if err != nil {
 			return unknown(err.Error())
 		}

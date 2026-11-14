@@ -445,12 +445,6 @@
       "lua_sha256": "6b73165ce67867e2f17726ef271bc91d35b0bd8ec4c5b2e301013e463e9de766"
     },
     {
-      "legacy": "portal/PTtutor100_0.js",
-      "source_sha256": "e121ec2c78ea745cf4f6dcf9ff7337c285fa64b2591cbb491b6cacca87b90817",
-      "lua": "portal/PTtutor100_0.lua",
-      "lua_sha256": "27221240df14d7a280fc84c6be4e6512f7c821e9c56578c4b838d148350b34b2"
-    },
-    {
       "legacy": "portal/Pianus.js",
       "source_sha256": "bb25a4d4fd782d7e11905b0d9d5690ef7ec92f9a75902201e8b8a3c85b07fd99",
       "lua": "portal/Pianus.lua",

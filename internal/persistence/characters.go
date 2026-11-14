@@ -247,7 +247,7 @@ func (s *Store) CreateCharacter(ctx context.Context, request domain.CreateCharac
 	if err != nil {
 		return domain.Character{}, domain.ErrForbidden
 	}
-	if a.Gender != request.Gender {
+	if a.Gender != request.Gender && !domain.CreationGenderFree(request.Family) {
 		return domain.Character{}, domain.ErrForbidden
 	}
 	previous, err := tx.Character.Query().Where(character.OperationIDEQ(request.OperationID)).Only(ctx)
@@ -279,9 +279,9 @@ func (s *Store) CreateCharacter(ctx context.Context, request domain.CreateCharac
 			return domain.Character{}, err
 		}
 	}
-	for _, item := range []struct{ id, slot int }{{request.Top, -5}, {request.Bottom, -6}, {request.Shoes, -7}, {request.Weapon, -11}} {
+	for _, item := range []struct{ id, slot int }{{request.Top, -5}, {request.Bottom, -6}, {request.Shoes, -7}, {start.cape, -9}, {start.shield, -10}, {request.Weapon, -11}} {
 		if item.id == 0 {
-			continue // Resistance overall occupies -5 and has no bottom.
+			continue // An overall occupies -5 and has no bottom; few families start with a cape.
 		}
 		create := tx.Equipment.Create().SetCharacterID(c.ID).SetItemID(item.id).SetSlot(item.slot)
 		if stats, ok := start.gear[item.id]; ok {

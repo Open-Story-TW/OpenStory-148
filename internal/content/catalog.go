@@ -241,7 +241,7 @@ func (n *wzNode) intValue(name string, fallback int) int {
 	return v
 }
 func readWZ(path string) (*wzNode, error) {
-	f, err := os.Open(path)
+	f, err := openWZ(path)
 	if err != nil {
 		return nil, err
 	}

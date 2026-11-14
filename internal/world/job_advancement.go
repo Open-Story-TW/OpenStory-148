@@ -74,6 +74,12 @@ func (a *worldScript) commitFirstJob(ctx context.Context, command scripting.Comm
 	if err = a.sink.WritePacket(protocol.JobAdvancementStats(current)); err != nil {
 		return scripting.CommandResult{}, err
 	}
+	if current.Level != snapshot.Character.Level {
+		// An advancement that also raised the level (the Phantom tutorial).
+		if err = a.sink.WritePacket(protocol.UpdateCombatStats(current)); err != nil {
+			return scripting.CommandResult{}, err
+		}
+	}
 	for _, skill := range current.Skills {
 		for _, before := range snapshot.Character.Skills {
 			if before.ID == skill.ID && before.Level == skill.Level {

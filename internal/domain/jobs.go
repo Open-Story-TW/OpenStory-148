@@ -2,7 +2,7 @@ package domain
 
 // Job families follow Legacy GameConstants and the v145 client's own checks.
 // The client decides the SP wire format itself (0x4B98D1), so ExtendedSPJob
-// must match it exactly even where Legacy's isSeparatedSp differs (Phantom).
+// must match it exactly even where Legacy's isSeparatedSp differs.
 
 // Native creation races sent in RecvCreate (client 0x5A1DCA race buttons).
 const (
@@ -13,7 +13,11 @@ const (
 	RaceEvan       = 4
 	RaceMercedes   = 5
 	RaceDemon      = 6
+	RacePhantom    = 7
 )
+
+// PhantomStarterCape is the one cape of v148 MakeCharInfo 2003.
+const PhantomStarterCape = 1102347
 
 // Explorer sub jobs (character subcategory).
 const (
@@ -40,6 +44,8 @@ type CreationRace struct {
 // creationRaces mirrors Legacy LoginInformationProvider.JobType, including
 // its custom start maps. The v145 client never sends Mercedes(5)/Demon(6)
 // (0x591622 returns before COutPacket), so they are not creatable here.
+// Phantom (7) is new in v148: beginner job 2003 on the airship of the
+// client's own tutorial (Map.wz 915000000, quest 25000 asks for job 2003).
 // Cannoneer (1/2) is absent from Legacy's enum; saveNewCharToDB's
 // subcategory==2 branch gives map 3000600.
 var creationRaces = []CreationRace{
@@ -50,7 +56,12 @@ var creationRaces = []CreationRace{
 	{Race: RaceCygnus, Job: 1000, MapID: 130030000, Family: 1000},
 	{Race: RaceAran, Job: 2000, MapID: 914000000, Family: 2000},
 	{Race: RaceEvan, Job: 2001, MapID: 900090004, Family: 2001},
+	{Race: RacePhantom, Job: 2003, MapID: 915000000, Family: 2003},
 }
+
+// CreationGenderFree reports the families whose creation screen offers both
+// genders whatever the account's own is (MakeCharInfo info/choosableGender).
+func CreationGenderFree(family int) bool { return family == 2003 }
 
 func CreationRaceFor(race, subJob int) (CreationRace, bool) {
 	for _, r := range creationRaces {
@@ -90,10 +101,11 @@ func IsBeginnerJob(job int) bool {
 	return false
 }
 
-// ExtendedSPJob is the client's per-book SP predicate (0x4B98D1):
-// Resistance/Demon (job/1000==3), Evan (2001, 22xx), Mercedes (2002, 23xx).
+// ExtendedSPJob is the client's per-book SP predicate (v148 0x4C76BA):
+// Resistance/Demon (job/1000==3), Evan (2001, 22xx), Mercedes (2002, 23xx),
+// Phantom (2003, 24xx) and the 5000/51xx family the v148 client added.
 func ExtendedSPJob(job int) bool {
-	return job/1000 == 3 || job == 2001 || job/100 == 22 || job == 2002 || job/100 == 23
+	return job/1000 == 3 || job == 2001 || job/100 == 22 || job == 2002 || job/100 == 23 || job == 2003 || job/100 == 24 || job == 5000 || job/100 == 51
 }
 
 // SkillBook mirrors Legacy GameConstants.getSkillBook(job).

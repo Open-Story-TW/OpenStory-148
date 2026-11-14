@@ -45,6 +45,9 @@ func (s *Server) runPortalScript(ctx context.Context, channel int, live *liveCha
 		s.portalGMNotice(live, sink, mapID, p, "未處理(腳本名稱不合法)")
 		return sink.WritePacket(protocol.EnableActions())
 	}
+	if scene := sceneScriptName(portalSceneScripts, p.Script, mapID); scene != "" {
+		return s.startScene(ctx, channel, live, sink, scene, "傳點 "+p.Name)
+	}
 	if _, err := scripts.Source(name); err != nil {
 		if reason, ok := scripts.LegacyPortalPendingReason(p.Script); ok {
 			s.portalGMNotice(live, sink, mapID, p, "未處理(Legacy portal/%s.js 尚未移植: %s)", p.Script, reason)
@@ -158,7 +161,7 @@ func (h *portalScriptHost) execute(ctx context.Context, id scripting.Identity, c
 	// Ardentmill's ticket portal and its Free Market door are written by hand
 	// and use the same reads, notice and atomic exchange as a generated
 	// Legacy source.
-	if scripts.LegacyPortal(command.Script) || command.Script == "portal/gatherTuto.lua" || command.Script == "portal/market300.lua" {
+	if scripts.LegacyPortal(command.Script) || command.Script == "portal/gatherTuto.lua" || command.Script == "portal/market300.lua" || command.Script == "portal/PTtutor100_0.lua" {
 		if result, handled, err := h.executeLegacy(ctx, id, snapshot, command); handled {
 			return result, err
 		}

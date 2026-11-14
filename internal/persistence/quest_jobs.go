@@ -29,8 +29,14 @@ type questJob struct {
 	// and consume takes the items that demand names.
 	minLevel int
 	verify   int
-	consume  []firstJobReward
+	// raiseLevel lifts a lower character to this level first (the Phantom
+	// tutorial ends at level 10 whatever was fought on the way).
+	raiseLevel int
+	consume    []firstJobReward
 }
+
+// PhantomSceneNPC is the butler the Phantom tutorial scenes run under.
+const PhantomSceneNPC = 1402000
 
 var questJobs = []questJob{
 	// Cannoneer: quest 2570 ends at Kyrin (q2570e). The cannon is the only gift.
@@ -60,6 +66,10 @@ var questJobs = []questJob{
 	{script: "quest/23013.lua", npc: 2151004, from: 3000, to: 3500, subJob: -1, expand: []int{1, 2, 4},
 		rewards: []firstJobReward{{1492014, 1, false}}, quests: map[int]int{23013: 1}, complete: []int{23013},
 		skills: []domain.SkillState{{ID: 30001068, Level: 1}}},
+	// Phantom: the tutorial ends in the Lumiere (map 150000000, PTjob1), where
+	// the beginner 2003 becomes level 10 and takes job 2400 with quest 25000.
+	{script: "scene/PTjob1.lua", npc: PhantomSceneNPC, from: 2003, to: 2400, subJob: -1, raiseLevel: 10,
+		quests: map[int]int{25000: 1}, complete: []int{25000}},
 	// Dual Blade, v148 line at Lady Syl (1056000). The rewards follow the Legacy
 	// advancements of the older line: q2363e (Blade Recruit, katara 1342000 and
 	// four more slots in every bag), q2369e (Blade Acolyte, nothing) and q2374e
@@ -84,7 +94,7 @@ func questJobPolicyFor(r domain.JobAdvancementRequest) (firstJobPolicy, error) {
 			minLevel = 10
 		}
 		return firstJobPolicy{job: q.to, fromJob: q.from, minLevel: minLevel, subJob: q.subJob, expand: q.expand, base: q.base,
-			rewards: q.rewards, quests: q.quests, complete: q.complete, skills: q.skills, verify: q.verify, consume: q.consume}, nil
+			rewards: q.rewards, quests: q.quests, complete: q.complete, skills: q.skills, verify: q.verify, consume: q.consume, raiseLevel: q.raiseLevel}, nil
 	}
 	return firstJobPolicy{}, domain.ErrForbidden
 }

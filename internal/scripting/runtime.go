@@ -206,6 +206,11 @@ type Prompt struct {
 	// Speaker is the NPC talk flag byte of a say prompt: 1 hides the close
 	// button, 2 shows the player as the speaker (Legacy sendNextS type).
 	Speaker int `json:"speaker,omitempty"`
+	// SpeakerNPC replaces the talking NPC of a scene say prompt.
+	SpeakerNPC int `json:"speaker_npc,omitempty"`
+	// Wait is the length in milliseconds of a scene wait prompt, which the
+	// client answers by itself when the time has passed.
+	Wait int `json:"wait,omitempty"`
 }
 type DebugSnapshot struct {
 	Line    int            `json:"line"`
@@ -234,7 +239,7 @@ type StartOptions struct {
 	Debug       bool
 	Breakpoints []int
 	Host        Host
-	API         string // "npc" (default) or "portal", selected by the server host.
+	API         string // "npc" (default), "portal", "map" or "scene", selected by the server host.
 }
 type Session struct {
 	mu                sync.Mutex
@@ -272,7 +277,7 @@ func (e *Engine) Start(ctx context.Context, id Identity, name string, options St
 	if options.API == "" {
 		options.API = "npc"
 	}
-	if options.API != "npc" && options.API != "portal" && options.API != "map" {
+	if options.API != "npc" && options.API != "portal" && options.API != "map" && options.API != "scene" {
 		return nil, event, errors.New("invalid script API context")
 	}
 	e.mu.RLock()
@@ -411,8 +416,10 @@ func (s *Session) Respond(ctx context.Context, response Response) (Event, error)
 			return Event{}, errors.New("next is not allowed at this prompt")
 		}
 		value = rt.BoolValue(!response.Back)
-	case "yes_no", "accept":
+	case "yes_no", "accept", "image":
 		value = rt.BoolValue(response.Bool)
+	case "wait":
+		value = rt.BoolValue(true)
 	case "menu", "map_selection":
 		found := false
 		for _, c := range p.Choices {
@@ -588,6 +595,9 @@ func (s *Session) installHost() {
 			}
 			return c.PushingNext1(t.Runtime, v), nil
 		}, 1)
+	}
+	if s.api == "scene" {
+		s.installScene(bind)
 	}
 	if s.api == "map" {
 		bind("gender", s.simpleCommand("gender", 0), 1)

@@ -62,7 +62,11 @@ func formatSPBooks(table domain.SPBookTable) string {
 
 // creationLook is one gender's Etc.wz/MakeCharInfo.img/<family> lists.
 // Resistance (3000) wears an overall in Top and has no Bottom.
-type creationLook struct{ face, hair, top, bottom, shoes, weapon []int }
+type creationLook struct {
+	face, hair, top, bottom, shoes, weapon []int
+	// cape and shield are worn from the start without being a choice.
+	cape, shield int
+}
 
 var (
 	explorerShoes   = []int{1072001, 1072005, 1072037, 1072038}
@@ -74,25 +78,43 @@ var (
 )
 
 var explorerLook = [2]creationLook{
-	{maleFaces, maleHair, []int{1040002, 1040006, 1040010}, []int{1060002, 1060006}, explorerShoes, explorerWeapons},
-	{femaleFaces, femaleHair, []int{1041002, 1041006, 1041010, 1041011}, []int{1061002, 1061008}, explorerShoes, explorerWeapons},
+	{face: maleFaces, hair: maleHair, top: []int{1040002, 1040006, 1040010}, bottom: []int{1060002, 1060006}, shoes: explorerShoes, weapon: explorerWeapons},
+	{face: femaleFaces, hair: femaleHair, top: []int{1041002, 1041006, 1041010, 1041011}, bottom: []int{1061002, 1061008}, shoes: explorerShoes, weapon: explorerWeapons},
 }
 
 var creationLooks = map[int][2]creationLook{
 	0:    explorerLook,
 	1000: explorerLook,
 	2000: {
-		{maleFaces, maleHair, []int{1042167}, []int{1062115}, []int{1072383}, []int{1442079}},
-		{femaleFaces, femaleHair, []int{1042167}, []int{1062115}, []int{1072383}, []int{1442079}},
+		{face: maleFaces, hair: maleHair, top: []int{1042167}, bottom: []int{1062115}, shoes: []int{1072383}, weapon: []int{1442079}},
+		{face: femaleFaces, hair: femaleHair, top: []int{1042167}, bottom: []int{1062115}, shoes: []int{1072383}, weapon: []int{1442079}},
 	},
 	2001: {
-		{maleFaces, maleHair, []int{1042180}, []int{1060138}, []int{1072418}, []int{1302132}},
-		{femaleFaces, femaleHair, []int{1042180}, []int{1061160}, []int{1072418}, []int{1302132}},
+		{face: maleFaces, hair: maleHair, top: []int{1042180}, bottom: []int{1060138}, shoes: []int{1072418}, weapon: []int{1302132}},
+		{face: femaleFaces, hair: femaleHair, top: []int{1042180}, bottom: []int{1061160}, shoes: []int{1072418}, weapon: []int{1302132}},
 	},
 	3000: {
-		{maleFaces, maleHair, []int{1050173, 1050174, 1050175}, nil, explorerShoes, explorerWeapons},
-		{femaleFaces, femaleHair, []int{1051214, 1051215, 1051216}, nil, explorerShoes, explorerWeapons},
+		{face: maleFaces, hair: maleHair, top: []int{1050173, 1050174, 1050175}, shoes: explorerShoes, weapon: explorerWeapons},
+		{face: femaleFaces, hair: femaleHair, top: []int{1051214, 1051215, 1051216}, shoes: explorerShoes, weapon: explorerWeapons},
 	},
+	// v148 MakeCharInfo 2003: two faces, two hair styles in eight colours, an
+	// overall, one cape, shoes and a cane. The card deck is Legacy's starter
+	// secondary item for the family.
+	2003: {
+		{face: []int{20659, 20658}, hair: hairColours(33700, 33730), top: []int{1050222}, shoes: []int{1070023}, weapon: []int{1362000}, cape: domain.PhantomStarterCape, shield: 1352100},
+		{face: []int{21656, 21657}, hair: hairColours(34700, 34730), top: []int{1051272}, shoes: []int{1071035}, weapon: []int{1362000}, cape: domain.PhantomStarterCape, shield: 1352100},
+	},
+}
+
+// hairColours lists the eight colours of each base style.
+func hairColours(styles ...int) []int {
+	var ids []int
+	for _, style := range styles {
+		for colour := 0; colour < 8; colour++ {
+			ids = append(ids, style+colour)
+		}
+	}
+	return ids
 }
 
 // validCreationSkin: the native Cygnus avatar UI sends skin 10 (observed
@@ -116,6 +138,7 @@ type creationPlacement struct {
 	mapID        int
 	portal, x, y int
 	gear         map[int]domain.Equipment
+	cape, shield int
 }
 
 // creationStart resolves the family's start map spawn portal and, outside
@@ -144,7 +167,9 @@ func creationStart(r domain.CreateCharacterRequest) (creationPlacement, error) {
 	}
 	start.portal, start.x, start.y = p.ID, p.X, p.Y
 	start.gear = make(map[int]domain.Equipment)
-	for _, id := range []int{r.Top, r.Bottom, r.Shoes, r.Weapon} {
+	look := creationLooks[r.Family][r.Gender&1]
+	start.cape, start.shield = look.cape, look.shield
+	for _, id := range []int{r.Top, r.Bottom, r.Shoes, r.Weapon, look.cape, look.shield} {
 		if id == 0 {
 			continue
 		}

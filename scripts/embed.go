@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-//go:embed npc/*.lua quest/*.lua portal/*.lua map/on_user_enter/*.lua
+//go:embed npc/*.lua quest/*.lua portal/*.lua map/on_user_enter/*.lua scene/*.lua
 var embedded embed.FS
 
 //go:embed legacy/quest_driver.lua
