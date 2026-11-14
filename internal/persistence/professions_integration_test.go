@@ -113,3 +113,57 @@ func TestProfessionExchangeRulesLevelsAndReaders(t *testing.T) {
 		t.Fatalf("unknown profession: %v", err)
 	}
 }
+
+func TestProfessionExchangeLeavesDropsOnTheMap(t *testing.T) {
+	ctx, s, sessions := inventoryFixture(t)
+	a := sessions[0]
+	if a.ChannelID == 0 {
+		a.ChannelID = 1
+	}
+	if _, err := s.ExecuteScriptExchange(ctx, domain.ScriptExchange{Session: a, OperationID: fmt.Sprintf("profession-drop-learn-%d", a.CharacterID), Profession: &domain.ProfessionChange{Learn: content.ProfessionMining}}); err != nil {
+		t.Fatal(err)
+	}
+	var err error
+	if a.Character, err = s.GetCharacter(ctx, a.CharacterID); err != nil {
+		t.Fatal(err)
+	}
+	bag := len(a.Character.Items)
+	op := domain.ScriptExchange{Session: a, OperationID: fmt.Sprintf("profession-drop-%d", a.CharacterID),
+		Profession: &domain.ProfessionChange{Gain: content.ProfessionMining, EXP: 18, Fatigue: 1},
+		Drops:      []domain.ScriptDrop{{TemplateID: 4010008, Quantity: 1, X: 120, Y: 510}}}
+	r, err := s.ExecuteScriptExchange(ctx, op)
+	if err != nil || len(r.Drops) != 1 || len(r.Character.Items) != bag || r.Character.Profession(content.ProfessionMining).EXP != 18 {
+		t.Fatalf("drop exchange: %+v %v", r.Drops, err)
+	}
+	d := r.Drops[0]
+	if d.ObjectID < 1000000000 || d.OwnerID != a.CharacterID || d.MapID != a.Character.MapID || d.ChannelID != a.ChannelID || d.WorldID != a.Lease.WorldID || d.InvType != 4 || d.TemplateID != 4010008 || d.Quantity != 1 || d.X != 120 || d.Y != 510 {
+		t.Fatalf("drop row: %+v", d)
+	}
+	listed, err := s.ListItemDrops(ctx, d.WorldID, d.ChannelID, d.MapID)
+	found := false
+	for _, v := range listed {
+		found = found || v.ObjectID == d.ObjectID
+	}
+	if err != nil || !found {
+		t.Fatalf("drop is not on the map: %v", err)
+	}
+	// A replay returns the same drop and leaves no second one.
+	again, err := s.ExecuteScriptExchange(ctx, op)
+	if err != nil || !again.Replayed || len(again.Drops) != 1 || again.Drops[0].ObjectID != d.ObjectID {
+		t.Fatalf("replay: %+v %v", again.Drops, err)
+	}
+	var rows int
+	if err = s.db.QueryRowContext(ctx, `SELECT count(*) FROM asset_item_drops WHERE owner_id=$1`, a.CharacterID).Scan(&rows); err != nil || rows != 1 {
+		t.Fatalf("drop rows: %d %v", rows, err)
+	}
+	a.Character = r.Character
+	// Equipment cannot be left this way, and nothing of the exchange commits.
+	_, err = s.ExecuteScriptExchange(ctx, domain.ScriptExchange{Session: a, OperationID: fmt.Sprintf("profession-drop-bad-%d", a.CharacterID),
+		Profession: &domain.ProfessionChange{Gain: content.ProfessionMining, EXP: 5}, Drops: []domain.ScriptDrop{{TemplateID: 1512000, Quantity: 1}}})
+	if !errors.Is(err, domain.ErrInvalidInput) {
+		t.Fatalf("equipment drop: %v", err)
+	}
+	if c, err := s.GetCharacter(ctx, a.CharacterID); err != nil || c.Profession(content.ProfessionMining).EXP != 18 {
+		t.Fatalf("refused exchange changed proficiency: %v", err)
+	}
+}

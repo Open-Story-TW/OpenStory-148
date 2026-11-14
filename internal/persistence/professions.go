@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"os"
 
 	"maple-go-server/internal/content"
@@ -200,4 +201,41 @@ func applyProfessionChange(ctx context.Context, tx *sql.Tx, c *domain.Character,
 		c.Fatigue = fatigue
 	}
 	return nil
+}
+
+// applyScriptDrops leaves the exchange's drops on the character's map. They
+// are ordinary item drops: the owner picks them up, and they expire, like
+// monster loot. A full map refuses the whole exchange.
+func applyScriptDrops(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, c domain.Character, drops []domain.ScriptDrop) ([]domain.ItemDrop, error) {
+	if len(drops) == 0 {
+		return nil, nil
+	}
+	world, channel := session.Lease.WorldID, session.ChannelID
+	if channel < 1 || channel > 20 {
+		return nil, domain.ErrInvalidInput
+	}
+	room := fmt.Sprintf("item-room/%d/%d/%d", world, channel, c.MapID)
+	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1,0))`, room); err != nil {
+		return nil, err
+	}
+	var count int
+	if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM asset_item_drops WHERE world_id=$1 AND channel_id=$2 AND map_id=$3 AND picked_up_by IS NULL AND expired_at IS NULL AND expires_at>clock_timestamp()`, world, channel, c.MapID).Scan(&count); err != nil {
+		return nil, err
+	}
+	if count+len(drops) > 512 {
+		return nil, domain.ErrInsufficient
+	}
+	out := make([]domain.ItemDrop, 0, len(drops))
+	for _, d := range drops {
+		def, err := inventoryDefinition(d.TemplateID)
+		if err != nil || def.InvType < 2 || def.InvType > 4 || def.Cash || d.Quantity < 1 || d.Quantity > def.SlotMax || d.X < -32768 || d.X > 32767 || d.Y < -32768 || d.Y > 32767 {
+			return nil, domain.ErrInvalidInput
+		}
+		drop := domain.ItemDrop{WorldID: world, ChannelID: channel, MapID: c.MapID, OwnerID: c.ID, X: d.X, Y: d.Y, InvType: def.InvType, TemplateID: d.TemplateID, Quantity: d.Quantity}
+		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity).Scan(&drop.ObjectID); err != nil {
+			return nil, err
+		}
+		out = append(out, drop)
+	}
+	return out, nil
 }

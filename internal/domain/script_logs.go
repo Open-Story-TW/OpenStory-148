@@ -86,6 +86,9 @@ type ScriptExchange struct {
 	Look        *ScriptLook         `json:"look,omitempty"`   // Beauty host only; never a raw Lua table field.
 	// Profession host only; never a raw Lua table field.
 	Profession *ProfessionChange `json:"profession,omitempty"`
+	// Drops are items left on the character's map for it to pick up (what a
+	// gathering node gives). Profession host only.
+	Drops []ScriptDrop `json:"drops,omitempty"`
 }
 
 // ScriptLook is one beauty salon visit (Legacy cm.setAvatar): one coupon from
@@ -125,6 +128,16 @@ type ScriptExchangeResult struct {
 	Logs      []ScriptLogValue  `json:"logs"`
 	QuestData []ScriptQuestData `json:"quest_data,omitempty"`
 	Quests    []QuestState      `json:"quests,omitempty"`
+	Drops     []ItemDrop        `json:"drops,omitempty"`
+}
+
+// ScriptDrop is one stack an exchange leaves on the ground at (X, Y) of the
+// character's own map and channel, owned by that character.
+type ScriptDrop struct {
+	TemplateID int `json:"template_id"`
+	Quantity   int `json:"quantity"`
+	X          int `json:"x"`
+	Y          int `json:"y"`
 }
 
 type ScriptQuestRepository interface {

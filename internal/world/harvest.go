@@ -31,6 +31,9 @@ const gatherLastState = 4
 // offers a node it overlaps (60 by 30 pixels around the node's own bounds).
 const gatherReachX, gatherReachY = 250, 200
 
+// gatherDropOffset is how far to the side of a node its yield lands.
+const gatherDropOffset = 45
+
 func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 	reactors, err := content.MapReactors(wzRoot(), mapID)
 	if err != nil || len(reactors) == 0 {
@@ -206,6 +209,7 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 	var all, others []packetSink
 	var packets [][]byte
 	var node content.GatherNode
+	var place content.Reactor
 	finished, held := false, false
 	g := s.gameplay
 	g.mu.Lock()
@@ -218,7 +222,7 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 			switch {
 			case x.state >= gatherLastState || stop && x.state >= gatherLastState-1:
 				// The last hit, or a stop the client sends in its place.
-				finished, node = true, x.node
+				finished, node, place = true, x.node, x.def
 				seconds := x.def.Respawn
 				if seconds <= 0 {
 					seconds = x.node.Respawn
@@ -255,7 +259,7 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 		}
 		return nil
 	}
-	success, err := s.finishHarvest(ctx, live, sink, node)
+	success, err := s.finishHarvest(ctx, live, sink, node, place)
 	for _, peer := range others {
 		_ = peer.WritePacket(protocol.ShowHarvesting(c.ID, 0))
 		_ = peer.WritePacket(protocol.Harvested(c.ID, success))
@@ -267,13 +271,14 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 }
 
 // finishHarvest decides what a finished node gives and commits it: the yield
-// goes straight into the bag together with proficiency, fatigue and trait.
+// falls to the ground where the node stood, for the gatherer to pick up, in
+// the same commit as the proficiency, fatigue and trait.
 //
 // Odds and gains follow Legacy's doHarvest: 90% at a node of the gatherer's
 // own level, 10% more or less per level of difference; a success is worth
 // 20 proficiency (2 more or less per level), a failure a tenth of that and a
 // root or ore fragment instead of the yield.
-func (s *Server) finishHarvest(ctx context.Context, live *liveCharacter, sink packetSink, node content.GatherNode) (bool, error) {
+func (s *Server) finishHarvest(ctx context.Context, live *liveCharacter, sink packetSink, node content.GatherNode, place content.Reactor) (bool, error) {
 	live.mu.Lock()
 	c := live.session.Character
 	live.mu.Unlock()
@@ -300,9 +305,16 @@ func (s *Server) finishHarvest(ctx context.Context, live *liveCharacter, sink pa
 	if !node.Free {
 		change.Fatigue = 1
 	}
-	var items []domain.ScriptItemDelta
+	// The yield lands beside the node, on the gatherer's side: the node grows
+	// back within seconds and would cover a drop left exactly on its spot.
+	side := gatherDropOffset
+	if c.X < place.X {
+		side = -side
+	}
+	drop := domain.ScriptDrop{TemplateID: scrap, Quantity: 1}
+	drop.X, drop.Y = s.gatherDropPoint(c.MapID, place.X, place.Y, side)
 	if success {
-		items = append(items, domain.ScriptItemDelta{TemplateID: yield[rand.IntN(len(yield))], Quantity: 1})
+		drop.TemplateID = yield[rand.IntN(len(yield))]
 		if node.Profession == content.ProfessionHerbalism {
 			change.Traits.Sense = 5
 		} else {
@@ -310,15 +322,11 @@ func (s *Server) finishHarvest(ctx context.Context, live *liveCharacter, sink pa
 		}
 	} else {
 		gain = max(gain/10, 1)
-		items = append(items, domain.ScriptItemDelta{TemplateID: scrap, Quantity: 1})
 	}
 	if level < content.ProfessionMaxLevel {
 		change.Gain, change.EXP = node.Profession, gain
 	}
-	if !canHoldItem(c, items[0].TemplateID, 1) {
-		return false, sink.WritePacket(protocol.PortalTrainingMessage("背包空間不足，無法取得採集物。"))
-	}
-	after, ok, err := s.commitProfession(ctx, live, sink, fmt.Sprintf("harvest-%d-%d-%d", c.ID, node.TemplateID, time.Now().UnixNano()), items, change)
+	after, ok, err := s.commitProfession(ctx, live, sink, fmt.Sprintf("harvest-%d-%d-%d", c.ID, node.TemplateID, time.Now().UnixNano()), nil, change, drop)
 	if err != nil || !ok {
 		return false, err
 	}
@@ -333,4 +341,49 @@ func (s *Server) finishHarvest(ctx context.Context, live *liveCharacter, sink pa
 		}
 	}
 	return success, nil
+}
+
+// gatherDropPoint is where a node's yield lands: on the platform the node
+// stands on, side pixels from it, or at the node itself where the platform
+// ends before that. The point has to lie on a foothold: the client draws a
+// drop in the layer of the foothold under it (0x4ED2DE looks one pixel around
+// the point), and one that hangs above the ground, as a node's own position
+// does by a few pixels, falls into the background layer behind the tiles.
+func (s *Server) gatherDropPoint(mapID, x, y, side int) (int, int) {
+	if s.gameplay == nil || s.gameplay.catalog == nil {
+		return x, y
+	}
+	m, err := s.gameplay.catalog.Map(mapID)
+	if err != nil {
+		return x, y
+	}
+	for _, at := range []int{x + side, x} {
+		if ground, ok := groundBelow(m, at, y); ok && ground-y <= 40 {
+			return at, ground
+		}
+	}
+	return x, y
+}
+
+// groundBelow is the highest foothold at x that is not above y (with the
+// slack a node standing a few pixels into the ground needs).
+func groundBelow(m content.Map, x, y int) (int, bool) {
+	best, found := 0, false
+	for _, f := range m.Footholds {
+		x1, y1, x2, y2 := f.X1, f.Y1, f.X2, f.Y2
+		if x1 > x2 {
+			x1, y1, x2, y2 = x2, y2, x1, y1
+		}
+		if x1 == x2 || x < x1 || x > x2 {
+			continue
+		}
+		at := y1 + (y2-y1)*(x-x1)/(x2-x1)
+		if at < y-10 {
+			continue
+		}
+		if !found || at < best {
+			best, found = at, true
+		}
+	}
+	return best, found
 }

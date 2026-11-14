@@ -140,7 +140,7 @@ func scriptExchangeHash(r domain.ScriptExchange) string {
 }
 
 func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchange) (domain.ScriptExchangeResult, error) {
-	if len(r.OperationID) < 16 || len(r.OperationID) > 128 || len(r.Logs) > 32 || len(r.Items) > 32 || len(r.QuestData) > 32 || len(r.Quests) > 32 || r.EXP < 0 || r.MesosDelta > maxMesos || r.MesosDelta < -maxMesos {
+	if len(r.OperationID) < 16 || len(r.OperationID) > 128 || len(r.Logs) > 32 || len(r.Items) > 32 || len(r.Drops) > 8 || len(r.QuestData) > 32 || len(r.Quests) > 32 || r.EXP < 0 || r.MesosDelta > maxMesos || r.MesosDelta < -maxMesos {
 		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
 	}
 	if err := validateScriptTravel(r); err != nil {
@@ -274,6 +274,9 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 		if err = applyProfessionChange(ctx, tx, &result.Character, *r.Profession); err != nil {
 			return result, err
 		}
+	}
+	if result.Drops, err = applyScriptDrops(ctx, tx, r.Session, result.Character, r.Drops); err != nil {
+		return result, err
 	}
 	if r.EXP > 0 {
 		if err = applyQuestExperience(&result.Character, r.EXP, r.OperationID); err != nil {

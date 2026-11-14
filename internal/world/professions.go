@@ -12,11 +12,12 @@ import (
 	"maple-go-server/internal/scripting"
 )
 
-// commitProfession runs one profession exchange (items plus a profession
-// change) for a live character and publishes the outcome: inventory, the
-// profession records the client keeps as skills, traits and fatigue. ok is
+// commitProfession runs one profession exchange (items, a profession change
+// and items left on the ground) for a live character and publishes the
+// outcome: inventory, ground drops, the profession records the client keeps
+// as skills, traits and fatigue. ok is
 // false when a rule or the inventory refused it; nothing changed then.
-func (s *Server) commitProfession(ctx context.Context, live *liveCharacter, sink packetSink, operationID string, items []domain.ScriptItemDelta, change domain.ProfessionChange) (after domain.Character, ok bool, err error) {
+func (s *Server) commitProfession(ctx context.Context, live *liveCharacter, sink packetSink, operationID string, items []domain.ScriptItemDelta, change domain.ProfessionChange, drops ...domain.ScriptDrop) (after domain.Character, ok bool, err error) {
 	repo, has := s.repo.(domain.ScriptRepository)
 	if !has {
 		return after, false, domain.ErrForbidden
@@ -31,7 +32,7 @@ func (s *Server) commitProfession(ctx context.Context, live *liveCharacter, sink
 	snapshot.Lease = s.currentLease()
 	live.mu.Unlock()
 	before := snapshot.Character
-	result, err := repo.ExecuteScriptExchange(ctx, domain.ScriptExchange{Session: snapshot, OperationID: operationID, Items: items, Profession: &change})
+	result, err := repo.ExecuteScriptExchange(ctx, domain.ScriptExchange{Session: snapshot, OperationID: operationID, Items: items, Profession: &change, Drops: drops})
 	if errors.Is(err, domain.ErrInsufficient) || errors.Is(err, domain.ErrAlreadyExists) {
 		return before, false, nil
 	}
@@ -55,6 +56,9 @@ func (s *Server) commitProfession(ctx context.Context, live *liveCharacter, sink
 		if err = sink.WritePacket(protocol.ModifyInventory(result.Changes)); err != nil {
 			return after, true, err
 		}
+	}
+	for _, drop := range result.Drops {
+		s.broadcastCombatDrop(drop)
 	}
 	for _, packet := range protocol.ProfessionChanges(before, after) {
 		if err = sink.WritePacket(packet); err != nil {
