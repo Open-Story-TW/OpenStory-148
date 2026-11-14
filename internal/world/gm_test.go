@@ -281,7 +281,9 @@ func TestGMChatHelpListsEveryCommand(t *testing.T) {
 	// listing it in !help should fail here.
 	samples := []string{"!heal", "!whereami", "!effstats", "!clearmobs", "!help", "!help 2", "!online", "!rates", "!level 1", "!job 1", "!warp 1", "!buffreset 1", "!hp 1",
 		"!ap 1", "!sp 1", "!map 1", "!npc 1", "!cash 1", "!points 1", "!petfood 1", "!mesos 1", "!alliance 1", "!mobhold 1", "!item 1", "!debuff 1", "!skill 1 1",
-		"!cashexpire 1 1", "!petexpire 1 1", "!vitals 1 1", "!spawn 1 1", "!stats 4 4 4 4", "!goto Someone", "!warphere Someone", "!dc Someone", "!notice two words"}
+		"!cashexpire 1 1", "!petexpire 1 1", "!vitals 1 1", "!spawn 1 1", "!stats 4 4 4 4", "!goto Someone", "!warphere Someone", "!dc Someone", "!notice two words",
+		"!fame 1", "!hair 30000", "!face 20000", "!skin 1", "!hide 1", "!god 1", "!maxskills", "!killall", "!cleardrops",
+		"!ban Someone", "!ban Someone 7", "!unban Someone", "!banip Someone", "!unbanip 1.2.3.4", "!rate exp 2"}
 	known := map[string]bool{}
 	for _, text := range samples {
 		name, _, _, _ := parseGMCommand(text)
@@ -303,7 +305,7 @@ func TestGMChatHelpListsEveryCommand(t *testing.T) {
 	if listed != len(known) {
 		t.Fatalf("%d listed, %d parsed", listed, len(known))
 	}
-	for _, text := range []string{"!help 1 2", "!notice", "!goto", "!dc two names", "!map x"} {
+	for _, text := range []string{"!help 1 2", "!notice", "!goto", "!dc two names", "!map x", "!ban", "!ban Someone 0", "!ban Someone x", "!rate gold 2", "!rate exp 0", "!god 2 2", "!killall 1"} {
 		if name, _, _, handled := parseGMCommand(text); !handled || name != "" {
 			t.Fatalf("grammar accepted %q", text)
 		}

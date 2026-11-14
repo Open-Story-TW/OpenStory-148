@@ -2,15 +2,19 @@ package world
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
+	"maple-go-server/internal/settings"
 )
 
 // The standing GM commands act on other players or the whole world. The store
@@ -116,6 +120,155 @@ func (s *Server) gmWarp(ctx context.Context, channel int, live *liveCharacter, s
 	return s.warpGameplay(ctx, channel, live, sink, m.ID, entry)
 }
 
+// gmKillAll removes the field's ordinary monsters without EXP or drops. They
+// stay in the room as dead, so the usual respawn brings them back. A monster
+// in a pending settlement is left to it, and a spawned (QA) one to !clearmobs.
+func (s *Server) gmKillAll(key mapKey) int {
+	g := s.gameplay
+	if g == nil {
+		return 0
+	}
+	now := time.Now()
+	var deliveries []roomDelivery
+	killed := 0
+	g.mu.Lock()
+	if room := g.rooms[key]; room != nil {
+		for _, mob := range room.mobs {
+			if mob.qaOwner != nil || mob.hp <= 0 || mob.claiming || mob.reservation != nil {
+				continue
+			}
+			mob.hp = 0
+			mob.respawnAt = now.Add(time.Duration(max(5, mob.life.RespawnSeconds)) * time.Second)
+			mob.statuses, mob.contributions = nil, nil
+			deliveries = append(deliveries, roomBroadcast(room, protocol.KillMonster(mob.objectID), -1)...)
+			killed++
+		}
+	}
+	g.mu.Unlock()
+	deliver(deliveries)
+	return killed
+}
+
+func gmActor(session domain.CharacterSession) string {
+	return fmt.Sprintf("gm-character-%d", session.CharacterID)
+}
+
+// gmKick closes the connections of the given characters that are online here.
+func (s *Server) gmKick(ids []int64) int {
+	if s.skills == nil {
+		return 0
+	}
+	var sinks []packetSink
+	s.skills.mu.Lock()
+	for _, id := range ids {
+		if m := s.skills.members[id]; m != nil {
+			sinks = append(sinks, m.sink)
+		}
+	}
+	s.skills.mu.Unlock()
+	kicked := 0
+	for _, sink := range sinks {
+		if c, ok := sink.(interface{ Close() error }); ok {
+			_ = c.Close()
+			kicked++
+		}
+	}
+	return kicked
+}
+
+type gmBanStore interface {
+	BanAccount(ctx context.Context, character string, until time.Time, reason, actor string) (domain.GMBan, error)
+	UnbanAccount(ctx context.Context, character string) (domain.GMBan, error)
+	LastLoginIP(ctx context.Context, character string) (string, error)
+	BanIP(ctx context.Context, ip, reason, actor string) error
+	UnbanIP(ctx context.Context, ip string) error
+}
+
+func (s *Server) gmBan(ctx context.Context, session domain.CharacterSession, req domain.GMCommandRequest, say func(string, ...any), failed func(error)) {
+	store, ok := s.repo.(gmBanStore)
+	if !ok {
+		failed(errors.New("bans unavailable"))
+		return
+	}
+	actor := gmActor(session)
+	switch req.Name {
+	case "ban":
+		if strings.EqualFold(req.Text, session.Character.Name) {
+			say("不能封鎖自己。")
+			return
+		}
+		until, length := domain.QAGMPermanentExpiry, "永久"
+		if len(req.Args) == 1 {
+			until, length = time.Now().Add(time.Duration(req.Args[0])*24*time.Hour), fmt.Sprintf("%d 天", req.Args[0])
+		}
+		ban, err := store.BanAccount(ctx, req.Text, until, "GM "+session.Character.Name, actor)
+		if errors.Is(err, domain.ErrNotFound) {
+			say("找不到角色「%s」。", req.Text)
+			return
+		}
+		if err != nil {
+			failed(err)
+			return
+		}
+		say("已封鎖「%s」的帳號 %s（%s），並讓 %d 個線上角色斷線。", req.Text, ban.Account, length, s.gmKick(ban.CharacterIDs))
+	case "unban":
+		ban, err := store.UnbanAccount(ctx, req.Text)
+		if errors.Is(err, domain.ErrNotFound) {
+			say("找不到角色「%s」。", req.Text)
+			return
+		}
+		if err != nil {
+			failed(err)
+			return
+		}
+		say("已解除「%s」的帳號 %s 的封鎖。", req.Text, ban.Account)
+	case "banip":
+		// An online player's live address; otherwise the last one they
+		// entered the world from.
+		ip := ""
+		var kick []int64
+		if m, found, online := s.gmFindOnline(req.Text); online && m != nil {
+			if remote, ok := m.sink.(interface{ RemoteAddr() net.Addr }); ok {
+				ip, _, _ = net.SplitHostPort(remote.RemoteAddr().String())
+			}
+			kick = []int64{found.CharacterID}
+		}
+		if ip == "" {
+			last, err := store.LastLoginIP(ctx, req.Text)
+			if errors.Is(err, domain.ErrNotFound) {
+				say("找不到「%s」的登入紀錄。", req.Text)
+				return
+			}
+			if err != nil {
+				failed(err)
+				return
+			}
+			ip = last
+		}
+		if err := store.BanIP(ctx, ip, "GM "+session.Character.Name+" / "+req.Text, actor); err != nil {
+			if errors.Is(err, domain.ErrInvalidInput) {
+				say("「%s」的位址 %s 不能封鎖（本機位址）。", req.Text, ip)
+				return
+			}
+			failed(err)
+			return
+		}
+		say("已封鎖「%s」的 IP %s，並讓 %d 個線上角色斷線。解除請用 !unbanip %s", req.Text, ip, s.gmKick(kick), ip)
+	case "unbanip":
+		err := store.UnbanIP(ctx, req.Text)
+		switch {
+		case errors.Is(err, domain.ErrNotFound):
+			say("IP %s 沒有被封鎖。", req.Text)
+		case errors.Is(err, domain.ErrInvalidInput):
+			say("「%s」不是有效的 IP 位址。", req.Text)
+		case err != nil:
+			failed(err)
+		default:
+			say("已解除 IP %s 的封鎖。", req.Text)
+		}
+	}
+}
+
 func (s *Server) gmStanding(session domain.CharacterSession, live *liveCharacter, sink packetSink, req domain.GMCommandRequest) {
 	ctx, done := context.WithTimeout(context.Background(), 5*time.Second)
 	defer done()
@@ -181,6 +334,76 @@ func (s *Server) gmStanding(session domain.CharacterSession, live *liveCharacter
 		}
 		_ = c.Close()
 		say("已讓「%s」斷線。", found.Character.Name)
+	case "hide":
+		// The store changed the buff row and the caller saw it; now the map.
+		live.persistMu.Lock()
+		s.syncGMHide(live)
+		live.persistMu.Unlock()
+		if req.Args[0] == 1 {
+			say("已隱身：其他玩家看不到你。輸入 !hide 0 解除。")
+		} else {
+			say("已解除隱身。")
+		}
+	case "god":
+		live.mu.Lock()
+		live.god = req.Args[0] == 1
+		live.mu.Unlock()
+		if req.Args[0] == 1 {
+			say("已開啟無敵：怪物的傷害不會扣血。換頻道或重新登入後要重新開啟。")
+		} else {
+			say("已關閉無敵。")
+		}
+	case "killall":
+		say("已清除這張地圖的 %d 隻怪物，牠們會照平常的時間重生。", s.gmKillAll(mapKey{channel: session.ChannelID, mapID: s.skillSession(live).Character.MapID}))
+	case "cleardrops":
+		store, ok := s.repo.(interface {
+			ClearMapDrops(context.Context, domain.WorldLease, int, int) ([]domain.ItemDrop, error)
+		})
+		if !ok {
+			failed(errors.New("drops unavailable"))
+			return
+		}
+		drops, err := store.ClearMapDrops(ctx, s.currentLease(), session.ChannelID, s.skillSession(live).Character.MapID)
+		if err != nil {
+			failed(err)
+			return
+		}
+		for _, drop := range drops {
+			s.removeVisibleDrop(drop, protocol.RemoveItemExpired(drop.ObjectID))
+		}
+		say("已清除這張地圖的 %d 個掉落物。", len(drops))
+	case "ban", "unban", "banip", "unbanip":
+		s.gmBan(ctx, session, req, say, failed)
+	case "rate":
+		store, ok := s.repo.(interface{ Database() *sql.DB })
+		if !ok {
+			failed(errors.New("settings unavailable"))
+			return
+		}
+		key, label := "exp_rate", "經驗"
+		switch req.Args[0] {
+		case 2:
+			key, label = "meso_rate", "楓幣"
+		case 3:
+			key, label = "drop_rate", "掉寶"
+		}
+		if err := settings.Save(ctx, store.Database(), gmActor(session), map[string]string{key: strconv.FormatInt(req.Args[1], 10)}); err != nil {
+			failed(err)
+			return
+		}
+		// Every service reads the saved value within a few seconds; this
+		// world applies it at once.
+		exp, meso, drop := int(domain.ExpRate()), int(domain.MesoRate()), int(domain.DropRate())
+		switch req.Args[0] {
+		case 1:
+			exp = int(req.Args[1])
+		case 2:
+			meso = int(req.Args[1])
+		case 3:
+			drop = int(req.Args[1])
+		}
+		domain.SetRates(exp, meso, drop)
+		say("%s倍率已改為 x%d。目前：經驗 x%d、楓幣 x%d、掉寶 x%d。", label, req.Args[1], exp, meso, drop)
 	case "npc":
 		if err := s.openPortalNPC(ctx, session.ChannelID, live, sink, int(req.Args[0])); err != nil {
 			failed(err)

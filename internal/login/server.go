@@ -159,6 +159,20 @@ func (s *Server) dispatch(ctx context.Context, c *protocol.Conn, st *state, op u
 			_ = c.WritePacket(protocol.LoginFailure(reason))
 			return nil
 		}
+		// Reason 3 is the client's own "deleted or blocked account" notice.
+		if bans, ok := s.repo.(interface {
+			LoginBanned(context.Context, int64, string) (bool, error)
+		}); ok {
+			host, _, _ := net.SplitHostPort(remote.String())
+			if banned, e := bans.LoginBanned(ctx, account.ID, host); e != nil || banned {
+				reason := byte(3)
+				if e != nil {
+					reason = 6
+				}
+				_ = c.WritePacket(protocol.LoginFailure(reason))
+				return nil
+			}
+		}
 		st.account = account
 		if !account.PINConfigured || account.Gender == 255 {
 			return c.WritePacket(protocol.ChooseGender(account.Name))

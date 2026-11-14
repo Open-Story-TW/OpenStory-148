@@ -18,9 +18,12 @@ type QAMobAuthorization struct {
 }
 
 func ValidQAMobCommand(name string, args []int64, mapID int) bool {
-	if mapID != QAMobMap {
-		return false
-	}
+	return mapID == QAMobMap && ValidGMMobCommand(name, args)
+}
+
+// ValidGMMobCommand checks the arguments alone. A standing GM may spawn on any
+// map; a timed QA grant only on the QA field (ValidQAMobCommand).
+func ValidGMMobCommand(name string, args []int64) bool {
 	switch name {
 	case "spawn":
 		return (len(args) == 2 || len(args) == 3 && args[2] >= -32000 && args[2] <= 32000) && args[0] > 0 && args[0] <= 9999999 && args[1] >= 1 && args[1] <= QAMobMaxBatch

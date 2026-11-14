@@ -102,8 +102,10 @@
 
 兩種授權能用的指令不同：
 
-- 限時和永久都能用：只影響自己的指令（補血、等級、職業、能力值、AP、SP、技能、道具、楓幣、測試地圖與測試怪物）以及查詢類（`!online`、`!rates`、`!whereami`）。
-- 只有永久授權能用（說明裡標 ★）：`!map` 傳送到任何地圖、`!goto` 和 `!warphere` 在玩家之間傳送、`!dc` 讓玩家斷線、`!notice` 全伺服器公告、`!npc` 遠端開啟 NPC 對話、`!cash` 和 `!points` 取得 Gash 與楓葉點數。
+- 限時和永久都能用：只影響自己的指令（補血、等級、職業、能力值、AP、SP、名聲、髮型臉型膚色、技能與 `!maxskills`、道具、楓幣、測試地圖與測試怪物）以及查詢類（`!online`、`!rates`、`!whereami`）。
+- 只有永久授權能用（說明裡標 ★）：`!map` 傳送到任何地圖、`!goto` 和 `!warphere` 在玩家之間傳送、`!dc` 讓玩家斷線、`!notice` 全伺服器公告、`!npc` 遠端開啟 NPC 對話、`!cash` 和 `!points` 取得 Gash 與楓葉點數、`!ban` / `!unban` / `!banip` / `!unbanip` 封鎖帳號與 IP、`!killall` 清怪、`!cleardrops` 清掉落物、在一般地圖 `!spawn`、`!rate` 改倍率、`!hide` 隱身、`!god` 無敵。
+
+封鎖記錄在 `auth_accounts` 的 `banned_until`、`ban_reason`、`banned_by` 欄位與 `ops_ip_bans` 表（遷移 0096）。被封的帳號或 IP 在登入和選角色時都會被拒絕；本機位址（127.0.0.1）不能封。`!god` 只存在記憶體，換頻道或重新登入後要重開；`!hide` 會保留 12 小時。
 
 每一道指令（包含被拒絕的）都會記錄在 `ops_qa_gm_commands`，公告內容和對象名稱在 `result` 欄的 `text`。
 

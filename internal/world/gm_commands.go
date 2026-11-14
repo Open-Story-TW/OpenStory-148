@@ -29,14 +29,14 @@ func parseGMChat(text string) (string, []int64, bool) {
 	name := strings.TrimPrefix(fields[0], "!")
 	want := -1
 	switch name {
-	case "heal", "whereami", "effstats", "clearmobs", "online", "rates": // !effstats: read-only server stat view
+	case "heal", "whereami", "effstats", "clearmobs", "online", "rates", "maxskills", "killall", "cleardrops": // !effstats: read-only server stat view
 		want = 0
 	case "help": // !help [page]
 		want = len(fields) - 1
 		if want > 1 {
 			want = -1
 		}
-	case "level", "job", "warp", "buffreset", "hp", "ap", "sp", "map", "npc", "cash", "points":
+	case "level", "job", "warp", "buffreset", "hp", "ap", "sp", "map", "npc", "cash", "points", "hair", "face", "skin", "fame", "hide", "god":
 		want = 1
 	case "petfood", "mesos", "alliance", "mobhold": // !mobhold <0|1>
 		want = 1
@@ -83,6 +83,9 @@ func parseGMChat(text string) (string, []int64, bool) {
 	return name, args, true
 }
 
+// gmHideBit is GM_HIDE in the buff stat table.
+const gmHideBit = 56
+
 // parseGMCommand adds the commands with one text argument (a character name
 // or a notice) to parseGMChat's numeric grammar.
 func parseGMCommand(text string) (name string, args []int64, arg string, handled bool) {
@@ -95,11 +98,33 @@ func parseGMCommand(text string) (name string, args []int64, arg string, handled
 				return "", nil, "", true
 			}
 			return "notice", nil, arg, true
-		case "!goto", "!warphere", "!dc":
+		case "!goto", "!warphere", "!dc", "!unban", "!banip", "!unbanip":
 			if len(fields) != 2 || len(fields[1]) > domain.GMNameMax {
 				return "", nil, "", true
 			}
 			return fields[0][1:], nil, fields[1], true
+		case "!ban": // !ban <name> [days]
+			if len(fields) < 2 || len(fields) > 3 || len(fields[1]) > domain.GMNameMax {
+				return "", nil, "", true
+			}
+			if len(fields) == 3 {
+				days, err := strconv.ParseInt(fields[2], 10, 64)
+				if err != nil || days < 1 {
+					return "", nil, "", true
+				}
+				args = []int64{days}
+			}
+			return "ban", args, fields[1], true
+		case "!rate": // !rate <exp|meso|drop> <multiplier>
+			kind := map[string]int64{"exp": 1, "經驗": 1, "meso": 2, "楓幣": 2, "drop": 3, "掉寶": 3}
+			if len(fields) != 3 || kind[strings.ToLower(fields[1])] == 0 {
+				return "", nil, "", true
+			}
+			n, err := strconv.ParseInt(fields[2], 10, 64)
+			if err != nil || n < 1 {
+				return "", nil, "", true
+			}
+			return "rate", []int64{kind[strings.ToLower(fields[1])], n}, "", true
 		}
 	}
 	name, args, handled = parseGMChat(text)
@@ -124,9 +149,16 @@ var gmHelpPages = []gmHelpPage{
 		{"!vitals <最大HP> <最大MP>", "設定最大 HP 和 MP 並補滿"},
 		{"!ap <點數>", "設定未分配的能力點"},
 		{"!sp <點數>", "設定未分配的技能點"},
+		{"!fame <名聲>", "設定名聲"},
+		{"!hair <髮型代碼>", "換髮型"},
+		{"!face <臉型代碼>", "換臉型"},
+		{"!skin <膚色編號>", "換膚色，0 到 5 或 9 到 11"},
+		{"!hide <0或1>", "1 隱身，其他玩家看不到你"},
+		{"!god <0或1>", "1 無敵，怪物打不扣血"},
 	}},
 	{"技能", []gmHelpEntry{
 		{"!skill <技能代碼> <等級>", "學會技能，不扣技能點"},
+		{"!maxskills", "目前職業能學的技能全部點滿"},
 		{"!debuff <狀態編號> [秒數]", "讓自己中異常狀態"},
 		{"!buffreset <狀態編號>", "清除一種狀態"},
 	}},
@@ -144,7 +176,9 @@ var gmHelpPages = []gmHelpPage{
 		{"!warp <地圖代碼>", "傳送到測試地圖"},
 		{"!whereami", "顯示所在地圖和座標"},
 		{"!npc <NPC代碼>", "不用走到 NPC 旁就開啟對話"},
-		{"!spawn <怪物代碼> <數量> [X座標]", "在測試地圖召喚怪物"},
+		{"!spawn <怪物代碼> <數量> [X座標]", "召喚怪物；永久授權可在任何地圖"},
+		{"!killall", "清除這張地圖的怪物，不給經驗和掉寶"},
+		{"!cleardrops", "清除這張地圖的掉落物"},
 		{"!clearmobs", "清除自己召喚的怪物"},
 		{"!mobhold <0或1>", "1 讓測試地圖的怪物打不死"},
 	}},
@@ -154,10 +188,15 @@ var gmHelpPages = []gmHelpPage{
 		{"!warphere <角色名稱>", "把該玩家傳送到自己的地圖"},
 		{"!dc <角色名稱>", "讓該玩家斷線"},
 		{"!notice <內容>", "對全伺服器發公告"},
+		{"!ban <角色名稱> [天數]", "封鎖該角色的帳號，不寫天數為永久"},
+		{"!unban <角色名稱>", "解除帳號封鎖"},
+		{"!banip <角色名稱>", "封鎖該玩家的 IP"},
+		{"!unbanip <IP>", "解除 IP 封鎖"},
 		{"!alliance <對方角色ID>", "建立聯盟，0 為解散"},
 	}},
 	{"伺服器", []gmHelpEntry{
 		{"!rates", "顯示經驗、楓幣、掉寶倍率"},
+		{"!rate <exp或meso或drop> <倍數>", "修改倍率，立即生效"},
 		{"!effstats", "顯示伺服器計算的攻擊數值"},
 		{"!help [編號]", "顯示這份說明"},
 	}},
@@ -285,12 +324,17 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 	}
 	req := domain.GMCommandRequest{Session: session, OperationID: "gm-native-" + platform.NewID(), Name: name, Args: args, Text: arg}
 	if name == "spawn" || name == "clearmobs" {
-		if s.gameplay == nil || !domain.ValidQAMobCommand(name, args, session.Character.MapID) {
+		if s.gameplay == nil || !domain.ValidGMMobCommand(name, args) {
 			return true, qaMobDenied(sink, "spawn/clearmobs require the empty QA field and bounded arguments")
 		}
 		req.RuntimeID = s.gameplay.bootID
 	}
-	call, cancel := context.WithTimeout(ctx, 3*time.Second)
+	timeout := 3 * time.Second
+	if name == "maxskills" {
+		// The first use reads every skill of the job from the WZ files.
+		timeout = 20 * time.Second
+	}
+	call, cancel := context.WithTimeout(ctx, timeout)
 	result, err := repo.ExecuteGMCommand(call, req)
 	cancel()
 	if err != nil && !combatKnownFailure(err) {
@@ -369,7 +413,14 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 	live.session = next
 	live.mu.Unlock()
 	published = true
-	if result.Changed && name == "buffreset" {
+	if result.Changed && name == "hide" {
+		// The caller's own buff row; gmStanding then hides or shows the body.
+		if args[0] == 1 {
+			s.publishQADebuff(session, live, sink, next.Character, gmHideBit)
+		} else {
+			s.publishQABuffReset(session, live, sink, gmHideBit)
+		}
+	} else if result.Changed && name == "buffreset" {
 		s.publishQABuffReset(session, live, sink, int(args[0]))
 	} else if result.Changed && name == "debuff" {
 		s.publishQADebuff(session, live, sink, next.Character, int(args[0]))
@@ -383,6 +434,26 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 			}
 			s.refreshCharacterLookScene(expectedVisit)
 		} else {
+			for _, id := range result.SkillIDs { // !maxskills
+				for _, state := range next.Character.Skills {
+					if state.ID == id {
+						if err = sink.WritePacket(protocol.SkillUpdate(state)); err != nil {
+							return true, err
+						}
+					}
+				}
+			}
+			switch name {
+			case "hair", "face", "skin":
+				if err = sink.WritePacket(protocol.UpdateLook(next.Character, name)); err != nil {
+					return true, err
+				}
+				s.refreshCharacterLookScene(expectedVisit)
+			case "fame":
+				if err = sink.WritePacket(protocol.UpdateFame(next.Character.Fame)); err != nil {
+					return true, err
+				}
+			}
 			if result.SkillID != 0 {
 				for _, state := range next.Character.Skills {
 					if state.ID == result.SkillID {

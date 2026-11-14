@@ -59,6 +59,7 @@ type liveCharacter struct {
 	mu               sync.Mutex
 	persistMu        sync.Mutex // serialize checkpoints and durable asset commands
 	nativeHandle     int64
+	god              bool // GM !god; guarded by mu, lost on relog or channel change.
 	session          domain.CharacterSession
 	longDamage       protocol.LongDamageLedger // Owned by the session's read loop.
 	statDetail       []byte                    // Last 0x614 frame sent; guarded by mu.

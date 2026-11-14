@@ -51,3 +51,24 @@ func UpdateLookStats(c domain.Character, face, hair bool) []byte {
 	w.U8(0)
 	return w.Packet()
 }
+
+// UpdateLook is the GM look change: one of skin (0x1, a byte), face (0x2) or
+// hair (0x4) in the same stat packet as UpdateLookStats.
+func UpdateLook(c domain.Character, part string) []byte {
+	w := NewWriter(SendUpdateStats)
+	w.U8(1)
+	switch part {
+	case "skin":
+		w.I64(0x1)
+		w.U8(byte(c.Skin))
+	case "face":
+		w.I64(0x2)
+		w.I32(int32(c.Face))
+	default:
+		w.I64(0x4)
+		w.I32(int32(c.Hair))
+	}
+	w.U8(0)
+	w.U8(0)
+	return w.Packet()
+}

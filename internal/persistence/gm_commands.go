@@ -187,6 +187,24 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 		if !domain.ValidGMStandingCommand(r.Name, r.Args, r.Text) {
 			return finish("unsupported_or_invalid_command")
 		}
+		if r.Name == "hide" {
+			// The GM Hide skill's own buff row, so the skill can cancel it too.
+			var buffs domain.SkillResult
+			var e error
+			if r.Args[0] == 1 {
+				e = replaceSkillBuffs(ctx, tx, &c, &buffs, []domain.SkillBuff{{ID: 9001004, Level: 1, Stat: "GM_HIDE", Value: 1, ExpiresAt: now.Add(12 * time.Hour)}})
+			} else {
+				e = removeSkillBuffs(ctx, tx, &c, &buffs, func(b domain.SkillBuff) bool { return b.Stat == "GM_HIDE" })
+			}
+			if e == nil {
+				e = commitInventoryState(ctx, tx, &c)
+			}
+			if e != nil {
+				return result, e
+			}
+			result.Character = c
+			result.Changed = true
+		}
 		return finish("")
 	}
 	if r.Text != "" {
@@ -286,6 +304,7 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 		}
 		return finish("")
 	}
+	priorSkills := c.Skills
 	changed, skillID, mapChanged, policyErr := applyQAGMPolicy(&c, r, now)
 	if policyErr == nil && (c.Level < 1 || c.Level > domain.MaxCharacterLevel() || c.AP < 0 || c.AP > max(65535, domain.MaxStat()) || c.SP < 0 || c.SP > 65535 || c.STR < 4 || c.STR > domain.MaxStat() || c.DEX < 4 || c.DEX > domain.MaxStat() || c.INT < 4 || c.INT > domain.MaxStat() || c.LUK < 4 || c.LUK > domain.MaxStat()) {
 		policyErr = domain.ErrInvalidInput
@@ -305,6 +324,21 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 			if _, err = tx.ExecContext(ctx, `INSERT INTO game_skills(character_id,skill_id,level,master_level) VALUES($1,$2,$3,$4) ON CONFLICT(character_id,skill_id) DO UPDATE SET level=EXCLUDED.level,master_level=EXCLUDED.master_level`, c.ID, state.ID, state.Level, state.MasterLevel); err != nil {
 				return result, err
 			}
+		}
+		if r.Name == "maxskills" {
+			prior := domain.Character{Skills: priorSkills}
+			for _, state := range c.Skills {
+				if learned(prior, state.ID) == state {
+					continue
+				}
+				if _, err = tx.ExecContext(ctx, `INSERT INTO game_skills(character_id,skill_id,level,master_level) VALUES($1,$2,$3,$4) ON CONFLICT(character_id,skill_id) DO UPDATE SET level=EXCLUDED.level,master_level=EXCLUDED.master_level`, c.ID, state.ID, state.Level, state.MasterLevel); err != nil {
+					return result, err
+				}
+				result.SkillIDs = append(result.SkillIDs, state.ID)
+			}
+		}
+		if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET hair=$1,face=$2,skin=$3,fame=$4 WHERE id=$5`, c.Hair, c.Face, c.Skin, c.Fame, c.ID); err != nil {
+			return result, err
 		}
 		if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET level=$1,job=$2,str=$3,dex=$4,int_stat=$5,luk=$6,ap=$7,sp=$8,exp=$9,map_id=$10,spawn_point=$11,x=$12,y=$13 WHERE id=$14`, c.Level, c.Job, c.STR, c.DEX, c.INT, c.LUK, c.AP, c.SP, c.EXP, c.MapID, c.SpawnPoint, c.X, c.Y, c.ID); err != nil {
 			return result, err
@@ -498,6 +532,89 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 			}
 		}
 		c.STR, c.DEX, c.INT, c.LUK = int(r.Args[0]), int(r.Args[1]), int(r.Args[2]), int(r.Args[3])
+		if c.VitalsModel == 1 {
+			if e := recomputeVitals(c); e != nil {
+				return false, 0, false, e
+			}
+		}
+	case "hair", "face":
+		// !hair / !face <style>: any style the client has, no coupon.
+		if len(r.Args) != 1 {
+			return invalid()
+		}
+		id := int(r.Args[0])
+		low, high := 30000, 49999
+		if r.Name == "face" {
+			low, high = 20000, 29999
+		}
+		if id < low || id > high {
+			return deny(fmt.Sprintf("%s must be %d..%d", r.Name, low, high))
+		}
+		if !content.StyleExists(os.Getenv("MAPLEGO_WZ_ROOT"), id) {
+			return deny(fmt.Sprintf("%s %d does not exist", r.Name, id))
+		}
+		if r.Name == "face" {
+			c.Face = id
+		} else {
+			c.Hair = id
+		}
+	case "skin":
+		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 11 || r.Args[0] > 5 && r.Args[0] < 9 {
+			return deny("skin must be 0..5 or 9..11")
+		}
+		c.Skin = int(r.Args[0])
+	case "fame":
+		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 30000 {
+			return deny("fame must be 0..30000")
+		}
+		c.Fame = int(r.Args[0])
+	case "maxskills":
+		// Every registered job skill the current job can learn at this level, to
+		// its top level. A skill whose buff or cooldown is running is left.
+		if len(r.Args) != 0 {
+			return invalid()
+		}
+		next := append([]domain.SkillState(nil), c.Skills...)
+		root := os.Getenv("MAPLEGO_WZ_ROOT")
+		for _, id := range skills.IDs() {
+			// Job books only: beginner books hold event and mount skills, and
+			// 800+ are GM, profession and special books.
+			if book := id / 10000; book%1000 < 100 || book >= 8000 || book/100 == 8 || book/100 == 9 && c.Job/100 != 9 {
+				continue
+			}
+			template, e := content.SkillDefinition(root, id)
+			if e != nil || template.Disabled || !template.CanLearnBy(*c) || c.Level < template.ReqLevel || id == 2000006 && c.VitalsModel != 1 {
+				continue
+			}
+			if _, e = template.Values(template.MaxLevel); e != nil {
+				continue
+			}
+			busy := false
+			for _, b := range c.SkillBuffs {
+				busy = busy || b.ID == id && b.ExpiresAt.After(now)
+			}
+			for _, b := range c.SkillCooldowns {
+				busy = busy || b.ID == id && b.ExpiresAt.After(now)
+			}
+			state := learned(*c, id)
+			if busy || !state.ExpiresAt.IsZero() && !state.ExpiresAt.After(now) || state.Level >= template.MaxLevel {
+				continue
+			}
+			state.Level = template.MaxLevel
+			if template.MasterLevel > 0 && state.MasterLevel < template.MaxLevel {
+				state.MasterLevel = template.MaxLevel
+			}
+			replaced := false
+			for i, s := range next {
+				if s.ID == id {
+					next[i], replaced = state, true
+				}
+			}
+			if !replaced {
+				next = append(next, state)
+			}
+		}
+		c.Skills = next
 		if c.VitalsModel == 1 {
 			if e := recomputeVitals(c); e != nil {
 				return false, 0, false, e

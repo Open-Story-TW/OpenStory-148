@@ -449,6 +449,10 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 		// skill's OnDamaged counts the block and breaks the shield.
 		hpLoss, mpLoss = 0, 0
 	}
+	if live.god {
+		// GM !god: the hit is reported and answered, never applied.
+		hpLoss, mpLoss = 0, 0
+	}
 	lethal := live.session.Character.HP-hpLoss <= 0
 	live.session.Character.HP = max(0, live.session.Character.HP-hpLoss)
 	live.session.Character.MP = max(0, live.session.Character.MP-mpLoss)

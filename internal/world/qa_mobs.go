@@ -46,11 +46,17 @@ type qaMobDelivery struct {
 // fit entirely inside its patrol interval; unsupported/flying-only geometry is
 // rejected rather than assigning guessed coordinates or synthetic HP.
 func qaMobPositions(m content.Map, body content.MobBodyBounds, n, nearX, nearY int) ([]content.Life, error) {
-	if m.ID != domain.QAMobMap || n < 1 || n > domain.QAMobMaxBatch || !body.Envelope.Nonempty() || body.FrameCount < 1 {
+	return mobPositions(m, body, n, nearX, nearY, false)
+}
+
+// mobPositions is qaMobPositions with the field policy optional: anyMap lets a
+// standing GM spawn on an ordinary map, beside its own monsters.
+func mobPositions(m content.Map, body content.MobBodyBounds, n, nearX, nearY int, anyMap bool) ([]content.Life, error) {
+	if !anyMap && m.ID != domain.QAMobMap || n < 1 || n > domain.QAMobMaxBatch || !body.Envelope.Nonempty() || body.FrameCount < 1 {
 		return nil, domain.ErrInvalidInput
 	}
 	for _, l := range m.Life {
-		if l.Kind == "m" {
+		if l.Kind == "m" && !anyMap {
 			return nil, domain.ErrForbidden
 		}
 	}
@@ -129,10 +135,14 @@ func qaMobPositions(m content.Map, body content.MobBodyBounds, n, nearX, nearY i
 // but cannot silently shift the requested group center to fit that floor.
 // The actor supplies only the existing nearY surface selection, never a new Y.
 func qaMobPositionsAtCenter(m content.Map, body content.MobBodyBounds, n, centerX, nearY int) ([]content.Life, error) {
+	return mobPositionsAtCenter(m, body, n, centerX, nearY, false)
+}
+
+func mobPositionsAtCenter(m content.Map, body content.MobBodyBounds, n, centerX, nearY int, anyMap bool) ([]content.Life, error) {
 	if centerX < -32000 || centerX > 32000 {
 		return nil, domain.ErrInvalidInput
 	}
-	lives, err := qaMobPositions(m, body, n, centerX, nearY)
+	lives, err := mobPositions(m, body, n, centerX, nearY, anyMap)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +160,7 @@ func qaMobPositionsAtCenter(m content.Map, body content.MobBodyBounds, n, center
 func (s *Server) publishQAMobCommand(req domain.GMCommandRequest, result domain.GMCommandResult, visit *sceneVisit, sink packetSink) error {
 	now := time.Now()
 	a := result.QAMobs
-	if s.gameplay == nil || a == nil || result.Denied || result.Changed || result.MapChanged || result.Name != req.Name || !slices.Equal(result.Args, req.Args) || a.RuntimeID != req.RuntimeID || req.RuntimeID != s.gameplay.bootID || a.GrantRevision <= 0 || !a.ExpiresAt.After(now) || a.ExpiresAt.After(now.Add(domain.QAMobLifetime)) || !domain.ValidQAMobCommand(req.Name, req.Args, req.Session.Character.MapID) || result.Character.ID != req.Session.CharacterID || result.Character.AccountID != req.Session.AccountID || result.Character.WorldID != req.Session.Lease.WorldID || result.Character.MapID != req.Session.Character.MapID || result.Character.Revision != req.Session.Character.Revision || result.Character.HP <= 0 || !s.sceneCurrent(visit) || !s.gmCurrent(req.Session, visit.live, sink) {
+	if s.gameplay == nil || a == nil || result.Denied || result.Changed || result.MapChanged || result.Name != req.Name || !slices.Equal(result.Args, req.Args) || a.RuntimeID != req.RuntimeID || req.RuntimeID != s.gameplay.bootID || a.GrantRevision <= 0 || !a.ExpiresAt.After(now) || a.ExpiresAt.After(now.Add(domain.QAMobLifetime)) || !domain.ValidGMMobCommand(req.Name, req.Args) || !result.Standing && req.Session.Character.MapID != domain.QAMobMap || result.Character.ID != req.Session.CharacterID || result.Character.AccountID != req.Session.AccountID || result.Character.WorldID != req.Session.Lease.WorldID || result.Character.MapID != req.Session.Character.MapID || result.Character.Revision != req.Session.Character.Revision || result.Character.HP <= 0 || !s.sceneCurrent(visit) || !s.gmCurrent(req.Session, visit.live, sink) {
 		return domain.ErrStaleOwner
 	}
 	g := s.gameplay
@@ -172,12 +182,12 @@ func (s *Server) publishQAMobCommand(req domain.GMCommandRequest, result domain.
 			return qaMobDenied(sink, "WZ monster geometry unavailable")
 		}
 		if len(req.Args) == 3 {
-			lives, err = qaMobPositionsAtCenter(m, body, int(req.Args[1]), int(req.Args[2]), req.Session.Character.Y)
+			lives, err = mobPositionsAtCenter(m, body, int(req.Args[1]), int(req.Args[2]), req.Session.Character.Y, result.Standing)
 		} else {
-			lives, err = qaMobPositions(m, body, int(req.Args[1]), req.Session.Character.X, req.Session.Character.Y)
+			lives, err = mobPositions(m, body, int(req.Args[1]), req.Session.Character.X, req.Session.Character.Y, result.Standing)
 		}
 		if err != nil {
-			return qaMobDenied(sink, "monster does not fit the QA foothold")
+			return qaMobDenied(sink, "monster does not fit a flat foothold below you")
 		}
 		for i := range lives {
 			lives[i].TemplateID = mob.ID

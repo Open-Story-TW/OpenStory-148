@@ -59,12 +59,24 @@ const (
 	GMWalletMax = 1000000 // one !cash or !points grant
 )
 
+// GMBan is the outcome of !ban or !unban: the account behind a character.
+type GMBan struct {
+	AccountID    int64
+	Account      string
+	CharacterIDs []int64
+	Until        time.Time
+}
+
+// GMBanDaysMax bounds a timed ban; without a day count a ban does not end.
+const GMBanDaysMax = 3650
+
 // GMStandingCommand reports the commands that act on other players or on the
 // whole world. They need a standing grant (no expiry, given in the web admin);
 // a timed QA grant keeps the self-only test commands.
 func GMStandingCommand(name string) bool {
 	switch name {
-	case "map", "goto", "warphere", "notice", "dc", "npc", "cash", "points":
+	case "map", "goto", "warphere", "notice", "dc", "npc", "cash", "points",
+		"ban", "unban", "banip", "unbanip", "rate", "killall", "cleardrops", "hide", "god":
 		return true
 	}
 	return false
@@ -85,7 +97,18 @@ func ValidGMStandingCommand(name string, args []int64, text string) bool {
 		return one(1, 9999999)
 	case "cash", "points":
 		return one(1, GMWalletMax)
-	case "goto", "warphere", "dc":
+	case "hide", "god":
+		return one(0, 1)
+	case "killall", "cleardrops":
+		return text == "" && len(args) == 0
+	case "rate": // kind (1 EXP, 2 mesos, 3 drops), multiplier
+		return text == "" && len(args) == 2 && args[0] >= 1 && args[0] <= 3 && args[1] >= 1 && args[1] <= MaxRate
+	case "ban": // name, then an optional number of days
+		if len(args) == 1 && (args[0] < 1 || args[0] > GMBanDaysMax) || len(args) > 1 {
+			return false
+		}
+		return text != "" && len(text) <= GMNameMax && !strings.ContainsAny(text, " \t")
+	case "goto", "warphere", "dc", "unban", "banip", "unbanip":
 		return len(args) == 0 && text != "" && len(text) <= GMNameMax && !strings.ContainsAny(text, " \t")
 	case "notice":
 		return len(args) == 0 && strings.TrimSpace(text) != "" && len(text) <= GMNoticeMax
@@ -97,8 +120,9 @@ type GMCommandResult struct {
 	Character  Character `json:"character"`
 	Name       string    `json:"name"`
 	Args       []int64   `json:"args"`
-	Text       string    `json:"text,omitempty"`     // the request's text, kept for the audit
-	Standing   bool      `json:"standing,omitempty"` // the grant has no expiry
+	Text       string    `json:"text,omitempty"`      // the request's text, kept for the audit
+	Standing   bool      `json:"standing,omitempty"`  // the grant has no expiry
+	SkillIDs   []int     `json:"skill_ids,omitempty"` // skills changed by !maxskills
 	Changed    bool      `json:"changed"`
 	Replayed   bool      `json:"replayed"`
 	Denied     bool      `json:"denied"`

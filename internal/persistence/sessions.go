@@ -163,6 +163,10 @@ func (s *Store) CreateTransfer(ctx context.Context, r domain.TransferRequest) (d
 	if err = tx.QueryRowContext(ctx, `SELECT id FROM game_characters WHERE id=$1 AND account_id=$2 AND world_id=$3`, r.CharacterID, r.AccountID, r.WorldID).Scan(&idCheck); err != nil {
 		return domain.Transfer{}, domain.ErrForbidden
 	}
+	// A ban set while the account sat at character select stops it here.
+	if banned, e := banQuery(ctx, tx, r.AccountID, r.ClientIP); e != nil || banned {
+		return domain.Transfer{}, domain.ErrForbidden
+	}
 	// The v145 client stores this value as its own character ID
 	// (CWvsContext+0x20C0) and echoes it on migrate-in; party leader checks
 	// compare against it. It must therefore be the character ID, never a
