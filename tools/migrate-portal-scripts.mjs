@@ -37,6 +37,8 @@ const PI = {
   getSavedLocation: [1, 1], saveLocation: [1, 1], clearSavedLocation: [1, 1],
   inFreeMarket: [0, 0], inArdentmill: [0, 0],
   getJob: [0, 0], getLevel: [0, 0], getMonsterCount: [0, 0],
+  getInfoQuest: [1, 1], updateInfoQuest: [2, 2], getEvanIntroState: [1, 1], updateEvanIntroState: [1, 1],
+  getParty: [0, 0], isLeader: [0, 0], warpParty: [1, 2], getPlayerStat: [1, 1],
   // Presentation only: the driver accepts and shows nothing for these.
   ShowWZEffect: [1, 2], showWZEffect: [1, 2], showInstruction: [1, 3], AranTutInstructionalBubble: [1, 1],
   showEffect: [1, 2], EnableUI: [1, 1], DisableUI: [1, 1], lockUI: [0, 1], unlockUI: [0, 0], environmentChange: [1, 2],
@@ -45,14 +47,16 @@ const PI = {
 // pi.getPlayer().<call>
 const PLAYER = {
   dropMessage: [1, 2], message: [1, 2], getMapId: [0, 0], getJob: [0, 0], getLevel: [0, 0], getGender: [0, 0],
-  changeMap: [1, 2], getMeso: [0, 0],
+  changeMap: [1, 2], getMeso: [0, 0], getFame: [0, 0], isGM: [0, 0], getParty: [0, 0],
 }
 // Methods allowed on values the driver returns (map handles, portal handles,
 // pi.getPortal()), and on strings for Java equals.
 const OBJECT = { getPortal: [1, 1], getId: [0, 0], getName: [0, 0], getPortalName: [0, 0], getMapId: [0, 0] }
 // Legacy SavedLocationType names; portal_driver.lua keeps the same table.
 const SAVED = new Set(['FREE_MARKET', 'MULUNG_TC', 'WORLDTOUR', 'FLORINA', 'FISHING', 'RICHIE', 'DONGDONGCHIANG', 'EVENT', 'AMORIA', 'CHRISTMAS', 'ARDENTMILL', 'Gachapon'])
-const BOOLEAN_PI = new Set(['haveItem', 'canHold', 'isQuestActive', 'isQuestFinished', 'isQuestCompleted'])
+const BOOLEAN_PI = new Set(['haveItem', 'canHold', 'isQuestActive', 'isQuestFinished', 'isQuestCompleted', 'isLeader', 'getEvanIntroState'])
+// pi.getPlayerStat names the driver answers.
+const STATS = new Set(['LVL', 'GENDER'])
 const RESERVED = new Set(['and', 'break', 'do', 'else', 'elseif', 'end', 'false', 'for', 'function', 'goto', 'if', 'in', 'local', 'nil', 'not', 'or', 'repeat', 'return', 'then', 'true', 'until', 'while', 'global',
   'pi', 'portal', 'math', 'string', 'table', 'tostring', 'tonumber', 'pairs', 'ipairs', 'select', 'next', 'error', 'assert', 'pcall', 'type'])
 
@@ -109,7 +113,10 @@ function convert(source, file) {
     const parts = chain(node)
     if (!parts) {
       const c = node.callee
-      if (c.type === 'MemberExpression' && !c.computed && c.object.type === 'Identifier' && c.object.name === 'Math' && ['random', 'floor', 'ceil', 'abs', 'max', 'min'].includes(c.property.name)) {
+      // Math.x and Rhino's java.lang.Math.x.
+      const javaMath = (o) => o.type === 'MemberExpression' && !o.computed && o.property.name === 'Math' && o.object.type === 'MemberExpression' && !o.object.computed &&
+        o.object.property.name === 'lang' && o.object.object.type === 'Identifier' && o.object.object.name === 'java'
+      if (c.type === 'MemberExpression' && !c.computed && ((c.object.type === 'Identifier' && c.object.name === 'Math') || javaMath(c.object)) && ['random', 'floor', 'ceil', 'abs', 'max', 'min'].includes(c.property.name)) {
         return `math.${c.property.name}(${node.arguments.map(expr).join(', ')})`
       }
       return null
@@ -140,6 +147,10 @@ function convert(source, file) {
       if (/SavedLocation$|^saveLocation$/.test(method)) {
         const where = node.arguments[0]
         if (where.type !== 'Literal' || !SAVED.has(where.value)) fail(node, `saved location ${where.value ?? '(computed)'} is not a Legacy SavedLocationType`)
+      }
+      if (method === 'getPlayerStat') {
+        const stat = node.arguments[0]
+        if (stat.type !== 'Literal' || !STATS.has(stat.value)) fail(node, `player stat ${stat.value ?? '(computed)'} is not supported`)
       }
       return `pi.${method}(${args.join(', ')})`
     }
@@ -188,6 +199,9 @@ function convert(source, file) {
           case '%': return `math.fmod(${l}, ${r})`
           case '==': case '===': return `(${l} == ${r})`
           case '!=': case '!==': return `(${l} ~= ${r})`
+          case '|':
+            if (node.right.type === 'Literal' && node.right.value === 0) return `__int(${l})`
+            break
         }
         return fail(node, `operator ${node.operator}`)
       }

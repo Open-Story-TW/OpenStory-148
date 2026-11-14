@@ -67,6 +67,15 @@ func (h *legacyPortalHost) Execute(_ context.Context, id Identity, c Command) (C
 	case "open_npc":
 		h.opened = c.Ints[0]
 		return CommandResult{}, nil
+	case "fame", "gm":
+		return CommandResult{Value: h.level}, nil
+	case "party_size":
+		return CommandResult{Value: h.level / 100}, nil
+	case "party_leader":
+		return CommandResult{Value: h.level >= 100}, nil
+	case "warp_party":
+		h.warps = append(h.warps, c)
+		return CommandResult{}, nil
 	case "warp":
 		h.warps = append(h.warps, c)
 		return CommandResult{}, nil

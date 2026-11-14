@@ -19,6 +19,24 @@
       "lua_sha256": "86f0d34f1048fd0e3469f97616f6052ef73b88c36cf943babc93690134ba251c"
     },
     {
+      "legacy": "portal/5th_cakeGL1.js",
+      "source_sha256": "658e6731be9fe46bae986d900aa7b3b54993efdc48d004f0cf484b2d753efc05",
+      "lua": "portal/5th_cakeGL1.lua",
+      "lua_sha256": "c3ebf3e132aabd71e1d919801c7a6d7afa600059e5dd3865047bd8cbd25ac5d6"
+    },
+    {
+      "legacy": "portal/5th_cakeGL2.js",
+      "source_sha256": "6910f202abfdecd535198800a6f2b1878d1a3c607b793bfbd38d0eebdfe08d01",
+      "lua": "portal/5th_cakeGL2.lua",
+      "lua_sha256": "f1c51038bf724a6e05b534e420dfc59488763d533078b7e3f5d254734a162588"
+    },
+    {
+      "legacy": "portal/5th_cakeGL3.js",
+      "source_sha256": "b9fc9eb38ba804caa22001fc14180520a7f8a0b67238f85ad1a0966fa05b35ed",
+      "lua": "portal/5th_cakeGL3.lua",
+      "lua_sha256": "8c60bbbfd35c18d907737bd0190241da6e97b12fc290708a4361d36e82379ea4"
+    },
+    {
       "legacy": "portal/BlackPortal.js",
       "source_sha256": "9798574f88293947b9b904dad32b0db89181825df099478d56886aba3dcb4fa4",
       "lua": "portal/BlackPortal.lua",
@@ -151,10 +169,130 @@
       "lua_sha256": "fc35c47a1c0a60becc76206c95e5dcbda184b3363a069e82558fa146fcec911e"
     },
     {
+      "legacy": "portal/MD_alien.js",
+      "source_sha256": "17b7dd1da3aa2ac3733a551a3b5e4f6671391fd3d4cef634016478b3a29373ed",
+      "lua": "portal/MD_alien.lua",
+      "lua_sha256": "4e3f2a5c7366ea5b49f4cd8ae7a47ac771999dedab290be95e8977c9225adb66"
+    },
+    {
+      "legacy": "portal/MD_boat.js",
+      "source_sha256": "a92bdcc9df5952cc14e7387b559c27f2c4005708678769ac21df38aedd8540a9",
+      "lua": "portal/MD_boat.lua",
+      "lua_sha256": "51246fbc04b5b011684fc7ae97675d4abe78f248574f5ffc10ca9c968c74aab2"
+    },
+    {
       "legacy": "portal/MD_cakeEnter.js",
       "source_sha256": "cb2847ac608b0e9aceeeb5b89f9c1374e760cce7fb9dc95f173630dcb218e4db",
       "lua": "portal/MD_cakeEnter.lua",
       "lua_sha256": "f292b8019779d1568c63515885cc1c786ea940ee45105183d0e71f35d345cb76"
+    },
+    {
+      "legacy": "portal/MD_cakeGL1.js",
+      "source_sha256": "907ea2aeab8af4a0bf3af53e7a6e37a1a0648864827321336e775232193c75ef",
+      "lua": "portal/MD_cakeGL1.lua",
+      "lua_sha256": "22e4e6851ba8f4cf869832a45c17f66c015d88ec509fbef8f0055ff63f412918"
+    },
+    {
+      "legacy": "portal/MD_cakeGL2.js",
+      "source_sha256": "2affa46768bff15c61ca9486db20c7235aedcb488cbc303b0c66d30e32c0dcde",
+      "lua": "portal/MD_cakeGL2.lua",
+      "lua_sha256": "5df79654397582e430cdf990505d995753bf1ead37293857b865ebca3094cedf"
+    },
+    {
+      "legacy": "portal/MD_cakeGL3.js",
+      "source_sha256": "f5d5c6669c97dd799ff8ec9f3be17eed83511e78c8e95b621987031b61f27c77",
+      "lua": "portal/MD_cakeGL3.lua",
+      "lua_sha256": "a0f968a6da333cf3573a34da05e78f3fea547aacab9a2b7a47b66c38423375b1"
+    },
+    {
+      "legacy": "portal/MD_coldeye.js",
+      "source_sha256": "822ab72f5a9877c9c1246e69292869f8a57972cc88ebf66744ee634bd0d71fd2",
+      "lua": "portal/MD_coldeye.lua",
+      "lua_sha256": "2db1b0d854503de399aff3b2e854ec79e78b2c816002feadbac4034978eea53a"
+    },
+    {
+      "legacy": "portal/MD_drake.js",
+      "source_sha256": "3cefc6853c8167f47ddddc14310160bc733d1ce772df3ddbce5f36360f90e943",
+      "lua": "portal/MD_drake.lua",
+      "lua_sha256": "d6b2ead51050005afc6a1db030c5c656cba21039e36a8e7dae68ee504bb1faab"
+    },
+    {
+      "legacy": "portal/MD_drakeroom.js",
+      "source_sha256": "98a907a31f2f4c730d8c05a39cb5c50705c9a9f78585b0907ddcb03f6fe992d7",
+      "lua": "portal/MD_drakeroom.lua",
+      "lua_sha256": "4add51f412b4d4daff344876fa75d77fcda991f4408c1adf62f1d5d2ec45842f"
+    },
+    {
+      "legacy": "portal/MD_error.js",
+      "source_sha256": "ac028f9afc7905246f4e4415b7b293e02fd66a2beefee82d9aaf56239914314a",
+      "lua": "portal/MD_error.lua",
+      "lua_sha256": "bb774fd9abe6ca75d4a8a704c17e511b130d29705a24792a792202d29d8e0e40"
+    },
+    {
+      "legacy": "portal/MD_golem.js",
+      "source_sha256": "c4ffa74f266cb399e963e7fd5686e7e577cd404490f71c2f46c40ec3c1ed980d",
+      "lua": "portal/MD_golem.lua",
+      "lua_sha256": "6d411376ac259820c0cd732bc83f6b086ca2cedfe5043ebad72e336d333649d0"
+    },
+    {
+      "legacy": "portal/MD_high.js",
+      "source_sha256": "2949eab50018e3597ebf395ed862254fb2885c33cab3b5c880c6ab19bf1f3bfe",
+      "lua": "portal/MD_high.lua",
+      "lua_sha256": "a3734e02dda7d84e4b15390c3a7702aaeb5b9a771f7e17ffa18cba76c24c5697"
+    },
+    {
+      "legacy": "portal/MD_longkiss.js",
+      "source_sha256": "246ade10a92debc279833d152b82636dc576568f4e2ebfd967c866b0b4bfed07",
+      "lua": "portal/MD_longkiss.lua",
+      "lua_sha256": "b343991067be0a8535a864186fc3352d0bfe2a9f7a70e0b63bd8ee9f6002c39a"
+    },
+    {
+      "legacy": "portal/MD_mushroom.js",
+      "source_sha256": "d51cee87a119cf6d47b4b5737e0b388b1b112fb9332ad5d1eb1a4e8177e45a86",
+      "lua": "portal/MD_mushroom.lua",
+      "lua_sha256": "716ee99c01de9a46be1f1aa696d0f82286fe54ffe02c399e70e01609a04d0d96"
+    },
+    {
+      "legacy": "portal/MD_pig.js",
+      "source_sha256": "1531a0474bf772ece32274859203c36e466970c1d95af623f13b2b9b424810c6",
+      "lua": "portal/MD_pig.lua",
+      "lua_sha256": "70f3751b282db1d2015e4b156bea98385c85de6fc97cb002fe752388f0a2a7d7"
+    },
+    {
+      "legacy": "portal/MD_protect.js",
+      "source_sha256": "b8af1a83259662941d454fc54ba7f893e26b38f965ff09eabba4468b46ab6ed6",
+      "lua": "portal/MD_protect.lua",
+      "lua_sha256": "e72b085527b7a980febb0fff3fd196cc78634c367f5fb65ee5f040122ed205d1"
+    },
+    {
+      "legacy": "portal/MD_rabbit.js",
+      "source_sha256": "c030d0eaa60d38f72ff6b67c927882996e956c74800ecf44ad4ecd55a00dac6e",
+      "lua": "portal/MD_rabbit.lua",
+      "lua_sha256": "5679e0d28d56dc8c6521dda43df6550c42e124ebcc3064fa94530d6ea822ff7a"
+    },
+    {
+      "legacy": "portal/MD_remember.js",
+      "source_sha256": "75c49281c8ffb24579a7a20df068ee9b6cd19068ea19fb2838d0f2475399185a",
+      "lua": "portal/MD_remember.lua",
+      "lua_sha256": "88edd0d0b90e9e70343871d7b4b7258fba71d544e67d3e13014f840f26f8d416"
+    },
+    {
+      "legacy": "portal/MD_roundTable.js",
+      "source_sha256": "ec7d05b47b71a87f5da98880d70effe39e5db27bcb6a42140baa70e17d95ab96",
+      "lua": "portal/MD_roundTable.lua",
+      "lua_sha256": "6db64a4593bc02951bf49a4bb90f293910cd45b39fe9780aa23bfb87deb35761"
+    },
+    {
+      "legacy": "portal/MD_sand.js",
+      "source_sha256": "adbd90d9b24d3fe9f1eda16ed6e221a8554a7ece19544b9859711469ab707b28",
+      "lua": "portal/MD_sand.lua",
+      "lua_sha256": "dadff7827ad7b11b5af957c29919f9404902590dd6c7e51691f9406901d5e3d6"
+    },
+    {
+      "legacy": "portal/MD_treasure.js",
+      "source_sha256": "54b96d06b2f433fbb7a963143b554c85d3c84b9d81a750261e7f881e2b609f8d",
+      "lua": "portal/MD_treasure.lua",
+      "lua_sha256": "d7918bc4b8bc8550f91a33f2b1f18261e6e6586b9a9a946a2b00b51d7c0e75ba"
     },
     {
       "legacy": "portal/MSN_Promotion.js",
@@ -349,6 +487,12 @@
       "lua_sha256": "84ea9801cf724b9dc64c2a8eb5a77626f9ac3153d2e5fb4090279415a0f35eb0"
     },
     {
+      "legacy": "portal/Sky_Next.js",
+      "source_sha256": "6666c6a657fdb5c8bba115ffdf2a643d8a77524b19cc7574f6f12da56f2f1d97",
+      "lua": "portal/Sky_Next.lua",
+      "lua_sha256": "176470b614ad8fdce493b991b934579c0b6c65082e0f8a74d379b4dafd6f659e"
+    },
+    {
       "legacy": "portal/Sky_Previous.js",
       "source_sha256": "0b43d98a518074aab8f2c6ffe14d40505e0b4e76bcec11d9f60277f02718021e",
       "lua": "portal/Sky_Previous.lua",
@@ -539,6 +683,72 @@
       "source_sha256": "54fcd64b415e506efd0af10d557a8ba9d45c10e57a52b77e7df4a6a3d94edfdb",
       "lua": "portal/aranTutorAloneX.lua",
       "lua_sha256": "976881dfee312fa839c0b3fd1d61bfdbad027e48c393021cef29b3a651acd139"
+    },
+    {
+      "legacy": "portal/aranTutorArrow0.js",
+      "source_sha256": "f4ffa76630697808032f241d5dccc310a7cdc7f4456fc3fa780cd90e4c32b65e",
+      "lua": "portal/aranTutorArrow0.lua",
+      "lua_sha256": "6621771f525d659d3ec832c5ab03e865ada7ca1b8bc2c53f5a4d96de26efee70"
+    },
+    {
+      "legacy": "portal/aranTutorArrow1.js",
+      "source_sha256": "b7b7e40276ff72a7a05a555e75af72abf4b382d6a9e73700bc69e89b895215fb",
+      "lua": "portal/aranTutorArrow1.lua",
+      "lua_sha256": "4113aaba37a52e61d8b0cc6f6942607fe1c325503e228a22127a4753b2f2e3ce"
+    },
+    {
+      "legacy": "portal/aranTutorArrow2.js",
+      "source_sha256": "ee5e986ee7ad51d45742a3c90559ac45d35600505baed1993991c5c71205d968",
+      "lua": "portal/aranTutorArrow2.lua",
+      "lua_sha256": "5b3c80f49f01af80c995383de45d73fe07be8b3ddd4c889106d650906ecef260"
+    },
+    {
+      "legacy": "portal/aranTutorArrow3.js",
+      "source_sha256": "cc7548eda528349bb969a14995d0ec2b54a3991e455a15e704c9f566b8d7c538",
+      "lua": "portal/aranTutorArrow3.lua",
+      "lua_sha256": "3fcfe7f94872c08cb99f52f58e4743fd4f66d4a68767e35982828eee48394e2e"
+    },
+    {
+      "legacy": "portal/aranTutorGuide0.js",
+      "source_sha256": "27009cafd52a88da0a396270fc31b0fd827e4ba4322e540a3ccd4368d33e5df2",
+      "lua": "portal/aranTutorGuide0.lua",
+      "lua_sha256": "b1039cb091353c6cb8ad76b5228d4f4c10a8ed153c3ee5ecb00ec94f9f0f39d0"
+    },
+    {
+      "legacy": "portal/aranTutorGuide1.js",
+      "source_sha256": "9b3ede878ad3cb6bdd8c874579729a16f945ff0f6a911fb91956e4ecd9421889",
+      "lua": "portal/aranTutorGuide1.lua",
+      "lua_sha256": "791e0aa6c8bd0f69504cdc1c0e2134178fdfed758aeda6de0244d31c3d989e02"
+    },
+    {
+      "legacy": "portal/aranTutorGuide2.js",
+      "source_sha256": "849915a591cb9e4f0109691a70f58d74fe9ea51a13e66fb62c23ac9690146ee5",
+      "lua": "portal/aranTutorGuide2.lua",
+      "lua_sha256": "f1ca101d35ed5138704ab63bd62f95cedc7b6dc19929337cf227cf303f241591"
+    },
+    {
+      "legacy": "portal/aranTutorLost.js",
+      "source_sha256": "c04ae763ec3c751f5dba699b572fd35d9003b7c8436ebcd4c5944f7082a1c962",
+      "lua": "portal/aranTutorLost.lua",
+      "lua_sha256": "ce59962476990ac4df26ca2ce56beba17da01f55bdcb7679eece9b6d22763ddf"
+    },
+    {
+      "legacy": "portal/aranTutorMono0.js",
+      "source_sha256": "9f71a1e759204a2d508cd19251e77bfcbd18b30012e61b09018ebc665ca881e7",
+      "lua": "portal/aranTutorMono0.lua",
+      "lua_sha256": "15e904ede0057928a1915ffe1cf584c71caf8c301a6c9ef54433da9326ab1496"
+    },
+    {
+      "legacy": "portal/aranTutorMono2.js",
+      "source_sha256": "01a4abcfb0c9492627d509015fd5f07f6510b7f4c7273d9bca231154894b98ff",
+      "lua": "portal/aranTutorMono2.lua",
+      "lua_sha256": "bbe4882a5bb67a8a273f1a883c123d0ce0d167dd74032b58c495fd78e857ce08"
+    },
+    {
+      "legacy": "portal/aranTutorMono3.js",
+      "source_sha256": "b5b3c6ffcac762e5c263d07b60a44c731c962d6133c4b1c28e854740e3847231",
+      "lua": "portal/aranTutorMono3.lua",
+      "lua_sha256": "217d679cac66fc496508c3b7509dd450b08f420075fe66b4652c80ce92f9ee3e"
     },
     {
       "legacy": "portal/ariant_Agit.js",
@@ -979,6 +1189,78 @@
       "lua_sha256": "373912bf3b6235dba58c34b797fe0caef5d1136870f5653654ce8d4c77770a2b"
     },
     {
+      "legacy": "portal/evanRoom0.js",
+      "source_sha256": "7727fb9622a6609c05974f0a2623f39fffb0e3d5af0f53388f9dfedbc6fcac9a",
+      "lua": "portal/evanRoom0.lua",
+      "lua_sha256": "437d6db1c59e857bc311ccfa3cde4aed69cb218c90c402435b602d74a3a1eb36"
+    },
+    {
+      "legacy": "portal/evantalk00.js",
+      "source_sha256": "3617027277743674cab1f18aa3b3d4aeef20fb239e0daef165a2a1537e5c6ca2",
+      "lua": "portal/evantalk00.lua",
+      "lua_sha256": "d6c1dbb7e3ad1b4a78d49da0ee0228c91871585dcf28c8f8f29f7e5444e39027"
+    },
+    {
+      "legacy": "portal/evantalk01.js",
+      "source_sha256": "d6700b2aa07c007896cef87890c7bcf19539e6a2219c6928485f4ccff6e0b713",
+      "lua": "portal/evantalk01.lua",
+      "lua_sha256": "b10b3c0ffa373393dde5fa090a5b538afd2466352fd6f56ca68dff792c952592"
+    },
+    {
+      "legacy": "portal/evantalk02.js",
+      "source_sha256": "0596101197983a2576f5edd3050d9c5ff74895096fd0987e9e82ae0a935eff90",
+      "lua": "portal/evantalk02.lua",
+      "lua_sha256": "b19f5baed418ae222b195075bd25d2f7739a5eb2b2469678dd13a58a5e477ef7"
+    },
+    {
+      "legacy": "portal/evantalk10.js",
+      "source_sha256": "8052453cab15edb2c8742f287411bea56e688ec33c6910f7d1fe478537b0b6d9",
+      "lua": "portal/evantalk10.lua",
+      "lua_sha256": "b8e4100190b9454fc841adc369a8a13345f39a8ae094185fe7fbef718ae8ec30"
+    },
+    {
+      "legacy": "portal/evantalk11.js",
+      "source_sha256": "3068ec75641201a6017b604d8533424fe03257ffa4627d1e72612bed6c7f0a72",
+      "lua": "portal/evantalk11.lua",
+      "lua_sha256": "f3724251304306cf141a5042d1b0e697d9a1456a0c721bfd04413fab2e2557ae"
+    },
+    {
+      "legacy": "portal/evantalk21.js",
+      "source_sha256": "b0864c72ca0e2fbe17772bd277e1c5b69f74b15a3c0c22390027f41bb656f8e4",
+      "lua": "portal/evantalk21.lua",
+      "lua_sha256": "006fa1bb6139539e8fcb3425cb15001701a8110210dd23daae92ff704523263a"
+    },
+    {
+      "legacy": "portal/evantalk40.js",
+      "source_sha256": "790e575c169781126e91adc51695d58df4f69e5697885e52a729bc1d78375d13",
+      "lua": "portal/evantalk40.lua",
+      "lua_sha256": "1e8f740db1cafb9965c3b6b7d2cc37b71e29eb796c50331a39924e4f84efa603"
+    },
+    {
+      "legacy": "portal/evantalk41.js",
+      "source_sha256": "61dd48610bb24d0c86b073f6220938fff66577e5f6c5a59b92bb32308dd76dce",
+      "lua": "portal/evantalk41.lua",
+      "lua_sha256": "8d25384642c2036b058a3c61bd4d02928a77e4e13ee844d7a504e17f75dd6dc3"
+    },
+    {
+      "legacy": "portal/evantalk42.js",
+      "source_sha256": "075e7e4ceb8cc024e53a398a75b5d185ec87fd87dd65fdda042d1b6ba88a0b5c",
+      "lua": "portal/evantalk42.lua",
+      "lua_sha256": "a51dd146a226700156c89da52cf58be167dfa96e0472fa6a022df30a842c0959"
+    },
+    {
+      "legacy": "portal/evantalk50.js",
+      "source_sha256": "6522c9c7ab2b77745607c8d999c3268e0948c48d15b13053031a825c51eec1b7",
+      "lua": "portal/evantalk50.lua",
+      "lua_sha256": "4a970317f1e0ae662b40dfbb7e87dbfd73c1691a7e10c2b50f03b7d7289ba5db"
+    },
+    {
+      "legacy": "portal/evantalk60.js",
+      "source_sha256": "1d915cfcaf109d517e91317ffdcd0af40bb0f2bc571fb51ba6d310158f3a5a50",
+      "lua": "portal/evantalk60.lua",
+      "lua_sha256": "e1f16bead84303357ff7dbde0970625a362f1390f975c975c7fdaf559afdef81"
+    },
+    {
       "legacy": "portal/eventjp_exit.js",
       "source_sha256": "ffbd64b3a8db1507515eab2d895da7b1c3e8a81e01b755f761d7d0c24260b604",
       "lua": "portal/eventjp_exit.lua",
@@ -1049,6 +1331,12 @@
       "source_sha256": "9968bc795c507524f348b791b946c9ffa4e6b00529ff4a1be53191fb67e7059c",
       "lua": "portal/gate_intoPast.lua",
       "lua_sha256": "8993f2a7b7a3a6b6e03c5a855de3db6a76677307c524ff117e980c806658ad31"
+    },
+    {
+      "legacy": "portal/gendergo.js",
+      "source_sha256": "6b8e2a746031e5dadb9724c04075fa44dc2eb2599a61fbcda1ccc6b8a736765c",
+      "lua": "portal/gendergo.lua",
+      "lua_sha256": "86acf0fd0af67eb94ebecb32a0b624bd72f0b14fbc00f98b5d3d3fac0e21ab01"
     },
     {
       "legacy": "portal/gh00.js",
@@ -1177,6 +1465,12 @@
       "lua_sha256": "e2a338baca4b2e35c85eebabe6017824c91321d15663a5b4d9c465f230b42de6"
     },
     {
+      "legacy": "portal/ghostShip_next.js",
+      "source_sha256": "52ba9fc65ae78431df51044ddd4893d9a5125c7efc6d6a971c862a54a5939c26",
+      "lua": "portal/ghostShip_next.lua",
+      "lua_sha256": "b2ab86480da51270e359ae2142a0763d11a0403baf0d37beb0c7bad133998683"
+    },
+    {
       "legacy": "portal/glTutoMsg0.js",
       "source_sha256": "c843aa3c30fb85ad2fe08a552c3dc04ef83be315e3baa4915ad89f141af94c9b",
       "lua": "portal/glTutoMsg0.lua",
@@ -1187,6 +1481,36 @@
       "source_sha256": "b54222f7f65262934e39f78d0aa89f7203bb718fa80b41549966287bb7b92d07",
       "lua": "portal/glpqEnter.lua",
       "lua_sha256": "49f312f236fd20cd8b2bc81aad0972a81e3de81e438b39432a37fb41e8f1f123"
+    },
+    {
+      "legacy": "portal/glpqPortal00.js",
+      "source_sha256": "64ac51f2550c3d062cec432ff5332bc46c921aaa03e5df40a071207b4bc358bc",
+      "lua": "portal/glpqPortal00.lua",
+      "lua_sha256": "ce8d6bce5f89b44aa3bfa8604338ff969704c444dfcc230f786c26d67d8f16c2"
+    },
+    {
+      "legacy": "portal/glpqPortal01.js",
+      "source_sha256": "57cb50612d7c848100c522a6a1167db64acdd1f04dbceb74347324d74e751479",
+      "lua": "portal/glpqPortal01.lua",
+      "lua_sha256": "a55fc6c17d2c03ed56916f591282f55ccdc48bdabe8aab98a01b71727211e9b0"
+    },
+    {
+      "legacy": "portal/glpqPortal02.js",
+      "source_sha256": "2217813bf2613edd80d304d1eb10dc2ef62d95f252d8a0dc51855d6450d55a78",
+      "lua": "portal/glpqPortal02.lua",
+      "lua_sha256": "2b785cddd15301d38ca11d7a27f4b35a5b732f58e7d8705ca8dfd5c4fd43020d"
+    },
+    {
+      "legacy": "portal/glpqPortal03.js",
+      "source_sha256": "17290efc06b5ffc3b02bbf5b228f2cb1450d9d310f5c0eb34c719ab51cfd46ae",
+      "lua": "portal/glpqPortal03.lua",
+      "lua_sha256": "56cf7a128b53ae11053a9b5b509b5f041bbba374a04b7c01605d341878cd9b6a"
+    },
+    {
+      "legacy": "portal/glpqPortal04.js",
+      "source_sha256": "7699c36d2a7ed0dc5f1ad59bd2854fd468cc850788b4497321ec1c55fb7edc98",
+      "lua": "portal/glpqPortal04.lua",
+      "lua_sha256": "941325ea7d27ff2abe6f49d5b41ff003337fef0d3aa183655c11cd638bdbf296"
     },
     {
       "legacy": "portal/goGoblin.js",
@@ -1319,6 +1643,12 @@
       "source_sha256": "e235a2e0cd94b3325517af646c1cefe7b981e9b6f3a589e5f4f70fc66cd87147",
       "lua": "portal/halloween_out.lua",
       "lua_sha256": "1c6fc0f276f6fdf7a3b0ee77cc1600b20df988ef197bb5d2db47ce76363cd8db"
+    },
+    {
+      "legacy": "portal/hillah_next.js",
+      "source_sha256": "89611df170f9e062d3b436655730cd79d8babee7fcf6517ad8539f720c194556",
+      "lua": "portal/hillah_next.lua",
+      "lua_sha256": "427b81ebe989658ce3983e822416c49cbbf4b777bfb98d97270d687446107cd1"
     },
     {
       "legacy": "portal/hontale_Bopen.js",
@@ -1507,6 +1837,12 @@
       "lua_sha256": "bb813476ae352b37266bd79829e7c5be075976a0c50047e5368a293c2e668680"
     },
     {
+      "legacy": "portal/jnr12_in.js",
+      "source_sha256": "f4d4442b83f907371a921202261af5dc402980b1ec9f5154774435c80b4ef521",
+      "lua": "portal/jnr12_in.lua",
+      "lua_sha256": "3ef77009eb6e1d050d2dbf2690362861f83b4b7b01168cb1c53f571423bf8485"
+    },
+    {
       "legacy": "portal/jnr1_out.js",
       "source_sha256": "83c9e50307598add8a9526923ac4a27e790479838a829b861f50d13c09eac3ab",
       "lua": "portal/jnr1_out.lua",
@@ -1523,6 +1859,12 @@
       "source_sha256": "43dddbf4db8544894240c28190bc55ffbc5ef86323408af14f8bba0fa69ad0b5",
       "lua": "portal/jnr_202.lua",
       "lua_sha256": "deefa260e8b50b87b64d2d5ea6a3b2d69e15e103a15bf9eb4e7aa6f9edc2b387"
+    },
+    {
+      "legacy": "portal/jnr_out300.js",
+      "source_sha256": "8237965104742c6c424b657daad7779015536cce46725c8b3b723ba41742c6f1",
+      "lua": "portal/jnr_out300.lua",
+      "lua_sha256": "129801d28c6c1a67da961e03cac81dc175dac929e58e454aff04f2b74e258a01"
     },
     {
       "legacy": "portal/kenta_exit.js",
@@ -1553,6 +1895,12 @@
       "source_sha256": "f919947f1e335af06cb69540f95d9e5097afddb8c32fdc884ff240b2502439dd",
       "lua": "portal/mPark_in02.lua",
       "lua_sha256": "ba0adb91322a2ab4b48cceeee27264651a4e50b2d0bd43d0c87a42fdbdb877ca"
+    },
+    {
+      "legacy": "portal/mPark_nextStage.js",
+      "source_sha256": "2f868ee46c2eaaf740b31f2097d402b0b1cac32e747dc887934b10c7a0378200",
+      "lua": "portal/mPark_nextStage.lua",
+      "lua_sha256": "ef59997ee414412a93ec05892f24952cd9d5c4e2d13894e2acef605abc8387a6"
     },
     {
       "legacy": "portal/magatia_dark0.js",
@@ -1831,6 +2179,18 @@
       "lua_sha256": "86113dd9566fe2117cf8106397a627446d897d2ac24c79efb346248d7b221376"
     },
     {
+      "legacy": "portal/mirtalk00.js",
+      "source_sha256": "f1f0ee63ef5005ced07fccdb1dc9db4c8c6fb3ad1c3606b4e5766798b1989b0c",
+      "lua": "portal/mirtalk00.lua",
+      "lua_sha256": "575c9b13aac5284ddda1609d19f43011c4b76a0110ad7beac3063463e892c6bf"
+    },
+    {
+      "legacy": "portal/mirtalk01.js",
+      "source_sha256": "475d291d31458c54ee4da9d32bd548c425aefaa244136015e40561a7d75db1f0",
+      "lua": "portal/mirtalk01.lua",
+      "lua_sha256": "370306e3309f54882f6678ca1a58cd34e7b92c53676bd5709731d48ba141808d"
+    },
+    {
       "legacy": "portal/moonrabbit_exit.js",
       "source_sha256": "ffbd64b3a8db1507515eab2d895da7b1c3e8a81e01b755f761d7d0c24260b604",
       "lua": "portal/moonrabbit_exit.lua",
@@ -1981,6 +2341,12 @@
       "lua_sha256": "f2f69f157312285cf0043f8f2c811d95ae75eb0d33c15d6cd4bd958cd8d37eeb"
     },
     {
+      "legacy": "portal/party3_gardenin.js",
+      "source_sha256": "df1e56d89848068c22744c527e5cf2ad5841375777efc4b03deee905431a20a2",
+      "lua": "portal/party3_gardenin.lua",
+      "lua_sha256": "a49af7bec0fdbb9479c5acdf77e3d17681a0871ae2ed84e011198e890b723ff2"
+    },
+    {
       "legacy": "portal/party3_jailin.js",
       "source_sha256": "3a136fa5e12c9b99bd7eac1be5debabdfebaa57d8d7ba1027281fc3557dfa237",
       "lua": "portal/party3_jailin.lua",
@@ -1997,6 +2363,150 @@
       "source_sha256": "fa7484b5a2ff5f8ef7d6ef8dcba52a85254c3ca7c76141080971fb70074ac12d",
       "lua": "portal/party3_r4pt1.lua",
       "lua_sha256": "3217284f11e0f6ba5b7fa586bdd8b7b747192839b4fae0a60bd8658926d22d6a"
+    },
+    {
+      "legacy": "portal/party3_room1.js",
+      "source_sha256": "7a655f65d3b8bb410ba250e2636ef60b58e5a575e41d0986c7dfcad00a5e9848",
+      "lua": "portal/party3_room1.lua",
+      "lua_sha256": "5be264f840ae8ea434528fa14f9435117f51000304e016c77afc617066861eab"
+    },
+    {
+      "legacy": "portal/party3_room2.js",
+      "source_sha256": "89f127fe689f07525e3fbad9612a8b0a7124d342973eb74bfc65c2a9ee04a6dc",
+      "lua": "portal/party3_room2.lua",
+      "lua_sha256": "e0171c00225702cd9bf0f653fe4864be8f6c53b9887be6eae5dbce99bdae0501"
+    },
+    {
+      "legacy": "portal/party3_room3.js",
+      "source_sha256": "3cf60e8575f02120a1da4c6cf4e3025aebbffe872f3431c8154bcab42e85584a",
+      "lua": "portal/party3_room3.lua",
+      "lua_sha256": "dced8788ff2f8f19f9fba6517cd3821b5c7b268ed7f6dcb03e0e19caa63c0ac4"
+    },
+    {
+      "legacy": "portal/party3_room4.js",
+      "source_sha256": "d2de3b554923f3f628f3a0b435addddcd04825ffb101b1dfe9a9c4f14e7c4d6c",
+      "lua": "portal/party3_room4.lua",
+      "lua_sha256": "a9a591ab2ecf3b37ae3bb7634799b4f6fd7286a90a63d6a64b2e4736601f99b9"
+    },
+    {
+      "legacy": "portal/party3_room5.js",
+      "source_sha256": "a5509e51d1fb1ee2eb00d4e0b323825d492a23d9593d8ddc86ae2479f1ffa75e",
+      "lua": "portal/party3_room5.lua",
+      "lua_sha256": "86cd0be98d387bc95bd8ebf30a28d243e35debe5fe3c8a3b57d0d6932ae351b1"
+    },
+    {
+      "legacy": "portal/party3_room6.js",
+      "source_sha256": "06c7591d772d4c8743b89fd2a5a99ed40c5012598972f100f54e779df7548c46",
+      "lua": "portal/party3_room6.lua",
+      "lua_sha256": "4572cb05a6fe8c5c63684a27e8deff1f7fc7aacd6ff2167413806a86b82880c7"
+    },
+    {
+      "legacy": "portal/party3_room8.js",
+      "source_sha256": "46de18b94fcacb2651f28b8ee16fbad2f7ae9d68a171f64b6dbe143559cd3cee",
+      "lua": "portal/party3_room8.lua",
+      "lua_sha256": "a95a744b727c18d6bb420a4ea0afb8092f3eed6197821467d2e101881a0db9ab"
+    },
+    {
+      "legacy": "portal/party3_roomout.js",
+      "source_sha256": "49ae1daa32e55d2332f916bfb144894248d01ac0d86ad556fb943ee5cc45d4d0",
+      "lua": "portal/party3_roomout.lua",
+      "lua_sha256": "ba7875776c530f2a75626623f7e7640594e3decb5a31845fe5b33fc5583ce835"
+    },
+    {
+      "legacy": "portal/party5_click.js",
+      "source_sha256": "5f2ea27091b1e140b316db6e992c54da0cdc2e44373c53fc1ffbea074482fa6e",
+      "lua": "portal/party5_click.lua",
+      "lua_sha256": "afa1597a50f89d653cd6033116770018aaf41f3a06411d6c350d1917c4927a02"
+    },
+    {
+      "legacy": "portal/party6_stage501.js",
+      "source_sha256": "8e0483d80ed8b8c2e6dc7e7dba6335a019e395c377c9b27160580c6672d62e5f",
+      "lua": "portal/party6_stage501.lua",
+      "lua_sha256": "ed95ae99003071d01e91c051880477e4970ac105b7a66c35078543152c3c689a"
+    },
+    {
+      "legacy": "portal/party6_stage502.js",
+      "source_sha256": "b2488c697473a87515f3661cafbccb76694ce12a5bb1089d604a9e5819e71701",
+      "lua": "portal/party6_stage502.lua",
+      "lua_sha256": "52c66bf7e25fa4ec36c6ec1e0814de070c34b5e1845f2bbb6cf448c3a9d11f92"
+    },
+    {
+      "legacy": "portal/party6_stage503.js",
+      "source_sha256": "9968947adb784672210f5ec10d568a517c009b051d8d4e6e9621b6ed53a12d59",
+      "lua": "portal/party6_stage503.lua",
+      "lua_sha256": "31514616c0c134a7c978e2da5cc334fff956b948ecf4d0003a68f61a3722fd5a"
+    },
+    {
+      "legacy": "portal/party6_stage504.js",
+      "source_sha256": "dd15341233f6dffd473e0a2233ba9b27b05c5cef0c860eff9658b61c650bef4c",
+      "lua": "portal/party6_stage504.lua",
+      "lua_sha256": "8cfbec605994ba93df80d16a5f1514e39869d3d10686c3762bd2ab23e7c415a0"
+    },
+    {
+      "legacy": "portal/party6_stage505.js",
+      "source_sha256": "28abd22adbd1dc2677cd620e2ae9da2137bf3b51a17f4ac69198c14333049caf",
+      "lua": "portal/party6_stage505.lua",
+      "lua_sha256": "ef53ca4dcfebf5937fba15c178eb67083e0917d416a12c6ac479a9ae172c0b67"
+    },
+    {
+      "legacy": "portal/party6_stage506.js",
+      "source_sha256": "f9c57c79d4f0d03c46d1eefc63f13dd974ee8edac560c128621a062979336b27",
+      "lua": "portal/party6_stage506.lua",
+      "lua_sha256": "35997e8e69030e386d3d8912dac0e4a8339869dec590faf9a26dd1565176e0d6"
+    },
+    {
+      "legacy": "portal/party6_stage507.js",
+      "source_sha256": "6195f99f2408b616890f2f8de67ba6d803637dd9fdf81cc28de0dbeed5e06233",
+      "lua": "portal/party6_stage507.lua",
+      "lua_sha256": "582c3a4308b596c9e73aac56b8b1626191077e41ec369f95f857d9beb7f8297d"
+    },
+    {
+      "legacy": "portal/party6_stage508.js",
+      "source_sha256": "fab97b10e3b7e4112bfae855090b1367320baa4321c1a36d2e759046ef8f61a9",
+      "lua": "portal/party6_stage508.lua",
+      "lua_sha256": "077fc0633f2d7bf12a3796010860bb89a051c101e2e0220a9de7b92ae81d6f09"
+    },
+    {
+      "legacy": "portal/party6_stage509.js",
+      "source_sha256": "2ff5c09f1ea03bb0faf5aaf2cb11d3fa95e2e4e36f985053a397408717252eda",
+      "lua": "portal/party6_stage509.lua",
+      "lua_sha256": "d3b6e770f7b181bc7573a21c0d6b9822b3d5048cdfd6cc9c078e0a2aa0250686"
+    },
+    {
+      "legacy": "portal/party6_stage510.js",
+      "source_sha256": "65429cf81e1db447fa480f69c1a013e098e560c11d6321b12ed6091ebef46a66",
+      "lua": "portal/party6_stage510.lua",
+      "lua_sha256": "9203d3dfa67a7891b560dfa7b3f9b15b0a0ee8f10fd092db803a7779238e3dc7"
+    },
+    {
+      "legacy": "portal/party6_stage511.js",
+      "source_sha256": "77a9c715f0d3f6304e1fb956288c7606fc2cd2e33ac7dea29997c5dd124ff65a",
+      "lua": "portal/party6_stage511.lua",
+      "lua_sha256": "cd4c74b7e5f24c6d6e0e24fdcf6596ad71d4ba528e9047a03ab5a7517ce89c11"
+    },
+    {
+      "legacy": "portal/party6_stage512.js",
+      "source_sha256": "8a1b385aaf2ddacbc5a0f633e97e19c558a5281fc27d3d98a6d9650b257a5c9e",
+      "lua": "portal/party6_stage512.lua",
+      "lua_sha256": "34004b39447ab79e6f8fb84475d43b0eace3d14c622e2175b4c332e5f7389c40"
+    },
+    {
+      "legacy": "portal/party6_stage513.js",
+      "source_sha256": "598e99509433310327f6c6edfb3cb1cb76c3be28c61484b7986a424a556ca308",
+      "lua": "portal/party6_stage513.lua",
+      "lua_sha256": "11a39505486beb3cf60a8249f6d567fa18d23c6e9f146be7a4c756d79c21f1ed"
+    },
+    {
+      "legacy": "portal/party6_stage514.js",
+      "source_sha256": "9260289bd9e9057e621573f6aff6dc944d60bb4d07dbaa00a0673e2602a45358",
+      "lua": "portal/party6_stage514.lua",
+      "lua_sha256": "b035912d2a7dd312d16b6a31f125be236857cda78f60cab3befbb832e3c289e4"
+    },
+    {
+      "legacy": "portal/party6_stage515.js",
+      "source_sha256": "545b322649845b5b839f8c81b6252334dcef1ff8c5ec0b3d96dbc81d16c15076",
+      "lua": "portal/party6_stage515.lua",
+      "lua_sha256": "a72f02254c4b8ba3486e56c49e797fde1dbc45be47ea1937473337378075e3d4"
     },
     {
       "legacy": "portal/party_exit.js",
@@ -2305,6 +2815,12 @@
       "lua_sha256": "9c0e5fecbde08b066a48fa0ca4db5aca3b2e8332e1cd88f3135fc0273208fa30"
     },
     {
+      "legacy": "portal/rnj12_in.js",
+      "source_sha256": "b301a84f9d75a9f620fdd54d34b21af02b54162229e1f7dedd0db804621b205d",
+      "lua": "portal/rnj12_in.lua",
+      "lua_sha256": "d23d4c2bce9ef99c80fed97f5e6bbfff85298c20d598d5a42a9d9bd36d404f6d"
+    },
+    {
       "legacy": "portal/rnj1_out.js",
       "source_sha256": "ff79adfffdde455e48d38f54040a4197172060578996196b7748e706ed732755",
       "lua": "portal/rnj1_out.lua",
@@ -2333,6 +2849,12 @@
       "source_sha256": "648bb772c616b2459571a8470877641d40564093e654542613085085e4387bba",
       "lua": "portal/rnj_exit.lua",
       "lua_sha256": "0ea890ff17eb259afd9beeb039b1e86962edc277c82d21d9019df12dde4abc1a"
+    },
+    {
+      "legacy": "portal/rnj_out300.js",
+      "source_sha256": "671e76002c132ac7af0309a068edecd8a5f0cab9fb45f1cd2c84f4d2fd53fb65",
+      "lua": "portal/rnj_out300.lua",
+      "lua_sha256": "2d2720bf061406ce07db9f1d114064bc715492c0e48d8344545a0a218a604fc3"
     },
     {
       "legacy": "portal/rootafirstDoor.js",
@@ -2401,6 +2923,18 @@
       "lua_sha256": "d43b1fcf31298909bedfa819f35ae8ff27150e66cb243f5702252a3b55e56360"
     },
     {
+      "legacy": "portal/shammos_Bossout.js",
+      "source_sha256": "5950418912f86b3e345c10660019dcf676c7af9e9bd13013c8039dc240ff2679",
+      "lua": "portal/shammos_Bossout.lua",
+      "lua_sha256": "eb1977ead5813d5be65712dbaa03072d8860189a63c778c42a9d101228bbf3f6"
+    },
+    {
+      "legacy": "portal/shammos_FakeGate.js",
+      "source_sha256": "295d33dbe0554306efbb4160bd40274b9b0a2883ae6af3941eaff9ba13228312",
+      "lua": "portal/shammos_FakeGate.lua",
+      "lua_sha256": "18de8d1a66a294b5d2a8ea444ad1607e8eed81978c84ae5148457886ee31429e"
+    },
+    {
       "legacy": "portal/shammos_Gate.js",
       "source_sha256": "424b70eaa790c0125eee60515ea20b00c1c2143803a150a121a24adda214db7d",
       "lua": "portal/shammos_Gate.lua",
@@ -2417,6 +2951,12 @@
       "source_sha256": "5c1394efed9a5744466e689afdd9f78d48250ea8478334615d5290cae137d721",
       "lua": "portal/skyrom.lua",
       "lua_sha256": "788b75dafcb0822cd21e49adc45d5625bad1440313a99d3b233bb1222deface5"
+    },
+    {
+      "legacy": "portal/stage6_portal.js",
+      "source_sha256": "6c2af648c4742c630e41736d3cc35d50d13fc611a3f7ec0c9d731175217af0ff",
+      "lua": "portal/stage6_portal.lua",
+      "lua_sha256": "b0d4267062630d8ad31a1216a5e81cf94f21ddd65e142e057147778a8a3067a2"
     },
     {
       "legacy": "portal/station_in.js",
@@ -2521,6 +3061,12 @@
       "lua_sha256": "5760083a7f89907e994a3123c49e26c98e64c6bc2d9a54248a0a78d327af6b4e"
     },
     {
+      "legacy": "portal/under30gate.js",
+      "source_sha256": "871665e7e42164be250da6ee572c6d65e8a231dd55ab3a03813eb46edfeffc11",
+      "lua": "portal/under30gate.lua",
+      "lua_sha256": "86ce3a49d138aba8821c0879043433771c4950616dd765f92284ddcb0a5464a5"
+    },
+    {
       "legacy": "portal/unityPortal2.js",
       "source_sha256": "c4755543f60c1ba3e7fe44ec9a99c4cd21a8f68adf9aa4855ebdb0a679c7d648",
       "lua": "portal/unityPortal2.lua",
@@ -2573,24 +3119,12 @@
       "reason": "pi.openNpc with 2 arguments (line 11)"
     },
     {
-      "legacy": "portal/5th_cakeGL1.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/5th_cakeGL2.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/5th_cakeGL3.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
       "legacy": "portal/Aswan_final.js",
       "reason": "pi.getPlayer().gainExp is not supported (line 7)"
     },
     {
       "legacy": "portal/DragonEggNotice.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
+      "reason": "pi.evanTutorial is not supported (line 6)"
     },
     {
       "legacy": "portal/EBoat1.js",
@@ -2645,96 +3179,16 @@
       "reason": "pi.getPlayer().getAvailableCP is not supported (line 10)"
     },
     {
-      "legacy": "portal/MD_alien.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_boat.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
       "legacy": "portal/MD_burning.js",
       "reason": "pi.getEventInstance is not supported (line 20)"
-    },
-    {
-      "legacy": "portal/MD_cakeGL1.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/MD_cakeGL2.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/MD_cakeGL3.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/MD_coldeye.js",
-      "reason": "pi.getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/MD_drake.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_drakeroom.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_error.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_golem.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_high.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_longkiss.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_mushroom.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_pig.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_protect.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_rabbit.js",
-      "reason": "pi.getParty is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_remember.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_roundTable.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/MD_sand.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
     },
     {
       "legacy": "portal/MD_space.js",
       "reason": "pi.getEventInstance is not supported (line 20)"
     },
     {
-      "legacy": "portal/MD_treasure.js",
-      "reason": "pi.getPlayer().getFame is not supported (line 7)"
-    },
-    {
       "legacy": "portal/NextMap.js",
-      "reason": "operator | (line 4)"
+      "reason": "pi.getName is not supported (line 39)"
     },
     {
       "legacy": "portal/Populatus00.js",
@@ -2750,11 +3204,7 @@
     },
     {
       "legacy": "portal/Sky_BossOut.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/Sky_Next.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+      "reason": "object.getCharactersThreadsafe is not supported (line 3)"
     },
     {
       "legacy": "portal/Spacegaga_out0.js",
@@ -2774,7 +3224,7 @@
     },
     {
       "legacy": "portal/TD_Boss_enter.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+      "reason": "call .getMembers is not supported (line 5)"
     },
     {
       "legacy": "portal/ThirdJobResi.js",
@@ -2805,52 +3255,8 @@
       "reason": "pi.getPlayer().getMap is not supported (line 2)"
     },
     {
-      "legacy": "portal/aranTutorArrow0.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorArrow1.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorArrow2.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorArrow3.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorGuide0.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorGuide1.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorGuide2.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorLost.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorMono0.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
       "legacy": "portal/aranTutorMono1.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorMono2.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/aranTutorMono3.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
+      "reason": "pi.Aran_Start is not supported (line 3)"
     },
     {
       "legacy": "portal/aranTutorOut1.js",
@@ -2993,72 +3399,16 @@
       "reason": "pi.getPlayer().gainSP is not supported (line 5)"
     },
     {
-      "legacy": "portal/evanRoom0.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
       "legacy": "portal/evanRoom1.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk00.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk01.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk02.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk10.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk11.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
+      "reason": "pi.evanTutorial is not supported (line 6)"
     },
     {
       "legacy": "portal/evantalk20.js",
       "reason": "pi.MovieClipIntroUI is not supported (line 2)"
     },
     {
-      "legacy": "portal/evantalk21.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk40.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk41.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk42.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk50.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/evantalk60.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
       "legacy": "portal/gaga_success.js",
       "reason": "call .complete is not supported (line 4)"
-    },
-    {
-      "legacy": "portal/gendergo.js",
-      "reason": "pi.getPlayerStat is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/ghostShip_next.js",
-      "reason": "pi.isLeader is not supported (line 2)"
     },
     {
       "legacy": "portal/ghostgate_open.js",
@@ -3067,26 +3417,6 @@
     {
       "legacy": "portal/glpqPortal0.js",
       "reason": "pi.getEventManager is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/glpqPortal00.js",
-      "reason": "call .floor is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/glpqPortal01.js",
-      "reason": "call .floor is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/glpqPortal02.js",
-      "reason": "call .floor is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/glpqPortal03.js",
-      "reason": "call .floor is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/glpqPortal04.js",
-      "reason": "call .floor is not supported (line 2)"
     },
     {
       "legacy": "portal/glpqPortal1.js",
@@ -3170,11 +3500,7 @@
     },
     {
       "legacy": "portal/highposition.js",
-      "reason": "pi.updateInfoQuest is not supported (line 7)"
-    },
-    {
-      "legacy": "portal/hillah_next.js",
-      "reason": "pi.warpParty is not supported (line 5)"
+      "reason": "call .getCustomData is not supported (line 12)"
     },
     {
       "legacy": "portal/hontale_BR.js",
@@ -3182,7 +3508,7 @@
     },
     {
       "legacy": "portal/hontale_C.js",
-      "reason": "pi.isLeader is not supported (line 29)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 30)"
     },
     {
       "legacy": "portal/hontale_boss1.js",
@@ -3198,7 +3524,7 @@
     },
     {
       "legacy": "portal/iceman_Next.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 3)"
+      "reason": "object.getMonsterById is not supported (line 3)"
     },
     {
       "legacy": "portal/iceman_Revive.js",
@@ -3207,10 +3533,6 @@
     {
       "legacy": "portal/jailmsg.js",
       "reason": "object.playerMessage is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/jnr12_in.js",
-      "reason": "pi.getPlayer().isGM is not supported (line 8)"
     },
     {
       "legacy": "portal/jnr1_pt00.js",
@@ -3261,12 +3583,8 @@
       "reason": "pi.getEventManager is not supported (line 3)"
     },
     {
-      "legacy": "portal/jnr_out300.js",
-      "reason": "pi.warpParty is not supported (line 9)"
-    },
-    {
       "legacy": "portal/kenta_nextStage.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 13)"
     },
     {
       "legacy": "portal/kinggate2_open.js",
@@ -3345,10 +3663,6 @@
       "reason": "pi.givePartyItems is not supported (line 3)"
     },
     {
-      "legacy": "portal/mPark_nextStage.js",
-      "reason": "pi.warpParty is not supported (line 3)"
-    },
-    {
       "legacy": "portal/mapOutset.js",
       "reason": "object.getForcedReturnId is not supported (line 2)"
     },
@@ -3357,16 +3671,8 @@
       "reason": "call .getState is not supported (line 8)"
     },
     {
-      "legacy": "portal/mirtalk00.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/mirtalk01.js",
-      "reason": "pi.getEvanIntroState is not supported (line 2)"
-    },
-    {
       "legacy": "portal/mv_bossEnter.js",
-      "reason": "pi.isLeader is not supported (line 5)"
+      "reason": "pi.mapMessage is not supported (line 8)"
     },
     {
       "legacy": "portal/next_AswanStage.js",
@@ -3401,48 +3707,8 @@
       "reason": "pi.getEventManager is not supported (line 3)"
     },
     {
-      "legacy": "portal/party3_gardenin.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
       "legacy": "portal/party3_r6pt.js",
       "reason": "pi.getEventManager is not supported (line 3)"
-    },
-    {
-      "legacy": "portal/party3_room1.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_room2.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_room3.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_room4.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_room5.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_room6.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_room8.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party3_roomout.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party5_click.js",
-      "reason": "pi.getPlayer().isGM is not supported (line 11)"
     },
     {
       "legacy": "portal/party6_out.js",
@@ -3453,76 +3719,16 @@
       "reason": "object.getReactorByName is not supported (line 14)"
     },
     {
-      "legacy": "portal/party6_stage501.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage502.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage503.js",
-      "reason": "call .random is not supported (line 3)"
-    },
-    {
-      "legacy": "portal/party6_stage504.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage505.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage506.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage507.js",
-      "reason": "call .random is not supported (line 3)"
-    },
-    {
-      "legacy": "portal/party6_stage508.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage509.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage510.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage511.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage512.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage513.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage514.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage515.js",
-      "reason": "call .random is not supported (line 2)"
-    },
-    {
       "legacy": "portal/party_portal.js",
       "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
     },
     {
       "legacy": "portal/prisonBreak_miro.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+      "reason": "call .size is not supported (line 2)"
     },
     {
       "legacy": "portal/prisonBreak_next.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 14)"
     },
     {
       "legacy": "portal/raid_stage.js",
@@ -3534,11 +3740,7 @@
     },
     {
       "legacy": "portal/rienTutor6.js",
-      "reason": "pi.getInfoQuest is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/rnj12_in.js",
-      "reason": "pi.warpParty is not supported (line 3)"
+      "reason": "pi.playerSummonHint is not supported (line 4)"
     },
     {
       "legacy": "portal/rnj1_pt00.js",
@@ -3589,10 +3791,6 @@
       "reason": "pi.getEventManager is not supported (line 2)"
     },
     {
-      "legacy": "portal/rnj_out300.js",
-      "reason": "pi.warpParty is not supported (line 3)"
-    },
-    {
       "legacy": "portal/s4berserk.js",
       "reason": "pi.getEventManager is not supported (line 5)"
     },
@@ -3622,7 +3820,7 @@
     },
     {
       "legacy": "portal/s4rush.js",
-      "reason": "pi.getParty is not supported (line 3)"
+      "reason": "property size (line 7)"
     },
     {
       "legacy": "portal/s4ship_out.js",
@@ -3645,16 +3843,8 @@
       "reason": "call .getState is not supported (line 8)"
     },
     {
-      "legacy": "portal/shammos_Bossout.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/shammos_FakeGate.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 7)"
-    },
-    {
       "legacy": "portal/shammos_Next.js",
-      "reason": "pi.getPlayer().getParty is not supported (line 8)"
+      "reason": "object.getMonsterById is not supported (line 8)"
     },
     {
       "legacy": "portal/shammos_Revive.js",
@@ -3671,10 +3861,6 @@
     {
       "legacy": "portal/speargate_open.js",
       "reason": "call .getState is not supported (line 8)"
-    },
-    {
-      "legacy": "portal/stage6_portal.js",
-      "reason": "pi.warpParty is not supported (line 10)"
     },
     {
       "legacy": "portal/statuegate_open.js",
@@ -3705,28 +3891,24 @@
       "reason": "pi.playerSummonHint is not supported (line 3)"
     },
     {
-      "legacy": "portal/under30gate.js",
-      "reason": "pi.getPlayerStat is not supported (line 10)"
-    },
-    {
       "legacy": "portal/undodraco.js",
       "reason": "pi.cancelItem is not supported (line 2)"
     },
     {
       "legacy": "portal/visitorPT_B.js",
-      "reason": "pi.isLeader is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 6)"
     },
     {
       "legacy": "portal/visitorPT_Boss.js",
-      "reason": "pi.isLeader is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 6)"
     },
     {
       "legacy": "portal/visitorPT_L.js",
-      "reason": "pi.isLeader is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 6)"
     },
     {
       "legacy": "portal/visitorPT_R.js",
-      "reason": "pi.isLeader is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 6)"
     },
     {
       "legacy": "portal/visitorPT_Revive.js",
@@ -3734,7 +3916,7 @@
     },
     {
       "legacy": "portal/visitorPT_T.js",
-      "reason": "pi.isLeader is not supported (line 2)"
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 6)"
     },
     {
       "legacy": "portal/watergate_open.js",

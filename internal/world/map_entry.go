@@ -2,7 +2,6 @@ package world
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -67,10 +66,13 @@ func (s *Server) enqueueMapEntry(channel int, live *liveCharacter, sink packetSi
 	live.mu.Unlock()
 	m, err := s.gameplay.catalog.Map(snapshot.Character.MapID)
 	name := ""
-	// Add each reviewed entry independently; a WZ name never grants arbitrary
-	// filesystem access or makes all legacy map scripts executable.
-	if err == nil && m.ID == 2010000 && m.OnUserEnter == "goLith" {
-		name = "map/on_user_enter/goLith.lua"
+	// Only the reviewed entries in entryScenes run, each on its own maps; a
+	// WZ name never grants arbitrary filesystem access or makes all legacy
+	// map scripts executable.
+	if err == nil {
+		if _, ok := entryScenePath(m.OnUserEnter, m.ID, snapshot.Character.Gender); ok {
+			name = "map/on_user_enter/" + m.OnUserEnter + ".lua"
+		}
 	}
 	s.scripts.mu.Lock()
 	old := s.scripts.active[snapshot.CharacterID]
@@ -203,14 +205,21 @@ func (h *mapEntryHost) Execute(ctx context.Context, id scripting.Identity, comma
 	h.live.mu.Lock()
 	snapshot := h.live.session
 	h.live.mu.Unlock()
-	if command.Kind == "gender" && len(command.Ints) == 0 && command.Text == "" {
-		return scripting.CommandResult{Value: int64(snapshot.Character.Gender)}, nil
+	if len(command.Ints) == 0 && command.Text == "" {
+		switch command.Kind {
+		case "gender":
+			return scripting.CommandResult{Value: int64(snapshot.Character.Gender)}, nil
+		case "map_id":
+			return scripting.CommandResult{Value: int64(snapshot.Character.MapID)}, nil
+		}
 	}
-	if command.Kind != "play_scene" || len(command.Ints) != 0 || snapshot.Character.HP <= 0 || snapshot.Character.MapID != 2010000 || r.name != "map/on_user_enter/goLith.lua" || command.Text != fmt.Sprintf("Effect/Direction3.img/goLith/Scene%d", snapshot.Character.Gender) {
+	// The script may play only the scene reviewed for it on this map.
+	expected, ok := entryScenePath(entrySceneScript(r.name), snapshot.Character.MapID, snapshot.Character.Gender)
+	if command.Kind != "play_scene" || len(command.Ints) != 0 || snapshot.Character.HP <= 0 || !ok || command.Text != expected {
 		return scripting.CommandResult{}, domain.ErrForbidden
 	}
 	plan, err := content.LoadMapScene(os.Getenv("MAPLEGO_WZ_ROOT"), command.Text)
-	if err != nil || plan.Transition.TargetMap != 104000000 {
+	if err != nil {
 		return scripting.CommandResult{}, domain.ErrInvalidInput
 	}
 	if _, err = h.server.gameplay.catalog.Map(plan.Transition.TargetMap); err != nil {

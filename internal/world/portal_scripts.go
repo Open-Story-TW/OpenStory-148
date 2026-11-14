@@ -187,6 +187,18 @@ func (h *portalScriptHost) executeLegacy(ctx context.Context, id scripting.Ident
 		return value(int64(h.server.mapPlayerCount(h.channel, int(command.Ints[0]))))
 	case "monster_count":
 		return value(int64(h.server.mapMonsterCount(h.channel, h.mapID)))
+	case "fame":
+		return value(int64(snapshot.Character.Fame))
+	case "gm":
+		return value(int64(snapshot.Character.GM))
+	case "party_size", "party_leader":
+		party := h.server.partySnapshotOf(snapshot.CharacterID)
+		if command.Kind == "party_leader" {
+			return value(party.ID != 0 && party.LeaderID == snapshot.CharacterID)
+		}
+		return value(int64(len(party.Members)))
+	case "warp_party":
+		return scripting.CommandResult{}, true, h.warpParty(ctx, snapshot, command)
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
 			return scripting.CommandResult{}, true, domain.ErrInvalidInput
@@ -199,6 +211,63 @@ func (h *portalScriptHost) executeLegacy(ctx context.Context, id scripting.Ident
 		return result, true, err
 	}
 	return scripting.CommandResult{}, true, fmt.Errorf("%w: portal command %q", domain.ErrForbidden, command.Kind)
+}
+
+// partySnapshotOf is the character's current party; ID 0 means none.
+func (s *Server) partySnapshotOf(id int64) domain.PartySnapshot {
+	if s.parties == nil {
+		return domain.PartySnapshot{}
+	}
+	s.parties.mu.Lock()
+	defer s.parties.mu.Unlock()
+	if p := s.parties.peers[id]; p != nil {
+		return p.party
+	}
+	return domain.PartySnapshot{}
+}
+
+// warpParty is Legacy warpParty(map, portal): without a party, or alone in
+// one, only the character moves. Otherwise every member who is alive, on
+// this channel and on the character's map moves, the character last so the
+// portal invocation stays valid until the others have left.
+func (h *portalScriptHost) warpParty(ctx context.Context, snapshot domain.CharacterSession, command scripting.Command) error {
+	if len(command.Ints) != 2 {
+		return domain.ErrInvalidInput
+	}
+	destination, entry, err := scriptDestination(h.server.gameplay.catalog, scripting.Command{Kind: "warp", Ints: command.Ints})
+	if err != nil {
+		return err
+	}
+	type member struct {
+		live *liveCharacter
+		sink packetSink
+	}
+	var others []member
+	if s := h.server; s.parties != nil {
+		s.parties.mu.Lock()
+		if me := s.parties.peers[snapshot.CharacterID]; me != nil && me.party.ID != 0 {
+			for _, m := range me.party.Members {
+				if peer := s.parties.peers[m.CharacterID]; peer != nil && m.CharacterID != snapshot.CharacterID && peer.party.ID == me.party.ID {
+					others = append(others, member{peer.live, peer.sink})
+				}
+			}
+		}
+		s.parties.mu.Unlock()
+	}
+	for _, m := range others {
+		m.live.mu.Lock()
+		there := m.live.session
+		m.live.mu.Unlock()
+		if there.ChannelID != h.channel || there.Character.MapID != h.mapID || there.Character.HP <= 0 || h.server.tradeActive(m.live) {
+			continue
+		}
+		h.server.cancelNPCScriptState(m.live, false)
+		h.server.closeEconomyDialog(m.live)
+		// A member who cannot be moved (for example one changing maps right
+		// now) stays behind, as a Legacy member on another map did.
+		_ = h.server.warpGameplay(ctx, h.channel, m.live, m.sink, destination.ID, entry)
+	}
+	return h.server.warpGameplay(ctx, h.channel, h.live, h.sink, destination.ID, entry)
 }
 
 func (s *Server) mapPlayerCount(channel, mapID int) int {

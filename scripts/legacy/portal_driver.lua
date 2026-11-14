@@ -67,6 +67,33 @@ local function warp(map, target)
     travel = { map, target or 0 }
 end
 
+-- Legacy warpParty: the driver's last move takes along the party members
+-- standing on this map. A negative portal asked Legacy for a random one.
+local function warp_party(map, target)
+    target = target or 0
+    if math.type(target) ~= "integer" or target < 0 then error("warpParty needs a portal id") end
+    travel = { map, target, party = true }
+end
+
+-- Legacy getParty() is only compared with null here.
+local function party()
+    if portal:party_size() > 0 then return { __party = true } end
+    return nil
+end
+
+-- Java (int) and JavaScript `x | 0`: drop the fraction, toward zero.
+function __int(v)
+    if math.type(v) == "integer" then return v end
+    if v ~= v or v == math.huge or v == -math.huge then return 0 end
+    if v < 0 then return math.tointeger(math.ceil(v)) end
+    return math.tointeger(math.floor(v))
+end
+
+local STATS = {
+    LVL = function() return portal:level() end,
+    GENDER = function() return portal:gender() end,
+}
+
 local function quest_state(id)
     flush()
     return portal:quest_state(id)
@@ -84,9 +111,28 @@ local function map_handle(id)
     }
 end
 
-local function save_location(name)
-    effects.data[#effects.data + 1] = { id = saved_id(name), data = tostring(portal:map_id()) }
+-- One exchange may name a record only once, so a later write replaces an
+-- earlier one that has not been committed yet.
+local function set_data(id, data)
+    for _, entry in ipairs(effects.data) do
+        if entry.id == id then
+            entry.data = data
+            return
+        end
+    end
+    effects.data[#effects.data + 1] = { id = id, data = data }
 end
+
+local function save_location(name)
+    set_data(saved_id(name), tostring(portal:map_id()))
+end
+
+-- Legacy info quests are the custom data string kept per quest id.
+local function info_quest(id)
+    flush()
+    return portal:quest_data(id)
+end
+local EVAN_INTRO = 22013
 
 local level = function() return portal:level() end
 
@@ -98,6 +144,9 @@ local player = {
     getLevel = level,
     getGender = function() return portal:gender() end,
     getMeso = function() return portal:mesos() end,
+    getFame = function() return portal:fame() end,
+    isGM = function() return portal:gm() > 0 end,
+    getParty = party,
     changeMap = function(target, entry)
         if type(target) == "table" then
             local map = target.__map
@@ -178,12 +227,24 @@ pi = {
     end,
     saveLocation = save_location,
     clearSavedLocation = function(name)
-        effects.data[#effects.data + 1] = { id = saved_id(name), data = "" }
+        set_data(saved_id(name), "")
     end,
+    getInfoQuest = info_quest,
+    updateInfoQuest = function(id, data) set_data(id, tostring(data)) end,
+    getEvanIntroState = function(data) return info_quest(EVAN_INTRO) == data end,
+    updateEvanIntroState = function(data) set_data(EVAN_INTRO, tostring(data)) end,
     inFreeMarket = function() enter_town(910000000, 15, "FREE_MARKET", "您必須是15級才能進入自由市場.") end,
     inArdentmill = function() enter_town(910001000, 10, "ARDENTMILL", "您必須是15級才能進入手工藝小鎮.") end,
     getJob = function() return portal:job() end,
     getLevel = level,
+    getParty = party,
+    isLeader = function() return portal:party_leader() end,
+    warpParty = warp_party,
+    getPlayerStat = function(name)
+        local read = STATS[name]
+        if read == nil then error("unknown player stat " .. tostring(name)) end
+        return read()
+    end,
     ShowWZEffect = presentation,
     showWZEffect = presentation,
     showInstruction = presentation,
@@ -216,5 +277,9 @@ if travel then
         message(5, "找不到要返回的地圖，無法傳送。")
         return
     end
-    portal:warp(travel[1], travel[2])
+    if travel.party then
+        portal:warp_party(travel[1], travel[2])
+    else
+        portal:warp(travel[1], travel[2])
+    end
 end

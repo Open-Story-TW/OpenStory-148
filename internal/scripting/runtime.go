@@ -573,6 +573,14 @@ func (s *Session) installHost() {
 		bind("player_count", s.simpleCommand("player_count", 1), 2)
 		bind("monster_count", s.simpleCommand("monster_count", 0), 1)
 		bind("open_npc", s.simpleCommand("open_npc", 1), 2)
+		// Legacy getFame/isGM and the party reads behind getParty/isLeader.
+		bind("fame", s.simpleCommand("fame", 0), 1)
+		bind("gm", s.simpleCommand("gm", 0), 1)
+		bind("party_size", s.simpleCommand("party_size", 0), 1)
+		bind("party_leader", s.simpleCommand("party_leader", 0), 1)
+		// warp_party(map, portal id) is Legacy warpParty: the character and
+		// every party member standing on the same map move together.
+		bind("warp_party", s.simpleCommand("warp_party", 2), 3)
 		bind("gender", s.simpleCommand("gender", 0), 1)
 	}
 	bind("quest_state", s.simpleCommand("quest_state", 1), 2)

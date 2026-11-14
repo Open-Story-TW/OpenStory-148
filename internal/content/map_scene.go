@@ -17,7 +17,7 @@ type MapScene struct {
 	Transition SceneTransition
 }
 
-var scenePathPattern = regexp.MustCompile(`^Effect/(Direction[0-9]+\.img)/([A-Za-z0-9_]+(?:/[A-Za-z0-9_]+){1,4})$`)
+var scenePathPattern = regexp.MustCompile(`^Effect/(Direction[0-9]*\.img)/([A-Za-z0-9_]+(?:/[A-Za-z0-9_]+){1,4})$`)
 
 // A scene grants only the field transition encoded in its mounted WZ. The
 // first supported lifecycle has one terminal transfer, not arbitrary Lua warp.
