@@ -123,6 +123,16 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 		}
 	}
 	s.parties = newPartySpace()
+	if cfg.ScriptsDir != "" {
+		// A bad file on disk must not stop the world: it is reported and the
+		// built-in source keeps running.
+		if report, err := s.reloadScripts(); err != nil {
+			slog.Error("script_directory_unreadable", "dir", cfg.ScriptsDir, "error", err)
+		} else {
+			slog.Info("script_directory_loaded", "dir", cfg.ScriptsDir, "changed", len(report.Changed), "rejected", report.Rejected)
+		}
+	}
+	health.Handle("/admin/scripts/reload", http.HandlerFunc(s.scriptReload))
 	health.Handle("/debug/scripts", http.HandlerFunc(s.scriptDebugger))
 	health.Handle("/admin/gm-grants", http.HandlerFunc(s.gmAuthorizations))
 	health.Handle("/admin/qa-mobs/snapshot", http.HandlerFunc(s.qaMobSnapshot))

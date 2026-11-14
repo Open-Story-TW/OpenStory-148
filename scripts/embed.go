@@ -7,12 +7,11 @@ import (
 	"embed"
 	"encoding/hex"
 	"encoding/json"
-	"io/fs"
 	"strings"
 )
 
 //go:embed npc/*.lua quest/*.lua portal/*.lua map/on_user_enter/*.lua
-var sources embed.FS
+var embedded embed.FS
 
 //go:embed legacy/quest_driver.lua
 var legacyQuestDriver []byte
@@ -221,20 +220,26 @@ func SimpleNPCMigrations() ([]SimpleNPCMigration, error) {
 }
 
 func Source(name string) ([]byte, error) {
-	data, err := sources.ReadFile(name)
-	if err != nil {
-		return data, err
-	}
-	var driver []byte
+	return sources.source(name)
+}
+
+// driverFile names the shared driver appended to a generated source, or "".
+func driverFile(name string, data []byte) string {
 	switch {
 	case strings.HasPrefix(name, "quest/") && bytes.HasPrefix(data, []byte(LegacyQuestMarker)):
-		driver = legacyQuestDriver
+		return "legacy/quest_driver.lua"
 	case strings.HasPrefix(name, "portal/") && bytes.HasPrefix(data, []byte(LegacyPortalMarker)):
-		driver = legacyPortalDriver
-	default:
-		return data, nil
+		return "legacy/portal_driver.lua"
 	}
-	return append(append(make([]byte, 0, len(data)+len(driver)+1), data...), append([]byte("\n"), driver...)...), nil
+	return ""
+}
+
+// embeddedDrivers are the shared drivers as built into the binary.
+func embeddedDrivers() map[string][]byte {
+	return map[string][]byte{
+		"legacy/quest_driver.lua":  legacyQuestDriver,
+		"legacy/portal_driver.lua": legacyPortalDriver,
+	}
 }
 
 // LegacyPortal reports whether name is a generated Legacy portal source.
@@ -244,20 +249,13 @@ func LegacyPortal(name string) bool {
 }
 func Manifest() (map[string]string, error) {
 	out := map[string]string{}
-	err := fs.WalkDir(sources, ".", func(name string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
+	for _, name := range sources.names() {
 		data, err := Source(name)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		hash := sha256.Sum256(data)
 		out[name] = hex.EncodeToString(hash[:])
-		return nil
-	})
-	return out, err
+	}
+	return out, nil
 }

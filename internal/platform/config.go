@@ -35,6 +35,9 @@ type Config struct {
 	RPCToken            string
 	StopFile            string
 	AllowLegacyLoopback bool
+	// ScriptsDir, when set, is a directory of Lua sources laid over the ones
+	// built into the world service; see scripts.Prepare.
+	ScriptsDir string
 }
 
 func value(name, fallback string) string {
@@ -62,7 +65,7 @@ func Load(kind string) (Config, error) {
 	c := Config{Kind: kind, InstanceID: value("MAPLEGO_INSTANCE_ID", NewID()),
 		DatabaseURL: os.Getenv("MAPLEGO_DATABASE_URL"), RedisAddr: value("MAPLEGO_REDIS_ADDR", "127.0.0.1:16379"),
 		RedisPassword: os.Getenv("MAPLEGO_REDIS_PASSWORD"), Bind: value("MAPLEGO_BIND", "127.0.0.1"),
-		RPCToken: os.Getenv("MAPLEGO_RPC_TOKEN"), StopFile: os.Getenv("MAPLEGO_STOP_FILE"),
+		RPCToken: os.Getenv("MAPLEGO_RPC_TOKEN"), StopFile: os.Getenv("MAPLEGO_STOP_FILE"), ScriptsDir: os.Getenv("MAPLEGO_SCRIPTS_DIR"),
 		AllowLegacyLoopback: value("MAPLEGO_LEGACY_LOOPBACK", "true") == "true"}
 	var err error
 	for _, entry := range []struct {

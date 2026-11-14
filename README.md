@@ -138,6 +138,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\local.ps1 test
 | `stop-local.cmd` | 停止服務，資料庫繼續執行 |
 | `tools\local.ps1 status` | 查看每個服務是否在執行 |
 | `tools\local.ps1 build` | 只編譯 |
+| `tools\local.ps1 reload-scripts` | 不重啟，重新讀取腳本資料夾 |
+
+不重啟更新腳本：
+
+1. 在 `.local/environment.json` 加上 `MAPLEGO_SCRIPTS_DIR`，值是一個排列方式和 `scripts` 相同的資料夾（`npc/`、`quest/`、`portal/`、`map/on_user_enter/`、`legacy/`），可以直接指向這個專案的 `scripts` 資料夾。重啟一次讓設定生效。
+2. 之後修改或新增 `.lua` 檔，執行 `tools\local.ps1 reload-scripts` 就會生效。
+
+資料夾裡的檔案會蓋過內建的同名腳本，資料夾沒有的腳本照舊用內建版本。語法有錯的檔案會被拒絕並列出原因，伺服器繼續用原本的版本。進行中的對話用舊版跑完，下一次對話才用新版。沒設定 `MAPLEGO_SCRIPTS_DIR` 時只用內建腳本。
+
+以下情況仍然要重新編譯並重啟：新增腳本可以呼叫的伺服器功能、為原本沒有腳本的任務新增腳本、修改 `scripts` 裡的 `.json` 清單。
 
 使用的埠：
 

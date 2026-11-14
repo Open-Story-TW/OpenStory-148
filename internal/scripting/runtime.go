@@ -127,22 +127,61 @@ func New(options Options) (*Engine, error) {
 
 var scriptName = regexp.MustCompile(`^[A-Za-z0-9_/.-]+\.lua$`)
 
-func (e *Engine) Register(name string, source []byte) (Script, error) {
+func (e *Engine) scan(name string, source []byte) error {
 	if !scriptName.MatchString(name) || strings.Contains(name, "..") || strings.HasPrefix(name, "/") || len(source) == 0 || len(source) > e.options.Limits.MaxSourceBytes {
-		return Script{}, errors.New("invalid Lua script name or size")
+		return errors.New("invalid Lua script name or size")
 	}
 	sc := scanner.New(name, source)
 	for {
 		t := sc.Scan()
 		if t.Type == token.EOF {
-			break
+			return nil
 		}
 		if t.Type == token.INVALID || t.Type == token.UNFINISHED {
-			return Script{}, errors.New("invalid Lua token")
+			return errors.New("invalid Lua token")
 		}
 		if t.Type == token.IDENT && string(t.Lit) == "__maple_trace" {
-			return Script{}, errors.New("reserved debugger identifier")
+			return errors.New("reserved debugger identifier")
 		}
+	}
+}
+
+// Check reports whether Register would take source and whether it compiles,
+// without registering it. A reload uses it so that a source with a syntax
+// error never replaces the one already running.
+func (e *Engine) Check(name string, source []byte) (err error) {
+	if err = e.scan(name, source); err != nil {
+		return err
+	}
+	l := e.options.Limits
+	vm := rt.New(io.Discard, rt.WithRuntimeContext(rt.RuntimeContextDef{HardLimits: rt.RuntimeResources{Cpu: l.TotalCPU, Memory: l.MemoryBytes}, RequiredFlags: rt.ComplyCpuSafe | rt.ComplyMemSafe | rt.ComplyTimeSafe | rt.ComplyIoSafe}))
+	defer vm.Close(nil)
+	defer func() {
+		if value := recover(); value != nil {
+			quota, ok := value.(rt.ContextTerminationError)
+			if !ok {
+				panic(value)
+			}
+			err = quota
+		}
+	}()
+	_, err = vm.MainThread().CallContext(rt.RuntimeContextDef{}, func() error {
+		_, e := compile(vm, name, source)
+		return e
+	})
+	return err
+}
+
+// Remove forgets a script. Conversations already running it are unaffected.
+func (e *Engine) Remove(name string) {
+	e.mu.Lock()
+	delete(e.scripts, name)
+	e.mu.Unlock()
+}
+
+func (e *Engine) Register(name string, source []byte) (Script, error) {
+	if err := e.scan(name, source); err != nil {
+		return Script{}, err
 	}
 	hash := sha256.Sum256(source)
 	s := Script{Name: name, SHA256: hex.EncodeToString(hash[:]), source: append([]byte(nil), source...), driverLine: driverLine(source)}

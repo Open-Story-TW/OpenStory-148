@@ -18,6 +18,8 @@ import (
 )
 
 type scriptWorld struct {
+	// reload serializes reads of the script directory.
+	reload sync.Mutex
 	mu     sync.Mutex
 	engine *scripting.Engine
 	active map[int64]*worldScript

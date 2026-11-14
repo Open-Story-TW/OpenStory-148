@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position=0)]
-    [ValidateSet('setup','build','start','stop','status','test')]
+    [ValidateSet('setup','build','start','stop','status','test','reload-scripts')]
     [string]$Action = 'status',
     [ValidateSet('all','login','world0','world1','cashshop','admin')]
     [string]$Service = 'all',
@@ -237,6 +237,23 @@ try {
             Assert-JavaUnchanged
         }
         'status' { Show-Status }
+        'reload-scripts' {
+            # Asks every running world to read MAPLEGO_SCRIPTS_DIR again.
+            Use-LocalEnvironment {
+                if (!$env:MAPLEGO_SCRIPTS_DIR) { throw 'Set MAPLEGO_SCRIPTS_DIR in .local/environment.json and restart the world services first.' }
+                $failed = $false
+                foreach ($name in @('world0','world1')) {
+                    $info = Get-ServiceInfo $name
+                    if (!(Get-OwnedProcess $info)) { Write-Host "$name STOPPED"; continue }
+                    $report = Invoke-RestMethod -Method Post -Uri ($info.Health+'/admin/scripts/reload') -Headers @{Authorization=('Bearer '+$env:MAPLEGO_RPC_TOKEN)} -TimeoutSec 30
+                    Write-Host "$name changed $($report.changed.Count), removed $($report.removed.Count)"
+                    foreach ($script in $report.changed) { Write-Host "  changed  $script" }
+                    foreach ($script in $report.removed) { Write-Host "  removed  $script" }
+                    foreach ($p in $report.rejected.PSObject.Properties) { $failed = $true; Write-Host "  REJECTED $($p.Name): $($p.Value)" }
+                }
+                if ($failed) { throw 'Some scripts were rejected; the versions already running were kept.' }
+            }
+        }
         'test' {
             Use-LocalEnvironment {
                 & (Join-Path $Local 'bin\smoke.exe')
