@@ -319,7 +319,7 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 	deny := func(reason string) (bool, int, bool, error) {
 		return false, 0, false, fmt.Errorf("%w: %s", domain.ErrInvalidInput, reason)
 	}
-	if r.Name == "whereami" || r.Name == "effstats" {
+	if r.Name == "whereami" || r.Name == "effstats" || r.Name == "help" {
 		if len(r.Args) != 0 {
 			return invalid()
 		}

@@ -29,7 +29,7 @@ func parseGMChat(text string) (string, []int64, bool) {
 	name := strings.TrimPrefix(fields[0], "!")
 	want := -1
 	switch name {
-	case "heal", "whereami", "effstats", "clearmobs": // !effstats: read-only server stat view
+	case "heal", "whereami", "effstats", "clearmobs", "help": // !effstats: read-only server stat view
 		want = 0
 	case "level", "job", "warp", "buffreset", "hp":
 		want = 1
@@ -76,6 +76,17 @@ func parseGMChat(text string) (string, []int64, bool) {
 		args[i] = n
 	}
 	return name, args, true
+}
+
+// gmHelpLines is the !help reply. It names every command parseGMChat accepts
+// (a test checks this), grouped so the list fits the chat window.
+var gmHelpLines = []string{
+	"GM 指令只作用在自己身上，參數都是數字，[ ] 內可省略。",
+	"角色：!heal 補滿、!hp <值>、!level <等級>（只能升）、!job <職業代碼>、!stats <力> <敏> <智> <幸>、!vitals <最大HP> <最大MP>",
+	"技能：!skill <技能代碼> <等級>（不扣 SP）、!debuff <狀態位元> [秒數]、!buffreset <狀態位元>",
+	"物品：!item <道具代碼> [數量]、!mesos <楓幣>、!petfood <數量>、!petexpire <寵物序號> <秒>、!cashexpire <保管箱序號> <秒>",
+	"地圖：!warp <地圖代碼>（僅測試地圖）、!spawn <怪物代碼> <數量> [X]、!clearmobs、!mobhold <0|1>（僅測試地圖）",
+	"其他：!alliance <對方角色ID>（0 為解散）、!whereami 目前位置、!effstats 伺服器計算的攻擊數值、!help",
 }
 
 func (s *Server) gmBusy(live *liveCharacter) bool {
@@ -372,6 +383,14 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 	}
 	if name == "whereami" {
 		return true, gmFeedback(sink, fmt.Sprintf("CID %d world %d channel %d map %d (%d,%d), level %d job %d.", next.CharacterID, next.Lease.WorldID, next.ChannelID, next.Character.MapID, next.Character.X, next.Character.Y, next.Character.Level, next.Character.Job))
+	}
+	if name == "help" {
+		for _, line := range gmHelpLines {
+			if err := gmFeedback(sink, line); err != nil {
+				return true, err
+			}
+		}
+		return true, nil
 	}
 	if name == "effstats" {
 		for _, line := range effectiveStatsLines(next.Character, time.Now()) {

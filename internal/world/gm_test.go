@@ -268,6 +268,44 @@ func TestGMChatDenialIsFollowedByItsCause(t *testing.T) {
 	}
 }
 
+func TestGMChatHelpListsEveryCommand(t *testing.T) {
+	help := strings.Join(gmHelpLines, "\n")
+	// One valid line per command: adding a command to the parser without
+	// listing it in !help should fail here.
+	for _, text := range []string{"!heal", "!whereami", "!effstats", "!clearmobs", "!help", "!level 1", "!job 1", "!warp 1", "!buffreset 1", "!hp 1",
+		"!petfood 1", "!mesos 1", "!alliance 1", "!mobhold 1", "!item 1", "!debuff 1", "!skill 1 1", "!cashexpire 1 1", "!petexpire 1 1", "!vitals 1 1", "!spawn 1 1", "!stats 4 4 4 4"} {
+		name, _, _ := parseGMChat(text)
+		if name == "" || !strings.Contains(help, "!"+name) {
+			t.Fatalf("%q is not a listed command", text)
+		}
+	}
+	if name, _, handled := parseGMChat("!help 1"); !handled || name != "" {
+		t.Fatal("help takes no arguments")
+	}
+	s, live, sink, repo := gmWorldFixture(t)
+	repo.execute = func(q domain.GMCommandRequest) (domain.GMCommandResult, error) {
+		if q.Name != "help" || len(q.Args) != 0 {
+			t.Fatalf("request %+v", q)
+		}
+		return domain.GMCommandResult{Character: live.session.Character, Name: q.Name}, nil
+	}
+	before := sink.count(0x58)
+	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help"); !handled || err != nil {
+		t.Fatal("help handling", err)
+	}
+	if sink.count(0x58)-before != len(gmHelpLines) {
+		t.Fatalf("help lines: %d", sink.count(0x58)-before)
+	}
+	// Without a grant the list stays hidden behind the ordinary denial.
+	repo.execute = func(domain.GMCommandRequest) (domain.GMCommandResult, error) {
+		return domain.GMCommandResult{Denied: true, Reason: "not_authorized"}, domain.ErrForbidden
+	}
+	before = sink.count(0x58)
+	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help"); !handled || err != nil || sink.count(0x58)-before != 1 {
+		t.Fatal("ungranted help", err)
+	}
+}
+
 func TestGMChatEffstatsEchoesServerStatsWithoutChanges(t *testing.T) {
 	for _, text := range []string{"!effstats 1", "!effstats x"} {
 		if name, _, handled := parseGMChat(text); !handled || name != "" {
