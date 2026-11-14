@@ -70,8 +70,13 @@ func (s *Server) enqueueMapEntry(channel int, live *liveCharacter, sink packetSi
 	// WZ name never grants arbitrary filesystem access or makes all legacy
 	// map scripts executable.
 	if err == nil {
-		if _, ok := entryScenePath(m.OnUserEnter, m.ID, snapshot.Character.Gender); ok {
-			name = "map/on_user_enter/" + m.OnUserEnter + ".lua"
+		script := m.OnUserEnter
+		if script == "" {
+			// The embedded starter maps carry no script name.
+			script = starterEntryScripts[m.ID]
+		}
+		if _, ok := entryScenePath(script, m.ID, snapshot.Character.Gender); ok {
+			name = "map/on_user_enter/" + script + ".lua"
 		}
 	}
 	s.scripts.mu.Lock()

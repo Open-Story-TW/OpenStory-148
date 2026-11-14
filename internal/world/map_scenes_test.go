@@ -66,6 +66,11 @@ func TestEntrySceneScriptsAskForTheirReviewedScene(t *testing.T) {
 			}
 		}
 	}
+	for mapID, script := range starterEntryScripts {
+		if _, ok := entryScenePath(script, mapID, 0); !ok {
+			t.Fatalf("starter map %d names %s, which has no scene there", mapID, script)
+		}
+	}
 	if _, ok := entryScenePath("goLith", 100000000, 0); ok {
 		t.Fatal("a scene script ran outside its maps")
 	}

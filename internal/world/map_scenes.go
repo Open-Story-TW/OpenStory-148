@@ -41,6 +41,10 @@ var entryScenes = map[string]map[int]string{
 	},
 }
 
+// starterEntryScripts names the onUserEnter script of the job intro maps that
+// are part of the embedded starter content, which records no script names.
+var starterEntryScripts = map[int]string{1020100: "goSwordman", 1020200: "goMagician", 1020400: "goRogue", 1020500: "goPirate"}
+
 // entryScenePath is the scene the onUserEnter script plays for a character of
 // this gender on this map; ok is false when the script has no reviewed scene
 // there.
