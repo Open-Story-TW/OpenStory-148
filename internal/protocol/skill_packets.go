@@ -22,7 +22,15 @@ const (
 type SkillAllocation struct {
 	Tick    uint32
 	SkillID int
+	// Count is how many points the request asks for. The native request has
+	// none and means one; the launcher's quantity prompt appends it.
+	Count int
 }
+
+// MaxSkillAllocation bounds the count of one request; no skill has as many
+// levels.
+const MaxSkillAllocation = 100
+
 type SkillCast struct {
 	Tick           uint32
 	SkillID, Level int
@@ -55,8 +63,11 @@ type Regeneration struct {
 }
 
 func ReadSkillAllocation(r *Reader) (SkillAllocation, error) {
-	v := SkillAllocation{Tick: r.U32(), SkillID: int(r.I32())}
-	if r.Err() != nil || r.Remaining() != 0 || v.SkillID < 1 {
+	v := SkillAllocation{Tick: r.U32(), SkillID: int(r.I32()), Count: 1}
+	if r.Remaining() == 4 {
+		v.Count = int(r.I32())
+	}
+	if r.Err() != nil || r.Remaining() != 0 || v.SkillID < 1 || v.Count < 1 || v.Count > MaxSkillAllocation {
 		return v, ErrMalformed
 	}
 	return v, nil

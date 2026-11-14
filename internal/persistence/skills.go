@@ -170,6 +170,8 @@ func (s *Store) AllocateSkill(ctx context.Context, req domain.SkillAllocateReque
 	if state.Level >= maximum || template.Invisible && state.Level == 0 {
 		return r, domain.ErrForbidden
 	}
+	// A request for several points takes as many as fit.
+	count := min(max(req.Count, 1), maximum-state.Level)
 	var now time.Time
 	if e = tx.QueryRowContext(ctx, `SELECT clock_timestamp()`).Scan(&now); e != nil {
 		return r, e
@@ -191,18 +193,20 @@ func (s *Store) AllocateSkill(ctx context.Context, req domain.SkillAllocateReque
 		if used >= min(c.Level-1, 6) {
 			return r, domain.ErrInsufficient
 		}
+		count = min(count, min(c.Level-1, 6)-used)
 	} else {
 		// Extended SP books require their own pool; never charge the legacy pool
 		// for a job family whose book semantics have not been implemented.
 		if c.Job >= 600 || req.SkillID/10000 == 0 || c.SP <= 0 {
 			return r, domain.ErrInsufficient
 		}
-		c.SP--
+		count = min(count, c.SP)
+		c.SP -= count
 		if _, e = tx.ExecContext(ctx, `UPDATE game_characters SET sp=$1 WHERE id=$2`, c.SP, c.ID); e != nil {
 			return r, e
 		}
 	}
-	state.Level++
+	state.Level += count
 	replaced := false
 	for i, v := range c.Skills {
 		if v.ID == state.ID {

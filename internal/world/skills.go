@@ -168,7 +168,7 @@ func (s *Server) allocateSkill(ctx context.Context, live *liveCharacter, sink pa
 	if s.skillMemberFor(session, live, sink) == nil {
 		return sink.WritePacket(protocol.EnableActions())
 	}
-	r, e := repo.AllocateSkill(ctx, domain.SkillAllocateRequest{Session: session, SkillID: q.SkillID, OperationID: fmt.Sprintf("sp-%s-%d-%d", session.SessionID, session.Generation, q.Tick)})
+	r, e := repo.AllocateSkill(ctx, domain.SkillAllocateRequest{Session: session, SkillID: q.SkillID, Count: q.Count, OperationID: fmt.Sprintf("sp-%s-%d-%d", session.SessionID, session.Generation, q.Tick)})
 	if e != nil {
 		return sink.WritePacket(protocol.EnableActions())
 	}

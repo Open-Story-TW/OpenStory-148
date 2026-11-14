@@ -99,6 +99,9 @@ const (
 	// point goes to any advancement's skills, whatever was spent on the
 	// earlier ones.
 	ClientUISkillAnyOrder uint32 = 1 << 13
+	// ClientUISkillBulk makes the skill window ask how many points to spend
+	// and send them as one request (the count after the skill ID).
+	ClientUISkillBulk uint32 = 1 << 14
 )
 
 // Client preference keys.

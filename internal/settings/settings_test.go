@@ -39,7 +39,7 @@ func TestResolveKeepsEnvironmentDefaultForBadRows(t *testing.T) {
 
 func TestApplySetsTheLauncherInterfaceMask(t *testing.T) {
 	defer apply(Resolve(nil), false)
-	values := Resolve(map[string]string{"equip_tooltip": "0", "equip_compare": "1", "merchant_price_units": "0", "chat_unlimited": "0", "chat_repeat_unlimited": "0", "skill_any_order": "0"})
+	values := Resolve(map[string]string{"equip_tooltip": "0", "equip_compare": "1", "merchant_price_units": "0", "chat_unlimited": "0", "chat_repeat_unlimited": "0", "skill_any_order": "0", "skill_bulk_points": "0"})
 	apply(values, false)
 	if got := protocol.ClientUI(); got != protocol.ClientUIEquipCompare {
 		t.Fatalf("mask=%#x", got)
@@ -185,5 +185,14 @@ func TestChatUnlimitedSetting(t *testing.T) {
 	apply(Resolve(map[string]string{"skill_any_order": "0"}), false)
 	if got := protocol.ClientUI(); got&protocol.ClientUISkillAnyOrder != 0 || got&protocol.ClientUIChatRepeat == 0 {
 		t.Fatalf("skill order off: mask=%#x", got)
+	}
+	// And the quantity prompt of the skill window.
+	apply(Resolve(nil), false)
+	if protocol.ClientUISkillBulk != 1<<14 || protocol.ClientUI()&protocol.ClientUISkillBulk == 0 {
+		t.Fatalf("skill bulk default: mask=%#x", protocol.ClientUI())
+	}
+	apply(Resolve(map[string]string{"skill_bulk_points": "0"}), false)
+	if got := protocol.ClientUI(); got&protocol.ClientUISkillBulk != 0 || got&protocol.ClientUISkillAnyOrder == 0 {
+		t.Fatalf("skill bulk off: mask=%#x", got)
 	}
 }

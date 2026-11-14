@@ -30,6 +30,9 @@ type SkillAllocateRequest struct {
 	Session     CharacterSession
 	SkillID     int
 	OperationID string
+	// Count is how many points to spend; zero means one. The skill takes as
+	// many of them as its maximum level and the character's points allow.
+	Count int
 }
 type SkillCastRequest struct {
 	Session              CharacterSession
