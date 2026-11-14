@@ -270,6 +270,11 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 			return result, err
 		}
 	}
+	if r.Profession != nil {
+		if err = applyProfessionChange(ctx, tx, &result.Character, *r.Profession); err != nil {
+			return result, err
+		}
+	}
 	if r.EXP > 0 {
 		if err = applyQuestExperience(&result.Character, r.EXP, r.OperationID); err != nil {
 			return result, err

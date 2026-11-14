@@ -9,6 +9,8 @@ func RosterView(c Character) CharacterSummary {
 	c.Skills = nil
 	c.SkillCooldowns = nil
 	c.SkillBuffs = nil
+	c.Professions = nil
+	c.Recipes = nil
 	c.Pets = nil
 	c.InventorySlots = [5]int{}
 	worn := make([]Equipment, 0, len(c.Equipment))

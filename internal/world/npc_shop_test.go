@@ -21,7 +21,7 @@ func TestNativeShopRequiresCurrentNearbyNPC(t *testing.T) {
 	for id, npc := range room.npcs {
 		if npc.TemplateID == 11000 {
 			oid = id
-			live.session.Character.X = npc.X + 1000
+			live.session.Character.X = npc.X + 5000
 			live.session.Character.Y = npc.Y
 		}
 	}
@@ -33,7 +33,7 @@ func TestNativeShopRequiresCurrentNearbyNPC(t *testing.T) {
 	if handled, err := s.openNativeNPCShop(context.Background(), 1, live, sink, oid); !handled || err != nil || s.getEconomyDialog(live, "shop") != nil {
 		t.Fatal("out-of-range shop opened")
 	}
-	live.session.Character.X -= 1000
+	live.session.Character.X -= 5000
 	if handled, err := s.openNativeNPCShop(context.Background(), 1, live, sink, oid); !handled || err != nil {
 		t.Fatalf("nearby native shop: %v %v", handled, err)
 	}

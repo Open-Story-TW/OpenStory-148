@@ -468,7 +468,11 @@ func TestNPCReachCoversFredrickFromTheGround(t *testing.T) {
 	if !npcReach(-857, 34, -857, -176) || !npcReach(-600, 34, -857, -176) {
 		t.Fatal("Fredrick cannot be reached from the ground below him")
 	}
-	if npcReach(-400, 34, -857, -176) || npcReach(-857, 400, -857, -176) {
+	// Anywhere on the largest screen counts: the camera stops at the map edge.
+	if !npcReach(383, 540, -93, 540) || !npcReach(1063, 34, -857, -176) {
+		t.Fatal("an NPC on the same screen is out of reach")
+	}
+	if npcReach(1064, 34, -857, -176) || npcReach(-857, 905, -857, -176) {
 		t.Fatal("an NPC far off screen is within reach")
 	}
 }

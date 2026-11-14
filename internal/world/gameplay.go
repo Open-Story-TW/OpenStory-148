@@ -63,6 +63,7 @@ type gameplayRoom struct {
 	mobs       map[int32]*gameplayMob
 	summons    map[int32]*roomSummon
 	areas      map[int32]*roomArea
+	reactors   map[int32]*roomReactor // gathering nodes; nil on most maps
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -128,6 +129,7 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 		}
 		r.mobs[oid] = &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP}
 	}
+	g.addReactorsLocked(r, key.mapID)
 	g.rooms[key] = r
 	return r, nil
 }
@@ -169,6 +171,7 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 	}
 	packets = append(packets, summonEnterPacketsLocked(r)...)
 	packets = append(packets, areaEnterPacketsLocked(r)...)
+	packets = append(packets, reactorEnterPacketsLocked(r, now)...)
 	packets = append(packets, g.doorEnterPacketsLocked(channel, c.MapID, c.ID, party)...)
 	g.mu.Unlock()
 	for _, p := range packets {
@@ -207,6 +210,11 @@ func (s *Server) leaveGameplay(channel, mapID int, characterID int64, expected .
 	var packets []delivery
 	for _, d := range removeOwnerSummonsLocked(r, characterID, 0) {
 		packets = append(packets, delivery{d.sink, d.packet})
+	}
+	for _, p := range releaseHarvestLocked(r, characterID) {
+		for _, m := range r.members {
+			packets = append(packets, delivery{m.sink, p})
+		}
 	}
 	for _, mob := range r.mobs {
 		if mob.qaOwner != nil && mob.qaOwner.retired {
@@ -248,6 +256,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.gameplay.tickSummons(now)
 			s.gameplay.tickAreas(now)
 			s.gameplay.tickDoors(now, s.partySnapshot())
+			s.gameplay.tickReactors(now)
 		}
 	}
 }
@@ -360,6 +369,9 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, s.physicalSkillGameplay(ctx, channel, live, sink, a)
 		}
 		return true, s.meleeGameplay(ctx, channel, live, sink, a)
+	case protocol.RecvStartHarvest, protocol.RecvStopHarvest, protocol.RecvReactorHit, protocol.RecvProfessionInfo,
+		protocol.RecvCraftEffect, protocol.RecvCraftMake, protocol.RecvCraftDone, protocol.RecvUseRecipe:
+		return true, s.handleProfession(ctx, channel, live, sink, op, r.Bytes(r.Remaining()))
 	case protocol.RecvMoveMonster:
 		m, err := protocol.ReadMonsterMove(r)
 		if err != nil {

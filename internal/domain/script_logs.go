@@ -84,6 +84,8 @@ type ScriptExchange struct {
 	Quests      []ScriptQuestForce  `json:"quests,omitempty"`
 	Travel      *ScriptTravel       `json:"travel,omitempty"` // Server-resolved destination; never a raw Lua table field.
 	Look        *ScriptLook         `json:"look,omitempty"`   // Beauty host only; never a raw Lua table field.
+	// Profession host only; never a raw Lua table field.
+	Profession *ProfessionChange `json:"profession,omitempty"`
 }
 
 // ScriptLook is one beauty salon visit (Legacy cm.setAvatar): one coupon from

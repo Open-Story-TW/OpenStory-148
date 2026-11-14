@@ -62,7 +62,7 @@ func TestFirstJobHostGenericHasNoCapacityPacketsAndRefreshesPeerLook(t *testing.
 		if len(peer.pkts) != 1 || !bytes.Equal(peer.pkts[0], protocol.CharacterLook(live.session.Character)) || s.maps.rooms[key][1].look.Job != 400 {
 			t.Fatal("visible peer or tracked look retained beginner job")
 		}
-		live.session.Character.X = 500 // beyond npcReach
+		live.session.Character.X += 5000 // beyond npcReach
 		if _, err = h.Execute(context.Background(), identity, scripting.Command{Kind: "advance_first_job", Script: "npc/1052001.lua", ID: "first-job-walked-away", Ints: []int64{400}}); !errors.Is(err, domain.ErrForbidden) || r.calls != 1 {
 			t.Fatalf("NPC context was not revalidated: %v calls=%d", err, r.calls)
 		}

@@ -32,7 +32,7 @@ func (r *jobTestRepo) AdvanceWarrior(_ context.Context, request domain.JobAdvanc
 }
 
 func TestJobHostGrowsNativeBagsBeforeRewardAndRechecksNPC(t *testing.T) {
-	for _, distance := range []int{0, 1000} {
+	for _, distance := range []int{0, 5000} {
 		repo := &jobTestRepo{}
 		s := &Server{repo: repo, online: make(map[int64]domain.CharacterSession), gameplay: &gameplaySpace{rooms: map[mapKey]*gameplayRoom{
 			{channel: 1, mapID: 102000003}: {npcs: map[int32]content.Life{500: {TemplateID: 1022000}}},

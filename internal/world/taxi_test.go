@@ -92,7 +92,7 @@ func TestTaxiHostRejectsChangedContextWithoutAssetCommand(t *testing.T) {
 			case "map":
 				a.live.session.Character.MapID++
 			case "far":
-				a.live.session.Character.X = 1000
+				a.live.session.Character.X = 5000
 			case "dead":
 				a.live.session.Character.HP = 0
 			case "discount":

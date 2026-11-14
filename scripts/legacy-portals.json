@@ -3053,10 +3053,6 @@
       "reason": "call .complete is not supported (line 4)"
     },
     {
-      "legacy": "portal/gatherTuto.js",
-      "reason": "pi.getPlayer().getEventCount is not supported (line 3)"
-    },
-    {
       "legacy": "portal/gendergo.js",
       "reason": "pi.getPlayerStat is not supported (line 2)"
     },

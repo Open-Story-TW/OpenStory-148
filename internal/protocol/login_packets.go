@@ -224,12 +224,10 @@ func addCharStats(w *Writer, c domain.Character, now time.Time) {
 	if domain.IsDemonJob(c.Job) {
 		w.I32(int32(c.DemonMark))
 	}
-	w.U8(0)
 	sg := now.In(time.FixedZone("TMS", 8*3600))
 	date := sg.Year()*1000000 + int(sg.Month())*10000 + sg.Day()*100 + sg.Hour()
-	w.I32(int32(date))
-	w.Zero(6 * 4)
-	w.Zero(21) // v148 widened this block from 12 to 21 bytes.
+	addTraitStats(w, c, int32(date))
+	w.Zero(21) // Today's trait gains; v148 widened this block from 12 to 21 bytes.
 	w.I32(0)
 	w.U8(0)
 	w.I32(0)

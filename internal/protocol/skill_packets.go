@@ -305,8 +305,9 @@ func ReadRegenerationOpcode(op uint16, r *Reader) (Regeneration, error) {
 
 func AddSkillSections(w *Writer, c domain.Character, now time.Time) {
 	w.U8(0)
-	w.U16(uint16(len(c.Skills)))
-	for _, s := range c.Skills {
+	records := wireSkills(c)
+	w.U16(uint16(len(records)))
+	for _, s := range records {
 		w.I32(int32(s.ID))
 		w.I32(int32(s.Level))
 	}

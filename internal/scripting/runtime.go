@@ -592,6 +592,12 @@ func (s *Session) installHost() {
 	bind("advance_warrior", s.simpleCommand("advance_warrior", 0), 1)
 	bind("advance_first_job", s.simpleCommand("advance_first_job", 1), 2)
 	bind("advance_second_job", s.simpleCommand("advance_second_job", 1), 2)
+	// Professions (Skill.wz 9200-9204). The host applies the learning rules
+	// and grants the starter tool; a script only names the profession.
+	bind("profession_level", s.simpleCommand("profession_level", 1), 2)
+	bind("profession_learn", s.simpleCommand("profession_learn", 1), 2)
+	bind("profession_forget", s.simpleCommand("profession_forget", 1), 2)
+	bind("open_crafting", s.simpleCommand("open_crafting", 0), 1)
 	bind("exchange", s.exchange, 2)
 	// Guild office (2010007/2010008) and alliance (2010009) services.
 	bind("guild_rank", s.simpleCommand("guild_rank", 0), 1)

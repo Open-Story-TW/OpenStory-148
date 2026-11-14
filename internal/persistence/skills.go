@@ -68,7 +68,10 @@ func readSkillState(ctx context.Context, q questQuerier, c *domain.Character) er
 	}
 	e = rows.Err()
 	rows.Close()
-	return e
+	if e != nil {
+		return e
+	}
+	return readProfessionState(ctx, q, c)
 }
 func learned(c domain.Character, id int) domain.SkillState {
 	for _, s := range c.Skills {

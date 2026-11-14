@@ -311,7 +311,8 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	// resumed conversation open a remote shop or grant a reward from another map.
 	switch command.Kind {
 	case "quest_start", "quest_complete", "quest_forfeit", "exchange", "change_look", "warp", "open_storage", "open_merchant_bank", "open_shop", "advance_warrior", "advance_first_job", "advance_second_job", "depart_island", "take_taxi",
-		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband":
+		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
+		"profession_learn", "profession_forget", "open_crafting":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
@@ -505,6 +506,8 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return scripting.CommandResult{}, a.server.openParcel(ctx, a.live, a.sink, a.npcID, false)
 	case "guild_rank", "guild_prompt", "guild_disband", "guild_capacity", "guild_capacity_limit", "alliance_rank", "alliance_create", "alliance_capacity", "alliance_disband":
 		return a.server.guildScriptCommand(ctx, a.live, a.sink, snapshot, command)
+	case "profession_level", "profession_learn", "profession_forget", "open_crafting":
+		return a.professionScriptCommand(ctx, snapshot, command)
 	case "open_shop":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 2147483647 {
 			return scripting.CommandResult{}, domain.ErrInvalidInput
@@ -538,13 +541,15 @@ func (a *worldScript) hasNPCContext(snapshot domain.CharacterSession) bool {
 }
 
 // npcReach reports whether a character may talk to an NPC from where it
-// stands. The native client lets a player click any NPC on screen, and some
-// stand on ledges nobody can walk onto (Fredrick and the storage keeper in the
-// Free Market entrance are 210 pixels above the ground), so the reach is a
-// screen-sized box rather than a 200-pixel circle.
+// stands. The native client lets a player click any NPC it draws, wherever the
+// character is on the screen: the camera stops at the map edge, so the two can
+// be a whole screen apart (Ardentmill's alchemist is 476 pixels from a player
+// standing at the smithing anvil). The reach is therefore the largest screen
+// the client offers, 1920x1080, in each direction; it only refuses a request
+// about an NPC the client could not have drawn.
 func npcReach(px, py, nx, ny int) bool {
 	dx, dy := px-nx, py-ny
-	return dx >= -400 && dx <= 400 && dy >= -300 && dy <= 300
+	return dx >= -1920 && dx <= 1920 && dy >= -1080 && dy <= 1080
 }
 
 // canHoldItem is Legacy MapleInventoryManipulator.checkSpace for one grant.

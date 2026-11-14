@@ -70,6 +70,7 @@ type liveCharacter struct {
 	visit            *sceneVisit
 	petHungerAt      time.Time              // next pet hunger pass; zero while no pet is summoned
 	guildGPAt        time.Time              // next hourly guild presence GP grant
+	fatigueAt        time.Time              // when the profession fatigue was last worn off; guarded by mu
 	attackKey        atomic.Uint32          // last settlement key handed out by nextAttackKey
 	itemUseUncertain *domain.UseItemRequest // persistMu; exact-owner unresolved item commit
 	scrollUncertain  *domain.ScrollRequest  // persistMu; exact-owner unresolved scroll commit

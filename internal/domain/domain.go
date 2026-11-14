@@ -111,9 +111,15 @@ type Character struct {
 	Skills         []SkillState    `json:"skills,omitempty"`
 	SkillCooldowns []SkillCooldown `json:"skill_cooldowns,omitempty"`
 	SkillBuffs     []SkillBuff     `json:"skill_buffs,omitempty"`
-	Pets           []Pet           `json:"pets,omitempty"`
-	Guild          GuildTag        `json:"guild,omitzero"`
-	Revision       int64           `json:"revision"`
+	// Professions, the recipes learned from recipe items, the six personality
+	// traits and the gathering/crafting fatigue (already worn off to now).
+	Professions []ProfessionState `json:"professions,omitempty"`
+	Recipes     []int             `json:"recipes,omitempty"`
+	Traits      Traits            `json:"traits,omitzero"`
+	Fatigue     int               `json:"fatigue,omitempty"`
+	Pets        []Pet             `json:"pets,omitempty"`
+	Guild       GuildTag          `json:"guild,omitzero"`
+	Revision    int64             `json:"revision"`
 }
 
 // Summary is read only from the dedicated roster projection, never by loading

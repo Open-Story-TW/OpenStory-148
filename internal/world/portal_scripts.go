@@ -143,7 +143,9 @@ func (h *portalScriptHost) execute(ctx context.Context, id scripting.Identity, c
 	if h.portal.Script == "entertraining" {
 		return h.executeTraining(ctx, snapshot, command)
 	}
-	if scripts.LegacyPortal(command.Script) {
+	// The ticket portal of Ardentmill is ported by hand and uses the same
+	// reads, notice and atomic exchange as a generated Legacy source.
+	if scripts.LegacyPortal(command.Script) || command.Script == "portal/gatherTuto.lua" {
 		if result, handled, err := h.executeLegacy(ctx, id, snapshot, command); handled {
 			return result, err
 		}
