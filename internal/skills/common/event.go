@@ -38,6 +38,22 @@ func init() {
 		}})
 	}
 
+	// 水晶花園傳送 (Phantom 20031203): moveTo = x, the Phantom's own airship.
+	skills.Register(skills.Handler{ID: 20031203, Kind: skills.KindSpecial, Cast: func(c *skills.CastContext) (skills.CastPlan, error) {
+		p := skills.StandardCost(c)
+		p.MoveTo = c.Value("x")
+		return p, nil
+	}})
+	// 幻影斗蓬 (Phantom 20031205): the client moves the character itself;
+	// the server takes the MP.
+	skills.Register(skills.Handler{ID: 20031205, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	// 卡牌審判 (Phantom 20031209, fourth job 20031210): the world spends the
+	// card deck and throws the cards; the drawn card's own bonus (critical
+	// rate, drop rate, resistance) is not applied yet.
+	for _, id := range []int{20031209, 20031210} {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	}
+
 	// 萬聖節南瓜: a one-target event attack; the input family is not
 	// observed yet, so any is accepted without ammunition.
 	skills.Register(skills.Handler{ID: 80001122, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee | combat.Shoot | combat.Magic, Ammo: combat.AmmoNone}})

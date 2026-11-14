@@ -47,6 +47,7 @@ func TestParseOnlySupportedAuthenticatedCreation(t *testing.T) {
 		{"mercedes-blocked-by-client", 5, 0, 0, 5, resistance, 0, false},
 		{"demon-blocked-by-client", 6, 0, 0, 7, append(resistance, 1, 2), 0, false},
 		{"unknown-sub-job", 1, 3, 0, 6, nil, 0, false},
+		{"unknown-race", 11, 0, 0, 6, nil, 0, false},
 		{"gender-mismatch", 1, 0, 1, 6, nil, 0, false},
 		{"invalid-count", 1, 0, 0, 5, nil, 0, false},
 	} {
@@ -69,6 +70,32 @@ func TestParseOnlySupportedAuthenticatedCreation(t *testing.T) {
 	r.U16()
 	if _, err := parseCreate(r, domain.Account{ID: 42, Gender: 0}, 0); err == nil {
 		t.Fatal("truncated creation accepted")
+	}
+}
+
+// The v148 Phantom screen offers both genders and sends face, hair, overall,
+// cape, shoes and weapon; the single cape is checked and not passed on.
+func TestParsePhantomCreation(t *testing.T) {
+	look := []int32{21657, 34732, 1051272, domain.PhantomStarterCape, 1071035, 1362000}
+	parse := func(gender byte, items ...int32) (domain.CreateCharacterRequest, error) {
+		r := protocol.NewReader(creationPacket(domain.RacePhantom, 0, gender, byte(len(items)), items...))
+		r.U16()
+		return parseCreate(r, domain.Account{ID: 42, Gender: 0}, 0)
+	}
+	req, err := parse(1, look...)
+	if err != nil || req.Family != 2003 || req.Gender != 1 || req.Face != 21657 || req.Hair != 34732 || req.Top != 1051272 || req.Bottom != 0 || req.Shoes != 1071035 || req.Weapon != 1362000 {
+		t.Fatalf("phantom creation %+v %v", req, err)
+	}
+	wrongCape := append([]int32(nil), look...)
+	wrongCape[3] = 1102000
+	if _, err = parse(1, wrongCape...); err == nil {
+		t.Fatal("another cape accepted")
+	}
+	if _, err = parse(1, look[:5]...); err == nil {
+		t.Fatal("five slots accepted")
+	}
+	if _, err = parse(2, look...); err == nil {
+		t.Fatal("gender 2 accepted")
 	}
 }
 

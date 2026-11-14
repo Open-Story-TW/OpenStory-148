@@ -23,6 +23,7 @@ func (s *Server) observeSkillAttack(e combat.AttackEvent) {
 		return
 	}
 	go s.runSkillTriggers(m, &e, 0, 0, 0)
+	go s.phantomCards(m, &e)
 }
 
 // runSkillTriggers commits the OnAttack/OnDamaged buff changes of m's

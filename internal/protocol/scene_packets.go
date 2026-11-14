@@ -126,3 +126,33 @@ func SceneImages(npcID int, paths []string) []byte {
 	}
 	return w.Packet()
 }
+
+// RecvForceAtomLanded lists the thrown cards that reached their monster.
+const RecvForceAtomLanded uint16 = 0xD0
+
+// PhantomDeck sets the card count of the Phantom deck window (0x904AB9; the
+// client ignores it without 卡牌審判 20031209 or 20031210).
+func PhantomDeck(cards int) []byte {
+	w := NewWriter(0x182)
+	w.U8(byte(min(max(cards, 0), 255)))
+	return w.Packet()
+}
+
+// PhantomCard throws one card from the character at a monster (0x51EF91).
+// When it lands the client attacks that monster with the card skill.
+func PhantomCard(characterID int64, mobObjectID int32, skillID, key, colour int) []byte {
+	w := NewWriter(0xF7)
+	w.U8(0) // thrown by the character
+	w.I32(int32(characterID))
+	w.I32(1) // toward a monster
+	w.I32(mobObjectID)
+	w.I32(int32(skillID))
+	w.U8(1)
+	w.I32(int32(key))
+	w.I32(int32(colour))
+	w.I32(22) // speed, launch angle and spread as Legacy rolled them
+	w.I32(9)
+	w.I32(5)
+	w.U8(0)
+	return w.Packet()
+}

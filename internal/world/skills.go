@@ -29,7 +29,10 @@ type skillMember struct {
 	cooldowns             map[int]time.Time         // Native-announced deadlines, guarded by publication.
 	passiveTicks          map[int]time.Time         // Last OnTick per skill, guarded by skills.mu.
 	damageTick            uint32
-	damageSeen            bool
+	// cards is the Phantom deck and cardKey the last thrown card, both
+	// guarded by skills.mu; the deck is not kept across logins (Legacy).
+	cards, cardKey int
+	damageSeen     bool
 }
 type skillSpace struct {
 	publication  sync.Mutex // Standalone test/runtime fallback without mapSpace.
@@ -197,6 +200,9 @@ func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packet
 	if source == nil {
 		return sink.WritePacket(protocol.EnableActions())
 	}
+	if phantomJudgment(q.SkillID) && !s.phantomDeckFull(source, session.Character.Job) {
+		return sink.WritePacket(protocol.EnableActions())
+	}
 	castPeers := s.skillCastAudience(source)
 	r, e := repo.CastSkill(ctx, domain.SkillCastRequest{Session: session, SkillID: q.SkillID, ClientLevel: q.Level, OperationID: fmt.Sprintf("cast-%s-%d-%d", session.SessionID, session.Generation, q.Tick)})
 	if e != nil {
@@ -210,6 +216,9 @@ func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packet
 		return e
 	}
 	s.castCombatObjects(snapshot, live, sink, q)
+	if phantomJudgment(q.SkillID) {
+		s.phantomDraw(source, snapshot.Character, q.SkillID, time.Now())
+	}
 	if r.MoveTo != 0 {
 		// The warp takes persistMu, which this cast still holds.
 		go s.castMove(snapshot.ChannelID, live, sink, r.MoveTo)

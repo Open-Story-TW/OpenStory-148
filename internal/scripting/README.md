@@ -123,3 +123,38 @@ The story quests of the new line (2387, 2600-2621, 2624-2636, 2639, 2640, 2643, 
 Saved locations (`pi.saveLocation("FREE_MARKET")` and the other Legacy `SavedLocationType` names) are kept as the character's server-side script record `1900000000 + index`. `pi.getMap()` monster and player counts use the `monster_count` and `player_count` portal queries; `playPortalSE`, effects, instructions and UI locks show nothing. The portal host still revalidates the source portal for every command, and only generated sources may read the character, exchange or open an NPC.
 
 A GM character sees a `[GM Portal] <map>/<portal>「<script>」` chat line for each portal invocation: the script started, every non-query command with its outcome and the converted Legacy line it came from, how it ended, and, when nothing ran, whether Legacy has the script and why it is not migrated yet. Ordinary players never receive these lines.
+
+## Cutscenes
+
+`scripts/scene/<name>.lua` is a conversation that can also direct the player's character. The world starts one from a map's `onUserEnter` name or from a portal's script name, and only for the names and maps listed in `internal/world/scenes.go`. The script global is `scene`; it has every NPC command plus:
+
+| Call | Effect |
+|---|---|
+| `scene:direct("lock", 1 or 0)` | take or return the controls (the client shows black bars); returned by itself when the script ends or fails |
+| `scene:direct("alone", 1 or 0)` | hide the other players |
+| `scene:direct("walk", 0, 1 or 2)` | stop, walk left, walk right |
+| `scene:direct("action", id, ms)` | play a character action |
+| `scene:direct("effect", path, ms, x, y)` | an Effect.wz animation at an offset from the character |
+| `scene:direct("screen", name)`, `"sound"`, `"music"` | a Map.wz/Effect.img animation over the view, a sound, new background music |
+| `scene:wait(ms)` | continue when the client reports the time has passed |
+| `scene:say_as(text, speaker[, back[, next]])` | a line spoken by the player (speaker 0) or by the NPC template given |
+| `scene:show_images{path, ...}` | picture pages in one window (the client's tutorial pages) |
+
+The walk, action, effect and wait calls only work while the controls are locked. The opcodes and layouts are in `internal/protocol/scene_packets.go`, each with the client handler it was read from.
+
+### Phantom tutorial
+
+The v148 client creates a Phantom as beginner job 2003 on map 915000000. The maps, the starter outfit and the guards are not in the v145 data root; `internal/content/v148` carries them and is read for any file the root lacks.
+
+| Map | Source | What happens |
+|---|---|---|
+| 915000000 臥室 | `scene/PTtutor000.lua` | Phantom paces and thinks aloud, then walks out |
+| 915000100 大廳 | `quest/25000.lua`, `portal/PTtutor100_0.lua` | 阿弗雷德 starts quest 25000; the exit opens after that |
+| 915000200 外部 | `scene/PTtutor200_0.lua` | one line, then the Knights' Hall |
+| 915000300 騎士之殿 | `scene/PTtutor300.lua`, `PTtutor300_0.lua`, `PTtutor300_2.lua` | the client's picture pages; either checkpoint leads to the disguise map |
+| 915000301 騎士之殿 | `scene/PTtutor300_2.lua` | 奇丹 stops the disguised Phantom once (the map itself dresses the character) |
+| 915000400 耶雷弗 | `scene/PTtutor400_0.lua` | one line on the way |
+| 915000500 大會議場 | `scene/PTtutor500.lua` | the hearing of 希拉 and 西格諾斯, then the ship |
+| 150000000 水晶花園 | `scene/PTjob1.lua` | level 10, job 2400, the beginner skills and quest 25000 in one transaction |
+
+Not done: the guards of the Knights' Hall (9300498, 9300507) with the two tutorial skills 20031211 and 20031212, the NPCs of 希拉's entrance, and the two movies. Legacy has no Phantom tutorial; the lines were written in Chinese for this server.

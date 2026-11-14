@@ -15,6 +15,11 @@ func (s *Server) handleSkills(ctx context.Context, live *liveCharacter, sink pac
 		return true, sink.WritePacket(protocol.UpdateHPMP(hp, mp))
 	}
 	switch op {
+	case protocol.RecvForceAtomLanded:
+		// The client reports each thrown Phantom card that reached its
+		// monster (0x54C65F); the card attack that follows is judged itself.
+		r.Skip(r.Remaining())
+		return true, nil
 	case protocol.RecvSkillAllocate:
 		q, err := protocol.ReadSkillAllocation(r)
 		if err != nil || s.tradeActive(live) {
