@@ -88,17 +88,23 @@ func (s *Server) runPortalScript(ctx context.Context, channel int, live *liveCha
 // object to stand next to, so the conversation is bound to the character's
 // current map instead.
 func (s *Server) openPortalNPC(ctx context.Context, channel int, live *liveCharacter, sink packetSink, npcID int) error {
+	return s.openChainedNPC(ctx, channel, live, sink, npcID, 0)
+}
+
+// openChainedNPC is openPortalNPC for a conversation that another
+// conversation opened (Legacy cm.openNpc); chain is how many came before it.
+func (s *Server) openChainedNPC(ctx context.Context, channel int, live *liveCharacter, sink packetSink, npcID, chain int) error {
 	name := fmt.Sprintf("npc/%d.lua", npcID)
 	if _, err := scripts.Source(name); err != nil {
-		s.npcGMNotice(live, sink, npcID, "未處理(傳點要開啟的 %s 腳本不存在)", name)
+		s.npcGMNotice(live, sink, npcID, "未處理(要開啟的 %s 腳本不存在)", name)
 		return sink.WritePacket(protocol.EnableActions())
 	}
-	return s.startRemoteScript(ctx, channel, live, sink, npcID, name, "由傳點開啟")
+	return s.startRemoteScript(ctx, channel, live, sink, npcID, name, "由腳本開啟", chain)
 }
 
 // startRemoteScript runs a script whose NPC is not on the character's map.
 // The conversation is bound to the map the character stands on instead.
-func (s *Server) startRemoteScript(ctx context.Context, channel int, live *liveCharacter, sink packetSink, npcID int, name, origin string) error {
+func (s *Server) startRemoteScript(ctx context.Context, channel int, live *liveCharacter, sink packetSink, npcID int, name, origin string, chain int) error {
 	live.mu.Lock()
 	snapshot := live.session
 	live.mu.Unlock()
@@ -106,7 +112,7 @@ func (s *Server) startRemoteScript(ctx context.Context, channel int, live *liveC
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	s.cancelNPCScriptState(live, false)
-	a := &worldScript{server: s, live: live, sink: sink, kind: "npc", npcID: npcID, remoteMap: snapshot.Character.MapID,
+	a := &worldScript{server: s, live: live, sink: sink, kind: "npc", npcID: npcID, remoteMap: snapshot.Character.MapID, chain: chain,
 		identity: scripting.Identity{SessionID: snapshot.SessionID, CharacterID: snapshot.CharacterID, Generation: snapshot.Generation}}
 	s.scripts.mu.Lock()
 	s.scripts.active[snapshot.CharacterID] = a

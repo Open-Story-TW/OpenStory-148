@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -149,6 +150,9 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	if r.Look != nil && !domain.ValidScriptLook(*r.Look) {
 		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
 	}
+	if r.Growth != nil && !domain.ValidScriptGrowth(*r.Growth) {
+		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
+	}
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return domain.ScriptExchangeResult{}, err
@@ -278,6 +282,17 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	if result.Drops, err = applyScriptDrops(ctx, tx, r.Session, result.Character, r.Drops); err != nil {
 		return result, err
 	}
+	if r.Growth != nil {
+		if r.Growth.Coupon != 0 {
+			// Uses one coupon; the look itself is set just below.
+			if err = applyScriptLook(ctx, tx, &result.InventoryResult, domain.ScriptLook{Coupon: r.Growth.Coupon, Hair: result.Character.Hair}); err != nil {
+				return result, err
+			}
+		}
+		if result.Skills, err = applyScriptGrowth(ctx, tx, &result.Character, *r.Growth); err != nil {
+			return result, err
+		}
+	}
 	if r.EXP > 0 {
 		if err = applyQuestExperience(&result.Character, r.EXP, r.OperationID); err != nil {
 			return result, err
@@ -310,6 +325,70 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	}
 	s.roster.Invalidate(ctx, value.AccountID, value.WorldID)
 	return result, nil
+}
+
+// applyScriptGrowth is the character part of a generated Legacy NPC call.
+// A job is only the next advancement of the branch the character is already
+// in (x0 to x1 from level 70, x1 to x2 from level 120), with Legacy's skill
+// points for it; anything else is refused.
+func applyScriptGrowth(ctx context.Context, tx *sql.Tx, c *domain.Character, g domain.ScriptGrowth) ([]domain.SkillState, error) {
+	c.Fame += g.Fame
+	if c.Fame < -30000 || c.Fame > 30000 {
+		return nil, domain.ErrInsufficient
+	}
+	if g.Job != 0 && g.Job != c.Job {
+		tier := g.Job % 10
+		if g.Job != c.Job+1 || c.Job%100 == 0 || tier != 1 && tier != 2 || tier == 1 && c.Level < 70 || tier == 2 && c.Level < 120 {
+			return nil, domain.ErrForbidden
+		}
+		c.SetJob(g.Job)
+		c.SubJob = domain.SubJobFor(g.Job)
+		c.SP++
+		if tier == 2 {
+			c.SP += 2
+		}
+	}
+	if g.SPSet != nil {
+		c.SP = *g.SPSet
+	}
+	c.SP += g.SP
+	if c.SP < 0 {
+		return nil, domain.ErrInsufficient
+	}
+	c.SP = min(c.SP, 999)
+	if g.Hair != 0 {
+		c.Hair = g.Hair
+	}
+	if g.Face != 0 {
+		c.Face = g.Face
+	}
+	if g.Skin != nil {
+		c.Skin = *g.Skin
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE game_characters SET fame=$1,job=$2,sp=$3,hair=$4,face=$5,skin=$6 WHERE id=$7`, c.Fame, c.Job, c.SP, c.Hair, c.Face, c.Skin, c.ID); err != nil {
+		return nil, err
+	}
+	if err := saveJobState(ctx, tx, *c); err != nil {
+		return nil, err
+	}
+	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	var taught []domain.SkillState
+	for _, s := range g.Skills {
+		template, err := content.SkillDefinition(root, s.ID)
+		if err != nil || template.Disabled || s.Level > template.MaxLevel || s.Level == 0 {
+			// Legacy ignores a skill the game data does not have.
+			continue
+		}
+		if err = grantJobSkills(ctx, tx, c, []domain.SkillState{{ID: s.ID, Level: s.Level, MasterLevel: min(s.Master, template.MaxLevel)}}); err != nil {
+			return nil, err
+		}
+		for _, owned := range c.Skills {
+			if owned.ID == s.ID {
+				taught = append(taught, owned)
+			}
+		}
+	}
+	return taught, nil
 }
 
 // applyScriptLook uses one coupon and sets the new hair or face. Coupons are

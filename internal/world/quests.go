@@ -159,7 +159,7 @@ func (s *Server) handleQuest(ctx context.Context, channel int, live *liveCharact
 		}
 		s.questGMNotice(live, sink, request, before, "啟動腳本 "+name)
 		if remote {
-			return s.startRemoteScript(ctx, channel, live, sink, request.NPCID, name, "自動開始的任務")
+			return s.startRemoteScript(ctx, channel, live, sink, request.NPCID, name, "自動開始的任務", 0)
 		}
 		_, err = s.startScriptAtNPC(ctx, channel, live, sink, oid, name)
 		return err

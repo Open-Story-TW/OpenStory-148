@@ -7,7 +7,9 @@ import (
 	"embed"
 	"encoding/hex"
 	"encoding/json"
+	"strconv"
 	"strings"
+	"sync"
 )
 
 //go:embed npc/*.lua quest/*.lua portal/*.lua map/on_user_enter/*.lua
@@ -18,6 +20,55 @@ var legacyQuestDriver []byte
 
 //go:embed legacy/portal_driver.lua
 var legacyPortalDriver []byte
+
+//go:embed legacy/npc_driver.lua
+var legacyNPCDriver []byte
+
+// LegacyNPCMarker opens an NPC source generated from a Legacy start/action
+// conversation by tools/migrate-npc-scripts.mjs. Source appends the shared
+// NPC driver to such a file, keeping its line numbers.
+const LegacyNPCMarker = "-- legacy-npc-script"
+
+//go:embed legacy-npcs.json
+var legacyNPCMigrationData []byte
+
+var legacyNPCs = sync.OnceValue(func() (manifest struct {
+	Scripts []LegacyQuestMigration `json:"scripts"`
+	Pending []LegacyPortalPending  `json:"pending"`
+	err     error
+}) {
+	manifest.err = json.Unmarshal(legacyNPCMigrationData, &manifest)
+	return manifest
+})
+
+// LegacyNPCMigrations lists the generated NPC sources and the Legacy NPC
+// scripts still pending conversion, each with the first construct the
+// generator could not convert.
+func LegacyNPCMigrations() ([]LegacyQuestMigration, []LegacyPortalPending, error) {
+	manifest := legacyNPCs()
+	return manifest.Scripts, manifest.Pending, manifest.err
+}
+
+// LegacyNPCPendingReason reports why Legacy's script for NPC id has no Lua
+// source yet; ok is false when Legacy has none either.
+func LegacyNPCPendingReason(id int) (reason string, ok bool) {
+	legacy := "npc/" + strconv.Itoa(id) + ".js"
+	for _, p := range legacyNPCs().Pending {
+		if p.Legacy == legacy {
+			return p.Reason, true
+		}
+	}
+	return "", false
+}
+
+// LegacyNPCDriver is the shared Lua appended to generated NPC sources.
+func LegacyNPCDriver() []byte { return append([]byte(nil), legacyNPCDriver...) }
+
+// LegacyNPC reports whether name is a generated Legacy NPC source.
+func LegacyNPC(name string) bool {
+	data, err := sources.ReadFile(name)
+	return err == nil && strings.HasPrefix(name, "npc/") && bytes.HasPrefix(data, []byte(LegacyNPCMarker))
+}
 
 // LegacyPortalMarker opens a portal source generated from a Legacy enter(pi)
 // script by tools/migrate-portal-scripts.mjs. Source appends the shared
@@ -230,6 +281,8 @@ func driverFile(name string, data []byte) string {
 		return "legacy/quest_driver.lua"
 	case strings.HasPrefix(name, "portal/") && bytes.HasPrefix(data, []byte(LegacyPortalMarker)):
 		return "legacy/portal_driver.lua"
+	case strings.HasPrefix(name, "npc/") && bytes.HasPrefix(data, []byte(LegacyNPCMarker)):
+		return "legacy/npc_driver.lua"
 	}
 	return ""
 }
@@ -239,6 +292,7 @@ func embeddedDrivers() map[string][]byte {
 	return map[string][]byte{
 		"legacy/quest_driver.lua":  legacyQuestDriver,
 		"legacy/portal_driver.lua": legacyPortalDriver,
+		"legacy/npc_driver.lua":    legacyNPCDriver,
 	}
 }
 

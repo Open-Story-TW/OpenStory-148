@@ -6,7 +6,7 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-// styleList reads a Lua array of hair or face IDs.
+// styleList reads a Lua array of hair or face IDs, or skin colours (0-13).
 func styleList(v rt.Value) ([]int64, error) {
 	table, ok := v.TryTable()
 	if !ok {
@@ -19,8 +19,8 @@ func styleList(v rt.Value) ([]int64, error) {
 	out := make([]int64, 0, n)
 	for i := int64(1); i <= n; i++ {
 		id, ok := table.Get(rt.IntValue(i)).TryInt()
-		if !ok || id < 20000 || id > 49999 {
-			return nil, errors.New("invalid hair or face id")
+		if !ok || id < 0 || id > 49999 || id > 13 && id < 20000 {
+			return nil, errors.New("invalid hair, face or skin id")
 		}
 		out = append(out, id)
 	}

@@ -84,6 +84,11 @@ type worldScript struct {
 	// pi.openNpc): there is no NPC object, so its context is the map the
 	// character stood on when it opened.
 	remoteMap int
+	// openNPC is the NPC this conversation asked to talk to next (Legacy
+	// cm.openNpc); it opens once this script has ended. chain counts how many
+	// conversations opened one another, so two sources cannot loop forever.
+	openNPC int
+	chain   int
 }
 
 func newScriptWorld() (*scriptWorld, error) {
@@ -173,7 +178,11 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 		name = fmt.Sprintf("npc/%d.lua", npcID)
 	}
 	if _, err := scripts.Source(name); err != nil {
-		s.npcGMNotice(live, sink, npcID, "未處理(伺服器沒有 %s 腳本)", name)
+		if reason, ok := scripts.LegacyNPCPendingReason(npcID); ok {
+			s.npcGMNotice(live, sink, npcID, "未處理(Legacy npc/%d.js 尚未移植: %s)", npcID, reason)
+		} else {
+			s.npcGMNotice(live, sink, npcID, "未處理(伺服器沒有 %s 腳本)", name)
+		}
 		return false, nil
 	}
 	s.cancelNPCScriptState(live, false)
@@ -243,6 +252,12 @@ func (a *worldScript) deliver(event scripting.Event) error {
 			delete(a.server.scripts.active, a.identity.CharacterID)
 		}
 		a.server.scripts.mu.Unlock()
+		if a.openNPC != 0 && a.kind == "npc" && a.chain < 8 {
+			a.live.mu.Lock()
+			channel := a.live.session.ChannelID
+			a.live.mu.Unlock()
+			return a.server.openChainedNPC(context.Background(), channel, a.live, a.sink, a.openNPC, a.chain+1)
+		}
 		return a.sink.WritePacket(protocol.EnableActions())
 	}
 	// Debugger pauses leave this character's script suspended. No server-wide
@@ -337,6 +352,64 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return result(int64(snapshot.Character.Face))
 	case "mesos":
 		return result(snapshot.Character.Mesos)
+	case "name":
+		return result(snapshot.Character.Name)
+	case "message":
+		if len(command.Ints) > 1 || command.Text == "" || len(command.Text) > 512 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		// Every Legacy kind is shown as the type-5 chat notice, as for portals.
+		return scripting.CommandResult{}, a.sink.WritePacket(protocol.PortalTrainingMessage(command.Text))
+	case "stat":
+		c := snapshot.Character
+		stats := map[string]int{"fame": c.Fame, "sp": c.SP, "ap": c.AP, "str": c.STR, "dex": c.DEX, "int": c.INT, "luk": c.LUK,
+			"skill_levels": skillLevels(c), "hp": c.HP, "mp": c.MP, "max_hp": c.MaxHP, "max_mp": c.MaxMP, "skin": c.Skin, "sub_job": c.SubJob, "channel": snapshot.ChannelID}
+		value, ok := stats[command.Text]
+		if !ok || len(command.Ints) != 0 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		return result(int64(value))
+	case "has_equipped":
+		if len(command.Ints) != 1 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		for _, e := range snapshot.Character.Equipment {
+			if e.Slot < 0 && int64(e.ItemID) == command.Ints[0] {
+				return result(true)
+			}
+		}
+		return result(false)
+	case "player_count":
+		if len(command.Ints) != 1 || command.Ints[0] < 0 || command.Ints[0] > 999999999 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		return result(int64(a.server.mapPlayerCount(snapshot.ChannelID, int(command.Ints[0]))))
+	case "monster_count":
+		return result(int64(a.server.mapMonsterCount(snapshot.ChannelID, snapshot.Character.MapID)))
+	case "party":
+		// id 0 means the character is in no party.
+		value := map[string]any{"id": int64(0), "leader": false, "size": int64(0)}
+		if a.server.parties != nil {
+			a.server.parties.mu.Lock()
+			if peer := a.server.parties.peers[snapshot.CharacterID]; peer != nil && peer.party.ID != 0 {
+				value = map[string]any{"id": peer.party.ID, "leader": peer.party.LeaderID == snapshot.CharacterID, "size": int64(len(peer.party.Members))}
+			}
+			a.server.parties.mu.Unlock()
+		}
+		return result(value)
+	case "open_npc":
+		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		a.openNPC = int(command.Ints[0])
+		return scripting.CommandResult{}, nil
+	case "map_message":
+		if len(command.Ints) > 1 || command.Text == "" || len(command.Text) > 512 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		// Legacy mapMessage: the notice line goes to everyone on this map.
+		a.server.broadcastInventoryPacket(snapshot.ChannelID, snapshot.Character.MapID, protocol.PortalTrainingMessage(command.Text))
+		return scripting.CommandResult{}, nil
 	case "item_count":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
 			return scripting.CommandResult{}, domain.ErrInvalidInput
@@ -420,10 +493,25 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		if !ok || command.Exchange == nil {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
-		progress := command.Exchange.EXP != 0 || len(command.Exchange.Quests) > 0
-		if progress && !strings.HasPrefix(command.Script, "quest/") && !scripts.LegacyPortal(command.Script) {
+		growth := command.Exchange.Growth
+		if growth != nil && !scripts.LegacyNPC(command.Script) {
+			return scripting.CommandResult{}, domain.ErrForbidden
+		}
+		if growth != nil && !domain.ValidScriptGrowth(*growth) {
+			// A job or amount the source computed that cannot exist.
+			return result(map[string]any{"ok": false, "reason": "conditions_not_met"})
+		}
+		if growth != nil {
+			// A style the game data lacks cannot be drawn by any client.
+			root := os.Getenv("MAPLEGO_WZ_ROOT")
+			if growth.Hair != 0 && !content.StyleExists(root, growth.Hair) || growth.Face != 0 && !content.StyleExists(root, growth.Face) {
+				return result(map[string]any{"ok": false, "reason": "no_style"})
+			}
+		}
+		progress := command.Exchange.EXP != 0 || len(command.Exchange.Quests) > 0 || growth != nil
+		if progress && !strings.HasPrefix(command.Script, "quest/") && !scripts.LegacyPortal(command.Script) && !scripts.LegacyNPC(command.Script) {
 			// Forced quest status and experience belong to reviewed quest
-			// sources and generated Legacy portal sources.
+			// sources and generated Legacy portal and NPC sources.
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
 		if a.server.tradeActive(a.live) {
@@ -439,7 +527,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		request.Session = snapshot
 		request.OperationID = command.ID
 		value, err := repo.ExecuteScriptExchange(ctx, request)
-		if errors.Is(err, domain.ErrInsufficient) || errors.Is(err, domain.ErrAlreadyExists) {
+		if errors.Is(err, domain.ErrInsufficient) || errors.Is(err, domain.ErrAlreadyExists) || growth != nil && errors.Is(err, domain.ErrForbidden) {
 			return result(map[string]any{"ok": false, "reason": "conditions_not_met"})
 		}
 		if err != nil {
@@ -473,6 +561,11 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 			}
 			if err = a.sink.WritePacket(protocol.UpdateCombatStats(value.Character)); err != nil {
 				return scripting.CommandResult{}, err
+			}
+			if growth != nil {
+				if err = a.publishGrowth(*growth, value); err != nil {
+					return scripting.CommandResult{}, err
+				}
 			}
 			a.live.mu.Lock()
 			current := a.live.session
@@ -518,6 +611,61 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	default:
 		return scripting.CommandResult{}, fmt.Errorf("unsupported Lua host command %q", command.Kind)
 	}
+}
+
+// publishGrowth shows the client what a ScriptGrowth changed. The job, skill
+// points and experience are already in the live character.
+func (a *worldScript) publishGrowth(g domain.ScriptGrowth, value domain.ScriptExchangeResult) error {
+	a.live.mu.Lock()
+	c := &a.live.session.Character
+	if value.Character.Revision == c.Revision {
+		c.Fame, c.Hair, c.Face, c.Skin = value.Character.Fame, value.Character.Hair, value.Character.Face, value.Character.Skin
+		c.SubJob, c.SPBooks = value.Character.SubJob, value.Character.SPBooks
+		c.Skills = value.Character.Skills
+	}
+	current := *c
+	a.live.mu.Unlock()
+	if g.Job != 0 {
+		if err := a.sink.WritePacket(protocol.JobAdvancementStats(current)); err != nil {
+			return err
+		}
+	}
+	if g.Fame != 0 {
+		if err := a.sink.WritePacket(protocol.UpdateFame(current.Fame)); err != nil {
+			return err
+		}
+	}
+	for _, skill := range value.Skills {
+		if err := a.sink.WritePacket(protocol.SkillUpdate(skill)); err != nil {
+			return err
+		}
+	}
+	if g.Skin != nil {
+		if err := a.sink.WritePacket(protocol.UpdateSkin(current.Skin)); err != nil {
+			return err
+		}
+	}
+	if g.Hair != 0 || g.Face != 0 {
+		if err := a.sink.WritePacket(protocol.UpdateLookStats(current, g.Face != 0, g.Hair != 0)); err != nil {
+			return err
+		}
+	}
+	if g.Hair != 0 || g.Face != 0 || g.Skin != nil || g.Job != 0 {
+		a.server.refreshCharacterLook(a.live)
+	}
+	return nil
+}
+
+// skillLevels is Legacy getAllSkillLevels: the skill points the character has
+// spent, leaving out the beginner books.
+func skillLevels(c domain.Character) int {
+	total := 0
+	for _, s := range c.Skills {
+		if book := s.ID / 10000; book%1000 != 0 && book != 1 {
+			total += s.Level
+		}
+	}
+	return total
 }
 
 func (a *worldScript) hasNPCContext(snapshot domain.CharacterSession) bool {

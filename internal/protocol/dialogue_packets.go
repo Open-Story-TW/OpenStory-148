@@ -115,7 +115,8 @@ func NPCPromptSpeaker(npcID int, kind, text string, choices []NPCMenuChoice, bac
 			return nil
 		}
 		for _, choice := range choices {
-			if choice.ID < 20000 || choice.ID > 49999 {
+			// Hair and face IDs, or skin colours 0-13.
+			if choice.ID < 0 || choice.ID > 49999 || choice.ID > 13 && choice.ID < 20000 {
 				return nil
 			}
 		}

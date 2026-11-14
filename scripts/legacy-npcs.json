@@ -1,0 +1,4234 @@
+{
+  "scripts": [
+    {
+      "legacy": "npc/10200.js",
+      "source_sha256": "282c916d77ade6ab460e12ea9637a93e286d649e4fcb0252226ce788f9e0b860",
+      "lua": "npc/10200.lua",
+      "lua_sha256": "cbf195c7e4e4cdf1b2d24768ff23c69c09380e6678d64fd69658c09a6d1279c5"
+    },
+    {
+      "legacy": "npc/10201.js",
+      "source_sha256": "d76ac2eeeb6316aa927e0447d5c09d3c83146708990d19691bf4670acbfa6af9",
+      "lua": "npc/10201.lua",
+      "lua_sha256": "79b462375ce7a68e8380b8dd58410f71f3de186d93c786464567f7ff2a9a67da"
+    },
+    {
+      "legacy": "npc/10202.js",
+      "source_sha256": "fcfc84e2ff5f0995dc7ca0829406a9c26a4166d952694f56abfbb26e28d2cf5f",
+      "lua": "npc/10202.lua",
+      "lua_sha256": "c5944d21dbd900b46465d7309ac293eed5dacc29b62fb64978bdc24795c0566a"
+    },
+    {
+      "legacy": "npc/10203.js",
+      "source_sha256": "2f48943b87652dd1bd32a436f17b518e8065729a2462cb64538ea0d00fa97206",
+      "lua": "npc/10203.lua",
+      "lua_sha256": "9b6da654baaa71c48b7bb5b47ed647dac663b5c978ac1825343690a0d7d06c83"
+    },
+    {
+      "legacy": "npc/10204.js",
+      "source_sha256": "6f5f3d229b2cf07af0684287a2ffc1e9a7e7f27c6f5690b1cf7edc9ef00a2569",
+      "lua": "npc/10204.lua",
+      "lua_sha256": "fdabfe993c2f06f9bbddda03d1770165900fa9b9f3631fe933ed8f5bb1f51562"
+    },
+    {
+      "legacy": "npc/12101.js",
+      "source_sha256": "20ff63cba9dd72703f9c99a42c06443617def373ffc903c37a91354d524586ba",
+      "lua": "npc/12101.lua",
+      "lua_sha256": "9be5af9bd8647b74df29dd7f2de69c5a4781cedf7802d4b388abf9f404fd2bc2"
+    },
+    {
+      "legacy": "npc/1002000.js",
+      "source_sha256": "953fd0954db17319092160a309694992c6524bba13b40449cb075d2d6fdb8f42",
+      "lua": "npc/1002000.lua",
+      "lua_sha256": "133b249704dd0298f13d9ed60542d00c6821cce2154c23cb1ee807746bba5f39"
+    },
+    {
+      "legacy": "npc/1002001.js",
+      "source_sha256": "64204e3ade0ae4d5f2df3853e4c22e876b4afd31576178885ddd34aa9ddd2898",
+      "lua": "npc/1002001.lua",
+      "lua_sha256": "a6df92b060e3cad878409d17b502b83e5b271e88b6961c25ebb83731c49b4e3f"
+    },
+    {
+      "legacy": "npc/1002002.js",
+      "source_sha256": "ac57cca033e9c7a04b5697a3c7b5be4b0d39a7d7dcefaf78364656ce0061ac41",
+      "lua": "npc/1002002.lua",
+      "lua_sha256": "0868c3c8e60932ce2c118d9a65dbc14796fc4af920cede57bf30ab26e0bbd81b"
+    },
+    {
+      "legacy": "npc/1002004.js",
+      "source_sha256": "0a549cfb9450fe40c0634afe1429b862a344c8260ae47395a1cc33fd858748f7",
+      "lua": "npc/1002004.lua",
+      "lua_sha256": "6dbe86b96fd7824348bc948147f89a621808dc5dc12b0c6b90eb7b591af38e26"
+    },
+    {
+      "legacy": "npc/1002100.js",
+      "source_sha256": "58e4c8666a228e3c5b9dc1d5fe3338c8b0bcee4c159528f81f4a5036c70efc59",
+      "lua": "npc/1002100.lua",
+      "lua_sha256": "ceb5a606f94cca6efb4339107f2414ab74dddabf003866e44277cc3221ad0a27"
+    },
+    {
+      "legacy": "npc/1002101.js",
+      "source_sha256": "cef6a342fe71d5705681b163ecbde715893c703183c786d99fef8d60abe32637",
+      "lua": "npc/1002101.lua",
+      "lua_sha256": "38155a6acd715d0359f72ab096a642f37060155b9f5f4edeaa595ed25106cb0b"
+    },
+    {
+      "legacy": "npc/1012000.js",
+      "source_sha256": "1313a000b79665944d806f3325c794ef28394a2fb808841aaf3780bd6d2a67ca",
+      "lua": "npc/1012000.lua",
+      "lua_sha256": "77427ce045b327c14a06bf09054a3a01afaf99ccbc10b0cc6ba505728344b50b"
+    },
+    {
+      "legacy": "npc/1012002.js",
+      "source_sha256": "906e8514e14149775ee148d9dbd101ff2a00b31f1d06a4ef812d7b5b77b6b05c",
+      "lua": "npc/1012002.lua",
+      "lua_sha256": "92b4a42b3720f05ce2f1952501a9f9be93e6b33e63a19e3de365d9b315a0e729"
+    },
+    {
+      "legacy": "npc/1012005.js",
+      "source_sha256": "a18a83fa7c50dff76410b367afd87b13d0fa88620f6b75dfbdcf54bb67573f9a",
+      "lua": "npc/1012005.lua",
+      "lua_sha256": "9c99a27f16e46dbf1ab74e9afb1c7a78fd22ae7dcc730c61ed09dbbaa525d4e6"
+    },
+    {
+      "legacy": "npc/1012006.js",
+      "source_sha256": "ae22660cb4ee1f4cd52caaf3f3a2cee344fe12f047bebfa661d41e48df5efd0a",
+      "lua": "npc/1012006.lua",
+      "lua_sha256": "5f246bf62ba95c1faf64329350767b8dd8813c72dd1d9f0ac47d1f4f90a5fa16"
+    },
+    {
+      "legacy": "npc/1012105.js",
+      "source_sha256": "722b61087589a3ed682e80f293b35efa66f42a734bbfc83dd39be4a62a955295",
+      "lua": "npc/1012105.lua",
+      "lua_sha256": "ab01e99df81b680f72ba1a29760babdb921d3bc7ee8a8c997a6fca2a5340e92a"
+    },
+    {
+      "legacy": "npc/1012115.js",
+      "source_sha256": "622e3cf0d3580cdcf8a921106dce209640ba236efd4cccb74cbb99680badb98d",
+      "lua": "npc/1012115.lua",
+      "lua_sha256": "05e90f7b668a5e373f3e36a9c4335e1af27db16f0673103c3c9c84357bd8906b"
+    },
+    {
+      "legacy": "npc/1012116.js",
+      "source_sha256": "325b5c2adab68a2afd24fbfb286a6650bd12260765bc653ccf6860b69ac87298",
+      "lua": "npc/1012116.lua",
+      "lua_sha256": "780f1312af2053f03962cb7781fdb518beb20c7e59c1df07758008d3974f4831"
+    },
+    {
+      "legacy": "npc/1012118.js",
+      "source_sha256": "96653c0f4e6c806745561a1c52b34cc144cdbfaa2d96af982c208947757cce84",
+      "lua": "npc/1012118.lua",
+      "lua_sha256": "f5c93bbe0402f6cf804d0ff2f82bf03066f1fbf831925fc660bee4a88ac2d5a9"
+    },
+    {
+      "legacy": "npc/1012119.js",
+      "source_sha256": "96653c0f4e6c806745561a1c52b34cc144cdbfaa2d96af982c208947757cce84",
+      "lua": "npc/1012119.lua",
+      "lua_sha256": "fa5d8defbe2e97d11bae36980870854e9a6f333d179c1517b813309c306b603f"
+    },
+    {
+      "legacy": "npc/1013001.js",
+      "source_sha256": "89c94c47d4030d04776512077681f435ba810a9a0c779d3df2f08a247209d2a6",
+      "lua": "npc/1013001.lua",
+      "lua_sha256": "05398448ef79b0fa2f34a74bbd770e4826fd0ef8eafdce2858704c1894915295"
+    },
+    {
+      "legacy": "npc/1013002.js",
+      "source_sha256": "7af0a3fb971eb1144348d40231e67e145cb9a0cfa12bd51c7f84984aadc24043",
+      "lua": "npc/1013002.lua",
+      "lua_sha256": "16181f5ac919757510f971b3e976239aafa76a021ea412e9209825e8d34fcb06"
+    },
+    {
+      "legacy": "npc/1013104.js",
+      "source_sha256": "e53cff0d22882a899fefeab92f1d9653e5af8d180da289fdd70989736b3021f7",
+      "lua": "npc/1013104.lua",
+      "lua_sha256": "021ef1cdf00675b39cc56ffba3ea1249b9e84a4ebebacdcdeca2e29d077ade8a"
+    },
+    {
+      "legacy": "npc/1013200.js",
+      "source_sha256": "a1f26f53204076e7962e2f051c219d68d7fcc43ddb620ad99abed9db43e09e28",
+      "lua": "npc/1013200.lua",
+      "lua_sha256": "6cbb36c2b343b76c9be820b94a40b7efba81f70159b3c6ced252ac83eb5ad8be"
+    },
+    {
+      "legacy": "npc/1013207.js",
+      "source_sha256": "7653d590531a37bfe9b745a7e5184174b6afeda2a5cc8f1589f8eda54b61ea66",
+      "lua": "npc/1013207.lua",
+      "lua_sha256": "b903af66949255c723d0d509a57c92f9e760985b9deb735ca99feb22ac6db173"
+    },
+    {
+      "legacy": "npc/1022001.js",
+      "source_sha256": "1c6ecca5e9b71d4037ef4fd1d10d2506f7742b2fb17dcb88fa1dd3679c53e41a",
+      "lua": "npc/1022001.lua",
+      "lua_sha256": "cbee0e8be9b9e184a9dd41802fe6b0e61dc3850d18a7c615116b8fe752f0f12f"
+    },
+    {
+      "legacy": "npc/1022002.js",
+      "source_sha256": "e62321e4039d245d878d9df73e87551a3227d68f99f78ddc99b4ef5903273a19",
+      "lua": "npc/1022002.lua",
+      "lua_sha256": "48fdc09a55b6e679c3ac43daac9906bf4b9a896963d7ecf7e13b7ab3b91623d6"
+    },
+    {
+      "legacy": "npc/1022003.js",
+      "source_sha256": "9656daed5a36dc88dc0623cece71ab2184491872a9569ad7fd9fc227b634093f",
+      "lua": "npc/1022003.lua",
+      "lua_sha256": "09d030829269f314a75dd0e30b81c39280313835b49cf44b9b8e303ef302624b"
+    },
+    {
+      "legacy": "npc/1022004.js",
+      "source_sha256": "5b2ace81be35432f16e7bde272362f6826abd1c8be33488d8464fbf6d2cc2ca2",
+      "lua": "npc/1022004.lua",
+      "lua_sha256": "901db0b27085eef74b5d38f8b1a44304d0605300b3211422ec4b0f25a8deedd6"
+    },
+    {
+      "legacy": "npc/1022101.js",
+      "source_sha256": "bcf8ede7f4aaf767ffe7d625cd6ecefc2553af377c116beadd3badeb65338ea6",
+      "lua": "npc/1022101.lua",
+      "lua_sha256": "b8fddad46fb04f38bedd8c7acef72d3e8e28c1ae3e8f55e98937e3418ca20196"
+    },
+    {
+      "legacy": "npc/1022103.js",
+      "source_sha256": "290f2db08fe22eb40468ad28c3c80b7a0e96a19a8f89917fe13643094f907e69",
+      "lua": "npc/1022103.lua",
+      "lua_sha256": "4a5fb68e44a52e97b8cddc91217ae81e753edc66050d6b3870c866edba18d0fb"
+    },
+    {
+      "legacy": "npc/1022105.js",
+      "source_sha256": "d382bcf853962e3a7233baf12a2ddaab90311f3a105a0e0780f3f567b651e639",
+      "lua": "npc/1022105.lua",
+      "lua_sha256": "d96bf4a38030c7084f930f3d7d91cab0d63ab7a3ec8e0f06cfe4a3d8c9897c28"
+    },
+    {
+      "legacy": "npc/1022106.js",
+      "source_sha256": "d382bcf853962e3a7233baf12a2ddaab90311f3a105a0e0780f3f567b651e639",
+      "lua": "npc/1022106.lua",
+      "lua_sha256": "05822a7d7da43e56173691343f5b392d1acfeb942946a0af1c9403730fadfbb7"
+    },
+    {
+      "legacy": "npc/1022107.js",
+      "source_sha256": "b8850590b71385db3317d68a3037b1d55003313a260210f53ebcd4590fac0ff8",
+      "lua": "npc/1022107.lua",
+      "lua_sha256": "8d97853a2019a97cadc0576071e32141a4d02f35cfe99c7c5ee0496ea53ace65"
+    },
+    {
+      "legacy": "npc/1032000.js",
+      "source_sha256": "5df6c898889d8b3458dfcfddf02c1068d55cb959426179a6f0fe85c8e8036a31",
+      "lua": "npc/1032000.lua",
+      "lua_sha256": "4650ba7137552e1f571faaa598ba70074e16f4dc5ab76f31864f4c5f952d128e"
+    },
+    {
+      "legacy": "npc/1032002.js",
+      "source_sha256": "ab4ed3d1dc17e6fe748f2f53ed629af14d97a73743696bd56e3f27b3d328cb01",
+      "lua": "npc/1032002.lua",
+      "lua_sha256": "1e5d25ee9f8f05c710c87d7e808fc89f36404e6edf7256e11c7661e4e5a15590"
+    },
+    {
+      "legacy": "npc/1032003.js",
+      "source_sha256": "31c27873f7b807de6871bde41914435b7d3d3beaf12311ae72e63dd5118fa34e",
+      "lua": "npc/1032003.lua",
+      "lua_sha256": "3530e06eb8065123c10f059ce60bf713f919192202bb36ff79393c06d407553e"
+    },
+    {
+      "legacy": "npc/1032004.js",
+      "source_sha256": "e8cf97ef93e32ce676f404109bbf16b5c02a9956044219681dead22c9deac67c",
+      "lua": "npc/1032004.lua",
+      "lua_sha256": "a4e45dd2bffe5a4538076907e01f5afa69b12ee1d5e5737e5cef30decae91b12"
+    },
+    {
+      "legacy": "npc/1032005.js",
+      "source_sha256": "c7c30a74cd1cb672d0396b8bb3d3028d419d5a8c68c6409992000ce7485e463a",
+      "lua": "npc/1032005.lua",
+      "lua_sha256": "91a92c577a09a86b1df4df37b707d2bc9dd7223cbe2738706c80f6edf8242e7e"
+    },
+    {
+      "legacy": "npc/1032007.js",
+      "source_sha256": "889dfc13996927253d9c7593daed00f217bd25da51284e6e03728e42e631d8c3",
+      "lua": "npc/1032007.lua",
+      "lua_sha256": "892028f2d6fda3e0b660c1f2f04b11d82696c54672396ccd267dd74fe6caa07b"
+    },
+    {
+      "legacy": "npc/1032009.js",
+      "source_sha256": "3ff48e986f748e67392a9d9040a0174ccb5badcb2f1fd212cdb7283c89be2e4f",
+      "lua": "npc/1032009.lua",
+      "lua_sha256": "c2ecdabf2da9d87c3cf7f03ff0ffcc8f9bb2c129345b520fad2ec7592d410b91"
+    },
+    {
+      "legacy": "npc/1032100.js",
+      "source_sha256": "ae4c0af012b824a4adb8da151de69e1490374dba8fa8be9b6fbea8bed2875f02",
+      "lua": "npc/1032100.lua",
+      "lua_sha256": "06a5b010351fe5c3427829a47b65a01da998a6da3f4f68bdbf5d7f13eea6952e"
+    },
+    {
+      "legacy": "npc/1032113.js",
+      "source_sha256": "07295cfe4eefc7e47d36349cc555a17eae5c198dde492bd1c09a679d8f7f4d42",
+      "lua": "npc/1032113.lua",
+      "lua_sha256": "4008bfc26f51c76d15e0f8104c0225c7a61c9bc0d5499af37d7ca014fa68447f"
+    },
+    {
+      "legacy": "npc/1032114.js",
+      "source_sha256": "07295cfe4eefc7e47d36349cc555a17eae5c198dde492bd1c09a679d8f7f4d42",
+      "lua": "npc/1032114.lua",
+      "lua_sha256": "e6e37532fd7b9116cee681dda7c658b1f5ce2444c4439838caedfcdc06b4bc27"
+    },
+    {
+      "legacy": "npc/1033001.js",
+      "source_sha256": "a2fbe2865d194559d40f33134a9d0adb1466f839b05bd9db4cb67e93d36789dc",
+      "lua": "npc/1033001.lua",
+      "lua_sha256": "8c594ab23c6c80f5e122d6a7e377ea49b2c537415a7730b4b85b15620631d973"
+    },
+    {
+      "legacy": "npc/1033103.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033103.lua",
+      "lua_sha256": "1ff48b1b3e4894d3529730d01faab34692652452df446ca960b12d22c0fe76ab"
+    },
+    {
+      "legacy": "npc/1033104.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033104.lua",
+      "lua_sha256": "0284890740afb0b35b2e5254c1cf45e078974555cf823bf9bd10fc0cba7e1679"
+    },
+    {
+      "legacy": "npc/1033105.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033105.lua",
+      "lua_sha256": "268c71504c9dc417a5e9f9a1a9d8a32b59e7910b9effc70582f5b4a931301d25"
+    },
+    {
+      "legacy": "npc/1033106.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033106.lua",
+      "lua_sha256": "c6a7d2e9976ebb50be7fdf7686e479869668a1c2ceeb6121419d9d31c1409f9f"
+    },
+    {
+      "legacy": "npc/1033110.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033110.lua",
+      "lua_sha256": "eb90c36eebbf5a8c708cbf61ee80c3ca521b62be1a5da435d29e7f149794a7cd"
+    },
+    {
+      "legacy": "npc/1033112.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033112.lua",
+      "lua_sha256": "74df57494930f8d4f4f8dc9c5e89e6b6c8c000f450ba514cc66e2731003eec06"
+    },
+    {
+      "legacy": "npc/1033200.js",
+      "source_sha256": "2b1463a7aaef043333ead1b3610f2cfb83f4973e7a2cb3c2407913c3bb944887",
+      "lua": "npc/1033200.lua",
+      "lua_sha256": "584e00ec83e66c36387a7c8056e117f0e8187437eaaca8eaafe3bbe43cabdb19"
+    },
+    {
+      "legacy": "npc/1033201.js",
+      "source_sha256": "74c1e610b95c2ac3fef5f5426e4890fbdbf50e14cb3545098d14a4c5418e6462",
+      "lua": "npc/1033201.lua",
+      "lua_sha256": "d27dd69f1f4711a81fd358301cd80dc31d271f890245004c26a956cbfc8770de"
+    },
+    {
+      "legacy": "npc/1033202.js",
+      "source_sha256": "c53144078aec34753063e0cbf5419b8bd8c903ea9c828820a43878dd2c5fb3f8",
+      "lua": "npc/1033202.lua",
+      "lua_sha256": "20e647624c026037c19190d8c98be86121bf79e6c72434f69c3ca13ccad8447f"
+    },
+    {
+      "legacy": "npc/1033206.js",
+      "source_sha256": "51b7b0aa095f3d94af59e71538b53c78804959872f48e61124be8dc5443572b9",
+      "lua": "npc/1033206.lua",
+      "lua_sha256": "214579f4e1ff0e1dfc7f398c2e506c10b9268333c0b12fd064f1f9a9fbaed1ca"
+    },
+    {
+      "legacy": "npc/1040000.js",
+      "source_sha256": "aca74b60dbbb3749fbb9a104689d35f38ea421aebf3dbe08e6ccc72a01eee48d",
+      "lua": "npc/1040000.lua",
+      "lua_sha256": "d36b7b0aade421ee55f154e9d97e0d30a81a15c7c897cfa2b47e7a27f9b98468"
+    },
+    {
+      "legacy": "npc/1040001.js",
+      "source_sha256": "aca74b60dbbb3749fbb9a104689d35f38ea421aebf3dbe08e6ccc72a01eee48d",
+      "lua": "npc/1040001.lua",
+      "lua_sha256": "2b5599fc7ea2793a8339ddd4cdb065525b6379cf28964b504aeaa167e330865d"
+    },
+    {
+      "legacy": "npc/1043002.js",
+      "source_sha256": "556113dc30f5780e2e74392ee3c1f4bf39a15209cfcaa99a0d57c8ba9bfc7916",
+      "lua": "npc/1043002.lua",
+      "lua_sha256": "ad48094afaf68ddb8a043bf26245908bc0b35be9b9d6e197c61791313516cfed"
+    },
+    {
+      "legacy": "npc/1043003.js",
+      "source_sha256": "556113dc30f5780e2e74392ee3c1f4bf39a15209cfcaa99a0d57c8ba9bfc7916",
+      "lua": "npc/1043003.lua",
+      "lua_sha256": "0c027773ec59a7d7ae30cbb0aeb9afbb6057317a51263edc35a30129541c2ba8"
+    },
+    {
+      "legacy": "npc/1052002.js",
+      "source_sha256": "9aa04282b2d2c80ceae2f903284363dc28b76296e09ed2c2812387c737f8666d",
+      "lua": "npc/1052002.lua",
+      "lua_sha256": "96e05103f3b0e66b8f03376353830c36d00a11899eb2ad85bf32424fa3841d8e"
+    },
+    {
+      "legacy": "npc/1052003.js",
+      "source_sha256": "5c2a38b3a19033612548f38618dc7b411880127946c30490000e4f05358bb2ce",
+      "lua": "npc/1052003.lua",
+      "lua_sha256": "c4ab29abbb18034020f308a90730ae901869ee9f1d00c865b683e901ef719cd9"
+    },
+    {
+      "legacy": "npc/1052004.js",
+      "source_sha256": "aedcd04bbf3ae74fe2d7455735379ebe1d3d23745fa510b54f058cb84e804913",
+      "lua": "npc/1052004.lua",
+      "lua_sha256": "34ec55d33b78be47162cbc8c0e116972d533f10f5bd4eb4a6600144b9bc7e8d0"
+    },
+    {
+      "legacy": "npc/1052005.js",
+      "source_sha256": "4ecea20c4a7f035ff584f4811f8f152aa03cbaf12c00c25fa0c8581118b580cd",
+      "lua": "npc/1052005.lua",
+      "lua_sha256": "d6503085ec6438f9c1afddb2c3d4d7b24e8dada7746011f0b7b65b25ced8bd05"
+    },
+    {
+      "legacy": "npc/1052006.js",
+      "source_sha256": "61660c3f5ed994b9cf694aa0a83a669449385fa7cbcd1ebff97a39357852b977",
+      "lua": "npc/1052006.lua",
+      "lua_sha256": "a6a9159c9ccaa02177fe930852937caaa40b363e2394f11cd45f87ca483b42e5"
+    },
+    {
+      "legacy": "npc/1052008.js",
+      "source_sha256": "11728b0715cc9fa7823adaebc4ee8dbf632a42c3fddbb954dbd907cb3268d065",
+      "lua": "npc/1052008.lua",
+      "lua_sha256": "1873132813982a77d1d4d597a763ca834e7fab52a29e21c0594bfb0a06d6152b"
+    },
+    {
+      "legacy": "npc/1052009.js",
+      "source_sha256": "fea2b3bbf80b692f0a0a1b2904e5c44b6b8f810ed01954e0ba5d5186199fdbff",
+      "lua": "npc/1052009.lua",
+      "lua_sha256": "8a211ca00ea961d2a8692f0cc97d1ad73c3efa4262ee38fb35f008263d8cff65"
+    },
+    {
+      "legacy": "npc/1052010.js",
+      "source_sha256": "5dbe97e5e849825ae8f97e51cb2d3aed825c40fde0adf59696eb986b8084c4c5",
+      "lua": "npc/1052010.lua",
+      "lua_sha256": "e833f80341f5e1370fbcb602e932652e474fd0046cdc19869f406fe0d9cc1437"
+    },
+    {
+      "legacy": "npc/1052011.js",
+      "source_sha256": "f9d4490d9759a13b7ef33654c8e47dffb78fbc62c41bd4f07dc272d9675d3f88",
+      "lua": "npc/1052011.lua",
+      "lua_sha256": "932b1d89301615a2eec855e582d7494e08baf22408735dee94851a696e3c7f0b"
+    },
+    {
+      "legacy": "npc/1052012.js",
+      "source_sha256": "3a58e356d30826b5b28a435b49142f952c03dfbc422be77641d156a4214cc074",
+      "lua": "npc/1052012.lua",
+      "lua_sha256": "8c89a002ad922869c560cf721716745270af02ae82988654d0501f1267fd0dc0"
+    },
+    {
+      "legacy": "npc/1052013.js",
+      "source_sha256": "d0185d5e261a84eb8d6900fc2cbe16ebd4fd2ec4aa84cd1e0cec0636b352e331",
+      "lua": "npc/1052013.lua",
+      "lua_sha256": "a1b1cf27dd0328268e18dee7c42a6acf689a082401682c9a4f6f099b5db8ecc1"
+    },
+    {
+      "legacy": "npc/1052014.js",
+      "source_sha256": "94f8ded9293edb26820d16cdd48a50a51cd1a04ade81a40ef4d8f6a728c10cd8",
+      "lua": "npc/1052014.lua",
+      "lua_sha256": "c4d96ff8f711b08c7e27c5bb7c8451c11a25d343ec1f04dde2b842ed6b07cbcd"
+    },
+    {
+      "legacy": "npc/1052016.js",
+      "source_sha256": "c923e87e463d1416dc637a2883a118019fa85248fb66faa7a1ccda343bf5509c",
+      "lua": "npc/1052016.lua",
+      "lua_sha256": "0a42c548035996bd8f26f44e0235e6e451763e754a74bf0ec79f41862e7795cb"
+    },
+    {
+      "legacy": "npc/1052100.js",
+      "source_sha256": "ca46f4f4648c9ea03b8432aeea841ceb1ebe7c9c54604ba7ac9e070d48f0060d",
+      "lua": "npc/1052100.lua",
+      "lua_sha256": "b35ff045c2dc8c7b4b6e37da441122d7e7d079ecf7e664b2671367476c145fb4"
+    },
+    {
+      "legacy": "npc/1052101.js",
+      "source_sha256": "2cc76d70082d3336cf00f4c29fd9685968f0bc7186eb893c620b203f80e86ef2",
+      "lua": "npc/1052101.lua",
+      "lua_sha256": "f13e88c71c3633839844d19e45ed0b3a3f023593e690bd6235dc02dd414266e9"
+    },
+    {
+      "legacy": "npc/1052104.js",
+      "source_sha256": "3bc21d4c4e51818c8d7e228514606bce035821fc801453f4beca7e481c211272",
+      "lua": "npc/1052104.lua",
+      "lua_sha256": "3942802c605e9eede6e9b993eee53d9a392ace18d399101342e97fb00cf33805"
+    },
+    {
+      "legacy": "npc/1052113.js",
+      "source_sha256": "1de9886b10f91e88ac135699ed2077a9c3cb90cbb69b4b5eca922493e5368ac4",
+      "lua": "npc/1052113.lua",
+      "lua_sha256": "510e735553979c4d116c16f3c96ec6fb26e9b6fdb7f3c5728cf9012d5ccdd71d"
+    },
+    {
+      "legacy": "npc/1052114.js",
+      "source_sha256": "1de9886b10f91e88ac135699ed2077a9c3cb90cbb69b4b5eca922493e5368ac4",
+      "lua": "npc/1052114.lua",
+      "lua_sha256": "07a1fee77d089adc999c856559f60b7ab4691cb5ab5e03df3b1fd14edd018eee"
+    },
+    {
+      "legacy": "npc/1057001.js",
+      "source_sha256": "d46d4550ae26ba19f19069e0529f375d863918a3a96485e8aa576599937d543f",
+      "lua": "npc/1057001.lua",
+      "lua_sha256": "d5ad6c5e28788687bba296c09839ff684886b4f83772fb39c76a2903abadc449"
+    },
+    {
+      "legacy": "npc/1061000.js",
+      "source_sha256": "afe025efec0c3a0b01c2da9832651a7e454ba1150db122ea1da974f5cac84b81",
+      "lua": "npc/1061000.lua",
+      "lua_sha256": "b790b04a45524723755c4c92ec05c3fb58ca727cd49d762aa92973af22f19728"
+    },
+    {
+      "legacy": "npc/1061006.js",
+      "source_sha256": "772ea4e2d1f4611c788a7728bcc576ff76ee7b4d6a017b39803a89563dfc3a17",
+      "lua": "npc/1061006.lua",
+      "lua_sha256": "8815cd4ab6db7a344182001def72932f17332720c9f0a1e3c5b72d54a9d2914b"
+    },
+    {
+      "legacy": "npc/1061007.js",
+      "source_sha256": "8aa08753b184afe1fcaf66ce6c49ee29229e2508d71561062bdc9d2c7ab0cf0d",
+      "lua": "npc/1061007.lua",
+      "lua_sha256": "07b4a3522a1f635b519c0322cba911c7e10536ff422c39cbd5ad86740b9be82d"
+    },
+    {
+      "legacy": "npc/1061008.js",
+      "source_sha256": "d65a6f44671db3041a9667c129e0b29877af3942eed5c07835ec61bf89f47dfd",
+      "lua": "npc/1061008.lua",
+      "lua_sha256": "1b26406c973d6d9949a2a9590df1aafe29ac091f9d1b393adfca484a33534861"
+    },
+    {
+      "legacy": "npc/1061010.js",
+      "source_sha256": "cd210cd9a273a5a431c255b80fff79f32de3f50c7df76cde352c0420a06a826e",
+      "lua": "npc/1061010.lua",
+      "lua_sha256": "1085703d069a428859cba66dd06a1d79a97ab6be973eb7100c5052b344dbb328"
+    },
+    {
+      "legacy": "npc/1061016.js",
+      "source_sha256": "5fee6d2bf958b268903db971ec17c83bd22313b359d2ba003a3ecb0e3fdd0c66",
+      "lua": "npc/1061016.lua",
+      "lua_sha256": "3371bf817b4b769a6e6fd38cb0ce831b7166c32875d227dafe45c0e44e31fe4c"
+    },
+    {
+      "legacy": "npc/1061018.js",
+      "source_sha256": "ef432572d06152efefd12d581f4f585b33eeec70870ea71ad4a0a1e5ef306a9a",
+      "lua": "npc/1061018.lua",
+      "lua_sha256": "6124531cfb64a09e9f04cbc5a360da2077745f1c9d28c208d3c1d336171fa09c"
+    },
+    {
+      "legacy": "npc/1061100.js",
+      "source_sha256": "8ec6f990a79b67d76bc437676c498118dd36ba90d0a800a091826137b2c5bc2b",
+      "lua": "npc/1061100.lua",
+      "lua_sha256": "1739177eebe62aeb65e534e06e5e5225e84918d3dbb2a25d71fb09bf5319df16"
+    },
+    {
+      "legacy": "npc/1063001.js",
+      "source_sha256": "e8f37dfe5198bd02250b99971497cb715b90b29735a4acdd70580ce7b713b88b",
+      "lua": "npc/1063001.lua",
+      "lua_sha256": "48cef35bcf46485e300d5c33c5b1ff1bf6e78036c4b29f97734aca8bce36f766"
+    },
+    {
+      "legacy": "npc/1063002.js",
+      "source_sha256": "700da9a66e3ff5fb2a1630e43129ed1c0d7771fcd8bb50e2af38429d3fb842dd",
+      "lua": "npc/1063002.lua",
+      "lua_sha256": "a384e82c011bbf8145feda0128a37537fa69d11af4b10e585431fabbc3e472a8"
+    },
+    {
+      "legacy": "npc/1063012.js",
+      "source_sha256": "b4aededff780729faabf5e1631436e0b2f62b5ad19b9ab9281d72da6327038f2",
+      "lua": "npc/1063012.lua",
+      "lua_sha256": "db414ea939f2e0106a030475166c2b769ef022b5de7945c002b64eb7453404f2"
+    },
+    {
+      "legacy": "npc/1063013.js",
+      "source_sha256": "b4aededff780729faabf5e1631436e0b2f62b5ad19b9ab9281d72da6327038f2",
+      "lua": "npc/1063013.lua",
+      "lua_sha256": "eee4e0736b2cd93f923302579f855d517f139d6d08d3925ff5581e478d7dc71f"
+    },
+    {
+      "legacy": "npc/1072000.js",
+      "source_sha256": "34699863e6b2fbca292a81152f7b73f7be8687d280670dc15bb10984e6e2c8e5",
+      "lua": "npc/1072000.lua",
+      "lua_sha256": "47170b996c0f8b3a5cf7877f7e048f902c0361da564df981cb42da60e956a01b"
+    },
+    {
+      "legacy": "npc/1072001.js",
+      "source_sha256": "0d7581bcdc5cdfa9bb348fad350ee1716e4b6cc35ff423c9d8b77730e6d352f2",
+      "lua": "npc/1072001.lua",
+      "lua_sha256": "74038fe69eea0fe243579459145edd9bb3fe2d0785bfce720696b3a921563b12"
+    },
+    {
+      "legacy": "npc/1072002.js",
+      "source_sha256": "da196e87a67dc55dcc963a833385664e714753a5c86f4e36e48c29ce8821e068",
+      "lua": "npc/1072002.lua",
+      "lua_sha256": "90330e05da8785101c17b7f457170d0e0973c6526fc791ee5fb8fefdfd713b5a"
+    },
+    {
+      "legacy": "npc/1072004.js",
+      "source_sha256": "aacb6b79969aa90289062e452df945c2a7df0ef783307afae74afe1f362c6ac1",
+      "lua": "npc/1072004.lua",
+      "lua_sha256": "b027c88ed8afb9d273b62b0678fb266b0fff5ee5c5a00bfebb5b95998c2ff242"
+    },
+    {
+      "legacy": "npc/1072005.js",
+      "source_sha256": "0ef0643ce354011a5b87ee97194b30ddce48a285d4df5e92f1edb46af5f6df7d",
+      "lua": "npc/1072005.lua",
+      "lua_sha256": "dfc27aa256e3deb17114b35fca2c173ef833696bbe50e3fd0f6d62fe74c6d37a"
+    },
+    {
+      "legacy": "npc/1072006.js",
+      "source_sha256": "0e3c71a54368cb5683ee3fcef5a27585b1fa9dc3c12362b88d6922e1cff84852",
+      "lua": "npc/1072006.lua",
+      "lua_sha256": "e33dee823060ee12115db9d7c834a47dbffdaa5a1aab22a2a0965c95c316c4a3"
+    },
+    {
+      "legacy": "npc/1072007.js",
+      "source_sha256": "8dc779f38be8afbf539bc9e071110ec334a55286f8745ed6b7fd7c8c03ebe0ba",
+      "lua": "npc/1072007.lua",
+      "lua_sha256": "3f91494b4122d9fb7909089fa8b6c302b01252096c1108393acc186e54ed68dc"
+    },
+    {
+      "legacy": "npc/1072008.js",
+      "source_sha256": "be70f43b03e011bbe884b798d291ba9355a0b7e4f65cd5db46a4e25e8adb6835",
+      "lua": "npc/1072008.lua",
+      "lua_sha256": "59e7dd79d68b433b87cb6ebad8d596d4d43e7542a7dde3e745dd54c8ba1aa0a9"
+    },
+    {
+      "legacy": "npc/1081001.js",
+      "source_sha256": "721ac0431fe0f21c7261da1b2ae07ccd88cec729917966195d726ec85a7ec128",
+      "lua": "npc/1081001.lua",
+      "lua_sha256": "4c1b4b48758d4ee78d61d4ba3f0033e9d310fdc530802005c22a7c540a0f735b"
+    },
+    {
+      "legacy": "npc/1091003.js",
+      "source_sha256": "0bd2bc8de612babb31ebe5324611bb27f88e9db4236835f04f8697473f8fcba8",
+      "lua": "npc/1091003.lua",
+      "lua_sha256": "5951f9267d8c5c3c9ddf61d9c7e1b863feeda48ac9855be09b3aaf1e60392e8a"
+    },
+    {
+      "legacy": "npc/1092000.js",
+      "source_sha256": "09c7a833b1645f5d301e6c10197d27af5f3e558d5e80f4d68095c54c14030992",
+      "lua": "npc/1092000.lua",
+      "lua_sha256": "f21578fd1ac9b276e27507c605e28d0818cd428a58378ade23252dc2df5afceb"
+    },
+    {
+      "legacy": "npc/1092004.js",
+      "source_sha256": "9411d227e633bae12b1b1988dc4826fd011626068695d58a90e7c98856b3013e",
+      "lua": "npc/1092004.lua",
+      "lua_sha256": "06c791fe7a21b7172d045ccbecdf4a67ad7eb31bf8751a6c711a3022a9d60752"
+    },
+    {
+      "legacy": "npc/1092007.js",
+      "source_sha256": "4a544e4f015d89f5d4cc15510b085318ec64c8a7c5854fb20636c2f117f99e14",
+      "lua": "npc/1092007.lua",
+      "lua_sha256": "4b07bb6a64dd6b03a09e6fafc7843dba5f7b58af9a2749b966790f48d16bbe8d"
+    },
+    {
+      "legacy": "npc/1092008.js",
+      "source_sha256": "b6d747b630c58efba5f23d26e6e07908343a37df1b37be46f5e126988b4a0a10",
+      "lua": "npc/1092008.lua",
+      "lua_sha256": "786d698a7ebe883669c76f6dc0460a4509df82e4c0016e39d95d536546798b87"
+    },
+    {
+      "legacy": "npc/1092010.js",
+      "source_sha256": "d78d9492eb8cc0c89bb6baf2c7f213c496fdebddb318b6a918399af65cbd36a8",
+      "lua": "npc/1092010.lua",
+      "lua_sha256": "266068f5b9e398bd9e2a8a8d66e25822b496ef70be2d1a921d814b521df6bc8b"
+    },
+    {
+      "legacy": "npc/1092014.js",
+      "source_sha256": "617b041aab73ede77ba5e3bf0787a71a11071ac4bb7927912ce644227a2be473",
+      "lua": "npc/1092014.lua",
+      "lua_sha256": "17381c57bf049ef04fc79cc8cc7614a7cfc5bac9ad71b70265ab7bf2d7d2ce7f"
+    },
+    {
+      "legacy": "npc/1092016.js",
+      "source_sha256": "a8d707cdf27527a9dc29faae491e3c3cff0b99408863f21425ef13a03f707c3d",
+      "lua": "npc/1092016.lua",
+      "lua_sha256": "dfe8e4eb680af954fa2f073c74d46204526356eaf6f8fd82895c5d474603b0e3"
+    },
+    {
+      "legacy": "npc/1092018.js",
+      "source_sha256": "dddf02b650ed013086e42bf8e8112c957caa27619abe4bf7926d5ddef51afa48",
+      "lua": "npc/1092018.lua",
+      "lua_sha256": "22cdbd7ccabee041ccbdf9ccf2a105f8d8c86c4b7e15d8e8f0b0c8dba3b4ec62"
+    },
+    {
+      "legacy": "npc/1092019.js",
+      "source_sha256": "f36d3ea0bc4a064575d1153d291eface72f5370d94223babed1eba12d78928ac",
+      "lua": "npc/1092019.lua",
+      "lua_sha256": "e16f851b4b5e0c93dc406315b0111167fd0ec2ffe3cdd6b08115eb866330996f"
+    },
+    {
+      "legacy": "npc/1092090.js",
+      "source_sha256": "73c5944708faad4881777f928b9dc8bc7b45de75eee5894e7245a3b352789b77",
+      "lua": "npc/1092090.lua",
+      "lua_sha256": "b2b8dd5f47b73dc3eb2a7a6b174321a185950e85c53ff72a510fce3253bcceb8"
+    },
+    {
+      "legacy": "npc/1092091.js",
+      "source_sha256": "73c5944708faad4881777f928b9dc8bc7b45de75eee5894e7245a3b352789b77",
+      "lua": "npc/1092091.lua",
+      "lua_sha256": "39f2ed14ed0b6ce8dadf3eaff608a08d71817a4fabaea446d7622d6a61a223cc"
+    },
+    {
+      "legacy": "npc/1092092.js",
+      "source_sha256": "73c5944708faad4881777f928b9dc8bc7b45de75eee5894e7245a3b352789b77",
+      "lua": "npc/1092092.lua",
+      "lua_sha256": "cf7a7848fa67a3b7e170a78c314784b9ffe7f4d47bafdcb82e7fd76d82905a0e"
+    },
+    {
+      "legacy": "npc/1092093.js",
+      "source_sha256": "73c5944708faad4881777f928b9dc8bc7b45de75eee5894e7245a3b352789b77",
+      "lua": "npc/1092093.lua",
+      "lua_sha256": "d6f1d38362c556ff5ce9bd5375582498b686920cb3e23b56b0a4d7fe5e93accd"
+    },
+    {
+      "legacy": "npc/1092094.js",
+      "source_sha256": "73c5944708faad4881777f928b9dc8bc7b45de75eee5894e7245a3b352789b77",
+      "lua": "npc/1092094.lua",
+      "lua_sha256": "79413b04ada7b3649fbc51323794396eef786b5d7383cdeb7f68c301d15b822b"
+    },
+    {
+      "legacy": "npc/1092095.js",
+      "source_sha256": "73c5944708faad4881777f928b9dc8bc7b45de75eee5894e7245a3b352789b77",
+      "lua": "npc/1092095.lua",
+      "lua_sha256": "251c8be17b02241efc36485aac096c16d63373bb32f622db982d29ab60be670c"
+    },
+    {
+      "legacy": "npc/1094000.js",
+      "source_sha256": "3b9b5b6a2cf0db9941467123a29dfd50aec952911dae78f11367c50ed0fc2a57",
+      "lua": "npc/1094000.lua",
+      "lua_sha256": "7d02431a1881c2560e3b124d96eaea4e886a777ff65fa98c31f6ddad69fbf982"
+    },
+    {
+      "legacy": "npc/1094002.js",
+      "source_sha256": "e41d95b3cb3238dda24b67fe6b7e8a1b1b5528e561ad899b5a6b85bac996de31",
+      "lua": "npc/1094002.lua",
+      "lua_sha256": "b7589dc9d0ce63cf67dc25d940fc680df70a55597e1b4a4c14cef6e150cae0e7"
+    },
+    {
+      "legacy": "npc/1094003.js",
+      "source_sha256": "83d37933eb170689adcac84764c7314c4c68cc7e8a89a8e65f4b593b742f5e21",
+      "lua": "npc/1094003.lua",
+      "lua_sha256": "dadb3d53cf52755a505040950a02079b4935200cc46fa4d99ed962372fec7e8f"
+    },
+    {
+      "legacy": "npc/1094004.js",
+      "source_sha256": "e41d95b3cb3238dda24b67fe6b7e8a1b1b5528e561ad899b5a6b85bac996de31",
+      "lua": "npc/1094004.lua",
+      "lua_sha256": "1b3e839a41ccd50c8073e16d993f09e31db01b903e4bb3ec99b1166cfde02787"
+    },
+    {
+      "legacy": "npc/1094005.js",
+      "source_sha256": "e41d95b3cb3238dda24b67fe6b7e8a1b1b5528e561ad899b5a6b85bac996de31",
+      "lua": "npc/1094005.lua",
+      "lua_sha256": "fc98dd84da7d47f022a438748b895301cf4848bb4a62dcb95efb921aebe1dc88"
+    },
+    {
+      "legacy": "npc/1094006.js",
+      "source_sha256": "e41d95b3cb3238dda24b67fe6b7e8a1b1b5528e561ad899b5a6b85bac996de31",
+      "lua": "npc/1094006.lua",
+      "lua_sha256": "c97fdf2a13c0bf5d62908d1ad5312aa181a4074391edacf848c0d66ade931072"
+    },
+    {
+      "legacy": "npc/1095000.js",
+      "source_sha256": "aaca95ea042ab529c8b700ed73c3641cbb10599b64fc28a930c3dc7c1729a15c",
+      "lua": "npc/1095000.lua",
+      "lua_sha256": "b10282e693845e9d9d450a0084761b47b8355f7f1680075f7327f9c85ef60756"
+    },
+    {
+      "legacy": "npc/1095001.js",
+      "source_sha256": "cf2500dcdeb7ea6bcf342869e8cf2d0d5f60523c9f6c6dc59db6102c9d240159",
+      "lua": "npc/1095001.lua",
+      "lua_sha256": "f5ed7d3cdd1b90b5a029a09cb7096d4b46827df17f5a196de4cbb0ace1490757"
+    },
+    {
+      "legacy": "npc/1095002.js",
+      "source_sha256": "cf2500dcdeb7ea6bcf342869e8cf2d0d5f60523c9f6c6dc59db6102c9d240159",
+      "lua": "npc/1095002.lua",
+      "lua_sha256": "dce353c0f2ecedaa27786b730f0cb9a8e6531a0ad6e4a45029c4225bf79439c2"
+    },
+    {
+      "legacy": "npc/1096001.js",
+      "source_sha256": "999167bcbdff8ce7740b6ce235e5dc393c96b3227028b1d72d19d0c81cf415ee",
+      "lua": "npc/1096001.lua",
+      "lua_sha256": "2a2eaef2d0479809d616a30cbeec1a67a2ecea0d5259e217b6669f07c8e8e369"
+    },
+    {
+      "legacy": "npc/1096003.js",
+      "source_sha256": "ce8708ac8f2226c98a62fe8d8f12671a87dcbc1cbb7afce2318e6775dcbdfc52",
+      "lua": "npc/1096003.lua",
+      "lua_sha256": "295ddfbb29a58d0aa2b3e382446d6d0ce652babb84a635755901596a32213c69"
+    },
+    {
+      "legacy": "npc/1096010.js",
+      "source_sha256": "1fdd8f25e6a120a5d4c74f4c404b1084947451e43e8f343771afa8ccf2d7b74e",
+      "lua": "npc/1096010.lua",
+      "lua_sha256": "7e4b3109d20d97042040e7c88eb93be06d650004f36807b9e87880d7c161417c"
+    },
+    {
+      "legacy": "npc/1100005.js",
+      "source_sha256": "224b07c515c815d1086d1ddfe6e455fdffd9f517af8d2595d828d4c760392319",
+      "lua": "npc/1100005.lua",
+      "lua_sha256": "d5ef529468286c3a734151b0fec4587fae7f957a562b0743828b9d869cb1c0c4"
+    },
+    {
+      "legacy": "npc/1101008.js",
+      "source_sha256": "0c0a7c4285d1967c74470c3169459b665021475237ac0b80167c2dcf0958b65f",
+      "lua": "npc/1101008.lua",
+      "lua_sha256": "314e35ad3ea7afe2fb15a676a6d820e580e0b35328c6cb191985c23606476b1e"
+    },
+    {
+      "legacy": "npc/1102001.js",
+      "source_sha256": "fa3dabf58d9a6c7d415d8fa3b2b8a24dbcb6e2a4a866bc2018db92935c1460f4",
+      "lua": "npc/1102001.lua",
+      "lua_sha256": "7c50fdc7c1369ec0498b38adc6afa3b176ea03fac192406b9f7fcc6d614b1462"
+    },
+    {
+      "legacy": "npc/1103000.js",
+      "source_sha256": "c93c76a88a596855a81a109c7672a3eb25458db3707323e814d82e0b85fadd02",
+      "lua": "npc/1103000.lua",
+      "lua_sha256": "79d7dc66f504b134e4ed31201bd0284eb2382504d2c553965b67034fba6f90c6"
+    },
+    {
+      "legacy": "npc/1103005.js",
+      "source_sha256": "5390b5e53b4789f65d0ab86df4a388c7af2205f289533601f1b0e59ab971011e",
+      "lua": "npc/1103005.lua",
+      "lua_sha256": "e94ad84f8ed5203e5c260c30f843042a6981e55729b19f0326cc30a93ad10674"
+    },
+    {
+      "legacy": "npc/1200003.js",
+      "source_sha256": "ac5a0583dc9aeea8cc61806df98c9acc9082f98086f23e929e256aa2f42d080f",
+      "lua": "npc/1200003.lua",
+      "lua_sha256": "4fcbe33cdb6cb9f07c23f692d4125577b90c3974a2a2543827b24887cfadaed6"
+    },
+    {
+      "legacy": "npc/1200004.js",
+      "source_sha256": "c8987f6a44fd8877e59ca446c79ece00b3c82771715edcca5e893092c01ae258",
+      "lua": "npc/1200004.lua",
+      "lua_sha256": "64a3750f1bd1b32e634b7611089ed8fb04871be8a2efa6884036a38cfef31cc9"
+    },
+    {
+      "legacy": "npc/1202000.js",
+      "source_sha256": "6d09be2a7a8c81bc25f6a6056aff77f15d6aee21ae6f59a1175738f18456d408",
+      "lua": "npc/1202000.lua",
+      "lua_sha256": "c77d1ceafba1e0aaee35c52bbda27af40d2e7e18d335e6c97f3cac0f3cf632f6"
+    },
+    {
+      "legacy": "npc/1204001.js",
+      "source_sha256": "997a086637fd805d8c5a8e8c8681b0bf6edbdcf6ac313d92968062ae1de3be78",
+      "lua": "npc/1204001.lua",
+      "lua_sha256": "6d05a2c9430babf69fdc4cd1b0def5f5afb80787e2fd93d5a534611a37c5b1f4"
+    },
+    {
+      "legacy": "npc/1209000.js",
+      "source_sha256": "2780914fe8e4915ec1ef2b111a9560dec9757378416bdbbb8689cdd54d0a33d3",
+      "lua": "npc/1209000.lua",
+      "lua_sha256": "01f5164e66c6747f38eb927c7b49522c4420b21b12e3f820d79ca300e3681f89"
+    },
+    {
+      "legacy": "npc/1300010.js",
+      "source_sha256": "79aaf0ee2f9d19ad91e56f39d2244aa48e42dc222fb87da8753804adf8eb7135",
+      "lua": "npc/1300010.lua",
+      "lua_sha256": "5327a18dd3db50e0143d26b3a3da9bce1aceb3908c718d95d39a0850b28a5b5a"
+    },
+    {
+      "legacy": "npc/1300014.js",
+      "source_sha256": "5cfaca17dba2b74741036a85c163dde58b79c4e7a225fbc87106c3f2004e53ad",
+      "lua": "npc/1300014.lua",
+      "lua_sha256": "48cb4e3afe9d43b679a9ad1272315302a524794b8bd619e0938ca5e4e26fdc24"
+    },
+    {
+      "legacy": "npc/1400001.js",
+      "source_sha256": "d56413f62ed87b46ed5ea07e3f6527c89d4af6ee22b1e32203db8fcf2b69aca9",
+      "lua": "npc/1400001.lua",
+      "lua_sha256": "5156f7af188d093908495780a3ebc8400c9cb88a743f45cb0f631689fc89e52e"
+    },
+    {
+      "legacy": "npc/1400003.js",
+      "source_sha256": "498be2238c71fe8c838f63b78bb9a37720e2b697ed95bc4414e7ddb8ec6d1c2c",
+      "lua": "npc/1400003.lua",
+      "lua_sha256": "8d6a1e703b9f3a2cfdd55c9eab00bb7dc2544017b3a1cdb3a15e2ef3628180f0"
+    },
+    {
+      "legacy": "npc/2001000.js",
+      "source_sha256": "93bd46a34096a29fba3286e93bbb33e764270a691950c62e02627a1d93afe5e8",
+      "lua": "npc/2001000.lua",
+      "lua_sha256": "6052833a318227ccb0f92f50f91be87f1b7e8110cf8b197afd55b9653c6f8e20"
+    },
+    {
+      "legacy": "npc/2001001.js",
+      "source_sha256": "5415a249824caf090dcffe892c51a8338e4524f37bcb7b27b89017cbfb3b6e9a",
+      "lua": "npc/2001001.lua",
+      "lua_sha256": "4496d5fa908bd428dddfb3bc2df6f42a818897d73b1831f465aeac9c157adb78"
+    },
+    {
+      "legacy": "npc/2001002.js",
+      "source_sha256": "d6dd59a26289ad3a8a4e29d5ec3a55f84b2ddf3677acfa51b7b2af645cdd23be",
+      "lua": "npc/2001002.lua",
+      "lua_sha256": "5aed4ea909ce79901af084f52b2424bc5b09e2264783d6c32c2d8d65856808cb"
+    },
+    {
+      "legacy": "npc/2001003.js",
+      "source_sha256": "cb163a4e4bf3bc48e56b04f9c8d0f9cc42c53b1e3518948e0fc13aa824ac3656",
+      "lua": "npc/2001003.lua",
+      "lua_sha256": "b3ada9c382f0f7c4c08b3c48d03f9b866cdd572cb3d72efa76320d8099dfc947"
+    },
+    {
+      "legacy": "npc/2001004.js",
+      "source_sha256": "095275f01d8a02ebe30157b1446cd25ca315df7864d756a5d9c3a03b89025ab9",
+      "lua": "npc/2001004.lua",
+      "lua_sha256": "5d052f45eda085cdc5b93485cbdd3267eff609830cb43bf26e25972496fb79d5"
+    },
+    {
+      "legacy": "npc/2002000.js",
+      "source_sha256": "1b64411744b229af375841672b0a7918a27bf3ef33071fd029e30faed62fdd6f",
+      "lua": "npc/2002000.lua",
+      "lua_sha256": "fd0dab5bcd1ad104ca3235ea7f5dc66ba8401ee21c5cffe7d59cb89e5436cf6d"
+    },
+    {
+      "legacy": "npc/2010000.js",
+      "source_sha256": "72db6d3f795cd2e0ba457980b39a41bd8aee3d1002dd93614a9069e8f27fed5a",
+      "lua": "npc/2010000.lua",
+      "lua_sha256": "cd6bf6e695d520a78c2916b03ac2c1e57371958b8289a14d8bd726fbd71c045a"
+    },
+    {
+      "legacy": "npc/2010001.js",
+      "source_sha256": "2e191815d0112860ccbe40f8a73a8c1ca5a0db833771363701fe0af4ba705125",
+      "lua": "npc/2010001.lua",
+      "lua_sha256": "735b84879b21bfefcc3e63fb92b42cd3eba13d5fd2970c60a167d0d91f629346"
+    },
+    {
+      "legacy": "npc/2010002.js",
+      "source_sha256": "a23777fc80a99c6f3604e44e187b653cc4a0e8ac6eed3e2061462b76b1b7a152",
+      "lua": "npc/2010002.lua",
+      "lua_sha256": "9f9bbb4e07d763a9a17790c8dc238903c68699afc30b74ed76affee518946919"
+    },
+    {
+      "legacy": "npc/2010003.js",
+      "source_sha256": "0fa9cf17217d7963f79fbcb423c4b11f734d8e02d468fb5888cb336ea4f6dcfb",
+      "lua": "npc/2010003.lua",
+      "lua_sha256": "ac2280e7b5a212bb0d418a66d3b15898b0d6683c8890b13b85f192815d220db9"
+    },
+    {
+      "legacy": "npc/2010005.js",
+      "source_sha256": "84aabca09f965139bee3f0918112bbed4a690a282969b4a7faf1280ff107b6d1",
+      "lua": "npc/2010005.lua",
+      "lua_sha256": "772d3bff89aeca71efcd4e42ed997218bb03e2fbde655cb11377b3ba9fa290f0"
+    },
+    {
+      "legacy": "npc/2012000.js",
+      "source_sha256": "77bfa6c55919ddd176600d2cc69a71c79b29f35aa6816aa85ef46b5e71240a03",
+      "lua": "npc/2012000.lua",
+      "lua_sha256": "7eecbade384edd0bd33ee726c3fc31ac88d3133fb50a4aa66abbabfd1e75824e"
+    },
+    {
+      "legacy": "npc/2012002.js",
+      "source_sha256": "98f8416a8e642bcd5e41694bba25c2093bf90c5ab0b9f19f90e00398ec38dd57",
+      "lua": "npc/2012002.lua",
+      "lua_sha256": "34237ff9a36c98319c045e59d56501daabd131dc177e1238d87b54f793c32500"
+    },
+    {
+      "legacy": "npc/2012006.js",
+      "source_sha256": "c77f20eaf42fe575bb3d94bd1231bb37c4ff91c5bf86da111b9e70d52da8deed",
+      "lua": "npc/2012006.lua",
+      "lua_sha256": "26ea208d5ebe98e3fc666ea90cba9f069444cf19ff52880db7c46ca3e6592e72"
+    },
+    {
+      "legacy": "npc/2012007.js",
+      "source_sha256": "48447a78b2596c5869b2a51eccd6cffb566ae2ed41a54b77aefcc56fc1b22bf7",
+      "lua": "npc/2012007.lua",
+      "lua_sha256": "39b76cc313b0a018fdf67d90ef47522cc40f24a0404c054fccefd58b93b5730a"
+    },
+    {
+      "legacy": "npc/2012008.js",
+      "source_sha256": "8c1750b64065d4d06efa5c80595bb29100c5f92b2f234d9d14baf53681c42271",
+      "lua": "npc/2012008.lua",
+      "lua_sha256": "9d640279edf814ba8f97029ca5fd86f96e6e5a960a9339222d5357f340fa4084"
+    },
+    {
+      "legacy": "npc/2012009.js",
+      "source_sha256": "0a41e759107ee22494e89a91f8ccdf26f79f2e16c57754b026e9601551404366",
+      "lua": "npc/2012009.lua",
+      "lua_sha256": "2fed39ecbce5b49525e1e5f91915f4414656670a712691142c8b8a247f1a3711"
+    },
+    {
+      "legacy": "npc/2012014.js",
+      "source_sha256": "b358ac86ae812d4afe34eca189f46d065ba6fb0fca011384f9d9545e3ec4896b",
+      "lua": "npc/2012014.lua",
+      "lua_sha256": "887b9e73dfd2fad0d59dfae050ccfb72ff4947ec37bed61289daec11707bcac5"
+    },
+    {
+      "legacy": "npc/2012015.js",
+      "source_sha256": "3eec2d9c51d056b041a36eef043f2384e119016e5bd9aa6eea821585ad8ec914",
+      "lua": "npc/2012015.lua",
+      "lua_sha256": "f283aefd04cac6af4a762ad8ff92402eaea9c275357163c4901d0a94cc3c8320"
+    },
+    {
+      "legacy": "npc/2012022.js",
+      "source_sha256": "6bc1dfc3305338157f7cb8fee616438839700ffb619b5a3e14d4158fe5bd8e90",
+      "lua": "npc/2012022.lua",
+      "lua_sha256": "1a092cdd5c6a9b207c893ac8f3222c5319fb31516132ee3c9b7a82ba762458a1"
+    },
+    {
+      "legacy": "npc/2012023.js",
+      "source_sha256": "d596d891b818626e6c5809d0ac9d675d00d1f409c8a910b307bf58374df5c38d",
+      "lua": "npc/2012023.lua",
+      "lua_sha256": "6dbec31b6c35e7ff12266eea298af921f8dfb7f632fe4f845cdcefb8afb8e388"
+    },
+    {
+      "legacy": "npc/2012024.js",
+      "source_sha256": "f9abba0cf5ce8d5a8b8742e6cae6dcef24dec693a6b7c2d217bf47f5371a35dc",
+      "lua": "npc/2012024.lua",
+      "lua_sha256": "0002709f524687460b91c92acd0fb3b71980ef8b179e6f06d519a780b15446da"
+    },
+    {
+      "legacy": "npc/2012027.js",
+      "source_sha256": "08335462882095708d70230ce776162964b778d8019fabfb89eddd7f068da62b",
+      "lua": "npc/2012027.lua",
+      "lua_sha256": "b675676f7d6cd49b07713fd1dfed6de668c721955815308bc826e3b28a19f798"
+    },
+    {
+      "legacy": "npc/2012028.js",
+      "source_sha256": "a3dd13b61cabea9c4c7ea114e8dd453a610a2d5c446c7cdf3d436ef9cbbb6c1e",
+      "lua": "npc/2012028.lua",
+      "lua_sha256": "8476d20b7d83e40b4122262584c136b34baf7ec00facd58610f90cadc0f7e096"
+    },
+    {
+      "legacy": "npc/2012029.js",
+      "source_sha256": "fdab34411b1057c3347a13b184b0627741ee260262fccad20134b913e7cac508",
+      "lua": "npc/2012029.lua",
+      "lua_sha256": "ed250aebd6e2843763b8cb485b263275e7a56757c941bf50acf1622196385ad1"
+    },
+    {
+      "legacy": "npc/2012030.js",
+      "source_sha256": "71548b357abeb37ec79c9c32621aff4382c2a03fa32af86f5c3f41217adda463",
+      "lua": "npc/2012030.lua",
+      "lua_sha256": "3a9ce05327f4742f13002525b339b72514f1f99cbbdc912a7caef140eada94d3"
+    },
+    {
+      "legacy": "npc/2012031.js",
+      "source_sha256": "3784a5ef04b95e2d037063879affa853253144a183c29f56499c58253f5825d5",
+      "lua": "npc/2012031.lua",
+      "lua_sha256": "421287e5c452aa73e57b875c83fc21cf17995a2c34f1411fc2010f4ddd0ccef5"
+    },
+    {
+      "legacy": "npc/2012032.js",
+      "source_sha256": "05b59e603a6a7a7fdf77a99ffa5676ffaea02f641c04ab36d29a51308bfc857a",
+      "lua": "npc/2012032.lua",
+      "lua_sha256": "70f38156288eac15134acc47511eed7d5f208bd102e13f26d183565e36d0b172"
+    },
+    {
+      "legacy": "npc/2012033.js",
+      "source_sha256": "ed2ece7ba216dc0b17a39fbecd79cacb7b379b13268dde31c31976774ed1a817",
+      "lua": "npc/2012033.lua",
+      "lua_sha256": "2910ef13c26ea7a3620265762a9f7f4cb84fca5e5293ade72070567e806b75d3"
+    },
+    {
+      "legacy": "npc/2020002.js",
+      "source_sha256": "d8ef1b525c93668d773ee225d9e8f26a66018d21e4d1376869ed1cb8bacc093b",
+      "lua": "npc/2020002.lua",
+      "lua_sha256": "76bd573a43a88adb95ab483264561aa0ad316202491629d4641ea12a389231b5"
+    },
+    {
+      "legacy": "npc/2020005.js",
+      "source_sha256": "94eca052f8d73366dfc80fbdc63c284dcc18c997c8837f8dd391c7c4ba29bbf1",
+      "lua": "npc/2020005.lua",
+      "lua_sha256": "b60f0c68d089b8c826df6ed824547bb0426c46d1854f82f6a7e9075aafcac99a"
+    },
+    {
+      "legacy": "npc/2020009.js",
+      "source_sha256": "b91f1ec8ef79bdaca60d7c229e250f9907a37f1d369ce47df8ad047d50b57b32",
+      "lua": "npc/2020009.lua",
+      "lua_sha256": "c7d8fb38c58c06cb6ea42e1b8698cb8305be7ff609f0493d550592ce4daeb11f"
+    },
+    {
+      "legacy": "npc/2020010.js",
+      "source_sha256": "6c2fe6a27c4fe7cf565288a457865abf63e60c5e47454339d2176c66af71b900",
+      "lua": "npc/2020010.lua",
+      "lua_sha256": "1135459bb75517df07b1c9508e1ff35d8261bf7a531f4f724b45b30adf420c90"
+    },
+    {
+      "legacy": "npc/2020011.js",
+      "source_sha256": "72dde810027e05b2de2e7200ab21103f0967cc2a2e014eb76e58e42606207db4",
+      "lua": "npc/2020011.lua",
+      "lua_sha256": "4cd9a8f97b8d68efff5adddef92943bc259b2084cc1ee9e5f75c36313fc4fd92"
+    },
+    {
+      "legacy": "npc/2020013.js",
+      "source_sha256": "a8a5a89d768cc531fc560ac77b512b0abbb43f00248a96dcb58146d68242b096",
+      "lua": "npc/2020013.lua",
+      "lua_sha256": "dcb47c08e1661ba57e8d36fb4b6b17a2cdbb561588eb179119e4ecb9b0b666bd"
+    },
+    {
+      "legacy": "npc/2022004.js",
+      "source_sha256": "76860166e13487e271b218c9a3f7adc0c775ea7a6af6f5de24d8bbdeca7ccd88",
+      "lua": "npc/2022004.lua",
+      "lua_sha256": "b6622c12f85ef083c6580c6a5aa4d1de62cee87f89571df1f12f292effc0e7bc"
+    },
+    {
+      "legacy": "npc/2022005.js",
+      "source_sha256": "f626cb7d417ace146974ddf375e02113ad1698dd955da73f4098ba9ea335bb60",
+      "lua": "npc/2022005.lua",
+      "lua_sha256": "2cf9a66878a627323344d64c1d4c219cec9e25cb76ac08c026c11af551939858"
+    },
+    {
+      "legacy": "npc/2022006.js",
+      "source_sha256": "6f620b86da9264a2483514f7b3de5a4005911f5bc21cb3faffd6cbbdf75bfcc3",
+      "lua": "npc/2022006.lua",
+      "lua_sha256": "bb0390d1e118953c1203c8e948154d0f35e2ea607090ec30feb1a18e0ed34d08"
+    },
+    {
+      "legacy": "npc/2022007.js",
+      "source_sha256": "5e910eef4e2ff23ca245fc030a0c155f9e7ce747a35bdaeb98de000d2d9037ad",
+      "lua": "npc/2022007.lua",
+      "lua_sha256": "1bdecd3fc67e58a8a3ecd5be7a1dac0d165d0c32071501d8d68c5ff4db9b22d3"
+    },
+    {
+      "legacy": "npc/2022008.js",
+      "source_sha256": "ec8c40aa49066ae035f0eadcd455603161dad2b5a57306b26a24f8abc1213b63",
+      "lua": "npc/2022008.lua",
+      "lua_sha256": "872c834ed6436f1d5cc3a72a0ad9a0bcbb9c5642a607feab8244503927e9f049"
+    },
+    {
+      "legacy": "npc/2023000.js",
+      "source_sha256": "b4861378b52d126cdde4cd5ac779689fb0a4f318075d949f8d77c9ca620b6d68",
+      "lua": "npc/2023000.lua",
+      "lua_sha256": "ecd54e5081d48d9ebc0c42357afddc129a5a734dd039c68f80e4526481ab9456"
+    },
+    {
+      "legacy": "npc/2030000.js",
+      "source_sha256": "13886386d74e0198ec24113fa60337ceb5b88598b239e1336b12df123ad38c85",
+      "lua": "npc/2030000.lua",
+      "lua_sha256": "705117345403f54c1e7e6bc53a5c4ddf81e5f0dcfd5fcc5098a52de3075db6f7"
+    },
+    {
+      "legacy": "npc/2030006.js",
+      "source_sha256": "729be4d9af696396ae83ef528d1d8ca6901f3da007be49a645cedd165550ffc2",
+      "lua": "npc/2030006.lua",
+      "lua_sha256": "ea13057006ddc62fc57508180a01b21f83cd83af53655fa448948ae405f46beb"
+    },
+    {
+      "legacy": "npc/2030011.js",
+      "source_sha256": "807f3b69a7f63ec31a06e5fa7adb5111ddbef7185fe2f966db0e04440ffdf25e",
+      "lua": "npc/2030011.lua",
+      "lua_sha256": "ff549648a01bf4af42430163d98e65f7cec89b8279d67c71286960e0ac6937cb"
+    },
+    {
+      "legacy": "npc/2030014.js",
+      "source_sha256": "290f2db08fe22eb40468ad28c3c80b7a0e96a19a8f89917fe13643094f907e69",
+      "lua": "npc/2030014.lua",
+      "lua_sha256": "80d3b540dc834df3707e0dcd68dde57bca47016ca77e5ede6360646a45e24ad3"
+    },
+    {
+      "legacy": "npc/2032001.js",
+      "source_sha256": "dc1a96097042590804abcd084c677d0d2e331dae540d5925762338819f95eece",
+      "lua": "npc/2032001.lua",
+      "lua_sha256": "6abe7caab39bc802727adb13a93c84f71493f87f01df6d66382ab8f4e4bc3b7b"
+    },
+    {
+      "legacy": "npc/2032003.js",
+      "source_sha256": "691c91aa9efafd42f64e94be42ed4f44b3bf9682a17b2ee60027bf0fe2405491",
+      "lua": "npc/2032003.lua",
+      "lua_sha256": "270d8e9c2db153de08fe91af74747f095bb2d21957ea7cc47d0bdaf83aa0d2eb"
+    },
+    {
+      "legacy": "npc/2040000.js",
+      "source_sha256": "b1554d2eaaf696fb0ac469259b8521142148fa92e3656b72e5292a549889b61e",
+      "lua": "npc/2040000.lua",
+      "lua_sha256": "2cd6444e1c0178c1b16f6fbc41e77a99c2d0d0f29f86e1d07256ad63459c2b79"
+    },
+    {
+      "legacy": "npc/2040003.js",
+      "source_sha256": "3415de300504461786eeb3414d861d8f96c20923b080851fa05226da9d6bf3f6",
+      "lua": "npc/2040003.lua",
+      "lua_sha256": "5927a01ebd2fecb7c4004979e44f7b01e52136b8dfadc4c91d8b2237eafddb09"
+    },
+    {
+      "legacy": "npc/2040016.js",
+      "source_sha256": "91b755dbb98357125926fc480ca76c85f2533f6df92c1d3ac87b8403c015e926",
+      "lua": "npc/2040016.lua",
+      "lua_sha256": "363933de1b36df20ac604aa5fff8f2f586ee89bf42d0fb5c5f47fb4ddc39f2a9"
+    },
+    {
+      "legacy": "npc/2040019.js",
+      "source_sha256": "6701f6a532bb1d889e405d3d5adb52e53a268e9f5fa125ced79caa2eb3802af7",
+      "lua": "npc/2040019.lua",
+      "lua_sha256": "cdf12fa7371481d8bf613f69baef2fdf22cd034110238f90da9e2fb2da8460a1"
+    },
+    {
+      "legacy": "npc/2040021.js",
+      "source_sha256": "02c92c7c2725bd77a28d316528501be4bd227a29ed6a495ae9f758ea90d423dd",
+      "lua": "npc/2040021.lua",
+      "lua_sha256": "1f0c19df51965ada97b20ce5b76d89fca376e01132515e8a976c2b59336d8396"
+    },
+    {
+      "legacy": "npc/2040022.js",
+      "source_sha256": "0fa34eef55b24e0815f248607dfbb58945e464bf145dd75cc718aa7c69b8a532",
+      "lua": "npc/2040022.lua",
+      "lua_sha256": "d53c05de1135fa9aa08f081257e8e770c44c4c0c856412405861d7bfa8667ecb"
+    },
+    {
+      "legacy": "npc/2040024.js",
+      "source_sha256": "6aa7d9da4465adc6e0101cc5fde39be0343b09d8a543932d957af8a86aa4062a",
+      "lua": "npc/2040024.lua",
+      "lua_sha256": "78af8dfbd951ec623b1652b6f2e8002007c5b77160d858d48ffaeca44fc8aa81"
+    },
+    {
+      "legacy": "npc/2040025.js",
+      "source_sha256": "a41a9f01489fd0c5f0389d1cd63582c7c45b4ba31a6d6e847f49113c3c0eedbb",
+      "lua": "npc/2040025.lua",
+      "lua_sha256": "4ec615ef394474a308bbf3674ce20cb5dac1f7713444506667df48ea085cece9"
+    },
+    {
+      "legacy": "npc/2040026.js",
+      "source_sha256": "446172822a7ca7185ca1e7c9f097ce70fed582242364942235708e562212e799",
+      "lua": "npc/2040026.lua",
+      "lua_sha256": "72f35c32e3e37eb3c2c40d7691558a210489982ae3852a01761d52536b404ac4"
+    },
+    {
+      "legacy": "npc/2040027.js",
+      "source_sha256": "5f77f1f79021ab6fe15c5b5c0bebe97a1c2dbe162236602fe20f0b286d4b8a8a",
+      "lua": "npc/2040027.lua",
+      "lua_sha256": "ff59df968dd8c110e2a902b623515d67a4921b498114cc903ddf21f4fcffe551"
+    },
+    {
+      "legacy": "npc/2040030.js",
+      "source_sha256": "996847c6dbbf86b6b61211398ba40e269e8e5753ff10cbf5e157d0036f82b520",
+      "lua": "npc/2040030.lua",
+      "lua_sha256": "694863df3bd8a6ae59e3a2503c5fed7800fa77d6142cd21683756b3f306892ac"
+    },
+    {
+      "legacy": "npc/2040032.js",
+      "source_sha256": "4c11a490dbf37b285c9499a218d919b1bc741b1604e7f43e735a26ef20e2352a",
+      "lua": "npc/2040032.lua",
+      "lua_sha256": "6b230a3947c1671d7cca96df0f6100e192b9c191798dceeae08bad11499c6b48"
+    },
+    {
+      "legacy": "npc/2040041.js",
+      "source_sha256": "bbeff44c73b6b655a2fb630a04bdd9a654609b63e18eaadad9e6a561019d3dc1",
+      "lua": "npc/2040041.lua",
+      "lua_sha256": "83f782222a973b8a1228311c0edef8b4ea207d1ed4c7316ab347cff8f2352800"
+    },
+    {
+      "legacy": "npc/2040045.js",
+      "source_sha256": "b15d9ddb50adf45c246a60f2782d99bac3b0619950794c26e5c3c8db083ed06f",
+      "lua": "npc/2040045.lua",
+      "lua_sha256": "a6e50ca5bf73017d9afef3e142f5de42feb67cff64c8e358385154710973db31"
+    },
+    {
+      "legacy": "npc/2040047.js",
+      "source_sha256": "bb631b3d11d9a92c963d2f31e43e8757a5d90f3dcef3e822bd74188cca91aae5",
+      "lua": "npc/2040047.lua",
+      "lua_sha256": "5956009b88230b4be279ac18583735c959335bec032c9bbcf1e15d4e0877e74e"
+    },
+    {
+      "legacy": "npc/2040048.js",
+      "source_sha256": "94af9b974f2bc0753faa80fa17ae400c0e1f323b58400eb71bd737d0234142d6",
+      "lua": "npc/2040048.lua",
+      "lua_sha256": "8a5f83e80b396258df4b56051759d5915a0e67aa93ddf53abf0ffacef7b71e6e"
+    },
+    {
+      "legacy": "npc/2040050.js",
+      "source_sha256": "f717cb4f10e37c32e93d8deecaba0d074b7468c9460c76396a593dc55000291a",
+      "lua": "npc/2040050.lua",
+      "lua_sha256": "938f870d60cc413fe1ecf8075b13a7efa0c85bd6ae8474006c6e7fc2301082a8"
+    },
+    {
+      "legacy": "npc/2040052.js",
+      "source_sha256": "9f39ed25460a512e439e45772c233e878c714dc73ab805cd6393fc73284af05f",
+      "lua": "npc/2040052.lua",
+      "lua_sha256": "b04134830d26df269c72ded691bb325e482cc16819328362ab8b6ebc83362bc7"
+    },
+    {
+      "legacy": "npc/2041001.js",
+      "source_sha256": "20862580476586de25ebdc399872328e751e9dbab23ca3d717ac53446cdf5f4e",
+      "lua": "npc/2041001.lua",
+      "lua_sha256": "ddfccd2b9eb2e526da9298fc2039f74800231412e59a19d348be61ac9bc15d16"
+    },
+    {
+      "legacy": "npc/2041007.js",
+      "source_sha256": "180d17ae89d9eac4ca409cd1cc918818c96cc08cbb3227d7308da3645ccfef92",
+      "lua": "npc/2041007.lua",
+      "lua_sha256": "76500cfe243509714acd47556c9cd3899e5f3404ac91f48c5c6f5d1478231e55"
+    },
+    {
+      "legacy": "npc/2041009.js",
+      "source_sha256": "d49e68467e68d0ab0da7d468d91a5d754731c489819e74945cf7c81cbc08f978",
+      "lua": "npc/2041009.lua",
+      "lua_sha256": "16271565b6ac353abd6464180184280912c04157a9f60d33f171b78e870dce43"
+    },
+    {
+      "legacy": "npc/2041010.js",
+      "source_sha256": "cb8d14e1ca3a74c3f28f52b3b07420001f5e0150f8bcf16dded677dae3838a60",
+      "lua": "npc/2041010.lua",
+      "lua_sha256": "d6e866b1e41fa18a9b08f521f044bd3d1cc110710c9e3c4c12c67b2fd110eb88"
+    },
+    {
+      "legacy": "npc/2041013.js",
+      "source_sha256": "96ac5190d26f4cb6d903907836aac2b0abba4129e1bd4fa1886b6edecd3b2a57",
+      "lua": "npc/2041013.lua",
+      "lua_sha256": "948848f8d4cd1594c9de37e548e002fc8f80df4f43ad7b22ae860f32ec07c59e"
+    },
+    {
+      "legacy": "npc/2042003.js",
+      "source_sha256": "a62017df64e096c2f612ff3367f27d02c728497922b53157f64cece94868b170",
+      "lua": "npc/2042003.lua",
+      "lua_sha256": "7b0940a97fbad1c827adbddeaadca0ebece4bda3df7339293257fc71dd21392e"
+    },
+    {
+      "legacy": "npc/2042004.js",
+      "source_sha256": "a62017df64e096c2f612ff3367f27d02c728497922b53157f64cece94868b170",
+      "lua": "npc/2042004.lua",
+      "lua_sha256": "b04f9b0255307759863a92de73249a5449e4c1db031046b3a067e020198491e0"
+    },
+    {
+      "legacy": "npc/2042005.js",
+      "source_sha256": "ac02b132685796ae45282c5137b4b535f6c7424964dd225437c581b09c5ff811",
+      "lua": "npc/2042005.lua",
+      "lua_sha256": "8c0f392f2cb31ff626ede8f53d77fda863b3e0d72e08b0a4b08826c14e440678"
+    },
+    {
+      "legacy": "npc/2042008.js",
+      "source_sha256": "5d588b7b99edf894ef291a6d31a8313836afc9608558c2327b0d42cca66ddcab",
+      "lua": "npc/2042008.lua",
+      "lua_sha256": "0527fedca8d13312d901cd2d6af42c8e0de8117367abcfdf1966422c7d0d6839"
+    },
+    {
+      "legacy": "npc/2042009.js",
+      "source_sha256": "5d588b7b99edf894ef291a6d31a8313836afc9608558c2327b0d42cca66ddcab",
+      "lua": "npc/2042009.lua",
+      "lua_sha256": "5470d29948257b66182038756c7de3d769c03232d549ad6c8b3181708d6d808d"
+    },
+    {
+      "legacy": "npc/2043000.js",
+      "source_sha256": "224d271637530062d0f85f7e72168e9751ebbcbce7ff2e1209b1ab70d909f8ef",
+      "lua": "npc/2043000.lua",
+      "lua_sha256": "e09a2ea15daace0d4f91e77bfd95eeeba644371f5f0028149fb586c29c683ca2"
+    },
+    {
+      "legacy": "npc/2050014.js",
+      "source_sha256": "07d7b170a369ba7fb9a8ae08bbb9db43e5fdd4e1f7730b6680182620153a3d9d",
+      "lua": "npc/2050014.lua",
+      "lua_sha256": "63279d553ccf76d34cdc68bf94c9a28df047310c236c979681bcd517371215e0"
+    },
+    {
+      "legacy": "npc/2050015.js",
+      "source_sha256": "07d7b170a369ba7fb9a8ae08bbb9db43e5fdd4e1f7730b6680182620153a3d9d",
+      "lua": "npc/2050015.lua",
+      "lua_sha256": "5e73f76bd72903427078866031e819b6fced32d370bc4d79c089e50dde0dda99"
+    },
+    {
+      "legacy": "npc/2050016.js",
+      "source_sha256": "07d7b170a369ba7fb9a8ae08bbb9db43e5fdd4e1f7730b6680182620153a3d9d",
+      "lua": "npc/2050016.lua",
+      "lua_sha256": "557395e7e4803e88a0e96ed7aa49e987b5947683e5bb401a14a36627cbf0972c"
+    },
+    {
+      "legacy": "npc/2050017.js",
+      "source_sha256": "07d7b170a369ba7fb9a8ae08bbb9db43e5fdd4e1f7730b6680182620153a3d9d",
+      "lua": "npc/2050017.lua",
+      "lua_sha256": "b5b105398b506ec9607686d5ddad24d46fe63a127b287bb5fcabbf7477161321"
+    },
+    {
+      "legacy": "npc/2050018.js",
+      "source_sha256": "07d7b170a369ba7fb9a8ae08bbb9db43e5fdd4e1f7730b6680182620153a3d9d",
+      "lua": "npc/2050018.lua",
+      "lua_sha256": "e149b7f828a4b0402a45218470af94c6a5f41f8fdc21649f053c6a909b0706f3"
+    },
+    {
+      "legacy": "npc/2050019.js",
+      "source_sha256": "07d7b170a369ba7fb9a8ae08bbb9db43e5fdd4e1f7730b6680182620153a3d9d",
+      "lua": "npc/2050019.lua",
+      "lua_sha256": "2843e54edf99d84f567e10fd6999cb92610080c948be1dbf6d0539cecec2a460"
+    },
+    {
+      "legacy": "npc/2060005.js",
+      "source_sha256": "2761c399f72ca095075522e0f76cbfd6a270cbce7562a0550a61521adad97e2c",
+      "lua": "npc/2060005.lua",
+      "lua_sha256": "dbf0a8e1aded04b692fd2c0030216206198abe1726107786d888739d99308d41"
+    },
+    {
+      "legacy": "npc/2060009.js",
+      "source_sha256": "f469f7a736cb002cd4beea10424294c5f13622d768cb2329d1301a6e7f89d3f9",
+      "lua": "npc/2060009.lua",
+      "lua_sha256": "4688bf6dbfc2956d407f2817b78ea89cf435c507eb6755fcfc95df687d7b43d5"
+    },
+    {
+      "legacy": "npc/2060010.js",
+      "source_sha256": "d8663df7520279084ac3120cab9175a63bada4d25e700b1f083d89e6c730601a",
+      "lua": "npc/2060010.lua",
+      "lua_sha256": "5f0b7ed07607f2c0de9085602921101b6daadf6bbde8e06ac72f6f17e696412f"
+    },
+    {
+      "legacy": "npc/2070000.js",
+      "source_sha256": "1d706fd491de3acdbcb0a0e19c0e955f8e3406f81f38108f077aeb4526df28c7",
+      "lua": "npc/2070000.lua",
+      "lua_sha256": "91ce597f46b086e6d5ef87b5a02732ebbf81aa4e5f2319b84969e29795a69bfc"
+    },
+    {
+      "legacy": "npc/2071012.js",
+      "source_sha256": "290f2db08fe22eb40468ad28c3c80b7a0e96a19a8f89917fe13643094f907e69",
+      "lua": "npc/2071012.lua",
+      "lua_sha256": "472ed9ac03cbe130c19e13b5a6d2725e9bf0c334d7fd3535e59a8faa2d0f63d8"
+    },
+    {
+      "legacy": "npc/2081000.js",
+      "source_sha256": "2181e95c1024e1fa840db8da6541b1070209224f17b499a04a7648f53218c44f",
+      "lua": "npc/2081000.lua",
+      "lua_sha256": "6a6c9cbe1e13b37fc93b0551a5c92342d34fc4cd3a224d7f5cdcac16c4447977"
+    },
+    {
+      "legacy": "npc/2081009.js",
+      "source_sha256": "84f27079560c502294b078b3fe5f8b69130b5afccd188b2265c7196a5f98306b",
+      "lua": "npc/2081009.lua",
+      "lua_sha256": "655402f0588d39fcf5b35f577468d6cc2fa87151ecc3d892be21ee2f216421b6"
+    },
+    {
+      "legacy": "npc/2081010.js",
+      "source_sha256": "0b815843cff890fe29cd27899a8a9582db2b73a09ccafd2a6a72634d8475ba94",
+      "lua": "npc/2081010.lua",
+      "lua_sha256": "b5026fc23b3434b8031337dd8da60647589fbfa92f6a3533667bbd6fd9c0bfac"
+    },
+    {
+      "legacy": "npc/2081100.js",
+      "source_sha256": "8159b6f21ac29be7c82b5cd2695d397556251151ecf0f89cd5fa75a83381e3c9",
+      "lua": "npc/2081100.lua",
+      "lua_sha256": "3ca21f8e4984da91f9faa0b12d6b606f1a4ced04189ade751aefb48471cad845"
+    },
+    {
+      "legacy": "npc/2081200.js",
+      "source_sha256": "aec26ab25ac0bad61fac4e46a0af3327a893dccee1079dc18e8a42de9c303301",
+      "lua": "npc/2081200.lua",
+      "lua_sha256": "bf80037d7077bddff86ea334f1fa87bf00b6de7e9062b92aba964c0b6beb59fa"
+    },
+    {
+      "legacy": "npc/2081300.js",
+      "source_sha256": "7bb657d1d5ac094aabf050f57d312232081baac940dbfcc522c9cd341313012d",
+      "lua": "npc/2081300.lua",
+      "lua_sha256": "b50e2b6770431f960979516cb4fd4d258e820c2032e6d87a1c486095a63e8e56"
+    },
+    {
+      "legacy": "npc/2081400.js",
+      "source_sha256": "1ed552ba9728f0430ce725acad6ff49705d0ec2fa3b7cfcf15373d9f3f80506c",
+      "lua": "npc/2081400.lua",
+      "lua_sha256": "b8fb350a2d36029dcfa7006f6ae60141ef26b486f3a75b496b349ae06dd09d0b"
+    },
+    {
+      "legacy": "npc/2081500.js",
+      "source_sha256": "b9f48196fb420c8ba6d7aa56b08311b83ec5f1ea55946df63ec7a8283f4934ba",
+      "lua": "npc/2081500.lua",
+      "lua_sha256": "b53042b8e79b47dab865a450cef2e6a0f60ea51fa0f446b22c60dc0dad0f4966"
+    },
+    {
+      "legacy": "npc/2082000.js",
+      "source_sha256": "1301316812ef5eaeb3b8a73407670bb5e3eb427d65ab2be1bf9414759832e89e",
+      "lua": "npc/2082000.lua",
+      "lua_sha256": "afc81e4d90940509b5e43ecae99871d81ae9902a5824117bf4769776de2141c0"
+    },
+    {
+      "legacy": "npc/2082002.js",
+      "source_sha256": "ed919234fbd33757a47eb845c2f0193bdd0d24261bd8ddc44e483a2dbbf9c2df",
+      "lua": "npc/2082002.lua",
+      "lua_sha256": "5431834b14b7ec37941d2f0fa414300d2958569f558da5d694e34db16f7befbc"
+    },
+    {
+      "legacy": "npc/2083000.js",
+      "source_sha256": "8d5fdbf8ff550f062e280d03c8b91a4f0e340ad83ae9600bec6ed073169e1402",
+      "lua": "npc/2083000.lua",
+      "lua_sha256": "29f34bae4e4e3b468c0d0ee255cb6ec4f99f58f0811e7f497eb6f213add88912"
+    },
+    {
+      "legacy": "npc/2083002.js",
+      "source_sha256": "f6934a167ad41f0cc8c7a5ff0385634c0361c5dbad0230d45c74e63ecee57f48",
+      "lua": "npc/2083002.lua",
+      "lua_sha256": "68457fdb899da4909f1c8211e50f5c048ab7308bf281da5ff549faaab928e454"
+    },
+    {
+      "legacy": "npc/2083006.js",
+      "source_sha256": "e4d23c52116be964dd9d554b48a480c4368f6a919dbc0654f39c08eddabbce9a",
+      "lua": "npc/2083006.lua",
+      "lua_sha256": "97b225433a479f97b21b6f5ad4130b64a4adea3879f4f238d8f074cefdaf083b"
+    },
+    {
+      "legacy": "npc/2084000.js",
+      "source_sha256": "ea5cddcc83dd20f9db09b722ccc5084a68960833e50997e404ac51aebabd2d86",
+      "lua": "npc/2084000.lua",
+      "lua_sha256": "2a8431abeb02ba70f03f394d627d95c6a4bcd45afedf9983fbf02e02162e32cf"
+    },
+    {
+      "legacy": "npc/2090100.js",
+      "source_sha256": "e95729f96a2ed69a2efbc8724c30469728c4b8254285ca6c88d30908fc81022f",
+      "lua": "npc/2090100.lua",
+      "lua_sha256": "2461568f4edc32cd096b7e0bc041cb6ceadaba2f55dc8f98f06f9d647eaaca57"
+    },
+    {
+      "legacy": "npc/2090101.js",
+      "source_sha256": "71ae01d1d3642f3dbd2de0062338261a935d9f26b3daf07b6b7e71cd1f147c73",
+      "lua": "npc/2090101.lua",
+      "lua_sha256": "ed3e8e09e769142996ae0e0eb920ec5891b7bc4b3a177c5dbee0494fb33228d3"
+    },
+    {
+      "legacy": "npc/2090102.js",
+      "source_sha256": "54a0c49fd3f1318a43ebdf4df60885475651b05b149d9b76c3c2b5322fb8852d",
+      "lua": "npc/2090102.lua",
+      "lua_sha256": "336a2850c58c5e291e03ea66326cc6670e6e72932754a1d6c2034969332be820"
+    },
+    {
+      "legacy": "npc/2090103.js",
+      "source_sha256": "1204fcb290bb61dbce32ef138b0377710dff8568cc76f3a30906bb6b7b02b040",
+      "lua": "npc/2090103.lua",
+      "lua_sha256": "fb8e2d8fa6f30f01616a344c3669109c89dc64c0ea71088341587cda84da5339"
+    },
+    {
+      "legacy": "npc/2090104.js",
+      "source_sha256": "0c3970740e75ed594c88402aa82e9567871e5ae5b1bcaee696295a0e8dd0e154",
+      "lua": "npc/2090104.lua",
+      "lua_sha256": "47dee32d7fbabbb987c4579f102387c39331431bc0c73b96237ffd7bf97fe18c"
+    },
+    {
+      "legacy": "npc/2091006.js",
+      "source_sha256": "0e112d8574fb2017f0a9a922c634c5be49222297a540c8fe320694039914dfea",
+      "lua": "npc/2091006.lua",
+      "lua_sha256": "0c2932040aa6af8fd68121d052a49a8ecaa6c5350414022822f725ce28bf8e52"
+    },
+    {
+      "legacy": "npc/2092001.js",
+      "source_sha256": "d5d8b618c265f7c4a06fc1b0797a6d398b33f81a91b40e6fb4006a4db4730cb2",
+      "lua": "npc/2092001.lua",
+      "lua_sha256": "bb1df6edb9e735ae069bf1c6981c6c15930f4ef8d13079a30d245a0a02e357a8"
+    },
+    {
+      "legacy": "npc/2093004.js",
+      "source_sha256": "a669008b79a902596a0d83ae5838ef4876bd2cb86e8c4a0b537f0fb135fc27fb",
+      "lua": "npc/2093004.lua",
+      "lua_sha256": "68bc8570526a5d3237ec406051ebd2715a53c25a85f25a4f5086e7f986094438"
+    },
+    {
+      "legacy": "npc/2095000.js",
+      "source_sha256": "d8ef3334c0e9e9b16b3ee9ebab6f72dd308db28b6135e0e34e2b6d6a4b51041f",
+      "lua": "npc/2095000.lua",
+      "lua_sha256": "56b3426259218a442cefd58d1fe78ce1fb683ddcb61187848a4255bb9358c1b0"
+    },
+    {
+      "legacy": "npc/2100001.js",
+      "source_sha256": "35c6006850be300fb97f74bb43ad224daa475cad24544f17d09d613c752048c0",
+      "lua": "npc/2100001.lua",
+      "lua_sha256": "32fe8d5d5fbb5683cc0c39e9c2fc9c5a4c6d065410e4a99927570b2d532d5c85"
+    },
+    {
+      "legacy": "npc/2100005.js",
+      "source_sha256": "5319a1a3da75f4d4e3af6a5f7e7e1178802f61ded893913c3146c1653d4813bc",
+      "lua": "npc/2100005.lua",
+      "lua_sha256": "bb8714f3f26e0d430716518083bf9ad4902f381004478e717ee60a79ea8250c3"
+    },
+    {
+      "legacy": "npc/2100006.js",
+      "source_sha256": "0b343b6d5bd9f3f6b4daa0d599f62fdc8a3ffabb45d676490713b52355c40e64",
+      "lua": "npc/2100006.lua",
+      "lua_sha256": "aa4bbaaa2c03d2e3b790e3c3867576ddd2459e2809d4327efc76901353034520"
+    },
+    {
+      "legacy": "npc/2100007.js",
+      "source_sha256": "91281a47820bd4ff7e95aac059bec830ddf72fecbccea411cee7794cadb8e637",
+      "lua": "npc/2100007.lua",
+      "lua_sha256": "4faefb8cf16ed4ee68adf047e8cc266ef171f582908d727a996aef09dedd3e47"
+    },
+    {
+      "legacy": "npc/2100008.js",
+      "source_sha256": "c6c20b7a7582e9cd3be61eb64559a153d43a07f0adac51f83001fb712d4b9956",
+      "lua": "npc/2100008.lua",
+      "lua_sha256": "75f1f1908d5ce597b43e509262ff967d0f2a1667ae055b34547febac6ba33e19"
+    },
+    {
+      "legacy": "npc/2100009.js",
+      "source_sha256": "5b90682c1861b5f38c3a3e7ed442925a1900f7f3620f43212c8901e35994b6b3",
+      "lua": "npc/2100009.lua",
+      "lua_sha256": "b40d53d6fd2737ec473e15384a4d6f8a8de4349809c98512abcdf9ecd97200f9"
+    },
+    {
+      "legacy": "npc/2101000.js",
+      "source_sha256": "5d1197e1339232fce2008af1ba60ad2c7ebb7e415ccb0c1186fff326e52078db",
+      "lua": "npc/2101000.lua",
+      "lua_sha256": "70c656d2707f50fad3877df9f1c78836fee0aeab43c16b1ed51c123cfbe4d6a1"
+    },
+    {
+      "legacy": "npc/2101001.js",
+      "source_sha256": "def62b4033498d274b6560e3374000ae483da6c5d926a5bb4fe131f35c1a38f1",
+      "lua": "npc/2101001.lua",
+      "lua_sha256": "a4242e32a504841ce74f55506b096925fdefcc70b5caf1eec06c561891c3a6bb"
+    },
+    {
+      "legacy": "npc/2101002.js",
+      "source_sha256": "a3ace747c9b224edf40c11961aaf536b69d4ca32f3defe432b5e2fcad1c001e3",
+      "lua": "npc/2101002.lua",
+      "lua_sha256": "84bddb936af50c224bc3e386442022330cd30880986c309ad9b3592ba5b503c7"
+    },
+    {
+      "legacy": "npc/2101003.js",
+      "source_sha256": "ab9ba593a027d6d7e15f37bfb85b9b7ce65e29958901236bbe6cc0ce1a9b6e0d",
+      "lua": "npc/2101003.lua",
+      "lua_sha256": "56f709b5894e64eb00106994166962fe6d3d66281ff6c61c391cf8ce0371ac5b"
+    },
+    {
+      "legacy": "npc/2101004.js",
+      "source_sha256": "443c20e7555db50551f039cf34baf5af046eee5bdac91246875df1ae0f074f01",
+      "lua": "npc/2101004.lua",
+      "lua_sha256": "d4935946f2e05b5decde60cefecf075be883dc52aa93a6fe91d12c2a0e518dc1"
+    },
+    {
+      "legacy": "npc/2101005.js",
+      "source_sha256": "d3508d67e9e76e8066f14a6cce03af662a7b98dcee8161bbb6eabe04d56b866a",
+      "lua": "npc/2101005.lua",
+      "lua_sha256": "36136ef098501799f394ef3b148375c0417605335635e6329ee403203f5e7f36"
+    },
+    {
+      "legacy": "npc/2101006.js",
+      "source_sha256": "e7e5766449d6990fdded2dcf1086f2fb6bbed5bcd00b7c6455897b6a14d3b3f1",
+      "lua": "npc/2101006.lua",
+      "lua_sha256": "7b11ae4202d7dbca9466f7bcdc46602236b3f9f9d495d1ae402995c7e4d01211"
+    },
+    {
+      "legacy": "npc/2101007.js",
+      "source_sha256": "d12ef3419370fc94b18a750e19abaa559810ce21f63a4d8014335432817a7ae2",
+      "lua": "npc/2101007.lua",
+      "lua_sha256": "e3bc79036e3a8b24ebdbc2c54774bc5b8f48141922eec711d522aa10433f2f25"
+    },
+    {
+      "legacy": "npc/2101008.js",
+      "source_sha256": "308f41118adb125e6782e54684e47dd7d045607f80def87bad7f939a42987065",
+      "lua": "npc/2101008.lua",
+      "lua_sha256": "e5f313d2b01e9ebde540599259e03f4a8dfaebb6b6553d69c62b3c81478bf38a"
+    },
+    {
+      "legacy": "npc/2101009.js",
+      "source_sha256": "95cbb6f6fc82bed55535b2835c9fabb0d85645f9f1a01fe1d296d31b7ad67310",
+      "lua": "npc/2101009.lua",
+      "lua_sha256": "297aca018f36a4a31d23ae26dbeb6ad2ac99e4f09ee1dd9b77edad3b2bbc4315"
+    },
+    {
+      "legacy": "npc/2101010.js",
+      "source_sha256": "5de7e60edfc0a52652f6b2f572f02048b16d3edd1a7377d6ae5688261b8f9cfa",
+      "lua": "npc/2101010.lua",
+      "lua_sha256": "5121687ebb331cb169e10a68267879dfbc45d1daf0a3ba75b4e97452183f7306"
+    },
+    {
+      "legacy": "npc/2101011.js",
+      "source_sha256": "35f327a435445d8ffadd4ccd4295a2d907a1d330140724b4ff658d59c5156d3f",
+      "lua": "npc/2101011.lua",
+      "lua_sha256": "61d4f2283fda025ad280d5250dff02d188b5b1dd09ebf1f3351a563f18144917"
+    },
+    {
+      "legacy": "npc/2101013.js",
+      "source_sha256": "a0801fb3ed31d1627461100518239d08a50db34cad7e71592894cd4f1caefe03",
+      "lua": "npc/2101013.lua",
+      "lua_sha256": "82fa36a26978b6eab1b98cf822c8a0a2c1297e8f86ceb56e85e14c430074839b"
+    },
+    {
+      "legacy": "npc/2102002.js",
+      "source_sha256": "dcab8ae83cae910db7e01639bf699388fcf0951d4ca4527de956f7696f7129d5",
+      "lua": "npc/2102002.lua",
+      "lua_sha256": "21f47f7cda4149dd456679358648608150d08dcf0ace8964de9bb74b07f64df8"
+    },
+    {
+      "legacy": "npc/2103000.js",
+      "source_sha256": "5baeae99bde7f1e81cd678095f3235953bcae23d2477fbb57093c0c87e21c10f",
+      "lua": "npc/2103000.lua",
+      "lua_sha256": "c09f0b687bba269e9981a5ba94b63f6f233b7f559d86efb8c68fa28eebb93210"
+    },
+    {
+      "legacy": "npc/2103001.js",
+      "source_sha256": "c22dfb7737d5b1f458ebbcc2f7ea3e1f33497a3fa492af3468af43130484ef61",
+      "lua": "npc/2103001.lua",
+      "lua_sha256": "1e6e0a2f8fbd4e86d15698b430bc503f9e8112e7674faa4d42ee6fa1188a86e1"
+    },
+    {
+      "legacy": "npc/2103002.js",
+      "source_sha256": "211adf1067d74d8b8e36ece664b6853f752da8688c4aa2e3d5f1c01500be6a3c",
+      "lua": "npc/2103002.lua",
+      "lua_sha256": "7f1f36d381dc2c781ba7ca60cc0c87d19fe36bb0c22b1898965a45eae13129da"
+    },
+    {
+      "legacy": "npc/2103009.js",
+      "source_sha256": "6cf3c6670468a14aec4bdf46067fe35b4912f8528790fe1c68deecf364ef7548",
+      "lua": "npc/2103009.lua",
+      "lua_sha256": "5f9a098ff07c0d0458dc35f73909bdd23ab5ba935842bc7d9103e755d4f925c4"
+    },
+    {
+      "legacy": "npc/2103010.js",
+      "source_sha256": "6cf3c6670468a14aec4bdf46067fe35b4912f8528790fe1c68deecf364ef7548",
+      "lua": "npc/2103010.lua",
+      "lua_sha256": "a4d31879dd40a47f6b5459528cb45f94307c692fac6f97b8f63836cb5f631a2c"
+    },
+    {
+      "legacy": "npc/2103011.js",
+      "source_sha256": "6cf3c6670468a14aec4bdf46067fe35b4912f8528790fe1c68deecf364ef7548",
+      "lua": "npc/2103011.lua",
+      "lua_sha256": "c523e0602731a0166c1e9fa0a1bed23c733da5892b1c429d4af8f982c3de1504"
+    },
+    {
+      "legacy": "npc/2103012.js",
+      "source_sha256": "6cf3c6670468a14aec4bdf46067fe35b4912f8528790fe1c68deecf364ef7548",
+      "lua": "npc/2103012.lua",
+      "lua_sha256": "a06a9a27463f6938c50adc7640deda5cfc71e77b9535cf2459355751b9100102"
+    },
+    {
+      "legacy": "npc/2110002.js",
+      "source_sha256": "71eaa62edf179ffac0da8e96dc5a40a5e2cd4fc60a5a7d6e860c011eda509bfb",
+      "lua": "npc/2110002.lua",
+      "lua_sha256": "3da11cff774b90acb32cc8066c4f81646723eb88a01dc50272303fb06aa3fe63"
+    },
+    {
+      "legacy": "npc/2111000.js",
+      "source_sha256": "c0b68ad81a4b4effedfe4c7896fcdfae3d4ff2cac615531a720fdc0d81f8cbe3",
+      "lua": "npc/2111000.lua",
+      "lua_sha256": "080b765d5aeda953bcc55437ad0fbaaf0815ad516c2aa2338eb6516fe90a142f"
+    },
+    {
+      "legacy": "npc/2111001.js",
+      "source_sha256": "6d27481e8a3492848b4373659b5a6c5d8391cd0d77b41771c535e2f5efae9e73",
+      "lua": "npc/2111001.lua",
+      "lua_sha256": "17c167d9c8ae8adc1d403051552e12de42b5655ea6e67c649081ab638656817e"
+    },
+    {
+      "legacy": "npc/2111003.js",
+      "source_sha256": "edf8653572effcdd164935d55a80d943342817fae999ab2acfeb6053acf05647",
+      "lua": "npc/2111003.lua",
+      "lua_sha256": "1250d30749014ea71ff48b4e73d1d398b21fc4a1c08d23ac7ee63d6e3d7d1113"
+    },
+    {
+      "legacy": "npc/2111006.js",
+      "source_sha256": "ed162c5e07eb39f9014568952dc5f0568fff9adfe49938c881f4007beecc13f7",
+      "lua": "npc/2111006.lua",
+      "lua_sha256": "d7bdbfa939dae1759ee453f488e574484deb81455406ee1c870c9c3e844b3221"
+    },
+    {
+      "legacy": "npc/2111024.js",
+      "source_sha256": "5e02e0b04cdc38d5baf17bed00526629d6cf9e6e5ca3deb908ad6e4944604dd9",
+      "lua": "npc/2111024.lua",
+      "lua_sha256": "ee954fa89c389f28b98b8c6ba440f4dadd13dca2d48db3ccf622cd1070d0643c"
+    },
+    {
+      "legacy": "npc/2112001.js",
+      "source_sha256": "6a480d2c14f9ef745ead83508bdcf20540c51a682d539e26f15028787a2eae2e",
+      "lua": "npc/2112001.lua",
+      "lua_sha256": "f784d64f28fd007d08e2d18967238805aa17f7bf33a75aa963122190eda578d8"
+    },
+    {
+      "legacy": "npc/2112004.js",
+      "source_sha256": "e2c5c194c57b1aef65d5e09fdcaed36e3d70b9845b1ef5b863b8b397d4938003",
+      "lua": "npc/2112004.lua",
+      "lua_sha256": "64ec246ce36efecd8b78c52cb39fecc8509317cb931373eb640a993a83a0d1c7"
+    },
+    {
+      "legacy": "npc/2112005.js",
+      "source_sha256": "9ca226c84c56d3f5bc1a909457ee72792d3f304da1fb9a76960dd27773b9b8b7",
+      "lua": "npc/2112005.lua",
+      "lua_sha256": "3ce1419894c9ba51026ab6a6ef76c86b6c8ead79e1823505ccb2403a425b220b"
+    },
+    {
+      "legacy": "npc/2112011.js",
+      "source_sha256": "0e3810c997f7c116f8bb913467638318646842bdb036d20d9cc5e8d536c43dbb",
+      "lua": "npc/2112011.lua",
+      "lua_sha256": "4dd8288c0c048fa9f687c4d61bf8188d36941bffe3bdc6d8574b9d0ac61b6348"
+    },
+    {
+      "legacy": "npc/2131001.js",
+      "source_sha256": "e0f726869b7fbd0c04a132a1483f761f482f5392d58269f0ac2592fc82ca0da9",
+      "lua": "npc/2131001.lua",
+      "lua_sha256": "6495a3c46776e2cac32fb9779cd34730f3614688ba01485fe41f500707976690"
+    },
+    {
+      "legacy": "npc/2131003.js",
+      "source_sha256": "c1ced3b10dfdb0e920a5970e3971865a052cd5b0d01ba7112aaddbc6854a14d0",
+      "lua": "npc/2131003.lua",
+      "lua_sha256": "648d958afc8da47a19a70c176c2812999266fff26e215914ed123f3603fb8847"
+    },
+    {
+      "legacy": "npc/2131005.js",
+      "source_sha256": "58861e9c8ea3b7a842ca9156a820d510f90f691d90aaf5eb8fc31f1f7a38d8b3",
+      "lua": "npc/2131005.lua",
+      "lua_sha256": "fdb7cf36a7ff555933fd6e4246debcf0bf420841a249795f899758196fdb8109"
+    },
+    {
+      "legacy": "npc/2131006.js",
+      "source_sha256": "8813ad5b785157ebfcc107cb42352602107bfb43eb040e7c145f8499aaa0c05f",
+      "lua": "npc/2131006.lua",
+      "lua_sha256": "1f110abac7bef8cd10516f9e6950f56ea95407bbe93fece150542fe3b85f6731"
+    },
+    {
+      "legacy": "npc/2131007.js",
+      "source_sha256": "ff6b5151d0fb8f038c2ec706b85e97b87cf84010a0a0396ffb444f3cecb77f65",
+      "lua": "npc/2131007.lua",
+      "lua_sha256": "e480840d90ad60d71bf61a7f76f82c678ba4d8ba855269f8496cf29c9e783f06"
+    },
+    {
+      "legacy": "npc/2132001.js",
+      "source_sha256": "29a9eb715b68ca02fd1741f75f1a09a85f3263d62a72a0b7f3fc70960558e840",
+      "lua": "npc/2132001.lua",
+      "lua_sha256": "494938433b6ed0b41c979e5c571d24bf35ad058996e6c3b63ae6e5883be0197b"
+    },
+    {
+      "legacy": "npc/2132002.js",
+      "source_sha256": "5a42727919dda2b8dbaed7d2b3543617989096798b89d75fb084531e4775f91a",
+      "lua": "npc/2132002.lua",
+      "lua_sha256": "169d959c2df15bf0aa017f15d9d64b756a28f1c0b5fcab9b81381cf02cbc124d"
+    },
+    {
+      "legacy": "npc/2132003.js",
+      "source_sha256": "b02ee42cb0cd032b656802d620fc118f2fa6166b2b54cb338f66a080cfce4724",
+      "lua": "npc/2132003.lua",
+      "lua_sha256": "b281714fbcf1a4e0505a8ba838f82000d5a2e39e38246ed5d538d8b92903043b"
+    },
+    {
+      "legacy": "npc/2133002.js",
+      "source_sha256": "3897cac19a2890c7207695139cb9b38981c4733bd347011c6ac67328a3ebbcdd",
+      "lua": "npc/2133002.lua",
+      "lua_sha256": "f51d06b81cbd4267826d2873576a0557612137173fcf13e51587e03aa2adfbd0"
+    },
+    {
+      "legacy": "npc/2141002.js",
+      "source_sha256": "abc3f4f5edd278ed3069eaa2499800c285bf86685c9d3ac5615940dfbaf8f622",
+      "lua": "npc/2141002.lua",
+      "lua_sha256": "022ca25b16300bb5c16e1bb89e1938f5ddcc24697d9ff959747261034708ea5c"
+    },
+    {
+      "legacy": "npc/2150008.js",
+      "source_sha256": "34c06efee08e11198e8a1caad0f12eae5f518e611bca37d0bb9488c468738da2",
+      "lua": "npc/2150008.lua",
+      "lua_sha256": "d17d705b2986de6229d8c896e715361d0e817b7df617dea5f76b7c6b607c00a6"
+    },
+    {
+      "legacy": "npc/2150009.js",
+      "source_sha256": "b5c85b13b17258048e599f60f04b4eea7a1cf030e007faaaeb6bacd20f3943d3",
+      "lua": "npc/2150009.lua",
+      "lua_sha256": "ab4f97852585b8e823b1dbf7d2b4fa8aedeb19e61af7f97227766de1d6f00dc2"
+    },
+    {
+      "legacy": "npc/2150010.js",
+      "source_sha256": "b5c85b13b17258048e599f60f04b4eea7a1cf030e007faaaeb6bacd20f3943d3",
+      "lua": "npc/2150010.lua",
+      "lua_sha256": "b351eec3b56c6651a55224696a32a0c3df9cbf7f233dbd4ced4f2c3b2b4ba0bb"
+    },
+    {
+      "legacy": "npc/2151007.js",
+      "source_sha256": "3548906cc51ebb1ee150361e39be975ade104108f785e49c62eaa8fc4a1d2b1a",
+      "lua": "npc/2151007.lua",
+      "lua_sha256": "b3b5e637fc13563c6dd5fc6729edc8881abc2bdecb2365c1d967fbafd555a4ee"
+    },
+    {
+      "legacy": "npc/2151008.js",
+      "source_sha256": "845e30bf41f8b6bd1be19d728f848b58844f988285ceeaa0e9f9de7010826c59",
+      "lua": "npc/2151008.lua",
+      "lua_sha256": "b5509db9b7585096ffe36d8aa416a7745cf8ca529ead47607b872f255285f84c"
+    },
+    {
+      "legacy": "npc/2152005.js",
+      "source_sha256": "6b7241811442e186e4ca1fc384a4d5c34acc2221dfec7c5de443c7bc3235fa54",
+      "lua": "npc/2152005.lua",
+      "lua_sha256": "6a91ca9e6ab8a0252fd60637c4243156f1c006056ff1bcfb9036d89c13c7369e"
+    },
+    {
+      "legacy": "npc/2152012.js",
+      "source_sha256": "a991ca403c41dc140fc6dfd96fdae58067f40b234d9e669154bdc36e3839d1e0",
+      "lua": "npc/2152012.lua",
+      "lua_sha256": "86a32e6855cba6bc49db3c816e4545df57fe7eab2ba4e0b54f72d059d02c6209"
+    },
+    {
+      "legacy": "npc/2152013.js",
+      "source_sha256": "a991ca403c41dc140fc6dfd96fdae58067f40b234d9e669154bdc36e3839d1e0",
+      "lua": "npc/2152013.lua",
+      "lua_sha256": "10ba0ba21c538fff04ccb0cd7da751358b375f9324cf43fc56691800cc4c8bf6"
+    },
+    {
+      "legacy": "npc/2152014.js",
+      "source_sha256": "a991ca403c41dc140fc6dfd96fdae58067f40b234d9e669154bdc36e3839d1e0",
+      "lua": "npc/2152014.lua",
+      "lua_sha256": "a44253b94c044cd2596c01e7d8ac5cce1c04963802a9d42c179188610f822497"
+    },
+    {
+      "legacy": "npc/2152015.js",
+      "source_sha256": "a991ca403c41dc140fc6dfd96fdae58067f40b234d9e669154bdc36e3839d1e0",
+      "lua": "npc/2152015.lua",
+      "lua_sha256": "1717ecd01f0463da17270e5359c8f7bd14337fc8e948dc46f05cac32d363a010"
+    },
+    {
+      "legacy": "npc/2152019.js",
+      "source_sha256": "2b6aa45818ad08e6ce9d1f6632790e34e00c78a42aa7d5f61b9bffcc26ca41b4",
+      "lua": "npc/2152019.lua",
+      "lua_sha256": "879b869a49e31b0d421a759a25c33dc8e2ac7e363eee7fca8658a543ec2a0dda"
+    },
+    {
+      "legacy": "npc/2153002.js",
+      "source_sha256": "da0f47992468fc6a080b753d743499e84511ada68b6ecf7699d17f47784e0c38",
+      "lua": "npc/2153002.lua",
+      "lua_sha256": "f8846f4bfb3a9dbeb15ce5b0f353debe6c36d184d2ba80a648bffad18832cd81"
+    },
+    {
+      "legacy": "npc/2159001.js",
+      "source_sha256": "f4ffc4d69f416e025edeac0295dac87c665b0d5b8b54eee406ca2e632e75f465",
+      "lua": "npc/2159001.lua",
+      "lua_sha256": "23c444ea44bf375f52604705fe5f36014df30f68bfb10e800dcd35eb16a691bc"
+    },
+    {
+      "legacy": "npc/2159002.js",
+      "source_sha256": "a244cb01480e8b8bcb9152de9bfaa718ee3c07e3330fcf055550e2d3c2b495a0",
+      "lua": "npc/2159002.lua",
+      "lua_sha256": "01877bcbbb122364d311d8ec3abda063682b3a413466abfea2f8a3eca332f858"
+    },
+    {
+      "legacy": "npc/2159003.js",
+      "source_sha256": "3027fd7840e0cb8f6b065358bd8f763bd57634c6909c7aa3d3cde5dc8c055106",
+      "lua": "npc/2159003.lua",
+      "lua_sha256": "f087638548d21fc5a22728c49acc92bab02e36bc64134cc60209813f3191a03d"
+    },
+    {
+      "legacy": "npc/2159004.js",
+      "source_sha256": "312de3d9dd46537e5584d8f6512b569847aae61662def964e596da4982db54b5",
+      "lua": "npc/2159004.lua",
+      "lua_sha256": "97f3bb50c0df47207aa0a92e6645f736e21ad1a2f7fd17db5b864a417de3c7dd"
+    },
+    {
+      "legacy": "npc/2159005.js",
+      "source_sha256": "ac6cb7c5b6fa41e28de22bb934e8422d7add369beeea297fa9f27753cd17e10e",
+      "lua": "npc/2159005.lua",
+      "lua_sha256": "fdaa4eea1b32891b645e4c5d6064493176fde162ce20780af30671e9c00ebe46"
+    },
+    {
+      "legacy": "npc/2159006.js",
+      "source_sha256": "55cdfbca0a7bf7c05f49c7163ca8b0cf0503691ce760f3aec5fc3ca1987d471d",
+      "lua": "npc/2159006.lua",
+      "lua_sha256": "03679a753fb25c47a56b93074e1f537014a8122b315e612660ce59d20fd0b1eb"
+    },
+    {
+      "legacy": "npc/2159007.js",
+      "source_sha256": "ba7ad786eb311f04b8441885bd887b233b535c5d48a72919ec86812513bef6c3",
+      "lua": "npc/2159007.lua",
+      "lua_sha256": "91e4ac36addafeb32b7f079cb02a26ca80ad0a416abfe2445a9020dd207e5410"
+    },
+    {
+      "legacy": "npc/2159008.js",
+      "source_sha256": "9045a6f5095ae63da1807d27bfdc29c84b7ecea78f45ccdcee598a85811a59e8",
+      "lua": "npc/2159008.lua",
+      "lua_sha256": "50c072df8aa59d7d635d53254e4067f0182747b0ac4ad8022773f3c5cf13d82d"
+    },
+    {
+      "legacy": "npc/2159010.js",
+      "source_sha256": "61a947b9c1fe937365e4a7ec1c08545a5028567614b29b1ea95cea483936caad",
+      "lua": "npc/2159010.lua",
+      "lua_sha256": "3724cf9900952391166a9a448519860bf7f943e09f261c616336d166605b5143"
+    },
+    {
+      "legacy": "npc/2159011.js",
+      "source_sha256": "0580c5d24e807840835858a5ce1cec5631d4a7ce9a530975af0a69744e438b93",
+      "lua": "npc/2159011.lua",
+      "lua_sha256": "109dbe3c49cf7a126fa7bda7a29eb29f1e652eece3f9039d3b668994ed5143b3"
+    },
+    {
+      "legacy": "npc/2159013.js",
+      "source_sha256": "c904ee1d36d76a7b29be3f1070c0545afbd3de70e257b364467b12d6c37b7fd5",
+      "lua": "npc/2159013.lua",
+      "lua_sha256": "e0c25cdb8322147744c21ada821b88d9081fbeda3723d4491a92a1f5da82659a"
+    },
+    {
+      "legacy": "npc/2159015.js",
+      "source_sha256": "3eaf1172fcfd9711cdc775346cc8372f7eaf565f6a0ea2ef178232d0e14d4b1a",
+      "lua": "npc/2159015.lua",
+      "lua_sha256": "51cc9cd53e0d677a890309b1c0e658445e363c8b29f4982242e7d1507db49f9b"
+    },
+    {
+      "legacy": "npc/2159016.js",
+      "source_sha256": "23db859e34b262337375e9771d2c936a417a9bdb55c26062dce7848fdac32756",
+      "lua": "npc/2159016.lua",
+      "lua_sha256": "a76b102711f120882d362e89ad5ce06e3916f19d20725330e6ca456d3adce07c"
+    },
+    {
+      "legacy": "npc/2159019.js",
+      "source_sha256": "a554d3fa71a6161fe8ae70e7c0c40132a94bc65a9de52ea2f24214522399f3cc",
+      "lua": "npc/2159019.lua",
+      "lua_sha256": "11b824b6152f191d628fac658325c3081ba6d2912ea2201edb26675eba3f3491"
+    },
+    {
+      "legacy": "npc/2159020.js",
+      "source_sha256": "126151427cb089dd1614a4dbcaa0bb056ab982cc16aec2b81a28edc9d7b1ebf2",
+      "lua": "npc/2159020.lua",
+      "lua_sha256": "641818b41a218eebfad94c6f751403fd6cf2315c55b851b519ef1c977c6d422a"
+    },
+    {
+      "legacy": "npc/2159328.js",
+      "source_sha256": "cfa7bd094be139119657eba0ee7dff361923ad99488e813a3b82d3ecec734768",
+      "lua": "npc/2159328.lua",
+      "lua_sha256": "5b183b70995a375212f7bca09749f2975b730a65901be3a99aef5acba1a98414"
+    },
+    {
+      "legacy": "npc/2159329.js",
+      "source_sha256": "34c2b9ec80f1805b385248235ae9a3d3aa52cd24b55c610b392c4d6d748af84c",
+      "lua": "npc/2159329.lua",
+      "lua_sha256": "5768d90013b70c7095bb2ab27be3ad4eacaf04294828b35bffc289641f48d0c4"
+    },
+    {
+      "legacy": "npc/2161001.js",
+      "source_sha256": "f5d96cbd8a3d63b5c5f828c5ab72456cde726847fb599a17389e98926e53cde1",
+      "lua": "npc/2161001.lua",
+      "lua_sha256": "f87acb6a06c9a3d1202aef9e39e685996b56343c41547ee2a57c1aa72813bb2a"
+    },
+    {
+      "legacy": "npc/2161006.js",
+      "source_sha256": "389bfb84ef8907a8b70d0b8a6cabd4ef1f7696dbb5c9e93c59cc971f87a4e4fd",
+      "lua": "npc/2161006.lua",
+      "lua_sha256": "901d001ccb25d995166c1dc7bcd9a671415817680d89dae6b9a00054eb1b8543"
+    },
+    {
+      "legacy": "npc/2161009.js",
+      "source_sha256": "36f6ecf4aa9bc7dfa983451fafc188023b0c63426fd601fc44a4546ac9bf0432",
+      "lua": "npc/2161009.lua",
+      "lua_sha256": "218b33e3248165366129da6aac141e981c5dfa4dc36d86d2a1f51803a9748cb8"
+    },
+    {
+      "legacy": "npc/2170004.js",
+      "source_sha256": "3078eaae96c61212c575cc8e5680bcd2144dbc27023b28ad17a58146884deb29",
+      "lua": "npc/2170004.lua",
+      "lua_sha256": "a090988ffe047f2af1f4f167292134c24d57f14b0c8aa0505713e829be83f5f5"
+    },
+    {
+      "legacy": "npc/2183000.js",
+      "source_sha256": "b856443206b231f4d20e3fa8a0e0276816c635247a3ddcef5637e8b4bbb04b72",
+      "lua": "npc/2183000.lua",
+      "lua_sha256": "55ffd94114016b1ebab755c2d450c8f49819df77d280354ac35246f18a0a82d6"
+    },
+    {
+      "legacy": "npc/2183005.js",
+      "source_sha256": "b856443206b231f4d20e3fa8a0e0276816c635247a3ddcef5637e8b4bbb04b72",
+      "lua": "npc/2183005.lua",
+      "lua_sha256": "b337c3668e8424a87115e405dd7789e4e9ce63eb22939d42c7ed8402548c4a34"
+    },
+    {
+      "legacy": "npc/9000002.js",
+      "source_sha256": "cb7582ec79e2756ae72636fae1ffc5f721dd12d8dfe51b566930e9f3b5e20eb5",
+      "lua": "npc/9000002.lua",
+      "lua_sha256": "f692b09a5fd1b4d834cdddc951e3240e8f3cb043028abd8e7908f48195563f3a"
+    },
+    {
+      "legacy": "npc/9000010.js",
+      "source_sha256": "cf95a99e5aad7432af56b776265f51e61e05ed5bf049d51d5e65e7aa0a371b68",
+      "lua": "npc/9000010.lua",
+      "lua_sha256": "c9e1d44c4839ce38ad19caf628eee18296e42735ed7fcffe0c97d32f88c7e32d"
+    },
+    {
+      "legacy": "npc/9000036.js",
+      "source_sha256": "59941cbc4eecfea96c1a9620dc9f5658ce6caac0ef3afe1e4ec1dbe1e5e4765b",
+      "lua": "npc/9000036.lua",
+      "lua_sha256": "8abb1a7f17b72831b36913d3134c0b68c67c8f2e6ad8163c087a12efac578bdc"
+    },
+    {
+      "legacy": "npc/9000037.js",
+      "source_sha256": "a0e85f5b9d332b94f4042a6e61b276a7a799c317b51f2e0ee5bfc6006b2cf0ae",
+      "lua": "npc/9000037.lua",
+      "lua_sha256": "21b4f099c1fc9eb785f36233bba77808c18c34b2b611ab2ccb13f51aba86997a"
+    },
+    {
+      "legacy": "npc/9000041.js",
+      "source_sha256": "4d0178e52ec9c2dd8a5b124c17b56275758439a19ac645804a50db8ae583e089",
+      "lua": "npc/9000041.lua",
+      "lua_sha256": "4d31857a3b221a61bfafff43f3a4acddbdb9fe23df93a4abc5c63675c3627813"
+    },
+    {
+      "legacy": "npc/9000055.js",
+      "source_sha256": "7d91e9353b329fa22b4e17e83c98c57fad174b18189ac15b8d7c47175d5fe523",
+      "lua": "npc/9000055.lua",
+      "lua_sha256": "23ae551b4d693b3aab02091dde6ff738afcdc1a8e7ec6aa9b4a5ff83e36e5c32"
+    },
+    {
+      "legacy": "npc/9000059.js",
+      "source_sha256": "37d3ecd4f68ea6a21afcc776b5ccafd46af357697479ea8feaf87a9eda749492",
+      "lua": "npc/9000059.lua",
+      "lua_sha256": "ee8e7883a2b88f712d0467ebc2f1faad21f54815f34a4ba93c4d986050ea358d"
+    },
+    {
+      "legacy": "npc/9000060.js",
+      "source_sha256": "e697aebb3800e654973ed41445c87c51ded93cd4db5589ff644d7a4dcce02c26",
+      "lua": "npc/9000060.lua",
+      "lua_sha256": "860f0cd3d43d3a9992012f364190e69032a09cb5ed009689b13f2bb14e58f90b"
+    },
+    {
+      "legacy": "npc/9000069.js",
+      "source_sha256": "8c07028cc9bf9bf1038d806c9e2fc6133bf32a6feb1ef6fc12ae83912b0ce179",
+      "lua": "npc/9000069.lua",
+      "lua_sha256": "51d5bc1619ef0451bddbc5771cf10a04295f9c97f4e4708491a9bd247986b7c2"
+    },
+    {
+      "legacy": "npc/9000075.js",
+      "source_sha256": "b7b760b20688acf451e698b0fcdb407d91e982925940f587f6cae7cbe2806c0e",
+      "lua": "npc/9000075.lua",
+      "lua_sha256": "5f16fd016b751353458dbd3e1110feda2d3bb5b6142e8965a783be670411b8d2"
+    },
+    {
+      "legacy": "npc/9000078.js",
+      "source_sha256": "6355fc4c298dd6c50caba841f66b87025aed5b4c743a3df83ad0405a74832c8e",
+      "lua": "npc/9000078.lua",
+      "lua_sha256": "1ae0abbc07c991ec59c7275a7398d01161bf1719c34456e730f0376da9ca2fa2"
+    },
+    {
+      "legacy": "npc/9000080.js",
+      "source_sha256": "81e14a59af2e836ee30aa71793419e190e867622f83e65d38b2f645b407f28ec",
+      "lua": "npc/9000080.lua",
+      "lua_sha256": "a606023e36de765c2c2fabf5d7ef7292ada7e8f4ffd6e067d4ba92bf0f9be6eb"
+    },
+    {
+      "legacy": "npc/9000082.js",
+      "source_sha256": "6c11ebf4a578cd1f5484f2ea0bfd7354b120ec7781ae3aec79d4816900062b2e",
+      "lua": "npc/9000082.lua",
+      "lua_sha256": "1686a5d6f3b45e930ce9fa40eda130c681e0d1f48ac5702f523769c54381ede2"
+    },
+    {
+      "legacy": "npc/9000083.js",
+      "source_sha256": "cebbcbd1f16854703bf29aaf22b99aac2231879499591e15095eb1e0cb109761",
+      "lua": "npc/9000083.lua",
+      "lua_sha256": "07199cffa25bd61bd738c9d0d7e3ff3a0b8d44a64d5ef485dca882a24a43c556"
+    },
+    {
+      "legacy": "npc/9000087.js",
+      "source_sha256": "4889aaa5ed2180759c74e9e9c0743742bcf83dc76650b82d8792635cc5256248",
+      "lua": "npc/9000087.lua",
+      "lua_sha256": "3a7cb5bd00b86ae614537828ac980dd53cd09bb2ceea502b2b8941787bf590d9"
+    },
+    {
+      "legacy": "npc/9000088.js",
+      "source_sha256": "13163229d38c268850ca048b75b1d170a520a44a45f2b58d193b4dd5c25d1cfa",
+      "lua": "npc/9000088.lua",
+      "lua_sha256": "9997c98158ba713c8de4108a725479aeca8be9df21f0a21efdd2b8b7902a6ff3"
+    },
+    {
+      "legacy": "npc/9001001.js",
+      "source_sha256": "17bf917ba708484ace13e677e79395dfba6da944bd651b34e82f79b9e7b3c260",
+      "lua": "npc/9001001.lua",
+      "lua_sha256": "0f5fd3d98dfde0f681a77939a25ba850be52054fb107ab8e25e2f622c430eb2a"
+    },
+    {
+      "legacy": "npc/9001002.js",
+      "source_sha256": "997e27a5da71ccc9b4436419c854e990a74da69064be1a28f9c2e5d987d29ec4",
+      "lua": "npc/9001002.lua",
+      "lua_sha256": "414a924ddddca65b16ee04b0d4f35554f5338760a2d0c97d914f392c3381b965"
+    },
+    {
+      "legacy": "npc/9001108.js",
+      "source_sha256": "3e9498267898e27a8626374cd4fd3e8e7fa4f5bd9952c2eaa0c37bb4095b4c08",
+      "lua": "npc/9001108.lua",
+      "lua_sha256": "4186f8420b7219f457da050a0083a78ba3c9fedafdf36a62d1c65a7eaf54a33c"
+    },
+    {
+      "legacy": "npc/9010000.js",
+      "source_sha256": "58c86486750161003213367e2d8a3e3242d7d4abf3ba6f135c5f26cc1e9e9407",
+      "lua": "npc/9010000.lua",
+      "lua_sha256": "9395c9383a27d0b0fb4df347557bf0ca287d44c150673e84b6792fe87445402d"
+    },
+    {
+      "legacy": "npc/9010001.js",
+      "source_sha256": "eb3cca1886f77239caca68222c133fec857aedd9cde087e4ca1bd8c37e63b27d",
+      "lua": "npc/9010001.lua",
+      "lua_sha256": "a04ce7025977cc99cc70f4cff795f93bbaac7845235ff209e3e0f73a966061bc"
+    },
+    {
+      "legacy": "npc/9010010.js",
+      "source_sha256": "68d2e8de7a36c45b54373f44d4378f675bdd84cea0a564cf178b63f79a1aa521",
+      "lua": "npc/9010010.lua",
+      "lua_sha256": "21ce698d465fc375e4dafb671f99226f97c9bfa8347b2ae0cff001a92f395115"
+    },
+    {
+      "legacy": "npc/9020002.js",
+      "source_sha256": "b92d7513ab51a96fa3b1b91e661d07d65a3273df433030c95907cc1618851c2f",
+      "lua": "npc/9020002.lua",
+      "lua_sha256": "bc8f3b54e974000ce2dbe42a814cd9d55ea2270443f05b90a2d6c0548984595a"
+    },
+    {
+      "legacy": "npc/9040001.js",
+      "source_sha256": "41d9a0fb6a03ce7dbdf2394ee0304e415df77825f572ac2f632a0cba51671a85",
+      "lua": "npc/9040001.lua",
+      "lua_sha256": "c1d7a4316dc7ad14268373e7428810b53e957812ab3dbb0b0e8aed483bff8d96"
+    },
+    {
+      "legacy": "npc/9040007.js",
+      "source_sha256": "6e0fd150e3423e1d9e1e480da0396e52fb69abe7d12a6ea401c51b1bfc11e2a0",
+      "lua": "npc/9040007.lua",
+      "lua_sha256": "b1ecacb0005e7ad568d907634f86eefd3c01746b41052b983aa69103beea1429"
+    },
+    {
+      "legacy": "npc/9040012.js",
+      "source_sha256": "726d9c3d58ec6de8ccd84791b53ebb5cb058a16cbe00c48c3cb532055ac1d70e",
+      "lua": "npc/9040012.lua",
+      "lua_sha256": "24173d451550336e95c79c3570013506c6735d425b78df28caa0928e55281fd6"
+    },
+    {
+      "legacy": "npc/9050008.js",
+      "source_sha256": "29ee9105ffb51127954529cf904e0aa1e66afd1c59d9f9bf699f987150fa48c7",
+      "lua": "npc/9050008.lua",
+      "lua_sha256": "f89aa266622f1c7bdc948bce0a23485d7db649bb42e66798240008f7c43c8411"
+    },
+    {
+      "legacy": "npc/9060000.js",
+      "source_sha256": "ed0c7581b7b446976de5a73354594a4302c48d11467d2ea8f198b3e993f06d56",
+      "lua": "npc/9060000.lua",
+      "lua_sha256": "8dd21aca42ba20c93bb00f20edc696800649ecc69087153ecbcb35c28b09b958"
+    },
+    {
+      "legacy": "npc/9070003.js",
+      "source_sha256": "c2bc8141cc0cf7f4a69e11e8b3d656a428cbe83ac9b38716d055fc75ee9e83e6",
+      "lua": "npc/9070003.lua",
+      "lua_sha256": "f1f20c9a7c3e3a877bd4c09d3839832746f18a2429c72433dd9d45b9ae64fd0c"
+    },
+    {
+      "legacy": "npc/9070004.js",
+      "source_sha256": "c2bc8141cc0cf7f4a69e11e8b3d656a428cbe83ac9b38716d055fc75ee9e83e6",
+      "lua": "npc/9070004.lua",
+      "lua_sha256": "97a27cb16d63e8d06918c62740725593f7d326de3d6145a34c2319494ef411d4"
+    },
+    {
+      "legacy": "npc/9070005.js",
+      "source_sha256": "738ae4c3aed279db3f3ad683b483072f1d4b690e11905cbd7a972abac4e3825f",
+      "lua": "npc/9070005.lua",
+      "lua_sha256": "c93170c22ec4f5baab74e779487cee3fd146a9c953ba691a00b94537dd7569a3"
+    },
+    {
+      "legacy": "npc/9071000.js",
+      "source_sha256": "3f5ae2399c9d3aaf92c7a8337928cd745250800fccaf4aeea7a1b570d70f2dc7",
+      "lua": "npc/9071000.lua",
+      "lua_sha256": "ab6c51df568d740aacc25ab4ef959f815de91170df715cc14717bd5dce49bc68"
+    },
+    {
+      "legacy": "npc/9071003.js",
+      "source_sha256": "a600e5f23cbf7e5851615502d71385d50e8dbf5b12175afc4b0366f32e35c4da",
+      "lua": "npc/9071003.lua",
+      "lua_sha256": "1dbff0bfdc0faeb7cd7a5dec3ad2845ac94e9909b2d3840d4767b085c1df2de5"
+    },
+    {
+      "legacy": "npc/9071005.js",
+      "source_sha256": "8450c97feef20063cfe47b38d1d1b1945e95fa5349f3194dcc950d3c6e065aa6",
+      "lua": "npc/9071005.lua",
+      "lua_sha256": "1c61944656cf65a3433bc849bd54ffdb9ea5dca431c1d56cc18c6d56ca29a978"
+    },
+    {
+      "legacy": "npc/9100100.js",
+      "source_sha256": "12f6a838b41d4fcb9353a993ea807ae5cbee70fe6ca39567e512e3f9ce85de40",
+      "lua": "npc/9100100.lua",
+      "lua_sha256": "3e402218e24ee20f81ebe2a0a0d46184c63f7a15a7f24a17ca321e030cd0c7ec"
+    },
+    {
+      "legacy": "npc/9100101.js",
+      "source_sha256": "b73d0098431a1bcb492dc31cd6e8a916f99b1a99776a4f0e8421181e3a755d8d",
+      "lua": "npc/9100101.lua",
+      "lua_sha256": "c952e20b2f8f31bd7252c5b14efcccb07440e57f4726d433db539965dc88c2de"
+    },
+    {
+      "legacy": "npc/9100102.js",
+      "source_sha256": "8a41d5bf51687d1bd0214cef12d7c38ab6e2eda915eb3e04b269d0cee8f2dc80",
+      "lua": "npc/9100102.lua",
+      "lua_sha256": "fe1e4b7c33004e79492ce7066ece440cf71ff5e3ca6018e4a1c2aa409ea18a6e"
+    },
+    {
+      "legacy": "npc/9100103.js",
+      "source_sha256": "62dc6006d4adaf63df56a4294a38850da2b4eaca08b85a7f4258c352aabc6b5f",
+      "lua": "npc/9100103.lua",
+      "lua_sha256": "ebb9c8ea30b18322986b36d4e8ecd6dcf77de26d191042d96ba8379b1c1774b9"
+    },
+    {
+      "legacy": "npc/9100104.js",
+      "source_sha256": "f4eaabc8c258c60c64cdec114d71b1f3dd62c2d6a2a09949d7b0f297c33b524c",
+      "lua": "npc/9100104.lua",
+      "lua_sha256": "afe16aed0f58c984fe28fd8f76da71009976d7c892fb02dc6ba5f3bc21b6fb1f"
+    },
+    {
+      "legacy": "npc/9100105.js",
+      "source_sha256": "2f9d930680e703992eb3b3fd97aee5f7f12b2d7fdc47158705406b5368e61a1e",
+      "lua": "npc/9100105.lua",
+      "lua_sha256": "095523d4f0e127ff86fcc75c371740d805099360b69324e35107dba05752387a"
+    },
+    {
+      "legacy": "npc/9100106.js",
+      "source_sha256": "783be00e4356c73a8832e8a203a012c5caa287c6565749080debb4b791639a6d",
+      "lua": "npc/9100106.lua",
+      "lua_sha256": "986fb06553d9058e8d44304dd3cf148da88e10b3b69ac72fba504af73b4edb46"
+    },
+    {
+      "legacy": "npc/9100107.js",
+      "source_sha256": "1eac52e90f8bb2e9ee5d79db9ac686e34a5d3ed717322d4c9403c95e383ecb1b",
+      "lua": "npc/9100107.lua",
+      "lua_sha256": "2ae574fc246a8c2f8797ac865c2343c3ee39566f344eb0b7dabf9968ea822591"
+    },
+    {
+      "legacy": "npc/9100108.js",
+      "source_sha256": "b0b469b4562057e8011cdbb127b0e14e2a7e65f3c6ad3712eb783ffbc8634fde",
+      "lua": "npc/9100108.lua",
+      "lua_sha256": "16828f53b40daf04ddbac3647010cf9dfdd9cfdc75188126218f5f0de25ae05f"
+    },
+    {
+      "legacy": "npc/9100109.js",
+      "source_sha256": "295da0a3b63d0941b3e6a82a3c622dd6728a2242f17d2032908c01c11f553481",
+      "lua": "npc/9100109.lua",
+      "lua_sha256": "5f6c4fae55aa7f688a0aa167a29ccd5d2a43034e2324a2cb7d231029239a7763"
+    },
+    {
+      "legacy": "npc/9100110.js",
+      "source_sha256": "295da0a3b63d0941b3e6a82a3c622dd6728a2242f17d2032908c01c11f553481",
+      "lua": "npc/9100110.lua",
+      "lua_sha256": "9daff2085e32e41a254083a63cdb94c6a79cb7774a87f89b380a30dd6ab34781"
+    },
+    {
+      "legacy": "npc/9100111.js",
+      "source_sha256": "f4f94531b36825bf9e27466f6b82bf97aa146d6195427f6a76bbf5f6740ff3dd",
+      "lua": "npc/9100111.lua",
+      "lua_sha256": "e1da143ed7a7465d78df1c8ad22c54084f272e3e1ae4799b0dc9557d93534485"
+    },
+    {
+      "legacy": "npc/9100112.js",
+      "source_sha256": "65b265f9134844f692e2bc69fdf2de4151ca28a375c3a50e511ca2597c5b185e",
+      "lua": "npc/9100112.lua",
+      "lua_sha256": "91b784d4865cd150ad7a7d5dd51928d34ebdc922e8ef6cab879f535d1b69cbba"
+    },
+    {
+      "legacy": "npc/9101001.js",
+      "source_sha256": "b67953bba2a4eb2e2bf2bbd29b871e2e1cd024d9628c23c5b7205023fdba71fb",
+      "lua": "npc/9101001.lua",
+      "lua_sha256": "d1e5fa822c14ad802e6a11adbf7e6b28cbaa0912a6424c3867e3ae6768791b13"
+    },
+    {
+      "legacy": "npc/9102001.js",
+      "source_sha256": "7b93c8bc7e412840ca769493aae8db08e19cbd21987635a69754a98fc4b0089a",
+      "lua": "npc/9102001.lua",
+      "lua_sha256": "de4d857a8a0a63b98a7808159f5ea4d485cccf0d3f690164181dbdd1abe616e1"
+    },
+    {
+      "legacy": "npc/9102100.js",
+      "source_sha256": "a3a6a8db1fe778f5c252f3121f0ad16a9ad27c5a927c93a771824f388fc61fd2",
+      "lua": "npc/9102100.lua",
+      "lua_sha256": "9228883dff267f135f0fb462af3a5a954436fb920104ea7c0546ddcfb5ced7a9"
+    },
+    {
+      "legacy": "npc/9102101.js",
+      "source_sha256": "0795e3fca9eeaa1ed2f3119a639934ad66fc183846da8f567bdaf7c27c82c019",
+      "lua": "npc/9102101.lua",
+      "lua_sha256": "f64136e91e325b8296aa7d02bd171f66c4ee7ed919b2ad09a03cfb96bb734457"
+    },
+    {
+      "legacy": "npc/9103003.js",
+      "source_sha256": "9d159311997210273711d74af4f1d2515de8edc3f9aed6a2ea85fdf325ba2b2f",
+      "lua": "npc/9103003.lua",
+      "lua_sha256": "f4a062b0979c9110e50a39ef027772b45f3665553d78869d2befcd7e320678bc"
+    },
+    {
+      "legacy": "npc/9105005.js",
+      "source_sha256": "1a89c6113dd64d0f3fc78247826437cea2e690e9d76a6a35e7f1d869062cb8af",
+      "lua": "npc/9105005.lua",
+      "lua_sha256": "8d4511bc85b89635cf3d24999c6b1b07787f7cf9b6c9dfeec7b7e7091a658c25"
+    },
+    {
+      "legacy": "npc/9110105.js",
+      "source_sha256": "aa6dc9b6ba183082121c2b5e50e45148c097bea5bf96ba2a27cd97936349b1ca",
+      "lua": "npc/9110105.lua",
+      "lua_sha256": "396abd0be6c84b4bf93a09928b2b75528afb168d589ea459e6859d98904ca26c"
+    },
+    {
+      "legacy": "npc/9110107.js",
+      "source_sha256": "ab7ab6b8c96becf497299f6101e680138352e26ccd41363abf89339a32c9d3a2",
+      "lua": "npc/9110107.lua",
+      "lua_sha256": "a6335f12b1b529a4deeb3e3dcf851d8a599270cff00acd2d4be1d2564a8699da"
+    },
+    {
+      "legacy": "npc/9120003.js",
+      "source_sha256": "bb81ca8cef63e73865b5ed7cdd6c062eae16a18ed9a64f7e9de2ba05244d9ff5",
+      "lua": "npc/9120003.lua",
+      "lua_sha256": "d59554cc8fd58ad0a64121dcf8675098cecb3944542ed2cea3ffb6b5485ee557"
+    },
+    {
+      "legacy": "npc/9120015.js",
+      "source_sha256": "f59515466d4332420f7874996891b1592c1e8958974aaf2472776d6e4aca4922",
+      "lua": "npc/9120015.lua",
+      "lua_sha256": "1e67be8a557fa070980c5aefc34bfb270ef82aeca8adb13ccdf7778635412b79"
+    },
+    {
+      "legacy": "npc/9120020.js",
+      "source_sha256": "290f2db08fe22eb40468ad28c3c80b7a0e96a19a8f89917fe13643094f907e69",
+      "lua": "npc/9120020.lua",
+      "lua_sha256": "c88e5bd80fac18e64ed2ddc19452ab1c489c52151d3c5640a6379bc1edfb1009"
+    },
+    {
+      "legacy": "npc/9120026.js",
+      "source_sha256": "f3d9a4401328bf4b583f1bf0e72afa4ae4245101055a8d14378f2b264afde9f1",
+      "lua": "npc/9120026.lua",
+      "lua_sha256": "c0361db1e0886ec2f13ff6d4ca37d95869484c3d945ad2180509679f733c62f2"
+    },
+    {
+      "legacy": "npc/9120030.js",
+      "source_sha256": "22a7c7b50d2ec4359a29837fcf43767e18e704221ba898d234e6fd81f7122ef1",
+      "lua": "npc/9120030.lua",
+      "lua_sha256": "4d93286e7248b47d6f05ff05f09f78e23c60fadd94bda96422641dab8e03be08"
+    },
+    {
+      "legacy": "npc/9120034.js",
+      "source_sha256": "172b3324904a68f247a07b1a024ae3e0e0edc248919ff46d1702572866301051",
+      "lua": "npc/9120034.lua",
+      "lua_sha256": "37c48cf56f8b09a3b4c1486cc2a5fd0129beff458ae7c3fb17b6342f4ce8b230"
+    },
+    {
+      "legacy": "npc/9120100.js",
+      "source_sha256": "8cdce0d186014c7d30136e4532828864d7a21a1744f1ba8715a556d08a25df0f",
+      "lua": "npc/9120100.lua",
+      "lua_sha256": "21b67a3ee58611a3ba6e7cb47fdeb7fa334e76ec4e03f0b13bb4e12fc2a2a8f1"
+    },
+    {
+      "legacy": "npc/9120101.js",
+      "source_sha256": "cb45e9fd41c93758c3e67d2e5bcbd2e114a06a9b91d00a69069e20442fbbeab2",
+      "lua": "npc/9120101.lua",
+      "lua_sha256": "d3b05ca6d5b16eaf996693bec1f15cdc44105063c0b7dfdbdf3387b8d7e2e1bb"
+    },
+    {
+      "legacy": "npc/9120200.js",
+      "source_sha256": "61b554b12193c5f64e52893f9e0d5800338ce42f9626f88727f7b5f626e131a2",
+      "lua": "npc/9120200.lua",
+      "lua_sha256": "1d6a8f11a859cd6227fc65341ad2e163b59db18dcf93db1b380d9d8451ac0737"
+    },
+    {
+      "legacy": "npc/9120202.js",
+      "source_sha256": "93767ea92efb98019d6fba2c9d63e567cec329efc8635fda617ae9c538f9a8e9",
+      "lua": "npc/9120202.lua",
+      "lua_sha256": "d12af9231233d215836cb087e962245aeac00b4ac966244c1211659262703a59"
+    },
+    {
+      "legacy": "npc/9120203.js",
+      "source_sha256": "e17a1ef1858ea9b364377c03458a07739558cbc322d9ada073cae770241f189b",
+      "lua": "npc/9120203.lua",
+      "lua_sha256": "527d19f3e12cdf44d37c4e486ed3888ef8f3fcb202f9bc2749be78d85d2e143f"
+    },
+    {
+      "legacy": "npc/9120206.js",
+      "source_sha256": "8158062f9f57427a07bed9b628ad7bd1008a53d9214c70156a6dfb333df2cdb2",
+      "lua": "npc/9120206.lua",
+      "lua_sha256": "463182475b9789bfce5fed922d6adf5173471fe51f0143013cb1365ee9296fb2"
+    },
+    {
+      "legacy": "npc/9120208.js",
+      "source_sha256": "8158062f9f57427a07bed9b628ad7bd1008a53d9214c70156a6dfb333df2cdb2",
+      "lua": "npc/9120208.lua",
+      "lua_sha256": "b78945c49ae738aadf16e335e9dfc288bdf1bb37de84af171cdba46a3790f43d"
+    },
+    {
+      "legacy": "npc/9120210.js",
+      "source_sha256": "8158062f9f57427a07bed9b628ad7bd1008a53d9214c70156a6dfb333df2cdb2",
+      "lua": "npc/9120210.lua",
+      "lua_sha256": "0a65ee5bfffd3c71066a1f1749a219274eaa2543d7fa47561746b44b095c3d1c"
+    },
+    {
+      "legacy": "npc/9120212.js",
+      "source_sha256": "8158062f9f57427a07bed9b628ad7bd1008a53d9214c70156a6dfb333df2cdb2",
+      "lua": "npc/9120212.lua",
+      "lua_sha256": "5a97ce86edf0a5bdb1355d84d82729aff363198c59f3bdd7ab28cb0f0831a12e"
+    },
+    {
+      "legacy": "npc/9120214.js",
+      "source_sha256": "8158062f9f57427a07bed9b628ad7bd1008a53d9214c70156a6dfb333df2cdb2",
+      "lua": "npc/9120214.lua",
+      "lua_sha256": "2349d150010d122d52eccd6bd120600abee54fa1b7a7667cee1a90f0697c5c63"
+    },
+    {
+      "legacy": "npc/9120216.js",
+      "source_sha256": "8158062f9f57427a07bed9b628ad7bd1008a53d9214c70156a6dfb333df2cdb2",
+      "lua": "npc/9120216.lua",
+      "lua_sha256": "ed4a6f31ce44fc779808382339a9cdd7a4737b6d093c3a88e599d524d049b4ea"
+    },
+    {
+      "legacy": "npc/9200001.js",
+      "source_sha256": "113a15cb2463d84c95b675a81929d01bd4f721e82d4f89ebb7e8f57a7bc93536",
+      "lua": "npc/9200001.lua",
+      "lua_sha256": "6cece9a0bda648a0fa987370e0cb760e03568beec1a93a8ccd52cc60c3112d5a"
+    },
+    {
+      "legacy": "npc/9200100.js",
+      "source_sha256": "bec4896c9d9fb6d03acceb4c022f229b13c8f8d12462c6e9929f83ed97f5429b",
+      "lua": "npc/9200100.lua",
+      "lua_sha256": "62722bda6fd566e143b41e117ce4da82c5e0480161f08ad58426e632f76846ac"
+    },
+    {
+      "legacy": "npc/9200101.js",
+      "source_sha256": "e6b6ad7095cec794a39ca81e2a06500cfe0fd57d9ae013de747304ed24345b50",
+      "lua": "npc/9200101.lua",
+      "lua_sha256": "8f401288b286ade35c1096c170bfcbf4f3e3b8b6e272dd609ffec4f5a918a5b5"
+    },
+    {
+      "legacy": "npc/9200102.js",
+      "source_sha256": "c9eaa8e8b2346fe75d463f634381f747606b16a16fa43d898ddcbb5c7b4a0fbd",
+      "lua": "npc/9200102.lua",
+      "lua_sha256": "5e98b37662b3b0923726313f70d47a548924c331eb9cfb0711c0359bf4c13910"
+    },
+    {
+      "legacy": "npc/9201005.js",
+      "source_sha256": "25d9cdb0f07a72f5186a57ff2443d54e26fdc9b8a5d1771ca1efd932a1a6822b",
+      "lua": "npc/9201005.lua",
+      "lua_sha256": "4b0f2fcecc29af5052c228f77e9637448b79eaaf92463d0472660d615500a286"
+    },
+    {
+      "legacy": "npc/9201007.js",
+      "source_sha256": "8d6a82088ebb5e2855a2eb0ca80f9d22610191ce4898023c1946b30354e1bf7d",
+      "lua": "npc/9201007.lua",
+      "lua_sha256": "bc3e6872a0b3a56bd6c0786205e7b2abd449839a4811a751e191605882a9e2a8"
+    },
+    {
+      "legacy": "npc/9201008.js",
+      "source_sha256": "81a31544544eaf82f4d0285487139d138fae4c9f03155afe2b11b1fe2778fca1",
+      "lua": "npc/9201008.lua",
+      "lua_sha256": "bd092ba450c3953cbb67e53e721dbce521ceef7b9934ca10d5caf62565c44d7a"
+    },
+    {
+      "legacy": "npc/9201009.js",
+      "source_sha256": "8d6a82088ebb5e2855a2eb0ca80f9d22610191ce4898023c1946b30354e1bf7d",
+      "lua": "npc/9201009.lua",
+      "lua_sha256": "f92b78287b3085cb53afcd7a1cc58d206bd9817d1e0678bb441e14687677b053"
+    },
+    {
+      "legacy": "npc/9201015.js",
+      "source_sha256": "80043c779430251e3ca4c5cd21f51c44d1b582d61fdc14134458dd51a6e5d17f",
+      "lua": "npc/9201015.lua",
+      "lua_sha256": "3f8cb76800129494bb2a7bcc337eb9d725752aa4dc8fe8fd5b7f9104497a4fae"
+    },
+    {
+      "legacy": "npc/9201016.js",
+      "source_sha256": "c9da4d50edf98ce523e76f846cc043c5e516450e3e104530f6c66a53152c33e0",
+      "lua": "npc/9201016.lua",
+      "lua_sha256": "d5888da6d64fb45430788dbc93b88441e49cafd2d3d7469cf16bdaf329e92379"
+    },
+    {
+      "legacy": "npc/9201017.js",
+      "source_sha256": "9a769d4e65953cf7540e00d06b2b2578d324907ce9fa86b4a4874eef3cd8321c",
+      "lua": "npc/9201017.lua",
+      "lua_sha256": "09c38526038cbc410b6b35dae2b200e154dbd9a48bf13dda9b5b3ca2e311174a"
+    },
+    {
+      "legacy": "npc/9201018.js",
+      "source_sha256": "3eebdbd912ec008ab42d69cf031660d8c32af46e0cb714a0824759b2f64bd726",
+      "lua": "npc/9201018.lua",
+      "lua_sha256": "5b200146dfc8bfe0e24f5ff86d525583b2cc666fb0b60b51f3649b8e0338d6fb"
+    },
+    {
+      "legacy": "npc/9201019.js",
+      "source_sha256": "2c5e69d0e472995758753f2520c8b06891387b864d21c81207c37b7b07436183",
+      "lua": "npc/9201019.lua",
+      "lua_sha256": "59293fda1fa60e735bcba0becce28469d4b8612f5a51000a486c241edc9a637b"
+    },
+    {
+      "legacy": "npc/9201028.js",
+      "source_sha256": "6722d3148f850fab1253d03934adc94243900b69e55d88886115de3fda48d0fe",
+      "lua": "npc/9201028.lua",
+      "lua_sha256": "48d760c2d84fbaaf480d856e5c7a54f225e9cacbbf3d7ceabaad43d00a3764c1"
+    },
+    {
+      "legacy": "npc/9201046.js",
+      "source_sha256": "6a2a9c7d9d6282109d72bfdca1e960f1076a397196e46a1b16dfe015f825ae2b",
+      "lua": "npc/9201046.lua",
+      "lua_sha256": "617f8d5fea0f54909cb4b13b213f10399385108ddf723184e81299435bbcc53a"
+    },
+    {
+      "legacy": "npc/9201049.js",
+      "source_sha256": "58b46b30157e9171ef2f86edcab303d6608ce299ec5047bfb85ab43f226257eb",
+      "lua": "npc/9201049.lua",
+      "lua_sha256": "787558568a8230504735a60648c5f6b4d0bfd1fb57df8085a0414b75026b09ef"
+    },
+    {
+      "legacy": "npc/9201056.js",
+      "source_sha256": "5fb0ba22813206d53512d4a1dbcf833091ea97b39fb6a6bc3b01f4ccc1452f85",
+      "lua": "npc/9201056.lua",
+      "lua_sha256": "30a3803cca30e803842a2ae4c405c364b77694593489af5b07c5bba6ac37261b"
+    },
+    {
+      "legacy": "npc/9201061.js",
+      "source_sha256": "39aae9d8574f9e1ed9477065dabb457e220f7ed1ef86f6c859fbb6fdb85b7a39",
+      "lua": "npc/9201061.lua",
+      "lua_sha256": "48751b56d8dc4719d6dc0e6f39f88bb20604814b280e6311e9ea60821737ec5d"
+    },
+    {
+      "legacy": "npc/9201062.js",
+      "source_sha256": "55b2475e312391a492a55dfae0b495a033db04b783a2e8f9ecb77b3f61b46ee1",
+      "lua": "npc/9201062.lua",
+      "lua_sha256": "28e98ccf4a0d811987ba314255df4d7ca57ad466dd5605a18a4a1db5a91998f3"
+    },
+    {
+      "legacy": "npc/9201063.js",
+      "source_sha256": "e35eb6ba02b114fd4d8d2a75cbcfc8328367c174e4775fbe5dc33e248d8865ba",
+      "lua": "npc/9201063.lua",
+      "lua_sha256": "ae42f01fd3624a731c53ff8d8532341e0e972a927bd91337837ae8c021b9daf6"
+    },
+    {
+      "legacy": "npc/9201064.js",
+      "source_sha256": "03ee04785b8b85c697d8af25c6eb422cdabb5dad382ed1b2441da42c5cdec2c9",
+      "lua": "npc/9201064.lua",
+      "lua_sha256": "017a01d3db99aff29e59fdd4a954b8f3bd559404a0ac776aff2ab41727f1f209"
+    },
+    {
+      "legacy": "npc/9201065.js",
+      "source_sha256": "476177008e29099a0780c5cb1683731f134d61ebc1cef255b6c9cc3af929df2a",
+      "lua": "npc/9201065.lua",
+      "lua_sha256": "7e38c063949363689524d5007747879f2806af64ef44a6d96b11d8b131026094"
+    },
+    {
+      "legacy": "npc/9201067.js",
+      "source_sha256": "f83b7d104c12abfaf4d0da27892c7f8347c45297ead80bc0afa371f23f636186",
+      "lua": "npc/9201067.lua",
+      "lua_sha256": "e2fc12c0735676084c3d5b9b4edd013db5ef6fd6c678cd16f2e4de53140b550b"
+    },
+    {
+      "legacy": "npc/9201069.js",
+      "source_sha256": "6d2319d2f8288f3adc74b0d35666a93b65119bd81594244c7bf77358614f2dd0",
+      "lua": "npc/9201069.lua",
+      "lua_sha256": "f6d6889d372dc0fe8693b727f587164a96881b40083c5b073ef7c6361a55ecfe"
+    },
+    {
+      "legacy": "npc/9201070.js",
+      "source_sha256": "deb437b38b570bf55d2a759625f66d23c44eb9d18248115649ef249bf9b04213",
+      "lua": "npc/9201070.lua",
+      "lua_sha256": "d5c6cbbe930dbb4ad758146b597d69f3074c09a5f2fd8e89a4c9585dbf8f6e25"
+    },
+    {
+      "legacy": "npc/9201081.js",
+      "source_sha256": "7fbe6ff974607cc6ef9e79029f51bca914dc1720cfcc7c06ac4900755c8d9efd",
+      "lua": "npc/9201081.lua",
+      "lua_sha256": "2f0ab81c23fb43e819fb542cc67108c66f056ad383c0346ee1ef9996c025d66d"
+    },
+    {
+      "legacy": "npc/9201104.js",
+      "source_sha256": "8b11c2a3ed492a55fd6e82433259e912491fcedb51fe051399808d1e8e04a71b",
+      "lua": "npc/9201104.lua",
+      "lua_sha256": "fb70aaf2fc115e74f329ce952a6ac9f436074d2daab13138b65f9e1c76e0df5c"
+    },
+    {
+      "legacy": "npc/9201111.js",
+      "source_sha256": "1d9f34a2f5143550c528a3e905639f2fce53fa7baba062b4d4d6436c6cee2273",
+      "lua": "npc/9201111.lua",
+      "lua_sha256": "ecb9455eac407e6c7107c624ba9f0a6a6d04ab48ca3213f335d1440786ef035f"
+    },
+    {
+      "legacy": "npc/9201114.js",
+      "source_sha256": "8797c3ccf378b051ff3acfaf8245ec16740c5bb6065eafaddf2f8001660d981a",
+      "lua": "npc/9201114.lua",
+      "lua_sha256": "10a9adc1b2b14fceaa149a0f90d6c1cf4d4602eecfdfc6bb1f57baf95cce5031"
+    },
+    {
+      "legacy": "npc/9201115.js",
+      "source_sha256": "5a95772c4c79ae56320ca5909904ff8d294b18ec4ac55cb2a25c4dd4e20d2b80",
+      "lua": "npc/9201115.lua",
+      "lua_sha256": "58b1b6966bc497ee9d589ea1780af53a914ef61fc43da6c765e5271623b861c2"
+    },
+    {
+      "legacy": "npc/9201123.js",
+      "source_sha256": "b06b8d9def2f391d080e97f791cfb9d6a204b8ae0354c53464ecf92d030ecdd5",
+      "lua": "npc/9201123.lua",
+      "lua_sha256": "65322ab37c1fdb578853fbc08dfd5769a906d056302309c84ff7582bbe6825d2"
+    },
+    {
+      "legacy": "npc/9201124.js",
+      "source_sha256": "b6818a6a4259d3a6b1fc71f59554b044f55c79a194a7f82d693ea92ce3459411",
+      "lua": "npc/9201124.lua",
+      "lua_sha256": "5c552a110a84eca3d04d093769db66f360a28f17520033cd4fccd27746fa85a3"
+    },
+    {
+      "legacy": "npc/9201125.js",
+      "source_sha256": "ba6581841c73320857d81afee2898ae61782470b29d811ded61719f2086814d8",
+      "lua": "npc/9201125.lua",
+      "lua_sha256": "6ccea18027b38eda87f7e8fbd1c0aa0892d653dcbeda0a44d65cbf3dc6257640"
+    },
+    {
+      "legacy": "npc/9201126.js",
+      "source_sha256": "ec1d312216cc16467f0e8629e5b2a4db98ebcf4dfe34df2b0020950db00e7381",
+      "lua": "npc/9201126.lua",
+      "lua_sha256": "361cf903cbff507b222d9e2864bebe6df4881192f307b0b3bf338e027a18db75"
+    },
+    {
+      "legacy": "npc/9201128.js",
+      "source_sha256": "6fdae5cf87424a43572c3d8bed28545adef51e76baa18fddd012e940f618d9f5",
+      "lua": "npc/9201128.lua",
+      "lua_sha256": "223c02ed0b8def908f95fd24d9632fc1fd0c9a476ddeb0c87cc42dd8f4a373d6"
+    },
+    {
+      "legacy": "npc/9201129.js",
+      "source_sha256": "f82fcff2f57288e256362c0d7cc97fc98bb39efe172864277335885854581b0d",
+      "lua": "npc/9201129.lua",
+      "lua_sha256": "ed293be0903636368f825c400b96900f920588590c31ea0d8dfceeed8b4b9404"
+    },
+    {
+      "legacy": "npc/9201130.js",
+      "source_sha256": "cc955fc41f4051bd76c496c5755b95a7390ec97bdcf7052218f7235e1a0e9745",
+      "lua": "npc/9201130.lua",
+      "lua_sha256": "e475d540a056464575f447a1e87f4c3ed42627d0b30eeb6ae9387b8c5582d322"
+    },
+    {
+      "legacy": "npc/9201131.js",
+      "source_sha256": "e9c24364fd71ce22b56be53493aecca1bcbc8785864658cb44e2de071a7b7dbf",
+      "lua": "npc/9201131.lua",
+      "lua_sha256": "5d2df9d5544238da51ec8acd9a757a7961c7851163bf7bf2ccf53b145d63d9f8"
+    },
+    {
+      "legacy": "npc/9201132.js",
+      "source_sha256": "4b55c9b62f46dff80166b68df414bb820d9dd2dfc3ed9ec191f12126988dd6b0",
+      "lua": "npc/9201132.lua",
+      "lua_sha256": "b25956ce4e544b8715d87093f10b7e471f5781aaa0bc2e3af74c9de5f0e750eb"
+    },
+    {
+      "legacy": "npc/9201134.js",
+      "source_sha256": "b96e217f8fa90b7d522853001613d19588085709cd584c685efdaaadb9840a7b",
+      "lua": "npc/9201134.lua",
+      "lua_sha256": "ce1ef1cf3c064a9d930eacaced064738b4d83ab6ece645e3b74b6eb24fada56e"
+    },
+    {
+      "legacy": "npc/9201135.js",
+      "source_sha256": "073e033fb9b0e3f14cca50bd60ef061b9ca6e34a49874df5d42cdbe9adb8a205",
+      "lua": "npc/9201135.lua",
+      "lua_sha256": "6fcbb6f624013b5c4f8d319e461c8809efe18fad7a848d37e5452149141e52b0"
+    },
+    {
+      "legacy": "npc/9201182.js",
+      "source_sha256": "f825673858bdf2e15649c3b3d47f73ded91a834895695e4a055d2ba10af73eb3",
+      "lua": "npc/9201182.lua",
+      "lua_sha256": "15002094d6ab704b04024d1b18ec1c7b005531cb50cb0480b93d628c2f15aacb"
+    },
+    {
+      "legacy": "npc/9209000.js",
+      "source_sha256": "5be15b21987a7478096672da69a4e34d254a66a3f94cc46ff87270769bcc62a9",
+      "lua": "npc/9209000.lua",
+      "lua_sha256": "7dcc0eaf93a76b8404caefc8f59ec5863766ef4f62089c5e17864748752b0d11"
+    },
+    {
+      "legacy": "npc/9209005.js",
+      "source_sha256": "595b3b64cb81443076d5e2607f4d6f983f271541a325456a0fca09adff723baa",
+      "lua": "npc/9209005.lua",
+      "lua_sha256": "44e0af40442b3eae6bb6fa3997e47514b81cbad498c91700c529a2f157d7f491"
+    },
+    {
+      "legacy": "npc/9209007.js",
+      "source_sha256": "928f8920235b863e00f3bddb827318bfc06a8cd2dd34a2d33191c8b60222f489",
+      "lua": "npc/9209007.lua",
+      "lua_sha256": "b4a7c4988d00af6304b666a9f3ad0d4d24eb7dae1d48f18b1958919da918415d"
+    },
+    {
+      "legacy": "npc/9209100.js",
+      "source_sha256": "243e668425852d464ff4e84fd64bbe7b19dee4438966e9019ee37745aac66f7d",
+      "lua": "npc/9209100.lua",
+      "lua_sha256": "bdf2558df48464829650c8e360512b73a2cc026ef6bbab4e5ac530fdf761755f"
+    },
+    {
+      "legacy": "npc/9220000.js",
+      "source_sha256": "841e543da4cfc1ab4cc75a303047a297db1622f2633a5639cc32aa085903a2bc",
+      "lua": "npc/9220000.lua",
+      "lua_sha256": "e28331d73a02f23870aee67ba9e4ba77097b7f958b610c719949a4bf8088cf83"
+    },
+    {
+      "legacy": "npc/9220005.js",
+      "source_sha256": "836040f1a456d08e3b7123bb9f6b3a125a8f6bbb84697ff7b5851a11a8e4ac96",
+      "lua": "npc/9220005.lua",
+      "lua_sha256": "88061715bbe332236b6c3365aed5b40edb0248b5ec3f61e2e6020556a1130345"
+    },
+    {
+      "legacy": "npc/9220019.js",
+      "source_sha256": "309212fba5df407ef4ad55c85a7c913e4963b51312e1448f115fe54e9d0c6d3a",
+      "lua": "npc/9220019.lua",
+      "lua_sha256": "b1a17fe2f8fae21480115d4548a7bf4d7577be115808d5229262b0ec94950cdc"
+    },
+    {
+      "legacy": "npc/9250030.js",
+      "source_sha256": "318a3ea9b89485cf675abf7e9fa10ff8e9b7b3dbcff9054eaf38049c7bff713d",
+      "lua": "npc/9250030.lua",
+      "lua_sha256": "ef0b073bb2c140f2499c0a1b2a62255fad3f6ee320b837900be4b1ba98ad9c51"
+    },
+    {
+      "legacy": "npc/9250049.js",
+      "source_sha256": "a76eb7cee1d08de37d023e0f6a7b7312c4c1e2eb6fca878ed5f86f92eb18a203",
+      "lua": "npc/9250049.lua",
+      "lua_sha256": "34fdbe45d4aac141ccfa9de7b7608fccd78c2e685298069dbfea667a816d4e14"
+    },
+    {
+      "legacy": "npc/9250137.js",
+      "source_sha256": "7c6aaf2e3002cae446c200e94b62479fe3d18cb645fb7bdceee58033ee523982",
+      "lua": "npc/9250137.lua",
+      "lua_sha256": "151098a05ebeada31d61dc6231cfb3260c839dc2d0a614839315737a57d5e7f5"
+    },
+    {
+      "legacy": "npc/9250155.js",
+      "source_sha256": "7c6aaf2e3002cae446c200e94b62479fe3d18cb645fb7bdceee58033ee523982",
+      "lua": "npc/9250155.lua",
+      "lua_sha256": "cd90538c9ee41b1f26d6a267b14fff72685cb45d0e897de3b318acf517e20d04"
+    },
+    {
+      "legacy": "npc/9270017.js",
+      "source_sha256": "d453282b64987b2974c328887ef219190f8d917d64f236de5d1306f50aeeeba5",
+      "lua": "npc/9270017.lua",
+      "lua_sha256": "f572c398821bb7d16822d4934adbc234a5ad409c6f8cb7775f0df7aeee3c09c2"
+    },
+    {
+      "legacy": "npc/9270018.js",
+      "source_sha256": "86decb4fe687415c3d75da4d259c40ff5cbdfcbc72e390f50b7f14cf0e794e15",
+      "lua": "npc/9270018.lua",
+      "lua_sha256": "f815385d769a4ab01c5618408765b056dc983fdb029bde966753d0c853a3950d"
+    },
+    {
+      "legacy": "npc/9270023.js",
+      "source_sha256": "7b0225508844b894d1c541e1e04ac4e3c71588d3ce63658f6a4778d73b819ca1",
+      "lua": "npc/9270023.lua",
+      "lua_sha256": "7682918d2fbcc7650e38a83131b56a8c532fb429924244c367c4e65405161fd3"
+    },
+    {
+      "legacy": "npc/9270024.js",
+      "source_sha256": "d478038a4f8ce2fb60a81dccc12fdd3fb7e22717e5736ff491d5f9435d11c1f6",
+      "lua": "npc/9270024.lua",
+      "lua_sha256": "de131edac7879a5d009e204f12b9f4ad2e7f88ac7e6a1e96b211456ee9e34096"
+    },
+    {
+      "legacy": "npc/9270025.js",
+      "source_sha256": "cda8e6e8b8538fcbae0ad4d3d5fb6c2e6d4d507bfa2563cf4bc00583fad0fbe3",
+      "lua": "npc/9270025.lua",
+      "lua_sha256": "d94d246829be450c9254ec543ff37394dcbbcf3abfe3e18c594cf2b7c1ece87d"
+    },
+    {
+      "legacy": "npc/9270026.js",
+      "source_sha256": "c624cd50e1671a435201bef69cf9b1c467d372d534e4c1d7a2f956c0ed0855e7",
+      "lua": "npc/9270026.lua",
+      "lua_sha256": "6ca56a26636c599cc3bba172f2fc2488c64b8a4d4ff5be3f9c2fb38c72065135"
+    },
+    {
+      "legacy": "npc/9270029.js",
+      "source_sha256": "7e0113c3216ee94fdef3fbb3a864b7c2c004ec84f18da678c291c57f1ea50a38",
+      "lua": "npc/9270029.lua",
+      "lua_sha256": "b7173c32e8d05405a3d2c21e274c937a7179f3ce13c8a8972f35e7f185c9249e"
+    },
+    {
+      "legacy": "npc/9270030.js",
+      "source_sha256": "028007e81fc7a54c39d65ad10642feaac177eab79a9c42ab6cbe494db3ef61b5",
+      "lua": "npc/9270030.lua",
+      "lua_sha256": "b53a201c8debb685692317a4c23530fbb4afb386cfd5b04d8a5053a031e09d23"
+    },
+    {
+      "legacy": "npc/9270033.js",
+      "source_sha256": "76be154feb059429c0e42397d788c5ab0e4ec415e0c76f10eaf88edd0bb732cf",
+      "lua": "npc/9270033.lua",
+      "lua_sha256": "ba61217e1d091bb1d2e38bce5b83b00ce8f35210f13c701b67306589d8cb9706"
+    },
+    {
+      "legacy": "npc/9270034.js",
+      "source_sha256": "17a9be8a368b765260450c0a7593f253d1ab7f9a49836fda37379aa760240f08",
+      "lua": "npc/9270034.lua",
+      "lua_sha256": "b66fd79f363faa1daf45b199a8e78721155e8b644c2b91b0b8dd34004a8d37e9"
+    },
+    {
+      "legacy": "npc/9270035.js",
+      "source_sha256": "3a350b2ad7d4cd63f0502067dab4e06a433da7047d9d66c0a132ba1359eec7b0",
+      "lua": "npc/9270035.lua",
+      "lua_sha256": "2043e15cc1cd285a8a4969482ba7f9386bc0c9bb3d221a6e3b98fe8d6ca94c4c"
+    },
+    {
+      "legacy": "npc/9270036.js",
+      "source_sha256": "f3ab6b292babdd352bdff652c26b5ecb8dd5eac1e37650e5336631351458aff1",
+      "lua": "npc/9270036.lua",
+      "lua_sha256": "4792c0b4b291265a318a277e305b7bd659a46102653c5a4756db101c39f6bb46"
+    },
+    {
+      "legacy": "npc/9270037.js",
+      "source_sha256": "283011e7d65ee141ba8d1d25c4d7110523404d845e6d1bf58811651185b37e7a",
+      "lua": "npc/9270037.lua",
+      "lua_sha256": "b53add68b65ba36327fa75e1dc212a645df83b7aecdf0b8568c3796600ea791c"
+    },
+    {
+      "legacy": "npc/9270043.js",
+      "source_sha256": "577d34ea1f641fd1654c5ac4c2f56be982a7e51b9360670d73974192731a315a",
+      "lua": "npc/9270043.lua",
+      "lua_sha256": "903b21820dd114cce322d5101620131e7824e8fb8b8014bb1e5e6a2baa1f6000"
+    },
+    {
+      "legacy": "npc/9270045.js",
+      "source_sha256": "4983fbf84e7bc73b54f56f9c1206497c9e3ad05407764997e1e0bd4de66afcc7",
+      "lua": "npc/9270045.lua",
+      "lua_sha256": "869235d38d6582fdadcc145a3c644a2fd2fdce507b7cc77d5b8482cbe3dae010"
+    },
+    {
+      "legacy": "npc/9270072.js",
+      "source_sha256": "c3a056ce7ce68bff12d7c320595f75c8638f99187ffec084814ce233cea9fdcb",
+      "lua": "npc/9270072.lua",
+      "lua_sha256": "999992ec1e5f8c3cef08b392d4a94da0afb70b08090f760f9c33753b0183122d"
+    },
+    {
+      "legacy": "npc/9270075.js",
+      "source_sha256": "f95f52fa74ac6e9bdd9780ee85af76170dfe144a846afaa1066f1cc3f3158c01",
+      "lua": "npc/9270075.lua",
+      "lua_sha256": "e58342341b31a2c6ce75ace244f96e9b2776afd537ac334bcca3f993b8926248"
+    },
+    {
+      "legacy": "npc/9300012.js",
+      "source_sha256": "86085a467697e5119a7d9a88d2cdcc0e3b3f287cedb493004d31430ab366c289",
+      "lua": "npc/9300012.lua",
+      "lua_sha256": "a8480ab5f2101bc2727ff8210f689da86a55f7aa30929ce0a8e372e0730ecc52"
+    },
+    {
+      "legacy": "npc/9310003.js",
+      "source_sha256": "29a9eb715b68ca02fd1741f75f1a09a85f3263d62a72a0b7f3fc70960558e840",
+      "lua": "npc/9310003.lua",
+      "lua_sha256": "23975690050462582eace77f0aba368c5634f8f0a1d2b8003b5ab44f4c5b5462"
+    },
+    {
+      "legacy": "npc/9310055.js",
+      "source_sha256": "ff3f16c95ebcf979efb280d3b7eea27a01d19a1baefc4c9ce122308fc2cba4d1",
+      "lua": "npc/9310055.lua",
+      "lua_sha256": "3828ec48cd6deb95a072aedff36a89854941a2c73270d9ea5dcb20e1600fa1e7"
+    },
+    {
+      "legacy": "npc/9330085.js",
+      "source_sha256": "1dd28d715fa595345f2e2cfbac2f4ad073305f220f344425f21f0d4e8f47c7b2",
+      "lua": "npc/9330085.lua",
+      "lua_sha256": "0577a33a6768ffff70d5dcca32ec7c04a715327f319de97b10a7f495512be243"
+    },
+    {
+      "legacy": "npc/9330109.js",
+      "source_sha256": "5fef7ad284153bd591a9ae725f0574e924f145b77b19fc2105b32921133ef96c",
+      "lua": "npc/9330109.lua",
+      "lua_sha256": "a20ba3e4ea3f4985e8e9b60e56ec0f2c3fa5212da0df85e993afeaf7bb8d4ac3"
+    },
+    {
+      "legacy": "npc/9891000.js",
+      "source_sha256": "48ec9b2f46ca3d0a0dc934ba08db08f89e32687c0296407d08e15a522c5a5df9",
+      "lua": "npc/9891000.lua",
+      "lua_sha256": "0938ac84177879d16b03d17bb31b3f54c7d40b6f4b9bd889c8d2169c36b5ead5"
+    },
+    {
+      "legacy": "npc/9891001.js",
+      "source_sha256": "e3bb6f67da7547f9bd7e3abdb45923d37e1d1a5615d0f8445c21ec8e20b94c82",
+      "lua": "npc/9891001.lua",
+      "lua_sha256": "81b60aedf5c20d69127dbcf83b50867131d3bc60092c41f69f3935848ec1d92d"
+    },
+    {
+      "legacy": "npc/9891002.js",
+      "source_sha256": "2003c643743b772de0c2be848d4478671612d6388a7deab16548b11dbd442f09",
+      "lua": "npc/9891002.lua",
+      "lua_sha256": "c136452446fe842e8a63692fed9a047b3d8032bb122e1fcfd7d46a7656f10985"
+    },
+    {
+      "legacy": "npc/9891003.js",
+      "source_sha256": "630921366cfdb6b05c7af045ede536fd996bb118e2812d708acc90ad837897ff",
+      "lua": "npc/9891003.lua",
+      "lua_sha256": "3985c6d7403eba8e9eb1cd54ea8cbf4bcf78c1e885cbdeb4f5f8fc748004ec62"
+    },
+    {
+      "legacy": "npc/9891005.js",
+      "source_sha256": "35e81f4e4f83e2c8acc1a3b17b42112fc75b7b0c09e0dfe53c6a86a24aeffd46",
+      "lua": "npc/9891005.lua",
+      "lua_sha256": "99c47122f192e083dc2d6732f95dbac2027b7089de70e7640a688fca27db9ac1"
+    },
+    {
+      "legacy": "npc/9899000.js",
+      "source_sha256": "c9e62279bfa05bda73e89c052cd13f7d0c58849a0863f88da31082669e305b7a",
+      "lua": "npc/9899000.lua",
+      "lua_sha256": "8a164e8f912ff793e96ded3abb2b4faf4f764bd8d6ed36a68329d03a20fb836c"
+    },
+    {
+      "legacy": "npc/9901000.js",
+      "source_sha256": "c346f2c92bed1562d4dd1c4fb36d8d1887be160fc9964517af0b4be4c69d1a76",
+      "lua": "npc/9901000.lua",
+      "lua_sha256": "0b17cfdfc649f36ce616f7a1ab393cf5b662d1b2ea8f3df819a44766edad8899"
+    },
+    {
+      "legacy": "npc/9901011.js",
+      "source_sha256": "f2735788a45621983f3d83707604b872a56a84ba92c7a220e3efc199f38a04fe",
+      "lua": "npc/9901011.lua",
+      "lua_sha256": "e5c6eb6f9b8fb123063a034f01b8d672703ab3c1e437773c16e0ef1e5129d831"
+    },
+    {
+      "legacy": "npc/9901012.js",
+      "source_sha256": "60a315f61cf37db8c5f89e25e9e5385f64816f6ebb8412b2a4c22375d87fc2b9",
+      "lua": "npc/9901012.lua",
+      "lua_sha256": "3fc9a602567ea817aef60dd022f98448e381beec198b3335fbf7ef7bef61d2a4"
+    },
+    {
+      "legacy": "npc/9901019.js",
+      "source_sha256": "4fcec743b3e6a795b43c75515f35f2861bf7e3d3eb208f5fd25cdb0038fc0148",
+      "lua": "npc/9901019.lua",
+      "lua_sha256": "1820f3523d63fa2b84e216be479eea38fe89e83c887ca4ff497e7be0cbbbc18a"
+    },
+    {
+      "legacy": "npc/9901111.js",
+      "source_sha256": "f0e95f6104cd2f0228b70033decf6c2aeeaaf39946fef8cce47feb1e20199261",
+      "lua": "npc/9901111.lua",
+      "lua_sha256": "ea9e99b7baa7e3dda14096e5e5039ac45185bb808011fad179424a89407638f2"
+    },
+    {
+      "legacy": "npc/9901113.js",
+      "source_sha256": "af15db213600a9ed1d67af2dd2144ab439bafba7b460b9f812e059513d7b298e",
+      "lua": "npc/9901113.lua",
+      "lua_sha256": "8c85fc1cc2a2797d9f6203f81a5f8bd5a8f076a58eb4930ad640ec2aace4bfb9"
+    },
+    {
+      "legacy": "npc/9901114.js",
+      "source_sha256": "af15db213600a9ed1d67af2dd2144ab439bafba7b460b9f812e059513d7b298e",
+      "lua": "npc/9901114.lua",
+      "lua_sha256": "8403c11da600a5e3fd7d3cf63bd47594699ec92e9c4e7aafc388cbecc0889165"
+    },
+    {
+      "legacy": "npc/9901118.js",
+      "source_sha256": "7a004eeced4ec7893d22a1bc51dfb1567b7397abee1b347de1e89c6ed878b80d",
+      "lua": "npc/9901118.lua",
+      "lua_sha256": "2a32027a2133e4f16850a4550d132b41fab4fe001ac4942cac6c4fb6e6430645"
+    },
+    {
+      "legacy": "npc/9901502.js",
+      "source_sha256": "9f5328b3c764facaabd88ff67955b12a170e61a647d9af31847f1d32594486fc",
+      "lua": "npc/9901502.lua",
+      "lua_sha256": "c83f77d17af7a509a3361384284e6be320906f94a8a4fda96a843141c6d7d29a"
+    },
+    {
+      "legacy": "npc/9901504.js",
+      "source_sha256": "29a9eb715b68ca02fd1741f75f1a09a85f3263d62a72a0b7f3fc70960558e840",
+      "lua": "npc/9901504.lua",
+      "lua_sha256": "567170400ce10487c39884a1e8ce491cdda45d1028c58eb92f3392f23942ac57"
+    },
+    {
+      "legacy": "npc/9930102.js",
+      "source_sha256": "e78566cffb59568ad1a19a4a11f5cc1496e68cd754eb82d89a2c9d2b6d3289d3",
+      "lua": "npc/9930102.lua",
+      "lua_sha256": "14aecac0041a11d0edde6e1a16c61c78e658308a43597b1c7ebedc044c3c8946"
+    }
+  ],
+  "pending": [
+    {
+      "legacy": "npc/2000.js",
+      "reason": "call .getMapId is not supported (line 31)"
+    },
+    {
+      "legacy": "npc/2003.js",
+      "reason": "cm.getPlayer().getOccId is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/1002003.js",
+      "reason": "cm.getBuddyCapacity is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/1012007.js",
+      "reason": "cm.getEventMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/1012008.js",
+      "reason": "cm.getPlayer().getVPoints is not supported (line 37)"
+    },
+    {
+      "legacy": "npc/1012112.js",
+      "reason": "call .getMembers is not supported (line 35)"
+    },
+    {
+      "legacy": "npc/1012114.js",
+      "reason": "cm.achievement is not supported (line 20)"
+    },
+    {
+      "legacy": "npc/1032008.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/1032102.js",
+      "reason": "Unexpected token (29:8)"
+    },
+    {
+      "legacy": "npc/1033205.js",
+      "reason": "cm.sendDirectionStatus is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/1043000.js",
+      "reason": "cm.getEventMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/1043001.js",
+      "reason": "cm.getEventMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/1052007.js",
+      "reason": "cm.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/1052015.js",
+      "reason": "cm.getPlayer().getBattler is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/1052107.js",
+      "reason": "call .killMonster is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/1052115.js",
+      "reason": "cm.start_PyramidSubway is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/1061009.js",
+      "reason": "cm.getEventManager is not supported (line 7)"
+    },
+    {
+      "legacy": "npc/1061012.js",
+      "reason": "cm.getEventManager is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/1061014.js",
+      "reason": "cm.getEventManager is not supported (line 25)"
+    },
+    {
+      "legacy": "npc/1063000.js",
+      "reason": "cm.getEventMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/1072003.js",
+      "reason": "cm.getEventManager is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/1096000.js",
+      "reason": "cm.sendDirectionStatus is not supported (line 23)"
+    },
+    {
+      "legacy": "npc/1096005.js",
+      "reason": "cm.sendDirectionInfo is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/1101001.js",
+      "reason": "cm.sendUltimateExplorer is not supported (line 34)"
+    },
+    {
+      "legacy": "npc/1104002.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/1104100.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/1104101.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/1104102.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/1104103.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/1104104.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/1104200.js",
+      "reason": "cm.removeNpc is not supported (line 3)"
+    },
+    {
+      "legacy": "npc/1209002.js",
+      "reason": "statement expression Literal (line 1)"
+    },
+    {
+      "legacy": "npc/1300013.js",
+      "reason": "call .getMembers is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/2012001.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2012013.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2012018.js",
+      "reason": "cm.getMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2012021.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2012025.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2013000.js",
+      "reason": "cm.warpParty is not supported (line 20)"
+    },
+    {
+      "legacy": "npc/2013001.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2013002.js",
+      "reason": "cm.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/2020000.js",
+      "reason": "cm.canHold with 0 arguments (line 210)"
+    },
+    {
+      "legacy": "npc/2020008.js",
+      "reason": "cm.getEventManager is not supported (line 35)"
+    },
+    {
+      "legacy": "npc/2022003.js",
+      "reason": "cm.warpParty is not supported (line 53)"
+    },
+    {
+      "legacy": "npc/2022009.js",
+      "reason": "call .getAllMonstersThreadsafe is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/2030008.js",
+      "reason": "call .getMembers is not supported (line 109)"
+    },
+    {
+      "legacy": "npc/2030010.js",
+      "reason": "cm.getMonsterCount is not supported (line 11)"
+    },
+    {
+      "legacy": "npc/2030013.js",
+      "reason": "cm.getEventManager is not supported (line 43)"
+    },
+    {
+      "legacy": "npc/2032002.js",
+      "reason": "cm.getEventInstance is not supported (line 43)"
+    },
+    {
+      "legacy": "npc/2040002.js",
+      "reason": "cm.getEventManager is not supported (line 5)"
+    },
+    {
+      "legacy": "npc/2040020.js",
+      "reason": "variable qty is never declared (line 219)"
+    },
+    {
+      "legacy": "npc/2040028.js",
+      "reason": "cm.getEventManager is not supported (line 21)"
+    },
+    {
+      "legacy": "npc/2040033.js",
+      "reason": "cm.getEventMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2040034.js",
+      "reason": "call .size is not supported (line 39)"
+    },
+    {
+      "legacy": "npc/2040035.js",
+      "reason": "cm.addTrait is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/2040036.js",
+      "reason": "cm.getEventInstance is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2040037.js",
+      "reason": "cm.getEventInstance is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/2040038.js",
+      "reason": "cm.getEventInstance is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2040039.js",
+      "reason": "cm.getEventInstance is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2040040.js",
+      "reason": "cm.getEventInstance is not supported (line 8)"
+    },
+    {
+      "legacy": "npc/2040042.js",
+      "reason": "cm.getEventInstance is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2040043.js",
+      "reason": "cm.getEventInstance is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/2040044.js",
+      "reason": "cm.getEventInstance is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/2040046.js",
+      "reason": "cm.getBuddyCapacity is not supported (line 31)"
+    },
+    {
+      "legacy": "npc/2041000.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2041023.js",
+      "reason": "cm.getEventManager is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/2041025.js",
+      "reason": "call .resetReactors is not supported (line 23)"
+    },
+    {
+      "legacy": "npc/2042000.js",
+      "reason": "call .getInstance is not supported (line 61)"
+    },
+    {
+      "legacy": "npc/2042001.js",
+      "reason": "cm.getNextCarnivalRequest is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/2042002.js",
+      "reason": "cm.getCarnivalParty is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2042006.js",
+      "reason": "cm.getNextCarnivalRequest is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/2042007.js",
+      "reason": "cm.getCarnivalParty is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2060100.js",
+      "reason": "cm.warpParty is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2060103.js",
+      "reason": "cm.getEventManager is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/2080000.js",
+      "reason": "cm.sendRepairWindow is not supported (line 244)"
+    },
+    {
+      "legacy": "npc/2081005.js",
+      "reason": "cm.getCharByName is not supported (line 33)"
+    },
+    {
+      "legacy": "npc/2082001.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2082003.js",
+      "reason": "cm.useItem is not supported (line 25)"
+    },
+    {
+      "legacy": "npc/2083004.js",
+      "reason": "cm.getEventManager is not supported (line 30)"
+    },
+    {
+      "legacy": "npc/2084001.js",
+      "reason": "cm.openNpc with 2 arguments (line 26)"
+    },
+    {
+      "legacy": "npc/2090004.js",
+      "reason": "call .iterator is not supported (line 114)"
+    },
+    {
+      "legacy": "npc/2090005.js",
+      "reason": "cm.getEventManager is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/2091005.js",
+      "reason": "cm.getDojoRankLastMonth is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/2091010.js",
+      "reason": "cm.sendDojoRanks is not supported (line 7)"
+    },
+    {
+      "legacy": "npc/2094000.js",
+      "reason": "call .getMembers is not supported (line 11)"
+    },
+    {
+      "legacy": "npc/2094001.js",
+      "reason": "cm.gainNX is not supported (line 27)"
+    },
+    {
+      "legacy": "npc/2094002.js",
+      "reason": "cm.getEventManager is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/2096000.js",
+      "reason": "call .killMonster is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/2101014.js",
+      "reason": "cm.getPlayer().getAriantSlotsRoom is not supported (line 34)"
+    },
+    {
+      "legacy": "npc/2101017.js",
+      "reason": "cm.getPlayer().getAriantRoomLeaderName is not supported (line 23)"
+    },
+    {
+      "legacy": "npc/2101018.js",
+      "reason": "cm.getPlayer().saveLocation is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/2102000.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2102001.js",
+      "reason": "cm.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/2103013.js",
+      "reason": "cm.start_PyramidSubway is not supported (line 97)"
+    },
+    {
+      "legacy": "npc/2110005.js",
+      "reason": "cm.isPlayerInstance is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2111025.js",
+      "reason": "call .killMonster is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/2111026.js",
+      "reason": "call .killMonster is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/2112000.js",
+      "reason": "cm.getEventManager is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/2112002.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2112003.js",
+      "reason": "cm.getEventManager is not supported (line 21)"
+    },
+    {
+      "legacy": "npc/2112006.js",
+      "reason": "cm.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/2112007.js",
+      "reason": "cm.getEventManager is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/2112008.js",
+      "reason": "cm.getEventManager is not supported (line 8)"
+    },
+    {
+      "legacy": "npc/2112009.js",
+      "reason": "cm.getEventManager is not supported (line 8)"
+    },
+    {
+      "legacy": "npc/2112010.js",
+      "reason": "cm.getEventManager is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2112013.js",
+      "reason": "cm.getEventManager is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/2112018.js",
+      "reason": "cm.getEventManager is not supported (line 26)"
+    },
+    {
+      "legacy": "npc/2133000.js",
+      "reason": "call .getMembers is not supported (line 45)"
+    },
+    {
+      "legacy": "npc/2133001.js",
+      "reason": "cm.warpParty is not supported (line 20)"
+    },
+    {
+      "legacy": "npc/2133004.js",
+      "reason": "cm.warpParty is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/2140003.js",
+      "reason": "cm.getEventManager is not supported (line 52)"
+    },
+    {
+      "legacy": "npc/2141000.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/2141001.js",
+      "reason": "cm.getEventManager is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/2143004.js",
+      "reason": "cm.getEventManager is not supported (line 21)"
+    },
+    {
+      "legacy": "npc/2144010.js",
+      "reason": "call .size is not supported (line 8)"
+    },
+    {
+      "legacy": "npc/2144018.js",
+      "reason": "cm.getEventManager is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/2151006.js",
+      "reason": "call .heal is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/2159000.js",
+      "reason": "cm.sendNext with 2 arguments (line 7)"
+    },
+    {
+      "legacy": "npc/2159012.js",
+      "reason": "cm.trembleEffect is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/2159017.js",
+      "reason": "call .size is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/2159018.js",
+      "reason": "call .getMembers is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/2159100.js",
+      "reason": "cm.removeNpc is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/2159307.js",
+      "reason": "cm.sendDirectionStatus is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/2159309.js",
+      "reason": "call .size is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/2159310.js",
+      "reason": "cm.sendDirectionInfo is not supported (line 39)"
+    },
+    {
+      "legacy": "npc/2159311.js",
+      "reason": "cm.sendDirectionInfo is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2159314.js",
+      "reason": "cm.sendDirectionStatus is not supported (line 29)"
+    },
+    {
+      "legacy": "npc/2159330.js",
+      "reason": "cm.sendDirectionStatus is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/2159340.js",
+      "reason": "cm.sendDirectionInfo is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2159344.js",
+      "reason": "cm.sendDirectionStatus is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/2161000.js",
+      "reason": "call .size is not supported (line 8)"
+    },
+    {
+      "legacy": "npc/2161005.js",
+      "reason": "cm.getEventManager is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/2170006.js",
+      "reason": "call .getMembers is not supported (line 7)"
+    },
+    {
+      "legacy": "npc/2180001.js",
+      "reason": "property warning (line 13)"
+    },
+    {
+      "legacy": "npc/2182001.js",
+      "reason": "cm.sendAzwanWindow is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/2183003.js",
+      "reason": "cm.getPartyMembers is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/2184000.js",
+      "reason": "cm.getEventManager is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/9000000.js",
+      "reason": "cm.canHold with 0 arguments (line 49)"
+    },
+    {
+      "legacy": "npc/9000001.js",
+      "reason": "cm.canHold with 0 arguments (line 49)"
+    },
+    {
+      "legacy": "npc/9000004.js",
+      "reason": "cm.getPlayer().getEventInstance is not supported (line 42)"
+    },
+    {
+      "legacy": "npc/9000009.js",
+      "reason": "cm.getEventMap is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/9000011.js",
+      "reason": "cm.canHold with 0 arguments (line 49)"
+    },
+    {
+      "legacy": "npc/9000012.js",
+      "reason": "object.getInstance is not supported (line 42)"
+    },
+    {
+      "legacy": "npc/9000013.js",
+      "reason": "cm.canHold with 0 arguments (line 49)"
+    },
+    {
+      "legacy": "npc/9000018.js",
+      "reason": "cm.getPlayer().AutoJQOnline is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/9000019.js",
+      "reason": "cm.sendRPS is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/9000020.js",
+      "reason": "cm.getJobId is not supported (line 83)"
+    },
+    {
+      "legacy": "npc/9000021.js",
+      "reason": "cm.getPlayer().getBattlers is not supported (line 11)"
+    },
+    {
+      "legacy": "npc/9000030.js",
+      "reason": "no start or action function (line ?)"
+    },
+    {
+      "legacy": "npc/9000049.js",
+      "reason": "cm.getEventManager is not supported (line 29)"
+    },
+    {
+      "legacy": "npc/9000085.js",
+      "reason": "call .size is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9001004.js",
+      "reason": "object.getInstance is not supported (line 42)"
+    },
+    {
+      "legacy": "npc/9001106.js",
+      "reason": "cm.getPlayer().getPoints is not supported (line 5)"
+    },
+    {
+      "legacy": "npc/9010002.js",
+      "reason": "cm.getMMesos is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9010003.js",
+      "reason": "cm.getEventManager is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9010014.js",
+      "reason": "cm.getKegs is not supported (line 25)"
+    },
+    {
+      "legacy": "npc/9010017.js",
+      "reason": "cm.getInventory is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9020000.js",
+      "reason": "call .getMembers is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/9020001.js",
+      "reason": "cm.getEventInstance is not supported (line 74)"
+    },
+    {
+      "legacy": "npc/9020003.js",
+      "reason": "call .getMembers is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9020004.js",
+      "reason": "call .size is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9020005.js",
+      "reason": "call .getMembers is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9020006.js",
+      "reason": "call .size is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9040000.js",
+      "reason": "cm.getPlayerStat(GID) is not supported (line 35)"
+    },
+    {
+      "legacy": "npc/9040002.js",
+      "reason": "cm.getEventManager is not supported (line 29)"
+    },
+    {
+      "legacy": "npc/9040003.js",
+      "reason": "call .getProperty is not supported (line 21)"
+    },
+    {
+      "legacy": "npc/9040004.js",
+      "reason": "cm.getPokemonRanking is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/9040005.js",
+      "reason": "cm.isPlayerInstance is not supported (line 11)"
+    },
+    {
+      "legacy": "npc/9040006.js",
+      "reason": "cm.getEventInstance is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9040008.js",
+      "reason": "cm.displayGuildRanks is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9040009.js",
+      "reason": "cm.getEventInstance is not supported (line 23)"
+    },
+    {
+      "legacy": "npc/9040010.js",
+      "reason": "cm.getEventInstance is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/9040011.js",
+      "reason": "cm.getDevNews is not supported (line 11)"
+    },
+    {
+      "legacy": "npc/9070000.js",
+      "reason": "cm.sendPVPWindow is not supported (line 5)"
+    },
+    {
+      "legacy": "npc/9070002.js",
+      "reason": "cm.getPlayer().getBattlePoints is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/9070007.js",
+      "reason": "cm.getPlayer().getBattler is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9071002.js",
+      "reason": "cm.haveMeso is not supported (line 34)"
+    },
+    {
+      "legacy": "npc/9071004.js",
+      "reason": "call .iterator is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/9100113.js",
+      "reason": "cm.processGachapon is not supported (line 32)"
+    },
+    {
+      "legacy": "npc/9100114.js",
+      "reason": "cm.processGachapon is not supported (line 32)"
+    },
+    {
+      "legacy": "npc/9100117.js",
+      "reason": "cm.processGachapon is not supported (line 31)"
+    },
+    {
+      "legacy": "npc/9103000.js",
+      "reason": "cm.givePartyExp is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9103001.js",
+      "reason": "cm.getEventManager is not supported (line 31)"
+    },
+    {
+      "legacy": "npc/9103002.js",
+      "reason": "cm used as a value (line 112)"
+    },
+    {
+      "legacy": "npc/9105004.js",
+      "reason": "operator | (line 36)"
+    },
+    {
+      "legacy": "npc/9105010.js",
+      "reason": "cm.getPlayerStat(EXP) is not supported (line 546)"
+    },
+    {
+      "legacy": "npc/9110009.js",
+      "reason": "cm.getPlayer().getVPoints is not supported (line 45)"
+    },
+    {
+      "legacy": "npc/9120005.js",
+      "reason": "Unterminated comment (1:0)"
+    },
+    {
+      "legacy": "npc/9120010.js",
+      "reason": "call .iterator is not supported (line 186)"
+    },
+    {
+      "legacy": "npc/9120013.js",
+      "reason": "object.pop is not supported (line 37)"
+    },
+    {
+      "legacy": "npc/9120036.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9120037.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9120038.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9120039.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9120040.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9120050.js",
+      "reason": "cm.getEventManager is not supported (line 5)"
+    },
+    {
+      "legacy": "npc/9120052.js",
+      "reason": "cm.getEventManager is not supported (line 10)"
+    },
+    {
+      "legacy": "npc/9120053.js",
+      "reason": "cm.getEventManager is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/9120201.js",
+      "reason": "cm.resetMap is not supported (line 7)"
+    },
+    {
+      "legacy": "npc/9120217.js",
+      "reason": "call .size is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9120218.js",
+      "reason": "call .size is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9120228.js",
+      "reason": "operator | (line 18)"
+    },
+    {
+      "legacy": "npc/9200000.js",
+      "reason": "cm.getPlayer().gmLevel is not supported (line 34)"
+    },
+    {
+      "legacy": "npc/9201000.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/9201001.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9201002.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9201003.js",
+      "reason": "cm.getPlayer().getMarriageQuestLevel is not supported (line 46)"
+    },
+    {
+      "legacy": "npc/9201006.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 27)"
+    },
+    {
+      "legacy": "npc/9201010.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 27)"
+    },
+    {
+      "legacy": "npc/9201011.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9201012.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/9201013.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/9201014.js",
+      "reason": "cm.handleDivorce is not supported (line 40)"
+    },
+    {
+      "legacy": "npc/9201021.js",
+      "reason": "cm.warpMap is not supported (line 20)"
+    },
+    {
+      "legacy": "npc/9201022.js",
+      "reason": "cm.setQuestRecord is not supported (line 23)"
+    },
+    {
+      "legacy": "npc/9201023.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9201024.js",
+      "reason": "cm.getPlayer().getReborns is not supported (line 34)"
+    },
+    {
+      "legacy": "npc/9201025.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9201026.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9201027.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9201037.js",
+      "reason": "cm.getPlayer().getItemEffect is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9201039.js",
+      "reason": "cm.sendBackNext is not supported (line 47)"
+    },
+    {
+      "legacy": "npc/9201042.js",
+      "reason": "call .sendStorage is not supported (line 23)"
+    },
+    {
+      "legacy": "npc/9201043.js",
+      "reason": "cm.getPlayer().getMarriageId is not supported (line 22)"
+    },
+    {
+      "legacy": "npc/9201044.js",
+      "reason": "cm.getEventManager is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/9201045.js",
+      "reason": "cm.getEventManager is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/9201047.js",
+      "reason": "cm.gainNX is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/9201048.js",
+      "reason": "call .getMembers is not supported (line 24)"
+    },
+    {
+      "legacy": "npc/9201050.js",
+      "reason": "cm.getQuestStarted is not supported (line 50)"
+    },
+    {
+      "legacy": "npc/9201057.js",
+      "reason": "cm.getEventManager is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/9201068.js",
+      "reason": "cm.getEventManager is not supported (line 5)"
+    },
+    {
+      "legacy": "npc/9201073.js",
+      "reason": "cm.getPlayer().getEventInstance is not supported (line 61)"
+    },
+    {
+      "legacy": "npc/9201101.js",
+      "reason": "call .getMonsterCount is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9201107.js",
+      "reason": "call .size is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/9201108.js",
+      "reason": "call .size is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/9201109.js",
+      "reason": "call .size is not supported (line 12)"
+    },
+    {
+      "legacy": "npc/9201110.js",
+      "reason": "cm.isAllReactorState is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/9201112.js",
+      "reason": "cm.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/9201113.js",
+      "reason": "cm.getEventManager is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/9201117.js",
+      "reason": "cm.getPlayer().autoAdvance is not supported (line 46)"
+    },
+    {
+      "legacy": "npc/9201127.js",
+      "reason": "call .announce is not supported (line 20)"
+    },
+    {
+      "legacy": "npc/9201133.js",
+      "reason": "call .getMembers is not supported (line 13)"
+    },
+    {
+      "legacy": "npc/9201139.js",
+      "reason": "cm.getPlayer().getEventInstance is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9201140.js",
+      "reason": "cm.getPlayer().getEventInstance is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9201141.js",
+      "reason": "cm.getPlayer().getEventInstance is not supported (line 4)"
+    },
+    {
+      "legacy": "npc/9201142.js",
+      "reason": "cm.getEventManager is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/9201187.js",
+      "reason": "cm.useNebuliteGachapon is not supported (line 20)"
+    },
+    {
+      "legacy": "npc/9201229.js",
+      "reason": "cm.getEventMap is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/9209001.js",
+      "reason": "cm.getPlayer().saveLocation is not supported (line 54)"
+    },
+    {
+      "legacy": "npc/9209102.js",
+      "reason": "statement ForInStatement (line 40)"
+    },
+    {
+      "legacy": "npc/9220018.js",
+      "reason": "call .getMembers is not supported (line 41)"
+    },
+    {
+      "legacy": "npc/9220020.js",
+      "reason": "cm.openGate is not supported (line 33)"
+    },
+    {
+      "legacy": "npc/9250139.js",
+      "reason": "call .getNumPlayersInArea is not supported (line 2)"
+    },
+    {
+      "legacy": "npc/9250143.js",
+      "reason": "cm.getEventManager is not supported (line 16)"
+    },
+    {
+      "legacy": "npc/9270038.js",
+      "reason": "cm.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/9270041.js",
+      "reason": "cm.getEventManager is not supported (line 5)"
+    },
+    {
+      "legacy": "npc/9270047.js",
+      "reason": "cm.getEventManager is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/9270073.js",
+      "reason": "cm.getDecorations is not supported (line 26)"
+    },
+    {
+      "legacy": "npc/9300010.js",
+      "reason": "cm.getPlayer().doEXPRB is not supported (line 31)"
+    },
+    {
+      "legacy": "npc/9300011.js",
+      "reason": "cm.displayGuildRanks is not supported (line 25)"
+    },
+    {
+      "legacy": "npc/9310056.js",
+      "reason": "cm.getPlayer().getEventInstance is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/9310057.js",
+      "reason": "cm.givePartyItems is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9330021.js",
+      "reason": "Unexpected token (73:24)"
+    },
+    {
+      "legacy": "npc/9330022.js",
+      "reason": "Unexpected token (73:24)"
+    },
+    {
+      "legacy": "npc/9330045.js",
+      "reason": "cm.gainItemPeriod is not supported (line 68)"
+    },
+    {
+      "legacy": "npc/9330108.js",
+      "reason": "cm.getMap is not supported (line 28)"
+    },
+    {
+      "legacy": "npc/9330110.js",
+      "reason": "cm.gainItemPeriod is not supported (line 30)"
+    },
+    {
+      "legacy": "npc/9330112.js",
+      "reason": "cm.getConnection is not supported (line 376)"
+    },
+    {
+      "legacy": "npc/9330113.js",
+      "reason": "cm.ExistItem is not supported (line 372)"
+    },
+    {
+      "legacy": "npc/9330114.js",
+      "reason": "cm.ExistItem is not supported (line 389)"
+    },
+    {
+      "legacy": "npc/9330115.js",
+      "reason": "cm.ExistItem is not supported (line 373)"
+    },
+    {
+      "legacy": "npc/9330116.js",
+      "reason": "cm.ExistItem is not supported (line 369)"
+    },
+    {
+      "legacy": "npc/9330117.js",
+      "reason": "statement ForInStatement (line 234)"
+    },
+    {
+      "legacy": "npc/9330118.js",
+      "reason": "statement ForInStatement (line 256)"
+    },
+    {
+      "legacy": "npc/9330119.js",
+      "reason": "cm.ExistItem is not supported (line 362)"
+    },
+    {
+      "legacy": "npc/9330136.js",
+      "reason": "cm.getConnection is not supported (line 242)"
+    },
+    {
+      "legacy": "npc/9330150.js",
+      "reason": "cm.getDisconnected is not supported (line 14)"
+    },
+    {
+      "legacy": "npc/9891004.js",
+      "reason": "cm.getPlayer().unequipStarter is not supported (line 18)"
+    },
+    {
+      "legacy": "npc/9900000.js",
+      "reason": "Unexpected token (73:24)"
+    },
+    {
+      "legacy": "npc/9900001.js",
+      "reason": "cm.maxStats is not supported (line 45)"
+    },
+    {
+      "legacy": "npc/9900002.js",
+      "reason": "call .getAccountName is not supported (line 101)"
+    },
+    {
+      "legacy": "npc/9900003.js",
+      "reason": "expression UpdateExpression (line 30)"
+    },
+    {
+      "legacy": "npc/9901001.js",
+      "reason": "cm.getCharByName is not supported (line 36)"
+    },
+    {
+      "legacy": "npc/9901002.js",
+      "reason": "cm.getSpeedRun is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/9901003.js",
+      "reason": "cm.getSpeedRun is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/9901009.js",
+      "reason": "left out of this repository"
+    },
+    {
+      "legacy": "npc/9901010.js",
+      "reason": "cm.maxAranskills is not supported (line 694)"
+    },
+    {
+      "legacy": "npc/9901013.js",
+      "reason": "cm.getPlayer().getReborns is not supported (line 30)"
+    },
+    {
+      "legacy": "npc/9901014.js",
+      "reason": "Unexpected token (43:42)"
+    },
+    {
+      "legacy": "npc/9901015.js",
+      "reason": "cm.maxAranskills is not supported (line 688)"
+    },
+    {
+      "legacy": "npc/9901016.js",
+      "reason": "Unexpected token (25:68)"
+    },
+    {
+      "legacy": "npc/9901017.js",
+      "reason": "cm.getPlayer().getOccupation is not supported (line 21)"
+    },
+    {
+      "legacy": "npc/9901100.js",
+      "reason": "cm.getSpeedRun is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9901101.js",
+      "reason": "cm.getEventManager is not supported (line 38)"
+    },
+    {
+      "legacy": "npc/9901110.js",
+      "reason": "cm.getHiredMerchantMesos is not supported (line 49)"
+    },
+    {
+      "legacy": "npc/9901112.js",
+      "reason": "Unexpected token (33:54)"
+    },
+    {
+      "legacy": "npc/9901115.js",
+      "reason": "call .getMembers is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/9901117.js",
+      "reason": "cm.giveRandItem is not supported (line 42)"
+    },
+    {
+      "legacy": "npc/9901119.js",
+      "reason": "call .getMembers is not supported (line 15)"
+    },
+    {
+      "legacy": "npc/9901200.js",
+      "reason": "cm.getSpeedRun is not supported (line 17)"
+    },
+    {
+      "legacy": "npc/9901201.js",
+      "reason": "cm.getPlayer().getVPoints is not supported (line 38)"
+    },
+    {
+      "legacy": "npc/9901300.js",
+      "reason": "cm.getSpeedRun is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9901301.js",
+      "reason": "cm.getSpeedRun is not supported (line 19)"
+    },
+    {
+      "legacy": "npc/9901317.js",
+      "reason": "cm.EquipList is not supported (line 30)"
+    },
+    {
+      "legacy": "npc/9901501.js",
+      "reason": "cm.getPlayer().getCSPoints is not supported (line 29)"
+    },
+    {
+      "legacy": "npc/9901503.js",
+      "reason": "cm.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "npc/9930101.js",
+      "reason": "switch case falls through (line 44)"
+    },
+    {
+      "legacy": "npc/9930107.js",
+      "reason": "left out of this repository"
+    },
+    {
+      "legacy": "npc/9930108.js",
+      "reason": "left out of this repository"
+    },
+    {
+      "legacy": "npc/9930109.js",
+      "reason": "property warning (line 13)"
+    }
+  ]
+}

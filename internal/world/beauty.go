@@ -22,7 +22,8 @@ func styleFilter(command scripting.Command) (scripting.CommandResult, error) {
 	root := os.Getenv("MAPLEGO_WZ_ROOT")
 	kept := make([]int64, 0, len(command.Ints))
 	for _, id := range command.Ints {
-		if id >= 20000 && id <= 49999 && content.StyleExists(root, int(id)) {
+		// Skin colours (0-13) are drawn from the body parts every client has.
+		if id >= 0 && id <= 13 || id >= 20000 && id <= 49999 && content.StyleExists(root, int(id)) {
 			kept = append(kept, id)
 		}
 	}

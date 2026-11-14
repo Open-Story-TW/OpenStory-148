@@ -84,11 +84,62 @@ type ScriptExchange struct {
 	Quests      []ScriptQuestForce  `json:"quests,omitempty"`
 	Travel      *ScriptTravel       `json:"travel,omitempty"` // Server-resolved destination; never a raw Lua table field.
 	Look        *ScriptLook         `json:"look,omitempty"`   // Beauty host only; never a raw Lua table field.
+	Growth      *ScriptGrowth       `json:"growth,omitempty"` // Generated Legacy NPC sources only.
 	// Profession host only; never a raw Lua table field.
 	Profession *ProfessionChange `json:"profession,omitempty"`
 	// Drops are items left on the character's map for it to pick up (what a
 	// gathering node gives). Profession host only.
 	Drops []ScriptDrop `json:"drops,omitempty"`
+}
+
+// ScriptGrowth is what a generated Legacy NPC source changes on the character
+// besides items, mesos, experience and quests: fame (cm.addFame), skill points
+// (gainSP / resetSP), the next job of the character's own branch
+// (cm.changeJob), taught skills (cm.teachSkill) and a look set without a
+// coupon (cm.setHair / setFace / setSkin; the source takes its own payment).
+// NPC host only; never a raw Lua table field.
+type ScriptGrowth struct {
+	Fame   int           `json:"fame,omitempty"`
+	SP     int           `json:"sp,omitempty"`
+	SPSet  *int          `json:"sp_set,omitempty"`
+	Job    int           `json:"job,omitempty"`
+	Skills []ScriptSkill `json:"skills,omitempty"`
+	Hair   int           `json:"hair,omitempty"`
+	Face   int           `json:"face,omitempty"`
+	Skin   *int          `json:"skin,omitempty"`
+	// Coupon is the 515xxxx cash coupon the source took for the look; cash
+	// items cannot leave through the item list, so it is used up here.
+	Coupon int `json:"coupon,omitempty"`
+}
+
+// ScriptSkill is one cm.teachSkill(id, level, master level).
+type ScriptSkill struct {
+	ID     int `json:"id"`
+	Level  int `json:"level"`
+	Master int `json:"master,omitempty"`
+}
+
+// ValidScriptGrowth bounds every field; whether the job is one the character
+// may take is decided against the stored character.
+func ValidScriptGrowth(g ScriptGrowth) bool {
+	if g.Fame < -30000 || g.Fame > 30000 || g.SP < -999 || g.SP > 999 || g.SPSet != nil && (*g.SPSet < 0 || *g.SPSet > 999) || len(g.Skills) > 16 {
+		return false
+	}
+	if g.Job != 0 && !ValidJob(g.Job) {
+		return false
+	}
+	if g.Coupon != 0 && (g.Coupon/10000 != 515 || g.Hair == 0 && g.Face == 0 && g.Skin == nil) {
+		return false
+	}
+	for _, s := range g.Skills {
+		if s.ID < 1 || s.ID > 99999999 || s.Level < 0 || s.Level > 255 || s.Master < 0 || s.Master > 255 {
+			return false
+		}
+	}
+	if g.Hair != 0 && (g.Hair < 30000 || g.Hair > 49999) || g.Face != 0 && (g.Face < 20000 || g.Face > 29999) || g.Skin != nil && (*g.Skin < 0 || *g.Skin > 13) {
+		return false
+	}
+	return true
 }
 
 // ScriptLook is one beauty salon visit (Legacy cm.setAvatar): one coupon from
@@ -129,6 +180,8 @@ type ScriptExchangeResult struct {
 	QuestData []ScriptQuestData `json:"quest_data,omitempty"`
 	Quests    []QuestState      `json:"quests,omitempty"`
 	Drops     []ItemDrop        `json:"drops,omitempty"`
+	// Skills are the skill records a ScriptGrowth taught, as they now stand.
+	Skills []SkillState `json:"skills,omitempty"`
 }
 
 // ScriptDrop is one stack an exchange leaves on the ground at (X, Y) of the

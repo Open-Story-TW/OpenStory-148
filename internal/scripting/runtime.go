@@ -566,6 +566,28 @@ func (s *Session) installHost() {
 		bind("gender", s.simpleCommand("gender", 0), 1)
 		bind("hair", s.simpleCommand("hair", 0), 1)
 		bind("face", s.simpleCommand("face", 0), 1)
+		bind("name", s.simpleCommand("name", 0), 1)
+		// message(text[, kind]) is Legacy playerMessage/dropMessage: a chat
+		// notice line outside the conversation window.
+		bind("message", s.messageCommand("message"), 3)
+		// Reads and calls the generated Legacy NPC sources need.
+		bind("stat", s.textCommand("stat"), 2)
+		bind("has_equipped", s.simpleCommand("has_equipped", 1), 2)
+		bind("player_count", s.simpleCommand("player_count", 1), 2)
+		bind("monster_count", s.simpleCommand("monster_count", 0), 1)
+		bind("party", s.simpleCommand("party", 0), 1)
+		bind("open_npc", s.simpleCommand("open_npc", 1), 2)
+		bind("map_message", s.messageCommand("map_message"), 3)
+		// time() is the server clock a Legacy source read with new Date().
+		bind("time", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+			now := time.Now()
+			v, err := hostValue(t.Runtime, map[string]any{"ms": now.UnixMilli(), "year": int64(now.Year()), "month": int64(now.Month()), "day": int64(now.Day()),
+				"hour": int64(now.Hour()), "minute": int64(now.Minute()), "second": int64(now.Second()), "weekday": int64(now.Weekday())}, 0)
+			if err != nil {
+				return nil, err
+			}
+			return c.PushingNext1(t.Runtime, v), nil
+		}, 1)
 	}
 	if s.api == "map" {
 		bind("gender", s.simpleCommand("gender", 0), 1)
@@ -586,27 +608,7 @@ func (s *Session) installHost() {
 	if s.api == "portal" {
 		// message(text[, kind]) is Legacy playerMessage: kind 5 (the default)
 		// or 6 is a chat notice line; the host maps other kinds to 5.
-		bind("message", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-			if err := c.CheckNArgs(2); err != nil {
-				return nil, err
-			}
-			text, err := c.StringArg(1)
-			if err != nil {
-				return nil, err
-			}
-			if len(text) == 0 || len(text) > 512 || strings.ContainsRune(text, 0) {
-				return nil, domain.ErrInvalidInput
-			}
-			command := Command{Kind: "portal_message", Text: text}
-			if c.NArgs() > 2 && !c.Arg(2).IsNil() {
-				kind, err := c.IntArg(2)
-				if err != nil || kind < -8 || kind > 25 {
-					return nil, domain.ErrInvalidInput
-				}
-				command.Ints = []int64{kind}
-			}
-			return s.execute(t, c, command)
-		}, 3)
+		bind("message", s.messageCommand("portal_message"), 3)
 		bind("portal_name", s.simpleCommand("portal_name", 0), 1)
 		bind("portal_id", s.simpleCommand("portal_id", 0), 1)
 		bind("player_count", s.simpleCommand("player_count", 1), 2)
@@ -944,6 +946,31 @@ func (s *Session) runHost(command Command) (CommandResult, error) {
 	ctx, cancel := context.WithTimeout(s.currentContext, 2*time.Second)
 	defer cancel()
 	return s.host.Execute(ctx, s.identity, command)
+}
+
+// messageCommand sends one chat notice line with an optional Legacy kind.
+func (s *Session) messageCommand(command string) rt.GoFunctionFunc {
+	return func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		if err := c.CheckNArgs(2); err != nil {
+			return nil, err
+		}
+		text, err := c.StringArg(1)
+		if err != nil {
+			return nil, err
+		}
+		if len(text) == 0 || len(text) > 512 || strings.ContainsRune(text, 0) {
+			return nil, domain.ErrInvalidInput
+		}
+		command := Command{Kind: command, Text: text}
+		if c.NArgs() > 2 && !c.Arg(2).IsNil() {
+			kind, err := c.IntArg(2)
+			if err != nil || kind < -8 || kind > 25 {
+				return nil, domain.ErrInvalidInput
+			}
+			command.Ints = []int64{kind}
+		}
+		return s.execute(t, c, command)
+	}
 }
 
 // textCommand passes one bounded string argument to the host.

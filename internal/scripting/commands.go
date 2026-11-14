@@ -261,7 +261,66 @@ func (s *Session) exchange(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			request.Quests = append(request.Quests, force)
 		}
 	}
-	if len(request.Logs) == 0 && len(request.Items) == 0 && len(request.QuestData) == 0 && request.MesosDelta == 0 && request.EXP == 0 && len(request.Quests) == 0 {
+	if value := spec.Get(rt.StringValue("character")); !value.IsNil() {
+		// Fame, skill points, job, skills and look of a generated Legacy NPC
+		// call; the host refuses it from any other source.
+		entry, ok := value.TryTable()
+		if !ok {
+			return nil, errors.New("invalid character changes")
+		}
+		growth := domain.ScriptGrowth{}
+		fields := []struct {
+			name string
+			into *int
+		}{{"fame", &growth.Fame}, {"sp", &growth.SP}, {"job", &growth.Job}, {"hair", &growth.Hair}, {"face", &growth.Face}}
+		for _, f := range fields {
+			n, err := intField(entry, f.name, false)
+			if err != nil || n < -99999 || n > 99999 {
+				return nil, errors.New("invalid character change " + f.name)
+			}
+			*f.into = int(n)
+		}
+		coupon, err := intField(entry, "coupon", false)
+		if err != nil || coupon < 0 || coupon > 9999999 {
+			return nil, errors.New("invalid character change coupon")
+		}
+		growth.Coupon = int(coupon)
+		for _, name := range []string{"sp_set", "skin"} {
+			if v := entry.Get(rt.StringValue(name)); !v.IsNil() {
+				n, ok := v.TryInt()
+				if !ok || n < 0 || n > 999 {
+					return nil, errors.New("invalid character change " + name)
+				}
+				x := int(n)
+				if name == "skin" {
+					growth.Skin = &x
+				} else {
+					growth.SPSet = &x
+				}
+			}
+		}
+		if v := entry.Get(rt.StringValue("skills")); !v.IsNil() {
+			list, ok := v.TryTable()
+			if !ok || list.Len() > 16 {
+				return nil, errors.New("invalid skill grants")
+			}
+			for i := int64(1); i <= list.Len(); i++ {
+				skill, ok := list.Get(rt.IntValue(i)).TryTable()
+				if !ok {
+					return nil, errors.New("invalid skill grant")
+				}
+				id, e1 := intField(skill, "id", true)
+				level, e2 := intField(skill, "level", true)
+				master, e3 := intField(skill, "master", false)
+				if e1 != nil || e2 != nil || e3 != nil || id < 1 || id > 99999999 || level < 0 || level > 255 || master < 0 || master > 255 {
+					return nil, errors.New("invalid skill grant")
+				}
+				growth.Skills = append(growth.Skills, domain.ScriptSkill{ID: int(id), Level: int(level), Master: int(master)})
+			}
+		}
+		request.Growth = &growth
+	}
+	if request.Growth == nil && len(request.Logs) == 0 && len(request.Items) == 0 && len(request.QuestData) == 0 && request.MesosDelta == 0 && request.EXP == 0 && len(request.Quests) == 0 {
 		return nil, errors.New("empty exchange")
 	}
 	return s.execute(t, c, Command{Kind: "exchange", Exchange: &request})
