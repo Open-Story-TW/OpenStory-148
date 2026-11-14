@@ -1,0 +1,263 @@
+{
+  "version": 1,
+  "starter_sha256": "f6e33416935df9e8c77a431329017469e495442755af206d764d6ee565ee4d05",
+  "definitions": [
+    {
+      "id": 100000,
+      "bounds": {
+        "Envelope": {
+          "Left": -22,
+          "Top": -33,
+          "Right": 22,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -21,
+          "Top": -33,
+          "Right": 22,
+          "Bottom": 0
+        },
+        "FrameCount": 7,
+        "Sources": [
+          {
+            "ID": 100000,
+            "SHA256": "4e252c521975a7d7324c8485b1c3311626ea1001d70ff5aeaa998ec2aa65fea3"
+          },
+          {
+            "ID": 100100,
+            "SHA256": "f08843a0c73833445d5a1c26595f56a708fd7aba3e8cdc2941349dfc7434286f"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100001,
+      "bounds": {
+        "Envelope": {
+          "Left": -34,
+          "Top": -39,
+          "Right": 34,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -16,
+          "Top": -39,
+          "Right": 34,
+          "Bottom": 0
+        },
+        "FrameCount": 6,
+        "Sources": [
+          {
+            "ID": 100001,
+            "SHA256": "709803ce1a673a34a524acb72814b9f5f0efda40ce74c0c0eb7b6a132d74d8a9"
+          },
+          {
+            "ID": 100101,
+            "SHA256": "74bca06da5f0ddb14c8ad83f80583621854b95a4db8fdfa9afcca4f544df1ab9"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100002,
+      "bounds": {
+        "Envelope": {
+          "Left": -34,
+          "Top": -39,
+          "Right": 34,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -16,
+          "Top": -39,
+          "Right": 34,
+          "Bottom": 0
+        },
+        "FrameCount": 6,
+        "Sources": [
+          {
+            "ID": 100002,
+            "SHA256": "048115883d7e0a0734477fe28ef87d27777015835e31aa9f772961da8888bb8e"
+          },
+          {
+            "ID": 130101,
+            "SHA256": "1b85a6e4d52095166aad62100468528c4b9286d89bec4e4f0bdc320f258f4f99"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100003,
+      "bounds": {
+        "Envelope": {
+          "Left": -23,
+          "Top": -37,
+          "Right": 23,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -23,
+          "Top": -37,
+          "Right": 18,
+          "Bottom": 0
+        },
+        "FrameCount": 8,
+        "Sources": [
+          {
+            "ID": 100003,
+            "SHA256": "ad685d97467709c4cfa5f89ef72ac51da57f21269bbb022cb7297a626d97856d"
+          },
+          {
+            "ID": 120100,
+            "SHA256": "b078ce13c5b77ea97ab43eb75a00952eda368fd1fe1343fdfe95b74aeab9417a"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100004,
+      "bounds": {
+        "Envelope": {
+          "Left": -36,
+          "Top": -67,
+          "Right": 36,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -32,
+          "Top": -67,
+          "Right": 36,
+          "Bottom": 0
+        },
+        "FrameCount": 7,
+        "Sources": [
+          {
+            "ID": 100004,
+            "SHA256": "540d38986fb3aa88d1ee966778a988b7b771ecb434e95bcbc687d801ea3cbbe2"
+          },
+          {
+            "ID": 1210102,
+            "SHA256": "0a68cfcf7f2c5cd78b47c27e57e3b1c9fe32c6eca6a07b22c0097ad06eb9511b"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100005,
+      "bounds": {
+        "Envelope": {
+          "Left": -34,
+          "Top": -54,
+          "Right": 34,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -34,
+          "Top": -54,
+          "Right": 34,
+          "Bottom": 0
+        },
+        "FrameCount": 6,
+        "Sources": [
+          {
+            "ID": 100005,
+            "SHA256": "b5a476a181ab2d9a5e4ff5da2c1db92c694d1ae5e4682fa6ae6d213fccc6a1f8"
+          },
+          {
+            "ID": 130100,
+            "SHA256": "674c20226681f170c35d20c62ebdba911ef33e0633619b4f7893e94e8705fb71"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100006,
+      "bounds": {
+        "Envelope": {
+          "Left": -31,
+          "Top": -66,
+          "Right": 31,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -31,
+          "Top": -66,
+          "Right": 26,
+          "Bottom": 0
+        },
+        "FrameCount": 12,
+        "Sources": [
+          {
+            "ID": 100006,
+            "SHA256": "7989317d071afff95b5c7e9e345ace8e4c7cdc5a563243cde2a0872c12347511"
+          },
+          {
+            "ID": 210100,
+            "SHA256": "65ffe24498afed25be2fb496e65cd7e8423739c1be53abf110ad87243f590640"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 100007,
+      "bounds": {
+        "Envelope": {
+          "Left": -35,
+          "Top": -54,
+          "Right": 35,
+          "Bottom": 0
+        },
+        "UnmirroredEnvelope": {
+          "Left": -34,
+          "Top": -54,
+          "Right": 35,
+          "Bottom": 0
+        },
+        "FrameCount": 8,
+        "Sources": [
+          {
+            "ID": 100007,
+            "SHA256": "d9b0cebf41a9927bd3ab85a4724358ba3fe2496a8d526cdb65c152204202db25"
+          },
+          {
+            "ID": 1210100,
+            "SHA256": "d9b4ff6d6f80de576e789dda6ba94401ec44f709969aa8b8cfb77ca2ddec05ad"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    },
+    {
+      "id": 9300018,
+      "bounds": {
+        "Envelope": {
+          "Left": -11,
+          "Top": -40,
+          "Right": 11,
+          "Bottom": -10
+        },
+        "UnmirroredEnvelope": {
+          "Left": -10,
+          "Top": -40,
+          "Right": 11,
+          "Bottom": -10
+        },
+        "FrameCount": 9,
+        "Sources": [
+          {
+            "ID": 9300018,
+            "SHA256": "caf7f2ac9240e2f8b59a04e97adad18bf303706ca2882428e330dc584acb068d"
+          }
+        ],
+        "Kind": "static_frame_envelope_both_facings"
+      }
+    }
+  ]
+}

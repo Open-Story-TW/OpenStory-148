@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "method": "reviewed-ordered-quest-state-branches-with-authenticated-source-portal",
+  "scripts": [{
+    "legacy": "portal/entertraining.js",
+    "source_sha256": "7e9ef61deb880a99a23f9e294969d35c2c5754444b8ddb3940abd69d56ab91cc",
+    "lua": "portal/entertraining.lua",
+    "lua_sha256": "1cee6cb1cf9fdffec43f5f9cb9aa8762631a60e77daa963d81295690665ea65a",
+    "source_map_id": 1010000,
+    "source_portal_name": "in00",
+    "branches": [
+      {"quest_id":1041,"state":1,"map_id":1010100,"portal_id":4},
+      {"quest_id":1042,"state":1,"map_id":1010200,"portal_id":4},
+      {"quest_id":1043,"state":1,"map_id":1010300,"portal_id":4},
+      {"quest_id":1044,"state":1,"map_id":1010400,"portal_id":4}
+    ],
+    "denied_message": "Only the adventurers that have been trained by Mai may enter.",
+    "message_wire": "0x54,type5,MapleString; native0x94444F/0x945219",
+    "native_mcp": "pending"
+  }]
+}

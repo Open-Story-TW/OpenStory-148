@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Open Maple 後台</title>
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="player.css">
+</head>
+<body>
+<main id="login" hidden>
+  <form id="login-form" class="card narrow">
+    <h1>Open Maple 後台</h1>
+    <p class="muted" id="login-hint">輸入管理員 email，我們會寄一組 6 位數認證碼給你。</p>
+    <label id="email-row">Email<input id="email" type="email" autocomplete="email" required></label>
+    <label id="code-row" hidden>認證碼<input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}"></label>
+    <button id="login-button" class="primary">寄認證碼</button>
+    <button id="login-back" type="button" class="link" hidden>換一個 email</button>
+    <p class="error" id="login-error" role="alert"></p>
+  </form>
+</main>
+
+<div id="app" hidden>
+  <header>
+    <strong>Open Maple 後台</strong>
+    <nav id="tabs">
+      <button data-tab="overview" class="active">總覽</button>
+      <button data-tab="settings">設定</button>
+      <button data-tab="players">玩家</button>
+      <button data-tab="notices">公告</button>
+      <button data-tab="logs">記錄</button>
+      <button data-tab="gm">GM 授權</button>
+    </nav>
+    <span class="who"><span id="me"></span> <button id="open-admins" class="link">後台管理員</button> <button id="logout" class="link">登出</button></span>
+  </header>
+  <p class="banner" id="mail-warning" hidden>還沒設定寄信服務：認證碼目前只會寫在後台服務的紀錄檔裡。請在服務器的啟動設定填入 Postmark 金鑰與寄件地址。</p>
+
+  <section id="tab-overview">
+    <div class="stats" id="stats"></div>
+    <h2>服務狀態</h2>
+    <div class="grid" id="services"></div>
+    <h2>頻道人數</h2>
+    <div id="channels"></div>
+  </section>
+
+  <section id="tab-settings" hidden>
+    <div id="settings-tabs" class="subtabs" role="tablist" aria-label="設定分類"></div>
+    <div id="settings"></div>
+    <div class="savebar">
+      <span id="settings-note" class="muted"></span>
+      <button id="settings-reset" class="link" disabled>還原</button>
+      <button id="settings-save" class="primary" disabled>儲存</button>
+    </div>
+  </section>
+
+  <section id="tab-players" hidden>
+    <div id="player-list">
+      <form id="player-search" class="row">
+        <input id="player-query" placeholder="搜尋角色或帳號名稱；留空顯示全部" maxlength="24">
+        <select id="player-scope" aria-label="顯示範圍">
+          <option value="all">全部玩家（含離線）</option>
+          <option value="live">只看線上（即時狀態）</option>
+        </select>
+        <button class="primary">搜尋</button>
+      </form>
+      <p class="muted" id="players-note"></p>
+      <div id="players"></div>
+    </div>
+    <div id="player-detail" hidden>
+      <div class="row" id="player-head"></div>
+      <p id="player-notice" class="muted"></p>
+      <div class="player-layout">
+        <div id="player-windows"></div>
+        <div class="player-side">
+          <div class="card">
+            <h3>給予道具</h3>
+            <form id="give-search"><input id="give-query" placeholder="輸入道具名稱或編號" maxlength="40" autocomplete="off"></form>
+            <div id="give-pick" hidden></div>
+            <div id="give-results"></div>
+          </div>
+          <div class="card">
+            <h3>楓幣・Gash・楓點</h3>
+            <div id="player-money"></div>
+          </div>
+        </div>
+      </div>
+      <div id="player-tip" hidden></div>
+      <dialog id="player-dialog"></dialog>
+    </div>
+  </section>
+
+  <section id="tab-notices" hidden>
+    <form id="notice-form" class="card stack">
+      <div class="row">
+        <label>範圍<select id="notice-scope">
+          <option value="all">全服務器</option>
+          <option value="world">指定世界</option>
+          <option value="channel">指定頻道</option>
+          <option value="map">指定地圖</option>
+        </select></label>
+        <label id="notice-world-row" hidden>世界<select id="notice-world"></select></label>
+        <label id="notice-channel-row" hidden>頻道<select id="notice-channel"></select></label>
+        <label id="notice-map-row" hidden>地圖編號<input id="notice-map" type="number" min="1" max="999999999" placeholder="例如 100000000"></label>
+      </div>
+      <label>公告內容<input id="notice-message" required maxlength="80" placeholder="會以藍色公告顯示在玩家的聊天視窗"></label>
+      <div class="row end"><button class="primary" id="notice-send">發送公告</button></div>
+    </form>
+    <p class="muted">只有已經進入地圖的角色收得到；正在換頻道或在商城裡的玩家收不到。</p>
+    <h2>最近發送</h2>
+    <div id="notice-list"></div>
+  </section>
+
+  <section id="tab-logs" hidden>
+    <form id="log-search" class="row">
+      <select id="log-kind" aria-label="記錄種類">
+        <option value="">全部</option>
+        <option value="chat">聊天</option>
+        <option value="party">組隊</option>
+        <option value="trade">交易</option>
+      </select>
+      <input id="log-query" placeholder="搜尋角色名稱或內容" maxlength="64">
+      <button class="primary">搜尋</button>
+    </form>
+    <div id="logs"></div>
+    <div class="row end"><button id="log-more" class="link" hidden>載入更早的記錄</button></div>
+  </section>
+
+  <section id="tab-gm" hidden>
+    <p class="muted">讓角色在遊戲裡使用 GM 指令。授權時該帳號必須先登出遊戲。</p>
+    <form id="gm-form" class="card row">
+      <div class="combo">
+        <input id="gm-name" placeholder="輸入角色或帳號名稱的一部分來搜尋" maxlength="24" autocomplete="off" spellcheck="false"
+          role="combobox" aria-label="要授權的角色" aria-autocomplete="list" aria-expanded="false" aria-controls="gm-options">
+        <ul id="gm-options" role="listbox" hidden></ul>
+      </div>
+      <select id="gm-term" aria-label="授權期限">
+        <option value="timed">限時</option>
+        <option value="permanent">永久（常駐）</option>
+      </select>
+      <span id="gm-hours-row"><input id="gm-hours" type="number" min="1" max="24" value="24" aria-label="授權時數"> <span class="muted">小時</span></span>
+      <button class="primary" id="gm-submit" disabled>授權 GM</button>
+    </form>
+    <p class="muted" id="gm-term-note"></p>
+    <div id="gm-list"></div>
+  </section>
+
+  <section id="tab-admins" hidden>
+    <h2 class="first">後台管理員</h2>
+    <p class="muted">可以登入這個後台的人，和遊戲裡的 GM 無關。</p>
+    <div id="admin-list"></div>
+    <details class="fold">
+      <summary>新增後台管理員</summary>
+      <form id="admin-form" class="row">
+        <input id="admin-email" type="email" placeholder="新管理員的 email" required>
+        <button class="primary">新增</button>
+      </form>
+    </details>
+  </section>
+
+  <p class="toast" id="toast" role="status" hidden></p>
+</div>
+<script src="app.js"></script>
+<script src="player.js"></script>
+</body>
+</html>

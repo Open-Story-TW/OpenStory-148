@@ -1,0 +1,295 @@
+{
+  "version": 1,
+  "method": "whole-source-literal-wrapper",
+  "scripts": [
+    {
+      "legacy": "npc/1012113.js",
+      "source_sha256": "f1835b695931f334954b8caaec2a0e46658611ad7e5a9d2470122c210b6e6774",
+      "lua": "npc/1012113.lua",
+      "kind": "warp",
+      "map_id": 100000200,
+      "portal_id": 0,
+      "lua_sha256": "32329da86a4f18762a5b1299d9295977e42d216dc33ddf3ea85d23100491f108"
+    },
+    {
+      "legacy": "npc/1012121.js",
+      "source_sha256": "265685aba9d9c4672bd1be5629ecd8ee02c2e03fc481c4550ee0c058c4b94991",
+      "lua": "npc/1012121.lua",
+      "kind": "dialogue",
+      "text": "You don't have anything for the Clothes Collector.",
+      "lua_sha256": "60dcc6b19d5498b9749463f9bd61fe7f5520935a8e6fb2663d8eb3978cc6a313"
+    },
+    {
+      "legacy": "npc/1032111.js",
+      "source_sha256": "edb23bd5e6a9f573142513b4359f7b6815281582752bc505412c610815df43aa",
+      "lua": "npc/1032111.lua",
+      "kind": "dialogue",
+      "text": "A sweet scent of tree bark tickles my nose.",
+      "lua_sha256": "90cee5a10820836d579afd28024529d273fc62ebad558cf54fb7f7942a2f1047"
+    },
+    {
+      "legacy": "npc/1063016.js",
+      "source_sha256": "c8e99ce1cc3217b2f7db21d84b3737842c8b1da5dd6d74c9c0f136ce3c18403f",
+      "lua": "npc/1063016.lua",
+      "kind": "warp",
+      "map_id": 101040311,
+      "portal_id": 0,
+      "lua_sha256": "93a5b5e919d601a703230cb6c571a65ccebecac7dde739608f4da9a14838a7e7"
+    },
+    {
+      "legacy": "npc/1063017.js",
+      "source_sha256": "3854fa4427a550bdf86f307f8377daf122b6d74ec5f92ca5311d9e28137fc8b5",
+      "lua": "npc/1063017.lua",
+      "kind": "warp",
+      "map_id": 910510202,
+      "portal_id": 0,
+      "lua_sha256": "4d0235c437aaeb15cf7edeb38260b38ce3b20ec173c44ac4ff99073225584003"
+    },
+    {
+      "legacy": "npc/1095003.js",
+      "source_sha256": "865540cb83859a09f6bcf80da5103cc130e42d78be4e9dff44daa109c056b814",
+      "lua": "npc/1095003.lua",
+      "kind": "dialogue",
+      "text": "If you want to be a Cannon Shooter, please talk to Kyrin.",
+      "lua_sha256": "93d7bfb33209ef8a397d95d22a0dc755e81fb4a18054ca364bde6f2be867e1a7"
+    },
+    {
+      "legacy": "npc/1100003.js",
+      "source_sha256": "46dcb5c014e1090d6785bf635ffd85fde08e0cc3174de5f9324d40f3dcbfa03f",
+      "lua": "npc/1100003.lua",
+      "kind": "warp",
+      "map_id": 130000000,
+      "portal_id": 0,
+      "lua_sha256": "867c25b92e7b0752bebefe6efbf4d65a08932b9d1ca089436065b533d262e7ed"
+    },
+    {
+      "legacy": "npc/1100007.js",
+      "source_sha256": "f062c25c4ef077fa1a3ff25d961940b40623ab043d5b3cd03e60f81ecf6833f9",
+      "lua": "npc/1100007.lua",
+      "kind": "warp",
+      "map_id": 130000210,
+      "portal_id": 0,
+      "lua_sha256": "fed8578060e2580ceb9311f7993d7216a3ea6c362a843132861c0464c9eb249a"
+    },
+    {
+      "legacy": "npc/1102003.js",
+      "source_sha256": "91c01f8ca15d8cf060ec4696cc08518b5b73c7c8b875c297b9c1b7befaff12e0",
+      "lua": "npc/1102003.lua",
+      "kind": "dialogue",
+      "text": "Welcome to the Hall of Knights.",
+      "lua_sha256": "20086e2c7a4ae15f564f7d41340617cea4accec309d76470f5f0ba6bc7d5dce8"
+    },
+    {
+      "legacy": "npc/1209001.js",
+      "source_sha256": "fb2112be18154b13a9b3466af559a05e77afe1cd1e021d862a768767d00c6e64",
+      "lua": "npc/1209001.lua",
+      "kind": "dialogue",
+      "text": ":(",
+      "lua_sha256": "12c5548d0c9e53b59ca8d3de1f35277a0f25099b7efc3cd0ffbe833ab27e3446"
+    },
+    {
+      "legacy": "npc/1209003.js",
+      "source_sha256": "fb2112be18154b13a9b3466af559a05e77afe1cd1e021d862a768767d00c6e64",
+      "lua": "npc/1209003.lua",
+      "kind": "dialogue",
+      "text": ":(",
+      "lua_sha256": "d5f562561e4389595aeb2003a31a421c8d7e8d20c95b1c4ad54ff613f08cea6d"
+    },
+    {
+      "legacy": "npc/1209004.js",
+      "source_sha256": "fb2112be18154b13a9b3466af559a05e77afe1cd1e021d862a768767d00c6e64",
+      "lua": "npc/1209004.lua",
+      "kind": "dialogue",
+      "text": ":(",
+      "lua_sha256": "90d13c1d26b210860e81e28228964a48858ec7dbdd0fb21e4cd2e6aae271f4b7"
+    },
+    {
+      "legacy": "npc/1209005.js",
+      "source_sha256": "fb2112be18154b13a9b3466af559a05e77afe1cd1e021d862a768767d00c6e64",
+      "lua": "npc/1209005.lua",
+      "kind": "dialogue",
+      "text": ":(",
+      "lua_sha256": "b72419c83bde3f42265a643d68d4a5037fd45456ee9b84658db3caf7ed472e1b"
+    },
+    {
+      "legacy": "npc/2081004.js",
+      "source_sha256": "986a0940c3b47e483a81d6fcdf6f4b3e61b25d61d89bc8945bfa64a4e4050ea0",
+      "lua": "npc/2081004.lua",
+      "kind": "dialogue",
+      "text": "Hmmm... baby formula? Don't you think you're past that age?",
+      "lua_sha256": "e6ff2b3407a3b67ccd6c83f5b0368c19c83d141d443f69f08b10e0d5c73c0769"
+    },
+    {
+      "legacy": "npc/2111004.js",
+      "source_sha256": "aaefea18393dd1fd32214bc6f847f668af584d53978a4fa5bbd295d3d1029b13",
+      "lua": "npc/2111004.lua",
+      "kind": "dialogue",
+      "text": "Even though Alchemists and Fairies have antipathy for each other, I can still be in this town because the Zenumist President has been protecting us.",
+      "lua_sha256": "87e3ae3f1a9e31d8ce42e23467313d1619b2e9415213e2bdc755b25919e64fc7"
+    },
+    {
+      "legacy": "npc/2111005.js",
+      "source_sha256": "664ff92147bf8a266b38a9fde1804c0da906a314a757607dee7d23530ba66599",
+      "lua": "npc/2111005.lua",
+      "kind": "dialogue",
+      "text": "Almost all Magatian people are Alchemists. Everyone concentrates on Alchemy. So...Magatia is always quiet.",
+      "lua_sha256": "ea0d0cd6654620ac46dc1b43124f02ca29405dd21ce5817f3389ed3881d45728"
+    },
+    {
+      "legacy": "npc/2111007.js",
+      "source_sha256": "9249181f43cff1872f88c956ff121c21d94f6b55ccda769ea6549dd15b021b40",
+      "lua": "npc/2111007.lua",
+      "kind": "dialogue",
+      "text": "Hm... Don't doubt it because I'm a back street broker. Dealing with me is trust... I keep up my credit.",
+      "lua_sha256": "4ac277d404c24f69986dd792625e14d9a3db999be1e5d6224a30698f74757d43"
+    },
+    {
+      "legacy": "npc/2111008.js",
+      "source_sha256": "861ecb632cc9c1fa6127985b22dee366350ed1213d037e8e3d20d6d35c639588",
+      "lua": "npc/2111008.lua",
+      "kind": "dialogue",
+      "text": "Make it clear of your position! Are you Zenumist or Alcadno?",
+      "lua_sha256": "d070c2a2091f84c930519c473833243749abf5c8e25cc4e8822b6d8377185757"
+    },
+    {
+      "legacy": "npc/2111009.js",
+      "source_sha256": "42c2eba1c481da9e4f10b9c8703759bee26d50b55a5ad34b5eb79ecc3e584540",
+      "lua": "npc/2111009.lua",
+      "kind": "dialogue",
+      "text": "Definitely Alcadno is excluded.....Huhuhuhu.....Stupid people....cannot see the real important things..",
+      "lua_sha256": "51a89616f1381ef4b025dfb130cbd50555e2a7f39876ebb3748335cf3076dbf4"
+    },
+    {
+      "legacy": "npc/2112012.js",
+      "source_sha256": "4885731790bcf51d094fc158714d75c7703fb9d75a40a8271e160355c1e8c104",
+      "lua": "npc/2112012.lua",
+      "kind": "dialogue",
+      "text": "I have been #rremoved#k from the game.",
+      "lua_sha256": "5f78da353ed7e07a876fe66f101cf89417dc838cd139f2e44c80857ee6a0e67b"
+    },
+    {
+      "legacy": "npc/2131000.js",
+      "source_sha256": "c6c545c4e09030b8212a4aa6ca88eff2b44834ef6988b027bb51ca131dc93ac5",
+      "lua": "npc/2131000.lua",
+      "kind": "dialogue",
+      "text": "It is been a while since we left Ossyria to avoid the Black Magician. If not for the world tree, I do not know where we would have been. I have been trying to establish myself here, but that is not easy. I wonder how things are like back home.",
+      "lua_sha256": "75328987d488d06ae0e63ba91079051a5181f75e7b9519359c6090217188161b"
+    },
+    {
+      "legacy": "npc/2131002.js",
+      "source_sha256": "67ef3631568e816dce6913f1a5cf4a896a0b35c8f4d654200f169071ae962dc4",
+      "lua": "npc/2131002.lua",
+      "kind": "dialogue",
+      "text": "My name is Euryth... As you can see, I am a fairy. People tell me I do not act fairy-like, but... I like making things out of metal objects. Shhh, don't tell this to anyone, but I also like MMA.",
+      "lua_sha256": "ea89839b6140f02df3ce92df5705ba2d500bdf6d39d218110268bba639efb159"
+    },
+    {
+      "legacy": "npc/2132000.js",
+      "source_sha256": "fbe66b495d1420c26c2d1826a3a9036ecc3c22f8a18ac765e79ea2e42c084183",
+      "lua": "npc/2132000.lua",
+      "kind": "dialogue",
+      "text": "Hmmm! For you to make your way here, far away from the Camp, you must be one strong individual. Let's explore new areas and find a place to establish our own town!!",
+      "lua_sha256": "fc2d240b2cd55ed49b89a8c56374c33b7f9ada10bfe8a1677ad58adaa68d02a4"
+    },
+    {
+      "legacy": "npc/2161007.js",
+      "source_sha256": "ba459bada96f138aa49b185ede7ae43c7c06f93418ba19c74e1a5932e1fa5359",
+      "lua": "npc/2161007.lua",
+      "kind": "warp",
+      "map_id": 211060200,
+      "portal_id": 0,
+      "lua_sha256": "87850f55ab83455eaa670706300011d22d8502a7f1fcbc93dc62bc2258c65c4f"
+    },
+    {
+      "legacy": "npc/2161008.js",
+      "source_sha256": "405905c70e0939c55cceed44cb1385bf57ecd062eefc375a4ccdf477f0fce3a0",
+      "lua": "npc/2161008.lua",
+      "kind": "warp",
+      "map_id": 211070000,
+      "portal_id": 0,
+      "lua_sha256": "8ad2fbc453c8f67a13cfe86333d4e8bb4b9dc6ede989ddf11df6fd5dc1cd8ad5"
+    },
+    {
+      "legacy": "npc/9000006.js",
+      "source_sha256": "cadc8504cf15c2458ba93d6430816edc1172f3c5d348128a905d06e941c54468",
+      "lua": "npc/9000006.lua",
+      "kind": "dialogue",
+      "text": "Hey hey!!! Find the Treasure Scroll! I lost the map somewhere and I can't leave without it.",
+      "lua_sha256": "adbd60d5ea39a2190081f98bc0cba158c53c5c85035d7a582c5f8a1d9f9355fc"
+    },
+    {
+      "legacy": "npc/9000017.js",
+      "source_sha256": "e663600003263aa8fb00cac0ef2f63d4ea4d15bba4f6406b96cbe14a655ff57d",
+      "lua": "npc/9000017.lua",
+      "kind": "dialogue",
+      "text": "Oh, how I love Valentines' Day!",
+      "lua_sha256": "a0d94be245055f08d812ef9c6c2362a4e45975015b5b264d349c75a5634da048"
+    },
+    {
+      "legacy": "npc/9000039.js",
+      "source_sha256": "60b379e87b43e0c1f18c950684c4e1b0243657f6eb3fb30f67f85da1f59f1666",
+      "lua": "npc/9000039.lua",
+      "kind": "dialogue",
+      "text": "I'm not coded yet.",
+      "lua_sha256": "3ebba3a5361c8496595901e7c5f47f0bd48176ce14531e232007a56ba6f14c8f"
+    },
+    {
+      "legacy": "npc/9001000.js",
+      "source_sha256": "371da47dd82307d5e0ee805b0051f212712e5406dffe52fed29a3c89f238b07e",
+      "lua": "npc/9001000.lua",
+      "kind": "dialogue",
+      "text": "My #ev83#n function(s): #rSelling GM Equipment/MSIs#k.\r\n\r\nWhat should I do in #bWizStory#k?",
+      "lua_sha256": "bd383116441b5e25a75814098f38e8f7335c23c372f71df431b0bc81b1beb428"
+    },
+    {
+      "legacy": "npc/9020008.js",
+      "source_sha256": "5518e2ec7c244f369cec9bd2ee2bd6e1ad96efb4a4a64bcfad3a0bac547dff47",
+      "lua": "npc/9020008.lua",
+      "kind": "dialogue",
+      "text": "Thanks for rescuing me.",
+      "lua_sha256": "489bfe40db53f0c457eac23f97bff43105d7eba78e14d44a23e693d8a88f4b03"
+    },
+    {
+      "legacy": "npc/9201004.js",
+      "source_sha256": "bbf9e087e5cf3fbf47c0ade71bdc222029d83b5f7d42c3ff821c915368802bb0",
+      "lua": "npc/9201004.lua",
+      "kind": "warp",
+      "map_id": 680000000,
+      "portal_id": 0,
+      "lua_sha256": "6f55d43e908ac455e9f640651836446c2fa81580798649228bbad075a04f8c0c"
+    },
+    {
+      "legacy": "npc/9201079.js",
+      "source_sha256": "9fb436a99e92d4d45ed0fb155fa30bc23259a0611bc4eac8512134a2f3a57eb2",
+      "lua": "npc/9201079.lua",
+      "kind": "warp",
+      "map_id": 682000100,
+      "portal_id": 0,
+      "lua_sha256": "2ec281589f4c007f44445bd4c28f6375df191f3916ffab8135b081d543a102d4"
+    },
+    {
+      "legacy": "npc/9250022.js",
+      "source_sha256": "7c6a9cbd749835f7dab15a3a0213f9e4a420bdc73f1bb8591329d76c62f6838f",
+      "lua": "npc/9250022.lua",
+      "kind": "dialogue",
+      "text": "The Fortune System is currently unavailable.",
+      "lua_sha256": "8407df1c1414f58e6005ea8fdeb50175fd63b02bc58cdf21ce4b2f58012b232a"
+    },
+    {
+      "legacy": "npc/9310013.js",
+      "source_sha256": "eaaefd8609c25af1490c2fb172ea43cd8ece0c8cd4f15388ebba96eae6b23b78",
+      "lua": "npc/9310013.lua",
+      "kind": "dialogue",
+      "text": "Don't you wish to fly high so you can touch the sky?",
+      "lua_sha256": "761e1081e44f71acf21c4c39b6ab530af8bbe54184282a63682b6af10fc47870"
+    },
+    {
+      "legacy": "npc/9930103.js",
+      "source_sha256": "08b106f0a7ebae1698b61e8857c54e6209e542040527843d7d79afc2b862aa1f",
+      "lua": "npc/9930103.lua",
+      "kind": "dialogue",
+      "text": "Hi, my creator is #rSai#k.\r\n#rSai#k has created many of the sprites here in #eDevelopment#n.\r\n\r\nIf you want to see his other works, check him out! :\r\n#bhttps://www.facebook.com/SaiKaydenOfficial#k\r\n#bhttps://www.youtube.com/user/Sejiha#k",
+      "lua_sha256": "a55047da15b3df00ca81f2428808cdc728a8e90b15cacb493ffef4fe730ea847"
+    }
+  ]
+}

@@ -1,0 +1,522 @@
+{
+  "version": 1,
+  "method": "exact-unconditional-service-wrapper",
+  "scripts": [
+    {
+      "legacy": "npc/1002005.js",
+      "source_sha256": "05813d4da257cb97b367fa0260772ca1658f7a74010e9056cddaac701ace8b2c",
+      "lua": "npc/1002005.lua",
+      "lua_sha256": "3a2b2dcf29c93aa89e2111c73682b8f95fb5a93adda9747b732287940676ed73",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1012009.js",
+      "source_sha256": "f6aa5f7d527e6eeab14190b0348f3007bca7217243b022bd2961dacf38737f16",
+      "lua": "npc/1012009.lua",
+      "lua_sha256": "b1d59881e5a0279874610c60aa8c45f12702967a6719e630c5fd92313582f46d",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1022005.js",
+      "source_sha256": "23b797a709c314f0f1c6dd687415713f0881324142a0ff7434c405e9b174752c",
+      "lua": "npc/1022005.lua",
+      "lua_sha256": "d8760a9b0498bbc891d656ce1680d1e359caf860f89c33afa5fa4f484eb32c38",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1032006.js",
+      "source_sha256": "b835c9480382433ac6aaebc47ef1b84769021532967c7c096f74cae163382f70",
+      "lua": "npc/1032006.lua",
+      "lua_sha256": "742179697ba0adc08511b302d59bc4d1c6396019a7a7d5759a022eabd7206d09",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1033000.js",
+      "source_sha256": "e2dc1921068fa47a10e3804462da565a223cfa3ae8254248ad6491c893f97fa4",
+      "lua": "npc/1033000.lua",
+      "lua_sha256": "cc45e57dd59e21cdc5c8f5ca32b7fb8e7e670f510766f97c4182aa282b226a20",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1033002.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/1033002.lua",
+      "lua_sha256": "4959b9054c8728e8d7cb3625aa4d7e3418c9ba6fc630eb9440d44f87525548ea",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/1052017.js",
+      "source_sha256": "e8814323bbcb520a1ba3e711b6889bb25503bb8e2fc3acd32aad98ea15977a4e",
+      "lua": "npc/1052017.lua",
+      "lua_sha256": "b4ca0f7903ae2d4dfbed94d525a4ea83e3672794ffb5a78a3c5185720ca6037c",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1052116.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/1052116.lua",
+      "lua_sha256": "baee60e6eb1f34301fa70dfc9de206ffe1e2c7084117ab277ba9bf442a954f6d",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/1091002.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/1091002.lua",
+      "lua_sha256": "85f37c53c7de903e10bd36c1481a2f1231cd73af5a21762373a6dfa0ed6b02b8",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/1091004.js",
+      "source_sha256": "6822460aa7d733ad3e3b0fdfd8aed5ddc37cfa28f3cb32539e95526cd632f150",
+      "lua": "npc/1091004.lua",
+      "lua_sha256": "6ef7e5e2e1fd4f63a33995a72fcc0d5eb5ec3bff16fcf77da81cc1b8b27b0c27",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1100000.js",
+      "source_sha256": "39f0ecc045764f68077f4052e45aaf43ae1b2bbd78964223cc7661be0e57f3e5",
+      "lua": "npc/1100000.lua",
+      "lua_sha256": "83b5b6759856ef7a2a4fb4990dd2874edadcefe6bc4dc3c59cde92f17a6666f9",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1200000.js",
+      "source_sha256": "379343282b47b2b80c14fb64732039f68f6e13645f9e5ac619cfb6ed990352e7",
+      "lua": "npc/1200000.lua",
+      "lua_sha256": "776a670def7e6a3813fb317aa132411facbc552fb7ae093ee598eb869fc8a069",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/1200001.js",
+      "source_sha256": "badeb0d22185d419625416f855eb99d09444dc32aa593e3a7a17e6c3e0b65df4",
+      "lua": "npc/1200001.lua",
+      "lua_sha256": "721345692a2377eee9fe22ca1daae65bb76aa6cbbe63be27ad95f945b2c541ce",
+      "service": "shop",
+      "shop_id": 106
+    },
+    {
+      "legacy": "npc/1200002.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/1200002.lua",
+      "lua_sha256": "55902533f9f9a729b2c26026efb67b5b7d6d87c40f190ee3e0ac9e5ed41363ef",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/1301000.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/1301000.lua",
+      "lua_sha256": "17c36ab65ca404e65bd3f0bbf7844c3e89ab822cff3234490fdab5c15910ed73",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/1400000.js",
+      "source_sha256": "efeda2cced011f49122f6cb46694b8d1191b0dae3f2ba46a1f56339a9571796a",
+      "lua": "npc/1400000.lua",
+      "lua_sha256": "d2d5ba679f29db69c18364043c61edd5b9242deaead2f5dcbfb100f7609bbe49",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2010006.js",
+      "source_sha256": "dc9ba4a8d9b516f48fe65f9426a43483a843bb80221b34ceef27a00d296f19e5",
+      "lua": "npc/2010006.lua",
+      "lua_sha256": "eeaafe188f92ecc71a24c6c3a8fe4b77426b27f1b630ef8d483c932fec07e2cf",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2020001.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/2020001.lua",
+      "lua_sha256": "bb84183d0af5ae0dbc9c8c9517d1ca38cb1b11b2ef4df3f5d27a3b46d92773b3",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/2020004.js",
+      "source_sha256": "3b272baba46f8ac0a377f33c623e140959a58b5f2a77f9385ba0381c7e21b03f",
+      "lua": "npc/2020004.lua",
+      "lua_sha256": "b2ae6505c9b6569a0dd52c4d12647e45323c644a28ea12ed349b33390b405ef8",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2041003.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/2041003.lua",
+      "lua_sha256": "bac038bde2eea036445625609bb9b0578856ec06789f51463aa3855e0295e2c6",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/2041008.js",
+      "source_sha256": "25ec3034b78aeac02e92d0ebae0fd9ce3cd3451cb3970223974c4bea5aca2e03",
+      "lua": "npc/2041008.lua",
+      "lua_sha256": "f40e93abbf89315bc5c28fbc9d67052532c2add9bd05859bad6041907d160a13",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2050004.js",
+      "source_sha256": "c9e7869777f01a3f7f3ee4c899100810f66c30276745ce3af1031fa332dd422a",
+      "lua": "npc/2050004.lua",
+      "lua_sha256": "6fa06c70ac1ee1d2b5d2a82fe8b9008736c890e847119be98dc2df1a2963586c",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2060008.js",
+      "source_sha256": "343657cc9187ea4edbcca90b77c870c8fd4830683e8de554f449b99888606651",
+      "lua": "npc/2060008.lua",
+      "lua_sha256": "1c8456a113e5e8e8b17a130e50e0ab99c548437fe789cc3e747bf0dfa6e0e785",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2070002.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/2070002.lua",
+      "lua_sha256": "fb079a89a31405ddf11aad71132d8bf9e5983b6e336de961b11108b3a5801ba6",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/2070003.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/2070003.lua",
+      "lua_sha256": "abc8cabeb3bbf23108fb9d6114592de9c56dd86807826b6e2583b22b362b4dab",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/2080001.js",
+      "source_sha256": "9f4b70db783c0ba73768487c6fa0cbaea26f6da2b441163032b8cc242ca4ad5a",
+      "lua": "npc/2080001.lua",
+      "lua_sha256": "39398e1fb4c06275bff0278cef6e1fd7cbdae37f509fa3ede976556fd87bf324",
+      "service": "shop",
+      "shop_id": 38
+    },
+    {
+      "legacy": "npc/2080002.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/2080002.lua",
+      "lua_sha256": "f0c547d504779fc10e7445b275e4e85f9bfec297a7ebdf2c75e4e3459c1805d0",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/2080004.js",
+      "source_sha256": "ed2c3883c42055c90dd12117b1fb2068921ae9378d7ab9ea68935987a58aeb1f",
+      "lua": "npc/2080004.lua",
+      "lua_sha256": "29c8cc55274eb2d470c148714d1d0195ad55c656d66f0d550fe301bad3e3cb57",
+      "service": "shop",
+      "shop_id": 105
+    },
+    {
+      "legacy": "npc/2080005.js",
+      "source_sha256": "6e860955e98a6f9783f4fcb81c9741de8fac426e4f4be21e8e5b42a03df591d8",
+      "lua": "npc/2080005.lua",
+      "lua_sha256": "711dd28a6174fd40cb68a630c1a89ca9bad3b73fcdfc74c510567ea5220a0320",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2090000.js",
+      "source_sha256": "39f0ecc045764f68077f4052e45aaf43ae1b2bbd78964223cc7661be0e57f3e5",
+      "lua": "npc/2090000.lua",
+      "lua_sha256": "8a20fd78e9f6ee64ae5c079f42bc86684dec6dea8776be3eef1b76c3139b3800",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2090001.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/2090001.lua",
+      "lua_sha256": "e648df81ae7e28305529e85ddb8cbed3bd5300e943e427a9a80df48875cf2d88",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/2090002.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/2090002.lua",
+      "lua_sha256": "d1128e9c0d7c994ed73f71c681e673a3689eb53a6b6dc8282cf4739175823f9a",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/2090003.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/2090003.lua",
+      "lua_sha256": "270364ae1f723a3323c1131da3e4b6788e16ad9e2fe44932ae28c0b3d93a3b00",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/2093000.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/2093000.lua",
+      "lua_sha256": "b9b0eae35054ea71919d0af1ad1b3f218c76141710a4bd22db5801d2a2e5b5a2",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/2093001.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/2093001.lua",
+      "lua_sha256": "06673c8267db7046c00f8c052494b5ca6f137a895d4f5698607772e5c9ea3870",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/2093002.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/2093002.lua",
+      "lua_sha256": "7d614a795633b3e4e6163c5a2b91bd269f0a1eb7ebd5a24a65473afe6375b170",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/2093003.js",
+      "source_sha256": "635309a1470e2c5ec57e2c43de553098ced3a3e4c855c958f14b30a4915658cb",
+      "lua": "npc/2093003.lua",
+      "lua_sha256": "59c09eaa1915e34617f5f447529e8fafec1f370d62440a577947d15e99cf6cfc",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2100000.js",
+      "source_sha256": "b2bc9b0b04d13550adbfe4d0665b573230179e07fd7f4ed64f6ec63b6f75e912",
+      "lua": "npc/2100000.lua",
+      "lua_sha256": "2314385125d7e46f20a3a60ffda37ed6882c1f040cf8f338a7c9f24fc33f6550",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2100002.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/2100002.lua",
+      "lua_sha256": "712d61c8921551fa58fe8bf710ca7bf412424051fab302fb90571577dc480071",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/2100003.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/2100003.lua",
+      "lua_sha256": "acc733b8ddc1dfb984094238e3dd6c6eb4e80afa99edb3cd364a6ce53b57046f",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/2110000.js",
+      "source_sha256": "39f0ecc045764f68077f4052e45aaf43ae1b2bbd78964223cc7661be0e57f3e5",
+      "lua": "npc/2110000.lua",
+      "lua_sha256": "332a1f92963d67d635234f573051da8a771d0c87903f843011273cca76b82017",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2110001.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/2110001.lua",
+      "lua_sha256": "60c024de384b5b39d8f7090d4dfd77fbc281d230eb920779e716f21c40b54095",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/2130000.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/2130000.lua",
+      "lua_sha256": "0a3ad41331de0e9b4be8f0a4fca41f8f2add0989c2df9e759591e963adba7ae2",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/2142000.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/2142000.lua",
+      "lua_sha256": "51c29a3e683dd389a70684faad9dd7534f0eeed7a0d49b8cb7034ab9aabba241",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/2150000.js",
+      "source_sha256": "39f0ecc045764f68077f4052e45aaf43ae1b2bbd78964223cc7661be0e57f3e5",
+      "lua": "npc/2150000.lua",
+      "lua_sha256": "4df096c0217d11a3904777dd3357c68b48e87053fb71548b31efc654059a445a",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/2150002.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/2150002.lua",
+      "lua_sha256": "0b41ff857f69593cd7baf47b09738efd0fa6e3c17cfa517bdc5449ec72181ebd",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/2180000.js",
+      "source_sha256": "e2dc1921068fa47a10e3804462da565a223cfa3ae8254248ad6491c893f97fa4",
+      "lua": "npc/2180000.lua",
+      "lua_sha256": "2d4ace41e4bd77e2e853f599f87f9c37817cbbec6672452da2d433471d54df13",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9000081.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/9000081.lua",
+      "lua_sha256": "dbe44989ee26718b03ab538e51b9a4cba7ca26af402fe3b961e842295af3a7f6",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/9001003.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/9001003.lua",
+      "lua_sha256": "5d4eda16480b07791620d7cfccf25544a2012998f4ae2827d30ba96d4ea19364",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/9030100.js",
+      "source_sha256": "39f0ecc045764f68077f4052e45aaf43ae1b2bbd78964223cc7661be0e57f3e5",
+      "lua": "npc/9030100.lua",
+      "lua_sha256": "406f34c0325cd31be1b43602d10eb04459b9e601d1717ce5d4e41f1c25a734b3",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9031016.js",
+      "source_sha256": "e2dc1921068fa47a10e3804462da565a223cfa3ae8254248ad6491c893f97fa4",
+      "lua": "npc/9031016.lua",
+      "lua_sha256": "a678a47890114e364930a91a5c584f479009d1fa25eb654495583afa218afba4",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9071001.js",
+      "source_sha256": "ac82bfe2cd446043d448bdd0cf1bf0696553f99501e826207439614ea7d103f7",
+      "lua": "npc/9071001.lua",
+      "lua_sha256": "0e2b161512ff4a5598ba0f85b6b06b06166eb87fcb177fd2857cf4cb17f184b6",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/9110100.js",
+      "source_sha256": "37589befa36f2f5962e096daaa986889da17bc7f60b5118fccf4e0034dc24188",
+      "lua": "npc/9110100.lua",
+      "lua_sha256": "e47826d56af3aefe99c39e5a8f511acec216c0e28bb5eb5ed26a6d98d91eef06",
+      "service": "shop",
+      "shop_id": 103
+    },
+    {
+      "legacy": "npc/9110102.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/9110102.lua",
+      "lua_sha256": "cc7046afcb2bd6ba930fd4682af340b36d4291143d40b8b336078aedb2771cbc",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/9120009.js",
+      "source_sha256": "99c5c737457c940ef8a4801993f2853e7ad963ec59c8ba6ac9d484d10d6fe954",
+      "lua": "npc/9120009.lua",
+      "lua_sha256": "861bf3ff6c1d0af9b3c5406203826a5819189714763fb05fb650729d2bcfb0c1",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9250007.js",
+      "source_sha256": "f641c1349a22d0056b1a72a56932f931a2e6e0c87a20fc4fc1ad709aad34b6b6",
+      "lua": "npc/9250007.lua",
+      "lua_sha256": "1c93d7443d7fe8c43d6a5688a25fcb001c71ce1b1cf876e422596f21de0d7789",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/9250008.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/9250008.lua",
+      "lua_sha256": "37f988111720996d9150ebb44f28fc6466230dfef2b73c3ed5766972f4d32390",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/9250009.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/9250009.lua",
+      "lua_sha256": "7818724ae27997419f7ceafad0e05f9cff330e2f1c343a343a3bf270a0bea90e",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/9250031.js",
+      "source_sha256": "39cdc236bd80d7f84ea169ec8958e91efae329cc4e7d0292deacbc2cc4e7440e",
+      "lua": "npc/9250031.lua",
+      "lua_sha256": "92d4a1fff73716ba057c4629c1e704e36864a4341f2b389882c058ba038bf0cf",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9270019.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/9270019.lua",
+      "lua_sha256": "f3bd3a22312b743e9005fa95b7a09a34f96fa837081187516817bc7dc7a9cbba",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/9270020.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/9270020.lua",
+      "lua_sha256": "2a5c0d80550e38ea0978fe67dda6ef2916ee97d7722827978578358d5fb5b9ee",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/9270022.js",
+      "source_sha256": "40f09724d099eb79983023662a7668bec31f3f25ca5624c5b12451620ed74b22",
+      "lua": "npc/9270022.lua",
+      "lua_sha256": "9f17831166e7518fb1ead4b4a981d7f235cf625230bd35a35f788911b9a2f3ab",
+      "service": "shop",
+      "shop_id": 35
+    },
+    {
+      "legacy": "npc/9270042.js",
+      "source_sha256": "5b0dda738b53c33c0c27160e6d170191b2f6e095a489a4c1be39c77ba18fb965",
+      "lua": "npc/9270042.lua",
+      "lua_sha256": "9fb59157ec25f6844de7c00dcafc6372dd892929d0ba53a84db1d671b11af311",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9270054.js",
+      "source_sha256": "3122eefc6fc07f4b1c6ab10f559814ce079ff50a9326ac22b114a49192685450",
+      "lua": "npc/9270054.lua",
+      "lua_sha256": "0980fe62a624cd97503e6df10df4e51f72db8bcee9425ddc0c9eba1c1fb41980",
+      "service": "storage"
+    },
+    {
+      "legacy": "npc/9270055.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/9270055.lua",
+      "lua_sha256": "572d33578bc2c63a5ea07aca290b1073c2ba26994820b3ec7484ffb4c95332a0",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/9270056.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/9270056.lua",
+      "lua_sha256": "946e6bd48cd60a3ffa73c5106412dbb3c00a9b09d248558bc2cbbb90ab31a353",
+      "service": "shop",
+      "shop_id": 52
+    },
+    {
+      "legacy": "npc/9310001.js",
+      "source_sha256": "53fe53463011d0340e9766827b949faa1cd86299b215b3fbccc7d89b10eb5d81",
+      "lua": "npc/9310001.lua",
+      "lua_sha256": "13cf56b0b274eda8f8176cdb77c7097ad9286ae922669b9f79f738a62e32f4ee",
+      "service": "shop",
+      "shop_id": 48
+    },
+    {
+      "legacy": "npc/9310002.js",
+      "source_sha256": "5193d58b27833a07dbb8a4d573cf6208ff993a00fa83ede4081f3668d440cd43",
+      "lua": "npc/9310002.lua",
+      "lua_sha256": "83b5efac35b633b44e32e1cabda5e447d3acb61e069e6bcedec60f5b8b4c991e",
+      "service": "shop",
+      "shop_id": 52
+    }
+  ]
+}

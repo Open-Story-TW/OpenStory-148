@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "scripts": [
+    {
+      "legacy": "npc/1022000.js",
+      "source_sha256": "65b65e0fd9dc99db938f9c51f3357bfe26701e16b2dc1cfb88550a954d94ca63",
+      "lua": "npc/1022000.lua",
+      "lua_sha256": "035ac85c20517b6d92a329776ea5fcb2613732b937aca2c9482a4aaee72242b1",
+      "npc_id": 1022000,
+      "map_id": 102000003,
+      "minimum_level": 10,
+      "jobs": [
+        100
+      ],
+      "scope": "ordinary-first-job-only",
+      "native_mcp": "pending"
+    },
+    {
+      "legacy": "npc/1032001.js",
+      "source_sha256": "8cf80dbcc7e93ad58ca7a8817aa1fd093a55515b925dda047d15fa63fc8ca438",
+      "lua": "npc/1032001.lua",
+      "lua_sha256": "b9622b2028269d50591c39a6c0b7f396baefe542d749db8e735c6b47524b1347",
+      "npc_id": 1032001,
+      "map_id": 101000003,
+      "minimum_level": 8,
+      "jobs": [
+        200
+      ],
+      "scope": "ordinary-first-job-only",
+      "native_mcp": "pending"
+    },
+    {
+      "legacy": "npc/1012100.js",
+      "source_sha256": "d14addd63e540d4a0f2405a71ebf2d68e6f99348c2c544fbbafd547fb1e61440",
+      "lua": "npc/1012100.lua",
+      "lua_sha256": "bc704610e512e8547e5d4371a576393afdf340c9875a8c0dd86f082b9c4294f4",
+      "npc_id": 1012100,
+      "map_id": 100000201,
+      "minimum_level": 10,
+      "jobs": [
+        300
+      ],
+      "scope": "ordinary-first-job-only",
+      "native_mcp": "pending"
+    },
+    {
+      "legacy": "npc/1052001.js",
+      "source_sha256": "87fa84dbd760f77d9893c44085b37bfc3894d06865854f4f52f8bf4b83d9294b",
+      "lua": "npc/1052001.lua",
+      "lua_sha256": "ee410c664af31dfeee2fccdc43d8c7d7e94eed3cd7bf0b1842ab3b3194f4fe4d",
+      "npc_id": 1052001,
+      "map_id": 103000003,
+      "minimum_level": 10,
+      "jobs": [
+        100,
+        200,
+        300,
+        400,
+        500
+      ],
+      "scope": "ordinary-first-job-only",
+      "native_mcp": "pending"
+    },
+    {
+      "legacy": "npc/1090000.js",
+      "source_sha256": "af9cdae9e1551618e366445d46e88958e7bfd8702831c85d3f68a0ef681f14fd",
+      "lua": "npc/1090000.lua",
+      "lua_sha256": "c8ac366576baf770015668a5659c8071feb98415e4c6c5a989dce5c7e3be7f67",
+      "npc_id": 1090000,
+      "map_id": 120000101,
+      "minimum_level": 10,
+      "jobs": [
+        500
+      ],
+      "scope": "ordinary-first-job-only",
+      "native_mcp": "pending"
+    }
+  ],
+  "limitations": [
+    "Only ordinary first-advancement branches are migrated; later jobs, custom advancement quests, Cannoneer, and clone-map NPCs remain pending.",
+    "Native launcher MCP verification of each listed source/target is pending.",
+    "Existing world attack/active-skill support remains the reviewed beginner/first-warrior subset; other first-job combat families are not completed by this migration.",
+    "NPC1090000 retains legacy dialogue claiming inventory expansion, but the actual source has no expansion call and no capacity is granted.",
+    "Mage and bowman pre-change stat resets are overwritten by changeJob; pirate resets DEX20 after changeJob. AP is conserved."
+  ]
+}

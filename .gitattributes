@@ -1,0 +1,19 @@
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.exe binary
+*.zip binary
+*.png binary
+# Embedded content whose pinned hashes were taken over CRLF bytes.
+internal/content/cash_catalog.json eol=crlf
+internal/content/cash_packages.json eol=crlf
+internal/content/mob_drops.json eol=crlf
+internal/content/npc_shops.json eol=crlf
+internal/content/quests.json eol=crlf
+internal/content/starter.json eol=crlf
+scripts/first-jobs.json eol=crlf
+scripts/portal-migrations.json eol=crlf
+scripts/service-npcs.json eol=crlf
+scripts/simple-npcs.json eol=crlf
+scripts/taxi-npcs.json eol=crlf
+scripts/npc/1052001.lua eol=crlf

@@ -1,0 +1,3748 @@
+{
+  "scripts": [
+    {
+      "legacy": "portal/08_xmas_out.js",
+      "source_sha256": "93e004f70a497d4a5f8367097ac5acdbb553355d780e062e695ba70b019fa223",
+      "lua": "portal/08_xmas_out.lua",
+      "lua_sha256": "20a0aaaad2dc3b68bf1d10c9bd78f1bdde56683f40bf9f77cbb5e684860b98ec"
+    },
+    {
+      "legacy": "portal/08_xmas_st.js",
+      "source_sha256": "785b0fab34b60d0e0795f9e8d8e6912d7a6fa1e982916f70dc41139bc1e6d062",
+      "lua": "portal/08_xmas_st.lua",
+      "lua_sha256": "00773ebde9707185ea21a8535a1e75bd0525238631165867e5d1d49746aa18c3"
+    },
+    {
+      "legacy": "portal/1stTowerTop.js",
+      "source_sha256": "b31eb032187bc821d726a4458bbf41a408ff43c1673aad60c728459ed19a3d66",
+      "lua": "portal/1stTowerTop.lua",
+      "lua_sha256": "86f0d34f1048fd0e3469f97616f6052ef73b88c36cf943babc93690134ba251c"
+    },
+    {
+      "legacy": "portal/BlackPortal.js",
+      "source_sha256": "9798574f88293947b9b904dad32b0db89181825df099478d56886aba3dcb4fa4",
+      "lua": "portal/BlackPortal.lua",
+      "lua_sha256": "46a43684ea4d89ff57a9b82ddff820baae7b37a1759167975b6f290860e2d2cd"
+    },
+    {
+      "legacy": "portal/Depart_ToKerning.js",
+      "source_sha256": "a5375251c4516cbbb9b34031fc935102485eb972f0e1db9a154c2fd1ee22efe0",
+      "lua": "portal/Depart_ToKerning.lua",
+      "lua_sha256": "3c11dafa11ac01e653471d46000d729e9ad0eeb34adebda3ce189cc858caa739"
+    },
+    {
+      "legacy": "portal/Depart_TopFloor.js",
+      "source_sha256": "af624c18c4379e0645864c49ec8af78e55b696f047e18ec9ca5c3c5364565057",
+      "lua": "portal/Depart_TopFloor.lua",
+      "lua_sha256": "f09edf2563bf0d7fa96744a037b0730d26001711552724d5c1035602609d36c9"
+    },
+    {
+      "legacy": "portal/Depart_goBack00.js",
+      "source_sha256": "16a91d4c9f702368e7c4a60414991241027f6213ed27ce54f26bfd6fe5e11ee6",
+      "lua": "portal/Depart_goBack00.lua",
+      "lua_sha256": "4157e43f17550667403bf9ad168780fc2e16d475f734c12638e8ae78bdc01e6d"
+    },
+    {
+      "legacy": "portal/Depart_goBack01.js",
+      "source_sha256": "d48e4fb15189c4fb6cf1d61afe108ed5ece5c5fbcc3b7ec4f84b68456d6ef776",
+      "lua": "portal/Depart_goBack01.lua",
+      "lua_sha256": "06f09e657b0d18118c4216cb03a13f28d048954681651f3c7ac0b9f3fda314c9"
+    },
+    {
+      "legacy": "portal/Depart_goFoward0.js",
+      "source_sha256": "3aa23e6e39454e4ce7aa30f51b533499f5d2630bf206773514696e1c5be12b5d",
+      "lua": "portal/Depart_goFoward0.lua",
+      "lua_sha256": "9d5327da273fd9594e8e4b058b02e8c81dd3e4e6d3d89c4145e4bbb2eeb2b6f3"
+    },
+    {
+      "legacy": "portal/Depart_goFoward1.js",
+      "source_sha256": "b358660765f668be48d5ed27ae5423286497c5634c607c5d54b231c6882b250f",
+      "lua": "portal/Depart_goFoward1.lua",
+      "lua_sha256": "e197a439436bb654e1c6f62d21476f87f42e30eb8e09b9341de4c6e0f9ad35eb"
+    },
+    {
+      "legacy": "portal/Depart_topOut.js",
+      "source_sha256": "064d8b96511ab8d08aaaf95dcba235ed2630c7e399db47fc6a2b189888d8a8fc",
+      "lua": "portal/Depart_topOut.lua",
+      "lua_sha256": "7ff31fd01018ef37c16e1b2031ad2a247be9a4e3d0dbe84dca2410181a919797"
+    },
+    {
+      "legacy": "portal/ElfTaxiTalk.js",
+      "source_sha256": "0ca4d79db5ae92f4142f614aef0cec4082301c66fea95a61b68bce5cd72277fe",
+      "lua": "portal/ElfTaxiTalk.lua",
+      "lua_sha256": "ad4b8ecf324d9b33f9d2f925bc448a31b2f118bbfabe8d7b27faff5dd0de7383"
+    },
+    {
+      "legacy": "portal/FourthJobResi.js",
+      "source_sha256": "250887477cb6c82334f22b1df9da94f8947148001ea9f1f071688d43ecc9eeeb",
+      "lua": "portal/FourthJobResi.lua",
+      "lua_sha256": "6da5428e979159ef6f6b2d2d992ff4e4e124f740403eb56afb4b9fc117efc80a"
+    },
+    {
+      "legacy": "portal/GC_out.js",
+      "source_sha256": "2a3a464663c0fa8441764daeae5ca8d984cc0a72d5fe2e7de0e1c2d7417350ba",
+      "lua": "portal/GC_out.lua",
+      "lua_sha256": "f7fd3f3d34f6fddfc494fc1457a08a589fa921749f1028bcb1a2b59b340ec734"
+    },
+    {
+      "legacy": "portal/GS_backSpace.js",
+      "source_sha256": "fed588b04743b68b29971958f2a4b2f1e9c42ae156362eaef0ced6de402e2f25",
+      "lua": "portal/GS_backSpace.lua",
+      "lua_sha256": "56142757e8ab80eb6d595c40e4c024615f25c30bf9e08d79fbe5a25c69890a44"
+    },
+    {
+      "legacy": "portal/GS_stage5_water.js",
+      "source_sha256": "005fd5a61c17fa343dfa748ca5eafcc0f151a8c98f281310f08d630b4ff8e385",
+      "lua": "portal/GS_stage5_water.lua",
+      "lua_sha256": "b0b48db8c4e7cbffda44a21cb6f3923a33c7cf171475f2d521313a1015428e47"
+    },
+    {
+      "legacy": "portal/GS_switchChat.js",
+      "source_sha256": "5829409702ca6a3ea470382c436adcdf3120aa826ff3c5f99adbfa4a537c6bd7",
+      "lua": "portal/GS_switchChat.lua",
+      "lua_sha256": "3186bd109a39f9a03f6e342df0b1138ca35cf1167fd2459cb12b2a78db2776ca"
+    },
+    {
+      "legacy": "portal/HW_portal_book.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_book.lua",
+      "lua_sha256": "149895fd77435b544060e711578ed00114cba37e32d9db4b71360b6eea77b994"
+    },
+    {
+      "legacy": "portal/HW_portal_guest3.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_guest3.lua",
+      "lua_sha256": "b8f0486aee20d0bbd41923cbf0908c455e6858622a2cb70ef5cc08949d9a3252"
+    },
+    {
+      "legacy": "portal/HW_portal_house.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_house.lua",
+      "lua_sha256": "749d287d27581bd71b5d4e469dbe297f7668a14809d57090d2c05cf70cc96099"
+    },
+    {
+      "legacy": "portal/HW_portal_illu.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_illu.lua",
+      "lua_sha256": "b024fb8c3379fc411e4be09df7e4e02e2d064c89215cc1051a317e7084168f73"
+    },
+    {
+      "legacy": "portal/HW_portal_sofil.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_sofil.lua",
+      "lua_sha256": "2f2581667f400e10fa9b94773743971f42ec28cf90ecfe6af69187a21a4e2bdb"
+    },
+    {
+      "legacy": "portal/HW_portal_top.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_top.lua",
+      "lua_sha256": "bc3459cf3af0dd690d1aab8913b068dd607900193953002a9ed0c6c2dbee1373"
+    },
+    {
+      "legacy": "portal/HW_portal_tumb.js",
+      "source_sha256": "cc5f0c47602e715e0fe44dba2d9ed6610a389cb8ff3adb49ac851531ef96d8ca",
+      "lua": "portal/HW_portal_tumb.lua",
+      "lua_sha256": "ec94544590c2cc31752d6550c0ff23bac261cef6fb3cc359d2be235926fc3761"
+    },
+    {
+      "legacy": "portal/HW_prtal_frame.js",
+      "source_sha256": "96dc06997ed50e17a8f69ee0428a40e00de64d3b5e221140b7316aa4f4e9deac",
+      "lua": "portal/HW_prtal_frame.lua",
+      "lua_sha256": "fc35c47a1c0a60becc76206c95e5dcbda184b3363a069e82558fa146fcec911e"
+    },
+    {
+      "legacy": "portal/MD_cakeEnter.js",
+      "source_sha256": "cb2847ac608b0e9aceeeb5b89f9c1374e760cce7fb9dc95f173630dcb218e4db",
+      "lua": "portal/MD_cakeEnter.lua",
+      "lua_sha256": "f292b8019779d1568c63515885cc1c786ea940ee45105183d0e71f35d345cb76"
+    },
+    {
+      "legacy": "portal/MSN_Promotion.js",
+      "source_sha256": "f1d27fc7ad53407441583c9fd0d5673bb3313be06ff48f5c8ea6a3056e8c4bf5",
+      "lua": "portal/MSN_Promotion.lua",
+      "lua_sha256": "b9aa39201f17740c287690d42e6df6a55d21f1c4f5381ac6d29631d845ace5ac"
+    },
+    {
+      "legacy": "portal/Masteria_B1_1.js",
+      "source_sha256": "554f2120bb1038e278a8aa9fc34cf77e045e92393c06241bd78ea23ea0a8d4d7",
+      "lua": "portal/Masteria_B1_1.lua",
+      "lua_sha256": "158ba6b510a94df07e7eeea064514a5d22a069263d3a026ef912104e032723b7"
+    },
+    {
+      "legacy": "portal/Masteria_B2_1.js",
+      "source_sha256": "554f2120bb1038e278a8aa9fc34cf77e045e92393c06241bd78ea23ea0a8d4d7",
+      "lua": "portal/Masteria_B2_1.lua",
+      "lua_sha256": "0eed01340f74858ad60a606e29a94d7f859c040e380134bdb52a7b3c7826f9db"
+    },
+    {
+      "legacy": "portal/Masteria_B3_1.js",
+      "source_sha256": "554f2120bb1038e278a8aa9fc34cf77e045e92393c06241bd78ea23ea0a8d4d7",
+      "lua": "portal/Masteria_B3_1.lua",
+      "lua_sha256": "38f1969fa17cf34bd286a0549239b34f07f7b163173589c354e445b27242e620"
+    },
+    {
+      "legacy": "portal/Masteria_CC1_A.js",
+      "source_sha256": "a22fe857f596090186c69aac9b1633ab7f69a562ca1ef6560597313313618a43",
+      "lua": "portal/Masteria_CC1_A.lua",
+      "lua_sha256": "0acda3dce3760a1dc0b42a3f6ebc73439efb28ef19482cd01d12f1ce7edad07e"
+    },
+    {
+      "legacy": "portal/Masteria_CC6_A.js",
+      "source_sha256": "5b5d2bb9e4ebfe92802d67c9e6b1e55855402977a55a2b41b1064e14cee54fd5",
+      "lua": "portal/Masteria_CC6_A.lua",
+      "lua_sha256": "54de49d20b0c7f5011eb51e74a956aa22893d2e46c190f4023c62b656fbbac79"
+    },
+    {
+      "legacy": "portal/Masteria_CM1_A.js",
+      "source_sha256": "6f42828e9bfcced3ddd597c9ea41cb491b4615930a48f011f5f0a6dab67d9390",
+      "lua": "portal/Masteria_CM1_A.lua",
+      "lua_sha256": "ff9dd15f210a5186038ad56ec9de29afa924595c2bfa6872af72e18090c70e21"
+    },
+    {
+      "legacy": "portal/Masteria_CM1_B.js",
+      "source_sha256": "967e8089c895db8d9368a748d13a0df48fb662d8e145f32870bceb28076017dc",
+      "lua": "portal/Masteria_CM1_B.lua",
+      "lua_sha256": "540183df46cebfe724f85a5ede7a816219209d09f3b7c1a11f09b8c2b12445c1"
+    },
+    {
+      "legacy": "portal/Masteria_CM1_C.js",
+      "source_sha256": "187d3486c77d38999a34a92f0eea48789edb7f293e114e95ecc9a450f53761d0",
+      "lua": "portal/Masteria_CM1_C.lua",
+      "lua_sha256": "507f9892067ac2ad004fc74f6d78e6e812ef11ef07fdbb0e9887f4d48d99bd01"
+    },
+    {
+      "legacy": "portal/Masteria_CM1_D.js",
+      "source_sha256": "def33907a564c9b575c801596e35a43dba6d6a4fded005654fc1ff054d75d836",
+      "lua": "portal/Masteria_CM1_D.lua",
+      "lua_sha256": "eeca6fe2e10e5b3919d838f1ae032a01273aff2021e31e5639f8fcd135ca672c"
+    },
+    {
+      "legacy": "portal/Masteria_CM2_B.js",
+      "source_sha256": "c5c99f3558a4b830c1d40db8ef7d6b9b903152cbd984ab33b5f40171a60ab81c",
+      "lua": "portal/Masteria_CM2_B.lua",
+      "lua_sha256": "7fa21250bf6233a14b003fd46e0b1b4d342f25de69d4607a2803a193aa48a212"
+    },
+    {
+      "legacy": "portal/Masteria_CM2_C.js",
+      "source_sha256": "53318cc38df3c7d642f6cc5ab557b43c0834ea64e3a6f76a765e4f005a47da65",
+      "lua": "portal/Masteria_CM2_C.lua",
+      "lua_sha256": "d8b884fcfe5a8f788982c23cd29ef48d59665cd77d3c80200eff1241b4609e35"
+    },
+    {
+      "legacy": "portal/Masteria_CM2_D.js",
+      "source_sha256": "a86bc1e463b5dd1b280beea28f03f268efe3d6b1695b86534aa0298dddd79ae7",
+      "lua": "portal/Masteria_CM2_D.lua",
+      "lua_sha256": "e5cde563e806a815d557012c410d76bc23bfe1f1c9750fa30c0d4dffd700338f"
+    },
+    {
+      "legacy": "portal/Masteria_CM2_E.js",
+      "source_sha256": "ff43c26ecb2ad4fb6e4e9e004daeb738331a28686cb31ec28b0ac5ec2039a872",
+      "lua": "portal/Masteria_CM2_E.lua",
+      "lua_sha256": "834870cf50745780aa44c8da54a834771ebb8cebd422583e38d121dff1e96b45"
+    },
+    {
+      "legacy": "portal/Masteria_U2_1.js",
+      "source_sha256": "62156386dd5e92f1df97f5cef81f473c214fda23461e2f30cd352f99ffe64eca",
+      "lua": "portal/Masteria_U2_1.lua",
+      "lua_sha256": "6c570c2eb582e59ebafb58f0276a025ccc9fd2d2aea843f00c0b926ae4685618"
+    },
+    {
+      "legacy": "portal/Masteria_U3_1.js",
+      "source_sha256": "6b0226478b5b6a1350c964a9c378beab3638723763e86feb7b5bd85f9e8fb09d",
+      "lua": "portal/Masteria_U3_1.lua",
+      "lua_sha256": "5acc7c1e05a6083f5b2ab5419c92ea312762be010be9d1cc0831cdd02229a591"
+    },
+    {
+      "legacy": "portal/Masteria_U5_1.js",
+      "source_sha256": "b62df2db230bb3043d3e08a01a6deb1779c7a521a71799952f02b3c85e358b2e",
+      "lua": "portal/Masteria_U5_1.lua",
+      "lua_sha256": "0f24b6f0eb78851e1f5999bfb51650586e80b4589c22efe94315aa24cf25dff0"
+    },
+    {
+      "legacy": "portal/Masteria_U5_2.js",
+      "source_sha256": "62156386dd5e92f1df97f5cef81f473c214fda23461e2f30cd352f99ffe64eca",
+      "lua": "portal/Masteria_U5_2.lua",
+      "lua_sha256": "120ef465eccb2cbe552ac37751eb5614ba50a027b69a290fa4766bffdca869f0"
+    },
+    {
+      "legacy": "portal/Masteria_U6_1.js",
+      "source_sha256": "b2fc50a8bcda706a258603906deb34225b8f160958afa5063cb25d7c1132a005",
+      "lua": "portal/Masteria_U6_1.lua",
+      "lua_sha256": "7736ee78fe32f884fcaa2c9bae9ad745be6bf51d5e87253dc57cc0af3f9f4ffd"
+    },
+    {
+      "legacy": "portal/OBoat1.js",
+      "source_sha256": "c7c2e3f041617895632a847fda84d9372eb97857fd25963e970afb1bc5ca207d",
+      "lua": "portal/OBoat1.lua",
+      "lua_sha256": "02a8d44239c522192be5a4eac519189439996b6f05dbf1e66b932fa5fd799d6b"
+    },
+    {
+      "legacy": "portal/OBoat2.js",
+      "source_sha256": "ef9e7596e64f51668e1bb5d6087c2d2759bfd4cdce75ea70156d5d5c873fe279",
+      "lua": "portal/OBoat2.lua",
+      "lua_sha256": "9b4e5a0c9856680d75b911176cc13e86fea3a06ec7115ef91d411634515cfcf8"
+    },
+    {
+      "legacy": "portal/OutPerrion_1.js",
+      "source_sha256": "42f03bd325ddca9f322ecbdf917576e208eadd0e5aaf29dbcf73e6000e450c09",
+      "lua": "portal/OutPerrion_1.lua",
+      "lua_sha256": "801fd0d9a2488152191b99e40196a539d103703a0f2ed40f9b81a67a242cb621"
+    },
+    {
+      "legacy": "portal/OutPerrion_2.js",
+      "source_sha256": "42f03bd325ddca9f322ecbdf917576e208eadd0e5aaf29dbcf73e6000e450c09",
+      "lua": "portal/OutPerrion_2.lua",
+      "lua_sha256": "8c83570a21b5a54a5a858d3b84ff6c5402c429b9f6d82b07ccfb6c70a296e111"
+    },
+    {
+      "legacy": "portal/PB_wich.js",
+      "source_sha256": "7041c74c8cbfd156f041859437f37fe9328efa6ca13fcc5476b09ea892978d81",
+      "lua": "portal/PB_wich.lua",
+      "lua_sha256": "9bdcf8ea4f424192fbebefb8a5ee4dc8c2b7e628c0930cfb365759cbf6970435"
+    },
+    {
+      "legacy": "portal/PPinkOut.js",
+      "source_sha256": "b3444c26fe4af65a32f9f7b4c428c4471826e2774e2639fd7561fe60176f9bd7",
+      "lua": "portal/PPinkOut.lua",
+      "lua_sha256": "6b73165ce67867e2f17726ef271bc91d35b0bd8ec4c5b2e301013e463e9de766"
+    },
+    {
+      "legacy": "portal/PTtutor100_0.js",
+      "source_sha256": "e121ec2c78ea745cf4f6dcf9ff7337c285fa64b2591cbb491b6cacca87b90817",
+      "lua": "portal/PTtutor100_0.lua",
+      "lua_sha256": "27221240df14d7a280fc84c6be4e6512f7c821e9c56578c4b838d148350b34b2"
+    },
+    {
+      "legacy": "portal/Pianus.js",
+      "source_sha256": "bb25a4d4fd782d7e11905b0d9d5690ef7ec92f9a75902201e8b8a3c85b07fd99",
+      "lua": "portal/Pianus.lua",
+      "lua_sha256": "77f1fae18a1d2570e4abc63f9d238df3be8ceacab7b541955dca2d14ce0be549"
+    },
+    {
+      "legacy": "portal/Resi_tutor11.js",
+      "source_sha256": "0f5089194d2420c71cd7e971dc4ed40c5ce62579005413351ab1385c2ce848db",
+      "lua": "portal/Resi_tutor11.lua",
+      "lua_sha256": "92a46d585d3d45b677c7d05fbdf453ad3fcb8ed85a66aca5058b12c72a955366"
+    },
+    {
+      "legacy": "portal/Resi_tutor31.js",
+      "source_sha256": "20e5f0bad9708c15abe849db74bfbdde8820cf11325623ecc9ee320986597984",
+      "lua": "portal/Resi_tutor31.lua",
+      "lua_sha256": "fee8d79f82c9d07ca9535a47db58a5d107dc4f949b067db753668bd179c3f8be"
+    },
+    {
+      "legacy": "portal/Resi_tutor61.js",
+      "source_sha256": "8b408957ec06b713bb13fa0c2b37e9874082f60ec8a56697e929d5e3385d41f2",
+      "lua": "portal/Resi_tutor61.lua",
+      "lua_sha256": "cd5efcf1834fd9dea5e22c8b9020d2649b657070f0e6cd9a29ad0badfc8f6b5a"
+    },
+    {
+      "legacy": "portal/Sky_BossSummon.js",
+      "source_sha256": "7793308fd98e0652bbfc2f221063cc92a4ef3969f12953ed378f51fbc25d90e5",
+      "lua": "portal/Sky_BossSummon.lua",
+      "lua_sha256": "37947fc8c625b3df13537c78e37e1bf626f1de2acd2a29171a4b5c0b5bdd4a2a"
+    },
+    {
+      "legacy": "portal/Sky_Enter.js",
+      "source_sha256": "d32ff1ba7a976e61a6751e583ee5abe551da73f6c042e6a5b0e0dfd28f2dcc43",
+      "lua": "portal/Sky_Enter.lua",
+      "lua_sha256": "84ea9801cf724b9dc64c2a8eb5a77626f9ac3153d2e5fb4090279415a0f35eb0"
+    },
+    {
+      "legacy": "portal/Sky_Previous.js",
+      "source_sha256": "0b43d98a518074aab8f2c6ffe14d40505e0b4e76bcec11d9f60277f02718021e",
+      "lua": "portal/Sky_Previous.lua",
+      "lua_sha256": "5e0a03ecf53e39dc57edcd6f085b08fc867fe971aee960fbb9197b4aa96dceac"
+    },
+    {
+      "legacy": "portal/TD_MC_Egate.js",
+      "source_sha256": "6513530158e3e4b54c4d2b5e78c1a05878f1ef1f48397ee06557e0f4584f8d9c",
+      "lua": "portal/TD_MC_Egate.lua",
+      "lua_sha256": "b81a6f2e1cd714cf268ff8e9e7e7777f3d6e98702d049b0383ed20a95a2fc45f"
+    },
+    {
+      "legacy": "portal/TD_MC_enterboss1.js",
+      "source_sha256": "cd69f6138ef0b35890d442c88e535a2ff55f97be96c004a8acf277ff69791ccc",
+      "lua": "portal/TD_MC_enterboss1.lua",
+      "lua_sha256": "d2140b42541b9476e8b0a3ade5e67111adcd6944ec98dda7a81893b6561b5590"
+    },
+    {
+      "legacy": "portal/TD_MC_enterboss2.js",
+      "source_sha256": "60613f0dc0bde6c16656ea13db97b76267d8438b1c3f4cacdfe19ed7f67dbfe9",
+      "lua": "portal/TD_MC_enterboss2.lua",
+      "lua_sha256": "0ab68436610dea21782bc73e864dfb1d56c039fdfdf5db6993e6b0dac05fb491"
+    },
+    {
+      "legacy": "portal/TD_MC_first.js",
+      "source_sha256": "3360b77371eb63a377fe1450cae0cdd7a000c523ca030cac75b6277a9d67179b",
+      "lua": "portal/TD_MC_first.lua",
+      "lua_sha256": "249e6d03ef1d7a19fd90458dcadc2c46f2d05228513e6b8d944a0dc90b8ed3d1"
+    },
+    {
+      "legacy": "portal/TD_MC_jump.js",
+      "source_sha256": "cde32c25a99004a144eb2dfa49689f669f285d131cd6779ee65f455d0a7a6324",
+      "lua": "portal/TD_MC_jump.lua",
+      "lua_sha256": "d5ad4a8bafccef382673e12265adbb5d00857e44f248a7c2de2019793cb63e37"
+    },
+    {
+      "legacy": "portal/TD_chat_enter.js",
+      "source_sha256": "0504a3aea61f48676b48f42de6a292abb5af30df45f199a7357133a3c6a6b4bb",
+      "lua": "portal/TD_chat_enter.lua",
+      "lua_sha256": "c17daf1cf96236387a742775dd2699d5cec17632ad2f61ae193450c73e17e5e8"
+    },
+    {
+      "legacy": "portal/TD_neo_inTree.js",
+      "source_sha256": "0b7f266c9aee4e599cf0be412731df0bca8878d657b6c4fd0666a0a870b18a7f",
+      "lua": "portal/TD_neo_inTree.lua",
+      "lua_sha256": "bf117e3d6bbf6ffc46bfc255bf94e034caac725a251e7a44b890bacc8dab10de"
+    },
+    {
+      "legacy": "portal/Tokyoboss1_go.js",
+      "source_sha256": "44d63ac80fdaa938bc46f9d43815c317e1bb654d886907d2c6993943b8336a64",
+      "lua": "portal/Tokyoboss1_go.lua",
+      "lua_sha256": "be6acdddba447ba3e0a7419651afe8ba857459aa87afc8286e4f2c324e3450ec"
+    },
+    {
+      "legacy": "portal/Tokyoboss2_go.js",
+      "source_sha256": "e8d24cb0a7de47eedee80d7d21bdde756de2e67d0e213e58596f7e3fe309c596",
+      "lua": "portal/Tokyoboss2_go.lua",
+      "lua_sha256": "111bcb8bc0dca60ecb86e2d4877b78d97203a4f0261b0460864bb8e7741ab461"
+    },
+    {
+      "legacy": "portal/Tokyoboss3_go.js",
+      "source_sha256": "a75678260f7681e0a914886f74528a528f9fcca2b485efa69b6d63cd4c0f7264",
+      "lua": "portal/Tokyoboss3_go.lua",
+      "lua_sha256": "1390dc1d71bcd4925161585841b8feba0c78f36bf8f1fd5edf795bdca7ee4256"
+    },
+    {
+      "legacy": "portal/Tokyoboss4_go.js",
+      "source_sha256": "489db252f6e169be2a6ca0b86f58b3b67243a8819e9f834e76ddbac6304c9c74",
+      "lua": "portal/Tokyoboss4_go.lua",
+      "lua_sha256": "733cd86a6283907c27f7a54912cb0df9210fdcd0acb320174529fa83aa820882"
+    },
+    {
+      "legacy": "portal/Tokyoboss5_go.js",
+      "source_sha256": "85ca6cc8f16fe93b4318bd9a9367b811f13bcb32c3b4c934d622eb96ececb7c9",
+      "lua": "portal/Tokyoboss5_go.lua",
+      "lua_sha256": "858d679724c3ca0380874e88ed47065719accb2709294f72fe2d4f7113859cd2"
+    },
+    {
+      "legacy": "portal/Tokyoboss6_go.js",
+      "source_sha256": "309ec394e0428e122f9ab0d7e4152911b7f4dd04c2e09f660588186c1d3c32f9",
+      "lua": "portal/Tokyoboss6_go.lua",
+      "lua_sha256": "e9cfafbdbb5465e8325a23f8f415dcd8ad3551e1c3d43dfc3aa8eebaea49cb8a"
+    },
+    {
+      "legacy": "portal/Tokyoboss7_go.js",
+      "source_sha256": "6b7d4d2cc3b81d2c175c54b4682e0a5a03b061c9e8457c04544e0912a1f05f3f",
+      "lua": "portal/Tokyoboss7_go.lua",
+      "lua_sha256": "ca538f7f0873dd2e2764455b025ec854788f36febaa5d2def4ff6f3ddf63835f"
+    },
+    {
+      "legacy": "portal/Zakum03.js",
+      "source_sha256": "ab85d63417bbeef64940935a8b692634a379978d368b4d80b25a47ea6658e2eb",
+      "lua": "portal/Zakum03.lua",
+      "lua_sha256": "7bbcbd1e5032c65ddc12d2aeb314ae759621ceb55b303b47f0f76bbd9979e409"
+    },
+    {
+      "legacy": "portal/Zakum05.js",
+      "source_sha256": "31fb24272e840eaec656093545e5372a75d1c4fbf83b27867f80c7bc49f57aaa",
+      "lua": "portal/Zakum05.lua",
+      "lua_sha256": "d264f9de4018710087fd971cafeb4451050fc77386389bcf4fd0730f4a94e047"
+    },
+    {
+      "legacy": "portal/Zakumgo.js",
+      "source_sha256": "b350da5f51c852947496208dd0975c39c218744b01e2f8eb58393be21376fb43",
+      "lua": "portal/Zakumgo.lua",
+      "lua_sha256": "506d0f358b68c38909350c4945ad48e4ee2e57d1a242c4abf4f94db215cc4553"
+    },
+    {
+      "legacy": "portal/aMatchMove2.js",
+      "source_sha256": "63dc4f174ad86ac3341f2f5a82cdef187d14275ae6fd453057142b2bbad2b07a",
+      "lua": "portal/aMatchMove2.lua",
+      "lua_sha256": "81e41f96aa28ef177c4fc9edddc5e10267a8983f540fccbda19dcc1dbdeab37a"
+    },
+    {
+      "legacy": "portal/advice00.js",
+      "source_sha256": "ee484474cc3fc6d007f23af953cf7264c4e66faa6a979dbd5247c8d053ba6d33",
+      "lua": "portal/advice00.lua",
+      "lua_sha256": "a51caec91f02b31570e2c3a8eb5485f9a91d2cd49e789757522af0748f3354e5"
+    },
+    {
+      "legacy": "portal/advice01.js",
+      "source_sha256": "ecb856aeeadf42509006cccc250127d1e119e2ce2a94c73b872757e4fb05a635",
+      "lua": "portal/advice01.lua",
+      "lua_sha256": "14f0b88aa04d0d446b294136ac97c8cde9bc7d25420a85de8f20bcb8bfb1cfc9"
+    },
+    {
+      "legacy": "portal/advice02.js",
+      "source_sha256": "4e4b3ab39617028c47754b0fe93f482c2b3d6cd5badf333c82f5f7f2ccbdaa42",
+      "lua": "portal/advice02.lua",
+      "lua_sha256": "67c278f80f0317cec7604cda15f1f0527a9e018a2387b827829554d3eb2a7814"
+    },
+    {
+      "legacy": "portal/advice03.js",
+      "source_sha256": "eecf0e8c5bee7525f87784123711a6910ee6945cbebd89762f20d094ddcaaa39",
+      "lua": "portal/advice03.lua",
+      "lua_sha256": "5c2357bd77847c9dda10b9975ee2dfae7cd2fbb5a598829646fa0272b04d2e51"
+    },
+    {
+      "legacy": "portal/advice04.js",
+      "source_sha256": "2e257778ebbd6e0f836c0ce18b3e2979eede4ee7891d1505a899b845427a7bad",
+      "lua": "portal/advice04.lua",
+      "lua_sha256": "71088ed390b2cad76493b0d70a1fba3161b61f8c070873e07caef38dcfeefea2"
+    },
+    {
+      "legacy": "portal/advice05.js",
+      "source_sha256": "140a99bf9f3d33eac6f25b323986a62113ad05f332f3580baafb5e3343e0f8cf",
+      "lua": "portal/advice05.lua",
+      "lua_sha256": "129cd492b3a98e81622d048c7101d385ae440e2ab9b356e1712f2f789b5a81e3"
+    },
+    {
+      "legacy": "portal/advice06.js",
+      "source_sha256": "b687c34ce5fd2b40d86283b976d5e8c5bc6d5b0139665704ec95ac6d1187bf06",
+      "lua": "portal/advice06.lua",
+      "lua_sha256": "4d930b7624fa133b0a21322753444a7d1820ad96531812e2374471c235576216"
+    },
+    {
+      "legacy": "portal/advice07.js",
+      "source_sha256": "1c4f535c78e28ee6e6ef54b0a56a6f9d1077d27d081e513d8ef08890d50d356a",
+      "lua": "portal/advice07.lua",
+      "lua_sha256": "e4a3d669deaa0adb6ef605e8a0c85c4285aa750e2637344de5e40b5c40431dca"
+    },
+    {
+      "legacy": "portal/advice08.js",
+      "source_sha256": "78e4b8d0121edceffd0b950a5436b74dab1f67d59f7221d9521ccbabca0aa80e",
+      "lua": "portal/advice08.lua",
+      "lua_sha256": "21653f08a6ae958725d08fc1e0ca20d1bfa4eaa6cb1ae09ce1c452927ded0034"
+    },
+    {
+      "legacy": "portal/advice09.js",
+      "source_sha256": "dfacf750d0320a4aaff11830448d181a098a96ec3c6f9e7a9f150ec22245b47b",
+      "lua": "portal/advice09.lua",
+      "lua_sha256": "8bfcac0f1823ba19b8254ab078723fe4126ca54a1e421b44fc68add9067b0dec"
+    },
+    {
+      "legacy": "portal/adviceMap.js",
+      "source_sha256": "e8976c03aebce706ea285fddeb061ebebfac059f53acf0e394c357153fb2b391",
+      "lua": "portal/adviceMap.lua",
+      "lua_sha256": "5ff857c677f899f9a4e5be2cf0779216b0ee8b708a0a3c4a354bb91ff3491c90"
+    },
+    {
+      "legacy": "portal/amoria_out.js",
+      "source_sha256": "1072ae094795974d82b09daeda3994a83ce00eacb73ef5992d9b7035b942f5a0",
+      "lua": "portal/amoria_out.lua",
+      "lua_sha256": "ea32694bed7a0e1c89a531696127fa8fa5d13199d0604968cbb7a0f9adcce3a2"
+    },
+    {
+      "legacy": "portal/aranTutorAloneX.js",
+      "source_sha256": "54fcd64b415e506efd0af10d557a8ba9d45c10e57a52b77e7df4a6a3d94edfdb",
+      "lua": "portal/aranTutorAloneX.lua",
+      "lua_sha256": "976881dfee312fa839c0b3fd1d61bfdbad027e48c393021cef29b3a651acd139"
+    },
+    {
+      "legacy": "portal/ariant_Agit.js",
+      "source_sha256": "dff7f440e6847e853f6311f3308d3cf9047718c24ad8aed093b3695c6f89fccb",
+      "lua": "portal/ariant_Agit.lua",
+      "lua_sha256": "2ca63128f8cab3312dcd3cb86753a46d83056a69391e8592c196184fdba7270f"
+    },
+    {
+      "legacy": "portal/ariant_castle.js",
+      "source_sha256": "1560ec11fc814b152b64f638075bf4a18fe2c4f4bff63cec48e011c223e3b09a",
+      "lua": "portal/ariant_castle.lua",
+      "lua_sha256": "a65874cbb0f61049db089dcc09d586fedcc48fa0f64fbcb21fa165c720c6c1f8"
+    },
+    {
+      "legacy": "portal/ariant_queens.js",
+      "source_sha256": "9bae615b09219d46342d5bd4aa9d992dcec23361b8e784002bde22e82d07873e",
+      "lua": "portal/ariant_queens.lua",
+      "lua_sha256": "807e6af3825907c764d225f2e010f60678ba43cbd8f21cf0798c17bb1b283df8"
+    },
+    {
+      "legacy": "portal/babyPigOut.js",
+      "source_sha256": "d89735bb2196afdedc37b46d18f90ed97d32d5605cf09b51c7d14655c6f16223",
+      "lua": "portal/babyPigOut.lua",
+      "lua_sha256": "bbd4b4379641fd31191baa1b464ad0c1cd18dc725ecdc3b92792784a2fec50ff"
+    },
+    {
+      "legacy": "portal/back_Ludi.js",
+      "source_sha256": "c03d3e1e3222a6ff6138eb734cc13a1a4c03d72b5efe5efc5e4d240044af12ab",
+      "lua": "portal/back_Ludi.lua",
+      "lua_sha256": "24fd4fa06e3e4b425e07b1221ebd05da662c155547006cce1f286c449568b640"
+    },
+    {
+      "legacy": "portal/back_cygnus.js",
+      "source_sha256": "65d6850adc92b55f5c573059cb6334293434ee897589b595d55641cd4362bb95",
+      "lua": "portal/back_cygnus.lua",
+      "lua_sha256": "10b3bf9652c12c923d1038431c56912934ead11d7e1435f36f83d1f4a14f2e42"
+    },
+    {
+      "legacy": "portal/balogTemple.js",
+      "source_sha256": "42f03bd325ddca9f322ecbdf917576e208eadd0e5aaf29dbcf73e6000e450c09",
+      "lua": "portal/balogTemple.lua",
+      "lua_sha256": "011b169633b0dc3c61bda10dca23ccc410b15a674063df6d416d2cf8510e4fc1"
+    },
+    {
+      "legacy": "portal/bingcube_EnterPT.js",
+      "source_sha256": "05f7de2b5f29a9d4ab776dde7940fb8fc31cbbe48a17914d2de7d7f137638109",
+      "lua": "portal/bingcube_EnterPT.lua",
+      "lua_sha256": "351ac2925dd87015cfec623beec7af62a7ac167da08f4768c17ae9c576482184"
+    },
+    {
+      "legacy": "portal/bossMY00.js",
+      "source_sha256": "d1af56305f04b2d19ef14722953d0d4050eb2fff286adac617923d978d877fec",
+      "lua": "portal/bossMY00.lua",
+      "lua_sha256": "df9985c8aa87c9675d4b5ca5bdb119394480eeb8b7450ce5e51a028600141055"
+    },
+    {
+      "legacy": "portal/bosscube_outpotal.js",
+      "source_sha256": "b6b71d025a0ba3023298092c0a171e9805ef6b50528f9c0a5d2cb03945317c26",
+      "lua": "portal/bosscube_outpotal.lua",
+      "lua_sha256": "8b99c65c200acb0c25a3e0bff907e3a2477aa337dabdfd35abb926d5e3dfb5f3"
+    },
+    {
+      "legacy": "portal/cannon_loot.js",
+      "source_sha256": "3b8648fc20c0cdc3465813f8dcada029c39da421e7d91e3c356835d46d337588",
+      "lua": "portal/cannon_loot.lua",
+      "lua_sha256": "51d12281f5c0854fb715f7d6266a3d906d7be6a1cd8efa4cfdea97cadc6064aa"
+    },
+    {
+      "legacy": "portal/cannon_tuto_10.js",
+      "source_sha256": "2942bee4217b940510ed312d4bc9ed17967ae0e8c05497474616716609455ef1",
+      "lua": "portal/cannon_tuto_10.lua",
+      "lua_sha256": "0381c3768c161ef59939800b2682530aae623076284028fee0b54ebe49c4cb96"
+    },
+    {
+      "legacy": "portal/cannot.js",
+      "source_sha256": "c27984acbd0bf9ae8bd52df4d996edbcca66da80386707d886a9046cd16e5b76",
+      "lua": "portal/cannot.lua",
+      "lua_sha256": "cee9aa5a5f226bc9556e6ab76dfc4e47a6c042f4cc47382324ce9e0f3f04cfd1"
+    },
+    {
+      "legacy": "portal/cannot2.js",
+      "source_sha256": "2d83693c88c7e4011a41c1892ca83e1dfb5fde04728b4c96adc135cf9512bc4e",
+      "lua": "portal/cannot2.lua",
+      "lua_sha256": "d7ed7249e721b0222f87fbfd27e9260678937591a1049bf040c022f7b82a6f1a"
+    },
+    {
+      "legacy": "portal/catPriest_map.js",
+      "source_sha256": "b3a038a182e838dc35537da6a3f94e8078301356f09aba84ed4a0d0dab471f1b",
+      "lua": "portal/catPriest_map.lua",
+      "lua_sha256": "6c94560cb6c7185873de7be8525be9e9d6fa7f102102b4815b5eaff5ac1001f1"
+    },
+    {
+      "legacy": "portal/cellar.js",
+      "source_sha256": "01ce79341a1eb9b8041b0a9dbc3711caf8604d0d4946aac2ad9615aea673c8e3",
+      "lua": "portal/cellar.lua",
+      "lua_sha256": "c784fc126562a28a2fc841f157bcd256755fe0ba216e9d630cd8d21538ea613b"
+    },
+    {
+      "legacy": "portal/checkJumpingDual.js",
+      "source_sha256": "a8ed9218164ad23540ef92fb79d3d45f20f29ba4520644ac6d17097d8191ff5d",
+      "lua": "portal/checkJumpingDual.lua",
+      "lua_sha256": "79889f159f9b1814d8f847fbee7560c4ebcd3eb7cc2af41219f999b2bcee67fb"
+    },
+    {
+      "legacy": "portal/connect_UIOpen.js",
+      "source_sha256": "f6892673a45ae7961cba7cde7f13e27f00bf9eaaeba2aa0c963d9b00a1cc53bb",
+      "lua": "portal/connect_UIOpen.lua",
+      "lua_sha256": "cef92b06ca29d473e7fcb37bcc6a9c62d0caf4efd65c1f6db76fa3820a0d4955"
+    },
+    {
+      "legacy": "portal/contactDragon.js",
+      "source_sha256": "a8064acffa29a837917d36a6db7b9dd129cd0f006f57ec96b0e422539fd832d6",
+      "lua": "portal/contactDragon.lua",
+      "lua_sha256": "c135052475a3fdd953f74715f02f9116e3b06b932d1b195ced012e1a828bd704"
+    },
+    {
+      "legacy": "portal/davy_exit.js",
+      "source_sha256": "ad89c165ac483582e8dadb0862b1c2d8968f213a76e88a63911dccd84c0eaa07",
+      "lua": "portal/davy_exit.lua",
+      "lua_sha256": "41f1c9355c2ec98cffacd240b5e01458b2cff25463676de9ec6bbde522db08d1"
+    },
+    {
+      "legacy": "portal/davy_next0.js",
+      "source_sha256": "551d2d14c9ebb6f5c46c07a27d8e506b2f34bac0bf78e22b9ebf411612de22a5",
+      "lua": "portal/davy_next0.lua",
+      "lua_sha256": "97737100e5370191b897d6f44614f481fd3b3c63a4ba7aee04d32c365f89ddda"
+    },
+    {
+      "legacy": "portal/davy_next2.js",
+      "source_sha256": "b24af642e6a836f43a3f6689a71d4ea0e333bdec39f8f27e295215dd96b29eb5",
+      "lua": "portal/davy_next2.lua",
+      "lua_sha256": "cc0d6e41039104ce1f5200760412f9c67f4f5862b6581d066472a10ab3466ae3"
+    },
+    {
+      "legacy": "portal/davy_next3.js",
+      "source_sha256": "593a5ab7b5cca67efecb246b6d82510df46cfd693bc9bdce0cd784f54e3e0ee0",
+      "lua": "portal/davy_next3.lua",
+      "lua_sha256": "06cc428ce7ca4dcbb271f1aa7f881dc618ba6ab64ec2e9cd217b08cdfe533293"
+    },
+    {
+      "legacy": "portal/dojang_exit.js",
+      "source_sha256": "63b18fc5968aa9f9a35a31d88ad4e97e94a033fc946637016b2020c11a803a4a",
+      "lua": "portal/dojang_exit.lua",
+      "lua_sha256": "abbaf3f8325d57891c00d8278bd8f3d91e5433a591a26795448fae6e824a6c36"
+    },
+    {
+      "legacy": "portal/dragoneyes.js",
+      "source_sha256": "40320a183fb557ed603c6809a6d9ba42b7575d9556aeb772ebb93fdaba4e8f4c",
+      "lua": "portal/dragoneyes.lua",
+      "lua_sha256": "96d3ae724e1bcebc265bbd10b903633b2027ba7b7a7ffd13b4d02bda4bbd1c1b"
+    },
+    {
+      "legacy": "portal/dual_ballRoom.js",
+      "source_sha256": "58ef684b057ea14e217a969a0a5fab538fe2e6d72394bd8f7fdce72d25710eb4",
+      "lua": "portal/dual_ballRoom.lua",
+      "lua_sha256": "833cf4a9fc299d3f80e98709ec4d323928e33eb1d7bb836c31f0115654f91cb5"
+    },
+    {
+      "legacy": "portal/dual_lv20.js",
+      "source_sha256": "614476377523a37fb3211bd5e478aa1a06af1e1a539c651f99b35debcd1650f8",
+      "lua": "portal/dual_lv20.lua",
+      "lua_sha256": "1b6c0f9f9c154a671e3bc92975cfba281266b94ddcfe895a978f254c3d095a07"
+    },
+    {
+      "legacy": "portal/dual_lv25.js",
+      "source_sha256": "3329dbdd4073daa5758262d3f1c26bd08f9c99686a81c75b093310dd6a7cb4ed",
+      "lua": "portal/dual_lv25.lua",
+      "lua_sha256": "dc09bbde448ac39b2f42565f8ee65547712564cb53c466aa620dacab9e6aab15"
+    },
+    {
+      "legacy": "portal/dual_lv30.js",
+      "source_sha256": "88d86f6c0b08b48bb963513ead99f068a6272c0d8e24ebc6fa70accbd1a7b02c",
+      "lua": "portal/dual_lv30.lua",
+      "lua_sha256": "aa7e33b6ff4128b68640dd823ab1a39cef3ecab4f5b26875262f3d93821df5db"
+    },
+    {
+      "legacy": "portal/dual_secret.js",
+      "source_sha256": "695e6533a691f56e7d23bca63ae75b51aa453b797f4da7533f7e733aa5cace1e",
+      "lua": "portal/dual_secret.lua",
+      "lua_sha256": "d3ff25f5266437d7b09bc504cf39cb1db3ed4844e4b1b0fda05eda2319448160"
+    },
+    {
+      "legacy": "portal/dubl2Tuto0.js",
+      "source_sha256": "7e19fe48097bec40ea54b6fe8876a94ba9e6dfa2020151ccce2a71238a04d47b",
+      "lua": "portal/dubl2Tuto0.lua",
+      "lua_sha256": "109d19ae3fa9cb77246a346d6d5eac0c7becfb7cdf606227bb1473d7322970f0"
+    },
+    {
+      "legacy": "portal/dubl2Tuto1.js",
+      "source_sha256": "ef76112069241016e3af6747f69437664d0400387e46d51db613c87119749cca",
+      "lua": "portal/dubl2Tuto1.lua",
+      "lua_sha256": "94174f2a15f62648db3ca7a322d22749c8ff91d58a9d19bca4770b5baba2d37a"
+    },
+    {
+      "legacy": "portal/dubl2TutoPT.js",
+      "source_sha256": "d342a2d7e1acae087a10fd689eb6e9939f764ff558de67e8ae786507c630c250",
+      "lua": "portal/dubl2TutoPT.lua",
+      "lua_sha256": "f907ee8f9342682d39d0ef1124d609ab614f933e5549fc92cc96d66729b00eb7"
+    },
+    {
+      "legacy": "portal/dublportal100.js",
+      "source_sha256": "73693276ea2f940878cbadcdd050b013985c5a6d997419e77c9d29804d90b419",
+      "lua": "portal/dublportal100.lua",
+      "lua_sha256": "5db6983be400de7aeaa57fa87c0d8c33c892d8a8a55d25d97bc7e4189453661a"
+    },
+    {
+      "legacy": "portal/dunkel_enter.js",
+      "source_sha256": "2a3a464663c0fa8441764daeae5ca8d984cc0a72d5fe2e7de0e1c2d7417350ba",
+      "lua": "portal/dunkel_enter.lua",
+      "lua_sha256": "241d2bc2c15f7255558811cd104e6b245e6c4b371a4791b0a9973ce79320f337"
+    },
+    {
+      "legacy": "portal/elevator.js",
+      "source_sha256": "d99b91d0561c14786121ec0d1ddeac78fa019cfaab3488bc1b56d268ccb262fa",
+      "lua": "portal/elevator.lua",
+      "lua_sha256": "0669027c4a292ddd4b46001e13a62b86e1ce5d09ae12452b79157bca887f8a22"
+    },
+    {
+      "legacy": "portal/enterAchter.js",
+      "source_sha256": "e4bc16f45c6710370edac0018072cb44406e33c38d14a93d28df6571fd6d590f",
+      "lua": "portal/enterAchter.lua",
+      "lua_sha256": "f9ef011c3750083de27a32cba80f39415407632940a4f6a39f87f060a8a5c255"
+    },
+    {
+      "legacy": "portal/enterBlackBC.js",
+      "source_sha256": "46131f55be965b94bb6402a6b44d3dacd0545ef4eec6523feaa1c9630673432a",
+      "lua": "portal/enterBlackBC.lua",
+      "lua_sha256": "d6b5eec260d580a0e94238bb04e15e50a70069d1d775186473ffea6dddea4a22"
+    },
+    {
+      "legacy": "portal/enterBlackWing.js",
+      "source_sha256": "51531aa201280ea44028c24afa02d630457bc1425ca55a55cf14e1b642176844",
+      "lua": "portal/enterBlackWing.lua",
+      "lua_sha256": "cb389d796d2713930ef4d63ec03c3d74c3fe95ccb837baac56bc26e108b991bf"
+    },
+    {
+      "legacy": "portal/enterBlackWingHD.js",
+      "source_sha256": "58cfe55c96a87b87a251a54db31784ea81286fab74dd90e53f5a6fdedb05a52c",
+      "lua": "portal/enterBlackWingHD.lua",
+      "lua_sha256": "5e9df893e7883e1966b5691c11115e4d42606aeb6f56ccee1f0686f180c07461"
+    },
+    {
+      "legacy": "portal/enterDelivery.js",
+      "source_sha256": "f3b4ac27108251498df5f7ed4140a9261fce462a787da0693933cc030614ca06",
+      "lua": "portal/enterDelivery.lua",
+      "lua_sha256": "aa3e327c4bc1e39129c135476851852eb17c28778015aa66f4f32a1574650a6b"
+    },
+    {
+      "legacy": "portal/enterDisguise0.js",
+      "source_sha256": "cc665d924f77840be33e7193b6605f9c63f348482fc02757dd8b38e4af27d556",
+      "lua": "portal/enterDisguise0.lua",
+      "lua_sha256": "6c2957d56b0845a2e50ee29e2e0084e8eb3a239bd56905cd7b60e15a92f02e3d"
+    },
+    {
+      "legacy": "portal/enterDollcave.js",
+      "source_sha256": "30f30cd29e302d9b2020de8cdca91ce798a4dacebebfdd9cb00b52aff3682af8",
+      "lua": "portal/enterDollcave.lua",
+      "lua_sha256": "d4eb3f673646a4ae0143335b9f960e91a869e30374e268faf579dce1d6dcd1cc"
+    },
+    {
+      "legacy": "portal/enterDreamForest.js",
+      "source_sha256": "42cd19ebbdd212bf715808ae7ac47cd20f7fadc25572d66107e6717911cc8f0e",
+      "lua": "portal/enterDreamForest.lua",
+      "lua_sha256": "a8f5a90d030927d42f6286389e006bc11e30eaada9ed8d3987deca19db3b8fef"
+    },
+    {
+      "legacy": "portal/enterDublTuto.js",
+      "source_sha256": "c15795c2e21b480d55405d664cc6c8ace8603bd7b5cfc364352b489811074996",
+      "lua": "portal/enterDublTuto.lua",
+      "lua_sha256": "5a0097bff6b066d0ff1f549fc43f5e4f642cf1d265732cef108ab68b3228215e"
+    },
+    {
+      "legacy": "portal/enterEvanRoom.js",
+      "source_sha256": "97b0fd62a7486ca99850986edf5ac37e3df76b6570dde4057ae603b7ecb72d11",
+      "lua": "portal/enterEvanRoom.lua",
+      "lua_sha256": "81421ee5d640b060c5e3e6bb7421c5972ade3343702344ffd499b7c4ed47f7ab"
+    },
+    {
+      "legacy": "portal/enterExitMirror.js",
+      "source_sha256": "ac7cd33217a39c3fdc216c7091832b4dc12eac62df0af8e440ce1766ebf6bca3",
+      "lua": "portal/enterExitMirror.lua",
+      "lua_sha256": "da2930e244ca5bcd538887061d4867e96c176cf0b21359542fc1b89de75995b2"
+    },
+    {
+      "legacy": "portal/enterForestOfTheStart2.js",
+      "source_sha256": "f053219e147808785f2b4a2a4ba85f6d3ab052bf04bba1b243f8a1ad2bd1a116",
+      "lua": "portal/enterForestOfTheStart2.lua",
+      "lua_sha256": "8d82a8d5595030da3b656acea8f2a42b5732097af6754c5a9de3987aef2e087e"
+    },
+    {
+      "legacy": "portal/enterGhostMS.js",
+      "source_sha256": "4c4656ba068f224bf0df43ff21eff4dfe3bfa356f68e04aeefd40edd5c65ec89",
+      "lua": "portal/enterGhostMS.lua",
+      "lua_sha256": "5ba39e9278cc97260a68bda262c9474b3faaab8deef74eb36b3c919d8017d1b9"
+    },
+    {
+      "legacy": "portal/enterGym.js",
+      "source_sha256": "a41c25e26b8149de2162e65ac3547b20c8baee13633b955720dcd265950b745e",
+      "lua": "portal/enterGym.lua",
+      "lua_sha256": "f5e12e7b84ef172faa6ff2710fe4782a0cb394601e8e584b82871326f1b459cd"
+    },
+    {
+      "legacy": "portal/enterInfo.js",
+      "source_sha256": "e4714e7c82c080f102e640c08e0d3d69f55b537634b4eddf651a01d7fcdb3e83",
+      "lua": "portal/enterInfo.lua",
+      "lua_sha256": "8b98ead0b1d992df4f9db57d28331dc8806e72cbd876571fd32d105ebe46458c"
+    },
+    {
+      "legacy": "portal/enterMCave.js",
+      "source_sha256": "db0372ebc1b841948bc26cb5280061595e7ede514784df7c0a7e09361d4cf705",
+      "lua": "portal/enterMCave.lua",
+      "lua_sha256": "0255d5877492cc9fda023242e740565c866e3a4e7dfef11604993169169b6a49"
+    },
+    {
+      "legacy": "portal/enterMRYetty.js",
+      "source_sha256": "8f4442697634317cb927ca7d1f41af86c85617d404330d255bc54c20b0f897f6",
+      "lua": "portal/enterMRYetty.lua",
+      "lua_sha256": "733ca5f7963af3a3649a954f93cbea3d6225c233ab4f6861c7253fa69102fc04"
+    },
+    {
+      "legacy": "portal/enterMagiclibrar.js",
+      "source_sha256": "a8539e3f545f9ae424c010d1db63822668a6d9ba4f40cd066339ff17dfcdee26",
+      "lua": "portal/enterMagiclibrar.lua",
+      "lua_sha256": "85644a4bddaa6891576da8d6aeb0f7454f1545993a0f38a13e84fe1d2b6749c8"
+    },
+    {
+      "legacy": "portal/enterNepenthes.js",
+      "source_sha256": "e7159ee34d9880f1ce8e8c7f19117cfb3c030d1daf9077ba7c74aaff489ed712",
+      "lua": "portal/enterNepenthes.lua",
+      "lua_sha256": "a3d472e3e90dfde24f236fba3b5c289f2aed0d4e5ac5197cac1de6793d890762"
+    },
+    {
+      "legacy": "portal/enterPottery.js",
+      "source_sha256": "f3b4ac27108251498df5f7ed4140a9261fce462a787da0693933cc030614ca06",
+      "lua": "portal/enterPottery.lua",
+      "lua_sha256": "2368d23154d0ca33925bb36bdd7156711f27928ef6d45a8a5dd5036284a46779"
+    },
+    {
+      "legacy": "portal/enterRIpt.js",
+      "source_sha256": "ca1e01fd485af4f2a4b1b7f42e89d4c8218f6c51ec8c03c9454bd6188a585edc",
+      "lua": "portal/enterRIpt.lua",
+      "lua_sha256": "ef278f5acb196494cee7023229d302a80dbd30337d23b016848c93ecad6018b0"
+    },
+    {
+      "legacy": "portal/enterResiTR.js",
+      "source_sha256": "e829df7ddfbd02afe23934b19387a6edf4127b1ec1a1dbc1b53e5d1f99ce4c68",
+      "lua": "portal/enterResiTR.lua",
+      "lua_sha256": "0890172ab49ab5cba347ff577c50307d3aa6341d920c040f6c881a6175b61c15"
+    },
+    {
+      "legacy": "portal/enterRider.js",
+      "source_sha256": "d8d07578ca6402db9a735d2e0f64b4c95dfbe5726fa73d24b5b1ef4a5b11f29f",
+      "lua": "portal/enterRider.lua",
+      "lua_sha256": "024ba8d205df79bf6fc3de645d92d9dc481de15c46ea830471a1af70052921b5"
+    },
+    {
+      "legacy": "portal/enterRienFirst.js",
+      "source_sha256": "a9eae780512e083974cf2e904bdcee27296c8245157d7f26cf9abc6f158d5775",
+      "lua": "portal/enterRienFirst.lua",
+      "lua_sha256": "cdd8797c199269997a34c80660211e61bf2beec9cfc692156d95e12d5b2508f4"
+    },
+    {
+      "legacy": "portal/enterSDI.js",
+      "source_sha256": "7db6592abd6e66cce376275005458bfd8904d8d53c187cd017c6c4dc1fcc2e98",
+      "lua": "portal/enterSDI.lua",
+      "lua_sha256": "70ca15bf9f2dfa1d46e52a1012e58d18b71d67a5b14ef036b88ac8fe493b4ff1"
+    },
+    {
+      "legacy": "portal/enterSecondDH.js",
+      "source_sha256": "73464f95f97258697169fc1d7102d33e54b48c949e66d646d372bde8c891e8d7",
+      "lua": "portal/enterSecondDH.lua",
+      "lua_sha256": "2cbcef878fc01f55315c84cb1bbe7d72aece4a85f598dd2b9d2c74e5bc77b0e6"
+    },
+    {
+      "legacy": "portal/enterUlika.js",
+      "source_sha256": "f3b4ac27108251498df5f7ed4140a9261fce462a787da0693933cc030614ca06",
+      "lua": "portal/enterUlika.lua",
+      "lua_sha256": "c8c3db6645688368e28705ead61ebaffdfd703e05f4a15bf1205f5b85bf02843"
+    },
+    {
+      "legacy": "portal/enterWarehouse.js",
+      "source_sha256": "1537745e08a999fafc85e76598206bbf4383432a5d100de28aedfb4c52e26b51",
+      "lua": "portal/enterWarehouse.lua",
+      "lua_sha256": "0642ede4d7d7ce5d7e4bf9847d73fb333cffe94f0424d239bcc1c5839886a979"
+    },
+    {
+      "legacy": "portal/enterWitch.js",
+      "source_sha256": "9531b7b724fcfa0943ac11e110101f38e0bc889c7a17736211656a59737dba48",
+      "lua": "portal/enterWitch.lua",
+      "lua_sha256": "538343373318b937b68afaa3bd666e2176460bb6d33ac8fab8508e31e15822cc"
+    },
+    {
+      "legacy": "portal/enter_Xerxes.js",
+      "source_sha256": "2515fbe714f05f48bb10d2e1ae513e2eaa9887c04fa65d0d68f623480a0a6a9b",
+      "lua": "portal/enter_Xerxes.lua",
+      "lua_sha256": "9b0323eb946caa8aa3e46e74fe5d0a6a5215309f8fe5521edadf6e0b3ef3fdd0"
+    },
+    {
+      "legacy": "portal/enter_fm01.js",
+      "source_sha256": "efdb415fbc44b6404d52a4a10dd77560ac691145f577f514eabfa938f8e7d824",
+      "lua": "portal/enter_fm01.lua",
+      "lua_sha256": "7d3aca42e3416e98a02eab7a7469ee941375c9a21489e69d0475ac3c7131b3e8"
+    },
+    {
+      "legacy": "portal/enter_nautil.js",
+      "source_sha256": "039b8bd8789bfd4451d8c730b4c579a32ad87b505a863cbc7a02b6256ea83805",
+      "lua": "portal/enter_nautil.lua",
+      "lua_sha256": "c4f9ac0632bae3c9b68143a621ced74f0c067646f63d8b57c501d8dcb6f3cbdd"
+    },
+    {
+      "legacy": "portal/enter_td.js",
+      "source_sha256": "0a948ea65e7aa4b03b7d43b39ffb6a2b9086ea2051d8271ab731c83f03361be4",
+      "lua": "portal/enter_td.lua",
+      "lua_sha256": "ce2a2907847ae42933ee3ea5b68ca38197dba37bff58fb9cdf5cb61d3fb18133"
+    },
+    {
+      "legacy": "portal/evanFall.js",
+      "source_sha256": "94eba5ba55146c0937daff00d0aecda2a503023b01cb0fea4d648980bb67607e",
+      "lua": "portal/evanFall.lua",
+      "lua_sha256": "53909e32b891759727468f64325a249f00ca98171f91d0c0553cd41ba4e6b08a"
+    },
+    {
+      "legacy": "portal/evanFarmCT.js",
+      "source_sha256": "de2023feb6627e422ebbca26979bd93d787e2e58b84788e2a5fc0075e88fb1cf",
+      "lua": "portal/evanFarmCT.lua",
+      "lua_sha256": "c84831f56740118191751f75372be2e2cc5d0e6f62a9aab87c7b0554233ddbb1"
+    },
+    {
+      "legacy": "portal/evanGarden0.js",
+      "source_sha256": "34319fbdaac2664cd2ccb023bd11890bb5a6dcd71766b95441733b3c72a40b44",
+      "lua": "portal/evanGarden0.lua",
+      "lua_sha256": "68951059f1a9fdfaf2781549ef312ca1207ba0a95f595666c67f119f53ccb7fb"
+    },
+    {
+      "legacy": "portal/evanGarden1.js",
+      "source_sha256": "ca9e28879dc2d98d319669affd8d383e6be313d8a34600af6cd5153fad725cfb",
+      "lua": "portal/evanGarden1.lua",
+      "lua_sha256": "373912bf3b6235dba58c34b797fe0caef5d1136870f5653654ce8d4c77770a2b"
+    },
+    {
+      "legacy": "portal/eventjp_exit.js",
+      "source_sha256": "ffbd64b3a8db1507515eab2d895da7b1c3e8a81e01b755f761d7d0c24260b604",
+      "lua": "portal/eventjp_exit.lua",
+      "lua_sha256": "00408906528ac7e7772d7ade0704cfbbf8425fc81b1632fd61134b89bccd4545"
+    },
+    {
+      "legacy": "portal/exitMRYetty.js",
+      "source_sha256": "450b0a23f3b213fcdfea9491bf8433bb4c1c7d5036f7578c2c64905caa6477ff",
+      "lua": "portal/exitMRYetty.lua",
+      "lua_sha256": "9b0d843cb6d56a4b09695e21c1fc9161bbdfcd4d54f13cfcb26092778bd45ddc"
+    },
+    {
+      "legacy": "portal/exit_dragonR.js",
+      "source_sha256": "759cb1e8ae072e0820ce403e87f315a96c609e4c92b762b15a7a3302288582a0",
+      "lua": "portal/exit_dragonR.lua",
+      "lua_sha256": "f83dc3c3c12cec3426320a9196ace7fb2f9675424e5bdf553ca0d6a08e27430f"
+    },
+    {
+      "legacy": "portal/exit_juliet.js",
+      "source_sha256": "1ff68bd1eb815e8cf969d52192caf6f155191dc93ccb932195d9ec2f64a9437c",
+      "lua": "portal/exit_juliet.lua",
+      "lua_sha256": "d413b904c5795a2e95ed24e276bca6a38c060580e585970a41e7404022996336"
+    },
+    {
+      "legacy": "portal/exit_party3.js",
+      "source_sha256": "e8e26200b787ba18021bc554d933f1bb7ab52f62cb1a4efe0b13208ed230bbf5",
+      "lua": "portal/exit_party3.lua",
+      "lua_sha256": "3a9b900720cf57f87a91b0221fef1a70f159907825697158e841a02506258fae"
+    },
+    {
+      "legacy": "portal/exit_party6.js",
+      "source_sha256": "9539b1a1909a35ffe0c6bac8c93bb9d00582a55cfa002f621b90f8cafe1ee17a",
+      "lua": "portal/exit_party6.lua",
+      "lua_sha256": "4805db582fff7dbc773c047ad0ca0433701b77382178f98ac56cb93801dc6ee3"
+    },
+    {
+      "legacy": "portal/exit_romio.js",
+      "source_sha256": "217b32df350c5391b820a5f2fd13cc1f911778abbd1c39f23783a1a0b719501e",
+      "lua": "portal/exit_romio.lua",
+      "lua_sha256": "e307c3a1dcfa965a7562a533c6c88e713f41c984511c126f45a4b74de5eb56b2"
+    },
+    {
+      "legacy": "portal/exit_shmmosP.js",
+      "source_sha256": "d60eb9d6b119117a1235676c1e5c130b7bc5554aa3061dd2a07ed2b615f7480c",
+      "lua": "portal/exit_shmmosP.lua",
+      "lua_sha256": "a8442612ab609f1252de2eeffe88d072646031ec9e26b7a1efb260dce206e1ba"
+    },
+    {
+      "legacy": "portal/female00.js",
+      "source_sha256": "64464ee45c4319c84b1ec2f7b3ef980b4af6c6b46b6c4c30675967799d09f47a",
+      "lua": "portal/female00.lua",
+      "lua_sha256": "cc10455a57871dbc1788c6d973085f4fe745819b4dae82295cfacdd076ce8b39"
+    },
+    {
+      "legacy": "portal/find_james.js",
+      "source_sha256": "519d5ec14249a39cff886dcd59966a579f9c29e6dac55adae0ccd459f623989d",
+      "lua": "portal/find_james.lua",
+      "lua_sha256": "5061a55ecbafccf72aae0922c2f45a26a115a18b2bc7a013dc76b4cc06fa18b1"
+    },
+    {
+      "legacy": "portal/fishing_out.js",
+      "source_sha256": "338c00289cc912d09ca14784b1b0005546e86a01e9e44507cef08354cf19cd2f",
+      "lua": "portal/fishing_out.lua",
+      "lua_sha256": "297d956c1c9de0087fd435d793906d3126e99c394b58dd5844579d059d9ee8bf"
+    },
+    {
+      "legacy": "portal/gate_intoPast.js",
+      "source_sha256": "9968bc795c507524f348b791b946c9ffa4e6b00529ff4a1be53191fb67e7059c",
+      "lua": "portal/gate_intoPast.lua",
+      "lua_sha256": "8993f2a7b7a3a6b6e03c5a855de3db6a76677307c524ff117e980c806658ad31"
+    },
+    {
+      "legacy": "portal/gh00.js",
+      "source_sha256": "afa25a84476ef75c1ddf9d8f28aa64d5648a45f9abce0a92ca3a0b77a6dca777",
+      "lua": "portal/gh00.lua",
+      "lua_sha256": "248a44bd4a314735f8ad23e1a22c07e1976e68937f3f303e5323c57f9e7f31fd"
+    },
+    {
+      "legacy": "portal/gh01.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh01.lua",
+      "lua_sha256": "300f2fe603f5470d3788ea17b131fb3bf386eff95a7e6ca282f1596ce1f0766f"
+    },
+    {
+      "legacy": "portal/gh02.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh02.lua",
+      "lua_sha256": "f187a6daff673f4a71c9092c21cc5468689477a7e45c43f3a779a763974697f3"
+    },
+    {
+      "legacy": "portal/gh03.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh03.lua",
+      "lua_sha256": "cb8247c7e88995057251170e5d5fbe52bde3046ca9b5d3ff787c4c49ba2c7022"
+    },
+    {
+      "legacy": "portal/gh04.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh04.lua",
+      "lua_sha256": "dae6a96ef55b6c372ff778bd8fcf3ab3634d17b16ddf4f3b4dd8db94dd019cb6"
+    },
+    {
+      "legacy": "portal/gh05.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh05.lua",
+      "lua_sha256": "4750dc7a4238d2b304244861306bc583dbabd33a0127e8cf93206b89531392b0"
+    },
+    {
+      "legacy": "portal/gh06.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh06.lua",
+      "lua_sha256": "ec34cf476753a36f4c96836fc0571c5b3182ad4dd00d65958a7a6e690050e52f"
+    },
+    {
+      "legacy": "portal/gh07.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh07.lua",
+      "lua_sha256": "cab9e94cef960f519c2a8a051ceb4f561766eef87be72d32fff114ebc9c96577"
+    },
+    {
+      "legacy": "portal/gh08.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh08.lua",
+      "lua_sha256": "4dc2ead89e949f00bc5cf7c6db5af13a0902af3b1a1d4f5825038e2b6cbd292b"
+    },
+    {
+      "legacy": "portal/gh09.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh09.lua",
+      "lua_sha256": "8b7b704f1185507fdeaf2ee49c0035868b60693bb473b7b3762714472b9739b0"
+    },
+    {
+      "legacy": "portal/gh10.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh10.lua",
+      "lua_sha256": "1a76509a73555a3d192bbe1bb19364efcf0879eec2e11079f9c92b308c36dbbb"
+    },
+    {
+      "legacy": "portal/gh11.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh11.lua",
+      "lua_sha256": "ac5a705e6ca1e567aa5b31e4181d6714066e682725daf0a87267b6e3c5269baf"
+    },
+    {
+      "legacy": "portal/gh12.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh12.lua",
+      "lua_sha256": "8ef93e165512ca9270503d07936f7e3d6ace0c1e22ea6236b2e3f44f93e8eae5"
+    },
+    {
+      "legacy": "portal/gh13.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh13.lua",
+      "lua_sha256": "f9c773632a7a9006428bd93545b2d7b6a449de1910a308139ab4937fc1d041dc"
+    },
+    {
+      "legacy": "portal/gh14.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh14.lua",
+      "lua_sha256": "128652356a1cbae3d71b9fba6be92fc9424ed7fd5b7cca5b96e83c4b85c46feb"
+    },
+    {
+      "legacy": "portal/gh15.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh15.lua",
+      "lua_sha256": "c5e3363bf3e4065a006459c5f517209cfa1be138ab3ccd3d3b4bb71c162ceca9"
+    },
+    {
+      "legacy": "portal/gh16.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh16.lua",
+      "lua_sha256": "73a7f48278b410e5430ca2ee47e570e9d59ca9a4165ff58e7c94b5ff3c14e8e0"
+    },
+    {
+      "legacy": "portal/gh17.js",
+      "source_sha256": "ae54ce71b6cd573f0cf15680ae6fe9fc39a69541a5079cd2b235b5d4173aa2d5",
+      "lua": "portal/gh17.lua",
+      "lua_sha256": "067a4fe098fe61e73dfc86fca2f80fca39f6cddc525a03101b6a4d4bd3d76d50"
+    },
+    {
+      "legacy": "portal/gh18.js",
+      "source_sha256": "ae54ce71b6cd573f0cf15680ae6fe9fc39a69541a5079cd2b235b5d4173aa2d5",
+      "lua": "portal/gh18.lua",
+      "lua_sha256": "b5b04fbfa58bc10cba11bdf288080dd24c199c4b2a6ed14d62746a121ebf0117"
+    },
+    {
+      "legacy": "portal/gh19.js",
+      "source_sha256": "ae54ce71b6cd573f0cf15680ae6fe9fc39a69541a5079cd2b235b5d4173aa2d5",
+      "lua": "portal/gh19.lua",
+      "lua_sha256": "65a99f56909eb8256e22a0d4b6bca09dadd83608f6af9c13576069fd62633d33"
+    },
+    {
+      "legacy": "portal/gh20.js",
+      "source_sha256": "4d5c0047fd45cc0461ca140ed1e704f847495400e43b55804f7c6e35f60a59be",
+      "lua": "portal/gh20.lua",
+      "lua_sha256": "e2a338baca4b2e35c85eebabe6017824c91321d15663a5b4d9c465f230b42de6"
+    },
+    {
+      "legacy": "portal/glTutoMsg0.js",
+      "source_sha256": "c843aa3c30fb85ad2fe08a552c3dc04ef83be315e3baa4915ad89f141af94c9b",
+      "lua": "portal/glTutoMsg0.lua",
+      "lua_sha256": "e51c3fbb5f923d20f59c19574c53f22beb768bef833a6de8d51938b30df2456a"
+    },
+    {
+      "legacy": "portal/glpqEnter.js",
+      "source_sha256": "b54222f7f65262934e39f78d0aa89f7203bb718fa80b41549966287bb7b92d07",
+      "lua": "portal/glpqEnter.lua",
+      "lua_sha256": "49f312f236fd20cd8b2bc81aad0972a81e3de81e438b39432a37fb41e8f1f123"
+    },
+    {
+      "legacy": "portal/goGoblin.js",
+      "source_sha256": "44660d2d32f55099d68d5dbe670c7b77e07a080b2db794d177f70d104617c42a",
+      "lua": "portal/goGoblin.lua",
+      "lua_sha256": "c2258fdb5ce8ea4e4c7668e34de7f4776372b7dd67a424c90b8586bb6d24be07"
+    },
+    {
+      "legacy": "portal/goMonkey.js",
+      "source_sha256": "d70bde1788289da7ba1b6ed3316f83bbca0116b52c21e856041e3c10dd19a342",
+      "lua": "portal/goMonkey.lua",
+      "lua_sha256": "a38c2052d1ee6ac8da1c6164272f60dabf7fb92aac13cfe1ab892d69258c7be9"
+    },
+    {
+      "legacy": "portal/goQuest_22404.js",
+      "source_sha256": "f3b4ac27108251498df5f7ed4140a9261fce462a787da0693933cc030614ca06",
+      "lua": "portal/goQuest_22404.lua",
+      "lua_sha256": "1a835c8ebe05f7e6863319522f9eba968e1d57b9ab40d130360f243b331675db"
+    },
+    {
+      "legacy": "portal/goShrine.js",
+      "source_sha256": "2e45f7aeb4cf6df9b3fd94289bd7416dc8b48483d4b3b1a5f70a0256b6eb950e",
+      "lua": "portal/goShrine.lua",
+      "lua_sha256": "c5cb2e57393f6b3238e0b0f68b5b52cc6c26510b7bf7a5d709dc3ad5d6427452"
+    },
+    {
+      "legacy": "portal/go_FantasticPark.js",
+      "source_sha256": "2ce5d54779047e0765aa708a2b32333369fd6f03228b5c65ec89395fcea28b93",
+      "lua": "portal/go_FantasticPark.lua",
+      "lua_sha256": "4ec80deeab6c8d72a01a6b7e10888449e7a63b61102c16dedd766c28b9ab05cb"
+    },
+    {
+      "legacy": "portal/go_animalShow.js",
+      "source_sha256": "66c80d34e6e10de0aac2b165e34aacb317c3085cc0d7321c0ef7052488c695b7",
+      "lua": "portal/go_animalShow.lua",
+      "lua_sha256": "b739326eae12a6d503231d46400b446ba32b49a7fa1c15eb3a30fff8707c12f8"
+    },
+    {
+      "legacy": "portal/go_secretroom.js",
+      "source_sha256": "a8f64852d8a837644aca49814e201d6f8c848daa9fc02113deda5c5695eb6f0a",
+      "lua": "portal/go_secretroom.lua",
+      "lua_sha256": "8e7e76f95468dd157ae98c704dcee2dcbf05180a559dc122f1e4f226ac8b498a"
+    },
+    {
+      "legacy": "portal/goback.js",
+      "source_sha256": "ffbd64b3a8db1507515eab2d895da7b1c3e8a81e01b755f761d7d0c24260b604",
+      "lua": "portal/goback.lua",
+      "lua_sha256": "c903b638b6449d1ec43e2166aae615bcec3c46722711ceae3f785fc0bb7da496"
+    },
+    {
+      "legacy": "portal/goback1.js",
+      "source_sha256": "9c0def06c205c12a4c43b222d11a238cc3f012b5bf015cedd83ac05bb15e6b80",
+      "lua": "portal/goback1.lua",
+      "lua_sha256": "8a018d360bbd17040218219059e432221bb9c61b083bd50d92a09aa6ce6662c6"
+    },
+    {
+      "legacy": "portal/gotoAni.js",
+      "source_sha256": "b05fdbab49554df391350cc76137fe2c450921efd2dfdb6e7459e65436cf17dd",
+      "lua": "portal/gotoAni.lua",
+      "lua_sha256": "e6ef5b98e5db83ec0f6501c39c42fc1f238194d2f66c42ee4a25e8bd2bb1e3af"
+    },
+    {
+      "legacy": "portal/gotoNext1.js",
+      "source_sha256": "ff1b227e932ccc0a507c3040f0e29090dc30e064459dab91faef744512e715a8",
+      "lua": "portal/gotoNext1.lua",
+      "lua_sha256": "5975e93dee74a57195ddaea17367f11b7e416b2de036110a0ffc0edf80061d3b"
+    },
+    {
+      "legacy": "portal/gotoNext2_1.js",
+      "source_sha256": "5c3948371f421061603f9a71ab83ded585d80e7ed12fd5f036316b7c14811782",
+      "lua": "portal/gotoNext2_1.lua",
+      "lua_sha256": "dfcd5caf679bfe95ce77821bd6ae475271767f2cfbb1275ce5962cf96e8385fc"
+    },
+    {
+      "legacy": "portal/gotoNext2_2.js",
+      "source_sha256": "41bfc1ed1136215d4a55c406435317096d8d0bdd9c351aee96d2a7988f8525da",
+      "lua": "portal/gotoNext2_2.lua",
+      "lua_sha256": "920cdd4b0732f580f619bb24908fa3d6a5e75bf771ccb19eced15b3b906c2dde"
+    },
+    {
+      "legacy": "portal/gotoNext3_1.js",
+      "source_sha256": "209b926cd4e87473d5b7552a8604c7fb9685e40a33acd55c59ef05423ab59920",
+      "lua": "portal/gotoNext3_1.lua",
+      "lua_sha256": "03a94d31e61d5b0ec98124d40850144b58e45506f8a9876a2527efffea6a0b59"
+    },
+    {
+      "legacy": "portal/gotoNext3_2.js",
+      "source_sha256": "7fda81cac3339de54c17cc74543643aac93c21109b38080a4ef088ee63cd7e54",
+      "lua": "portal/gotoNext3_2.lua",
+      "lua_sha256": "89972272ec87406e2929ff0b6ed6729163c108908725e733b87f714f00772792"
+    },
+    {
+      "legacy": "portal/gotoNext3_3.js",
+      "source_sha256": "e5c9f3e461453ca2e90cbab5f1cb267673c44c5f3c89ba9f40f655fbebd5c690",
+      "lua": "portal/gotoNext3_3.lua",
+      "lua_sha256": "23ff328a2ec6878574cfaa87e64a130ba1fbd5c00997580a54c5cc3517fea35a"
+    },
+    {
+      "legacy": "portal/gotoNext4.js",
+      "source_sha256": "b8ac8c32b8254c2436053ef18357764f510e7be9d162ea24e05fc591cbf69228",
+      "lua": "portal/gotoNext4.lua",
+      "lua_sha256": "305794454ad5e24859d03fa5b7bc1850b319fff3919837e87ddaed48749230f5"
+    },
+    {
+      "legacy": "portal/gotocastle.js",
+      "source_sha256": "8071b99cc0a260c47dd699a3397f6806d2783b62a83370bafad96f5ef2c02168",
+      "lua": "portal/gotocastle.lua",
+      "lua_sha256": "b01d77a2bd14419ea219c66b7de102fdc8fb8d59339ce4a92221d1a19787ecb9"
+    },
+    {
+      "legacy": "portal/gryphius.js",
+      "source_sha256": "28af156512ce055a793ef3a9a9dcb3e5f2ff100a61bb97acf8d55438bf88cbf8",
+      "lua": "portal/gryphius.lua",
+      "lua_sha256": "d453dd28b1171d0de6f8133f8221d59ff6b072a29ebc257ae2cf687551bbc12a"
+    },
+    {
+      "legacy": "portal/halloween_Omni1.js",
+      "source_sha256": "eff5b967a48cbc95b6497a5c87fdd4ce5648825d583cacd59819e0eab3ca3477",
+      "lua": "portal/halloween_Omni1.lua",
+      "lua_sha256": "a599b39dbfa4e34949ac3a0a6b71c5e0d016f76f0736d778302e2f60dd97b3e1"
+    },
+    {
+      "legacy": "portal/halloween_enter.js",
+      "source_sha256": "fd7f054994e26dbe2c05090d856b1e31d05e06e5dff0778d993d7d2c05725f0a",
+      "lua": "portal/halloween_enter.lua",
+      "lua_sha256": "68c25af9e0c9f0d16560150a16b1d91a90b0a2525ff5389daa4399c10a950687"
+    },
+    {
+      "legacy": "portal/halloween_out.js",
+      "source_sha256": "e235a2e0cd94b3325517af646c1cefe7b981e9b6f3a589e5f4f70fc66cd87147",
+      "lua": "portal/halloween_out.lua",
+      "lua_sha256": "1c6fc0f276f6fdf7a3b0ee77cc1600b20df988ef197bb5d2db47ce76363cd8db"
+    },
+    {
+      "legacy": "portal/hontale_Bopen.js",
+      "source_sha256": "3e286657d58267952de7c333ade43eec74c96367879e9f5203349a1d191b6d4d",
+      "lua": "portal/hontale_Bopen.lua",
+      "lua_sha256": "53146948ffc64d345201559d41afb72f9b2ddff7e1926be3b0c0bf280dedd132"
+    },
+    {
+      "legacy": "portal/hontale_BtoB1.js",
+      "source_sha256": "0bb0d4d454d74eb8c04dec1e49ce72437de34d51300d5392902d4c4c21bf6901",
+      "lua": "portal/hontale_BtoB1.lua",
+      "lua_sha256": "de4c34dfd25463c40d9ec2efc95b5b448517d96439de20da7893e12318a706cc"
+    },
+    {
+      "legacy": "portal/hontale_morph.js",
+      "source_sha256": "28f2baa78cd0d0301fa37abe2a797dd4c94460590a0778ba13aef5ad15293877",
+      "lua": "portal/hontale_morph.lua",
+      "lua_sha256": "b263536ebd8f9f5f8943ba1df2da9a90caf6fb67f2a01054740c4a5f5eb8ab62"
+    },
+    {
+      "legacy": "portal/hontale_out1.js",
+      "source_sha256": "3aac2fdfc1211d3498c90ea22bcfa5e6d6cffac1b7765331a5857d1407003073",
+      "lua": "portal/hontale_out1.lua",
+      "lua_sha256": "0353efaf8a1d8066033189d17f9d2c0fc1c3829ca536ae61d0024c6ee07e28fe"
+    },
+    {
+      "legacy": "portal/hwtool.js",
+      "source_sha256": "f3b4ac27108251498df5f7ed4140a9261fce462a787da0693933cc030614ca06",
+      "lua": "portal/hwtool.lua",
+      "lua_sha256": "af12bf6d4dcf7523e9fb71c908ccbe1c7eae7cf50d4ef647ad7985c4df5b1a59"
+    },
+    {
+      "legacy": "portal/iceman_Exit.js",
+      "source_sha256": "3b21df3165555c967228b614cd16e6f79dcc771f1434604cd84cc21bff353cac",
+      "lua": "portal/iceman_Exit.lua",
+      "lua_sha256": "0759e331e8197d9b7debc6d1ee04735d5d579309c5182cfa0bd0c2d12f1d8603"
+    },
+    {
+      "legacy": "portal/imgevent_in.js",
+      "source_sha256": "a6530a2b6ffe700523da099908179b0851b5089be1d001403373140be26e3dab",
+      "lua": "portal/imgevent_in.lua",
+      "lua_sha256": "afe8fe7be49a0ff1da320d7078de55e7d58d66efa659453a4e554158ca3ef8f3"
+    },
+    {
+      "legacy": "portal/in2159011.js",
+      "source_sha256": "73c3f9baa16208446bb7815246abf851ac249540b884ee2f524cdb64cfa2cf73",
+      "lua": "portal/in2159011.lua",
+      "lua_sha256": "8c00b86c17bcdfa2a482c104297dc392af0476445bf9920422fad40789cea604"
+    },
+    {
+      "legacy": "portal/inDragonEgg.js",
+      "source_sha256": "80449159c6d063e45a9e3ef635c901b31a5f51e23de798e266963ed4979317a8",
+      "lua": "portal/inDragonEgg.lua",
+      "lua_sha256": "2fcc092019ff9c7590e3f36a40fa09245aaaa3254b5d6617214dcbac13fda33d"
+    },
+    {
+      "legacy": "portal/inMyung.js",
+      "source_sha256": "282011295e87a2285f68e20b3a61848ebd2380a9b1fdbf38d8b8b26757701df1",
+      "lua": "portal/inMyung.lua",
+      "lua_sha256": "dded1a8c735416c6c12af54fabe604637f2939ff7965b82c4b6b75e1222d2077"
+    },
+    {
+      "legacy": "portal/inRueEater.js",
+      "source_sha256": "10176ceac47fa3d6173141457f97fe87c4ddbc854f2c85e83429401a8369cef7",
+      "lua": "portal/inRueEater.lua",
+      "lua_sha256": "be5527a81e8ab3ca1d9aa1c5c3861f519a40e3a6ce0ce2a7de3b28e94d029371"
+    },
+    {
+      "legacy": "portal/inThiefMaster.js",
+      "source_sha256": "6a9e0df87390d6ce8ba318e335ccd72b93fce31899d8f62f777960b878cdfb63",
+      "lua": "portal/inThiefMaster.lua",
+      "lua_sha256": "4255feb69e6b8ea2b4ba3c2bcedc788281f43e240a2e555844a9c20f9ea218ea"
+    },
+    {
+      "legacy": "portal/in_FantasticPark.js",
+      "source_sha256": "6ce863a4816f69e82f26479d350d67ded0a0806245db74e73fbc1f410430b0c9",
+      "lua": "portal/in_FantasticPark.lua",
+      "lua_sha256": "780826bcaa3ab4b437cae778acabc515d91d8ea038536b107795d76878842c69"
+    },
+    {
+      "legacy": "portal/in_crossroad.js",
+      "source_sha256": "9be552c517bdec03bd7dab734e28c177f1fa1c8b72e03af0f832053eb6d1a694",
+      "lua": "portal/in_crossroad.lua",
+      "lua_sha256": "1c82fd028fce9181acb4d190c340cde725fe7dc0bfea0f790839b510a7c74b72"
+    },
+    {
+      "legacy": "portal/in_cygnus.js",
+      "source_sha256": "125fe56ee13c2ab1958d959a01dcc0684b5a71649885a4a1ba00887bc02243ce",
+      "lua": "portal/in_cygnus.lua",
+      "lua_sha256": "1bc859d26a7190f15ab11cbe43aa37fe6705fb0d25cfcb3ea85d7ad005f275a4"
+    },
+    {
+      "legacy": "portal/in_cygnusGarden.js",
+      "source_sha256": "a64ea52e3c4310f59a474ac2785b9ec5477779b57c40b6049f628319844b7eba",
+      "lua": "portal/in_cygnusGarden.lua",
+      "lua_sha256": "44a7480e3ff0062601d1fdf2e432fe83f14a1ae553bd37bfc375359f1bdfda79"
+    },
+    {
+      "legacy": "portal/in_ghostHouse.js",
+      "source_sha256": "2019d4376ee0b5e9c8c853f585e9997b35ce93620220b64387c1705bf90e8e7d",
+      "lua": "portal/in_ghostHouse.lua",
+      "lua_sha256": "6a7f300dd1c525113c84780c581522bbbf38ef37cb1efb793e501af9a7719157"
+    },
+    {
+      "legacy": "portal/in_hillah.js",
+      "source_sha256": "e1df0a572b48aac4debd770abb8c57be3a338b403dcc5dda91d8150e4c59bc09",
+      "lua": "portal/in_hillah.lua",
+      "lua_sha256": "837b5a23cb30b0a7b096d8e00da9a8ba25a1c797593cf8b45ad0961cb377f76b"
+    },
+    {
+      "legacy": "portal/in_james.js",
+      "source_sha256": "789bc3b4b8ecd41fb4fecfb75fc427b8e4fc19b7ca007d18c368076fb7e3561a",
+      "lua": "portal/in_james.lua",
+      "lua_sha256": "8ba6cfe7d222f376bcb884f70fa22c4f80e79f08bafd97c70a8b1fd70a135668"
+    },
+    {
+      "legacy": "portal/in_knights00.js",
+      "source_sha256": "494de97da62f3fae6cc2c35984009f97b74008d0b7c7e9f68d28b2e6ceba4d04",
+      "lua": "portal/in_knights00.lua",
+      "lua_sha256": "4ee2c279a17f6e35a1628eec2621ba70201a5350ce8e5d14835a315985011fed"
+    },
+    {
+      "legacy": "portal/in_nextD.js",
+      "source_sha256": "b3898677de8ab5287e2721be6a08df270499d92a4d10d9a4360c310c9ec85083",
+      "lua": "portal/in_nextD.lua",
+      "lua_sha256": "03b665f1b1c0ed91c3cff0213c44003ec62c46760cc348609c7e76f2b0f2f77a"
+    },
+    {
+      "legacy": "portal/in_secretGarden.js",
+      "source_sha256": "4b9ca4fb8418c4ec3a59dcda1d30e61dea46428508ce8957c331083ef925cec9",
+      "lua": "portal/in_secretGarden.lua",
+      "lua_sha256": "d84cf9969ee7d23bc60315db10e965365fa337fb817d8b0a1af0f97638a0b2ae"
+    },
+    {
+      "legacy": "portal/in_xmas_party.js",
+      "source_sha256": "3ded676d8dd79842cffa50e847510b277fd58f7f58e83ecde5b6beed72f6980b",
+      "lua": "portal/in_xmas_party.lua",
+      "lua_sha256": "a18391ea577e4ea2ed51f48e6f223190360c386c189c0c7cd7bb3094f3d159ab"
+    },
+    {
+      "legacy": "portal/infoAttack.js",
+      "source_sha256": "1652c6398b75b6f97fb3df6f2412855a0ff2c3097e6084e98944b86b0b0ffd2b",
+      "lua": "portal/infoAttack.lua",
+      "lua_sha256": "58c28ca4614c7777861fadbf08d400de7b3e2786304639e71fdcbfbce1ccdaa3"
+    },
+    {
+      "legacy": "portal/infoMinimap.js",
+      "source_sha256": "9ab2a66084860bc4d362cbd42d184b4e2a451ac38218369ce2c312e18fe903d7",
+      "lua": "portal/infoMinimap.lua",
+      "lua_sha256": "124a7625831f49c2f12cc6f40f0ad606fcfe79429163da88217b661032920175"
+    },
+    {
+      "legacy": "portal/infoPickup.js",
+      "source_sha256": "660e5da23519068720b2f0b542fd852c91e7fc2f1935660ae5b3fcc57e2b10b7",
+      "lua": "portal/infoPickup.lua",
+      "lua_sha256": "6a5864f4bd0d5229317aa684ff00c40110b2f652ebf1586e7e943dba5ae9b8c1"
+    },
+    {
+      "legacy": "portal/infoReactor.js",
+      "source_sha256": "87b231c356e32e61519e497875ee27670cb38f4f253f38045fd1ccd15d7d2483",
+      "lua": "portal/infoReactor.lua",
+      "lua_sha256": "d57a562f1178299776d511473b1f022e8cbe5c8ae8ef6459b64b059786056096"
+    },
+    {
+      "legacy": "portal/infoSkill.js",
+      "source_sha256": "8f73f9acf910ec93e951f8251c4d0afa1b03b9a9719fff1b50cda0935f44119d",
+      "lua": "portal/infoSkill.lua",
+      "lua_sha256": "750e1c4f24be41d713c86074974f946b72fb126362e4b2ce84cf74b4b178176f"
+    },
+    {
+      "legacy": "portal/infoWorldmap.js",
+      "source_sha256": "7f17a7452b9b44c5fddfa6eb74c2a7176d1fdd11db02d178f49b1df30c1a648e",
+      "lua": "portal/infoWorldmap.lua",
+      "lua_sha256": "67463d632421f6349a5bf838e03a8fe567e339e295deae050469a9a4dca53096"
+    },
+    {
+      "legacy": "portal/inhalloween.js",
+      "source_sha256": "7d49d468f594f471cbaef5941d1368060a2f835dfb73f470f68342502658c429",
+      "lua": "portal/inhalloween.lua",
+      "lua_sha256": "0e50c50ae71d0175e49564e6298873074f66d4f4d83eddae1c6d5b539b4d304f"
+    },
+    {
+      "legacy": "portal/investigate1.js",
+      "source_sha256": "cfed0167a763b60227f87b231d770038c2d95b4d6bb570d03e39f823127987e9",
+      "lua": "portal/investigate1.lua",
+      "lua_sha256": "bb813476ae352b37266bd79829e7c5be075976a0c50047e5368a293c2e668680"
+    },
+    {
+      "legacy": "portal/jnr1_out.js",
+      "source_sha256": "83c9e50307598add8a9526923ac4a27e790479838a829b861f50d13c09eac3ab",
+      "lua": "portal/jnr1_out.lua",
+      "lua_sha256": "228e6f847226c84337abf8da50b6146ce0b5ef38bc3e3d425b1ebc1b1e5f6b4e"
+    },
+    {
+      "legacy": "portal/jnr_201_0.js",
+      "source_sha256": "d6d3bc776d99880be20c40b03d78509fd57774bb4e33d4431f5f5dd8a40ff210",
+      "lua": "portal/jnr_201_0.lua",
+      "lua_sha256": "d7d9333b7c4ffce9fa3fb4d4c9b737e021e06395c9b111d03df360698ced3084"
+    },
+    {
+      "legacy": "portal/jnr_202.js",
+      "source_sha256": "43dddbf4db8544894240c28190bc55ffbc5ef86323408af14f8bba0fa69ad0b5",
+      "lua": "portal/jnr_202.lua",
+      "lua_sha256": "deefa260e8b50b87b64d2d5ea6a3b2d69e15e103a15bf9eb4e7aa6f9edc2b387"
+    },
+    {
+      "legacy": "portal/kenta_exit.js",
+      "source_sha256": "d1d95579670829a9a7f466e1d4d948615f0e5cc310b3efa7b4fb2a0b39ff206c",
+      "lua": "portal/kenta_exit.lua",
+      "lua_sha256": "7fdb5964b1ae914109be9e42fd10dc1cde7093dafa02c5cdca0153b2d43cc410"
+    },
+    {
+      "legacy": "portal/lionCastle_enter.js",
+      "source_sha256": "79301d1e477f792b70a0d8638cd5f38560e9cc8398c97326c534090f990fb4f4",
+      "lua": "portal/lionCastle_enter.lua",
+      "lua_sha256": "ba35863583ac077c2ee8d2049e44119c1d3710ec495ed6c9f7b3d2aa9e0a107f"
+    },
+    {
+      "legacy": "portal/mPark_in00.js",
+      "source_sha256": "f919947f1e335af06cb69540f95d9e5097afddb8c32fdc884ff240b2502439dd",
+      "lua": "portal/mPark_in00.lua",
+      "lua_sha256": "1a01be3bdd41f3d1d0d31d508a4734bea2cbc01e492de25a7c979cc91b022b36"
+    },
+    {
+      "legacy": "portal/mPark_in01.js",
+      "source_sha256": "f919947f1e335af06cb69540f95d9e5097afddb8c32fdc884ff240b2502439dd",
+      "lua": "portal/mPark_in01.lua",
+      "lua_sha256": "e5263aef797157a28f088feab30822f06429793cb55927b6d292e6a6d632312f"
+    },
+    {
+      "legacy": "portal/mPark_in02.js",
+      "source_sha256": "f919947f1e335af06cb69540f95d9e5097afddb8c32fdc884ff240b2502439dd",
+      "lua": "portal/mPark_in02.lua",
+      "lua_sha256": "ba0adb91322a2ab4b48cceeee27264651a4e50b2d0bd43d0c87a42fdbdb877ca"
+    },
+    {
+      "legacy": "portal/magatia_dark0.js",
+      "source_sha256": "2a43ceb58b295ad1c6dee9c3656cf29d8a3b0fc4fc032aa633c982ea2c67e73b",
+      "lua": "portal/magatia_dark0.lua",
+      "lua_sha256": "1248d5457a6ee45ff35917458a2c8a450e948de78d6ca01f74b1c3b75b1209e9"
+    },
+    {
+      "legacy": "portal/male00.js",
+      "source_sha256": "afe5db89ec021e9e2af3d5e7897c7d45828c46b10caba80d05e67f4291535894",
+      "lua": "portal/male00.lua",
+      "lua_sha256": "ffb7a30a494e3fac0806c903331f5ff79f7f3bc1faa6df6f88c8fd69099db08d"
+    },
+    {
+      "legacy": "portal/mapleTree_out.js",
+      "source_sha256": "128ed4cf028dd8f225236641387f104177be14bb9bd5ed9ac34518a6fba45801",
+      "lua": "portal/mapleTree_out.lua",
+      "lua_sha256": "dc3134abc3334fe4669098a63145a61d289eacab20c1bb1a12fecf28a514651e"
+    },
+    {
+      "legacy": "portal/market00.js",
+      "source_sha256": "1e2f0518e9c28015f1bf0533efd84f96d5a5c6da543502b1b7f80bd2b121c773",
+      "lua": "portal/market00.lua",
+      "lua_sha256": "1bd13e5bb08ab60ae99c2499c9058716320552ddc582cbdae496de3c88327d9d"
+    },
+    {
+      "legacy": "portal/market01.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market01.lua",
+      "lua_sha256": "d7522f464450a772d54d281a9177a8abb4c56b8362340c782a59a02849a12af0"
+    },
+    {
+      "legacy": "portal/market02.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market02.lua",
+      "lua_sha256": "cf7e4bd98eb0c4dd97effa3311171430ace54ba3d7e130a6566cd57a0d295f36"
+    },
+    {
+      "legacy": "portal/market03.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market03.lua",
+      "lua_sha256": "142e46ab7a73890bbadba02f8db7fc20fada2f80d11834c4d4b564453e999304"
+    },
+    {
+      "legacy": "portal/market04.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market04.lua",
+      "lua_sha256": "4381e723e51863ec143b72a37eefaa1c3078054ea84e295e1e96203e85ae4279"
+    },
+    {
+      "legacy": "portal/market05.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market05.lua",
+      "lua_sha256": "77444e42666e50606ca516df222bd688643e12dd9ec257d1506ae154ac10f0a0"
+    },
+    {
+      "legacy": "portal/market06.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market06.lua",
+      "lua_sha256": "f6f998114510a87ac18950d2138ac4ed9c146622016609ae98cdb6133b31887c"
+    },
+    {
+      "legacy": "portal/market07.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market07.lua",
+      "lua_sha256": "b4e69ce655910d603bcdf7008de30fabe8dc647f9034e79ec3a71225d76ac501"
+    },
+    {
+      "legacy": "portal/market08.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market08.lua",
+      "lua_sha256": "10f48fcfec7e53ed90d8665cd0ffe71ce12b980cef583e4ff2e842c8f8dba9b5"
+    },
+    {
+      "legacy": "portal/market09.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market09.lua",
+      "lua_sha256": "ce3f943c536af8903a3fd9be96ea0326846a1276d391350507fa49bf1e4812d9"
+    },
+    {
+      "legacy": "portal/market10.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market10.lua",
+      "lua_sha256": "0f0694ffc7cc7951023807794cae10803ed051f4244b7357f5fda148a6bd7610"
+    },
+    {
+      "legacy": "portal/market11.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market11.lua",
+      "lua_sha256": "0b2112c6e5ac304f19ebfe3d55d159b212539ed5a481e0fd82c7dd4588f16468"
+    },
+    {
+      "legacy": "portal/market12.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market12.lua",
+      "lua_sha256": "9a5e24048ddc7317fd45e5ec6c70d55c4b0bfd0273679cc9b6cdb300226ed3cf"
+    },
+    {
+      "legacy": "portal/market13.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market13.lua",
+      "lua_sha256": "9aab9be389176c810bc9aac872612e481aaa12abf0cc4c3c4c1e7bcf1ae21af9"
+    },
+    {
+      "legacy": "portal/market14.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market14.lua",
+      "lua_sha256": "ad6e41f7f1277546627c4b2f90476270534a7fdee6fd3e70a7108b39f6b5ee4b"
+    },
+    {
+      "legacy": "portal/market15.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market15.lua",
+      "lua_sha256": "374e84fbce94827bb484d6ca8e8ebe90daeb097361e12705e3eb966e1d93d28e"
+    },
+    {
+      "legacy": "portal/market16.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market16.lua",
+      "lua_sha256": "ed09adf06be8ef54e76846a322ac64f5dae90c5b091c82a8e2a92ccf8fb65b14"
+    },
+    {
+      "legacy": "portal/market17.js",
+      "source_sha256": "be5a761f6c41a7f3835f683beb8e941a6113303a1e16e2352587cd5f7dd7a734",
+      "lua": "portal/market17.lua",
+      "lua_sha256": "0231681e57f191399c4751b2f7be4eb5c3811ac7516c2bbf02216f907ee57e24"
+    },
+    {
+      "legacy": "portal/market18.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market18.lua",
+      "lua_sha256": "4f143e4ab188f14e810f55ba0ea5f6c10dd6a4f01f2e88121ecc18c43ed46ed1"
+    },
+    {
+      "legacy": "portal/market19.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market19.lua",
+      "lua_sha256": "5e0426c950397a4aa06a7cd47157d18949af5f9e33458ab76ec1cd5fd00db227"
+    },
+    {
+      "legacy": "portal/market20.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market20.lua",
+      "lua_sha256": "464233394804e94d3da042fd6ec40cc1b356ae8c2d001483fd96b9d30d5f831b"
+    },
+    {
+      "legacy": "portal/market21.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market21.lua",
+      "lua_sha256": "dd8f1c971bf452de1bd1757aa5867ae8cab85b4f4e4bb9b501e551f2d7e117e8"
+    },
+    {
+      "legacy": "portal/market22.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market22.lua",
+      "lua_sha256": "65483241f72d5b46028ed1cfb1c25f3d2be2a8db421a06da012e7f6a8df2bf76"
+    },
+    {
+      "legacy": "portal/market23.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market23.lua",
+      "lua_sha256": "f4b21ff78f13a7450b1e7b8f19f3fab97955532a0462c83d28ece6f4ca423895"
+    },
+    {
+      "legacy": "portal/market24.js",
+      "source_sha256": "c2dc384236636cad85181bd72225271d4aa43e7efbe3722ce7fb7c18ac2abb6b",
+      "lua": "portal/market24.lua",
+      "lua_sha256": "42e6df3709f0a5e7342267b0ad4994b932e563fed12f90a28c75272697d649aa"
+    },
+    {
+      "legacy": "portal/market52.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market52.lua",
+      "lua_sha256": "85c9117cfe478114ebd283d3d9a6f1e7f85cfff3ea56c2014cc96b9520190fe1"
+    },
+    {
+      "legacy": "portal/market53.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market53.lua",
+      "lua_sha256": "a381eb45d3697f2af665c2c67bdde3eb56720769a29048ce9ca187a9d0f5b71d"
+    },
+    {
+      "legacy": "portal/market54.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market54.lua",
+      "lua_sha256": "b8853848bf322cb965ffe45f39acfd700bd40fc6f535d063517ce7c36d1d1e7c"
+    },
+    {
+      "legacy": "portal/market55.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market55.lua",
+      "lua_sha256": "e0e1eb4c047bb1721dba7d087fe9b678bf3e2b9d987a15276c0a9a632f90350c"
+    },
+    {
+      "legacy": "portal/market56.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market56.lua",
+      "lua_sha256": "d6b58a24c8b3f54ecee40b2defbd4e0c13b6feef2d6e9e023ef1ae7ca1860aca"
+    },
+    {
+      "legacy": "portal/market57.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/market57.lua",
+      "lua_sha256": "d15b9687b345732dd706698bb9ad657b0df218d57c21a1a6bcfe25806066127d"
+    },
+    {
+      "legacy": "portal/marketJ00.js",
+      "source_sha256": "f5034e5bc49cd5978bc28012d64f571bb007e0fb3e8e0f41a947094a97025227",
+      "lua": "portal/marketJ00.lua",
+      "lua_sha256": "4883a0edf51b02c30277c7eec51c59b58a6775ce1122ea62375d3fe448edfb9c"
+    },
+    {
+      "legacy": "portal/mayong.js",
+      "source_sha256": "5799e014b186ad0ddac478ab0c95ca9570981e1c6ef0885f6a52fe9a5a8f9993",
+      "lua": "portal/mayong.lua",
+      "lua_sha256": "fffb9f07996ade29a016e125142ab83aba9de11748046297858433dadfd02c53"
+    },
+    {
+      "legacy": "portal/mc_out.js",
+      "source_sha256": "90ed4e91112095eceae8ae0745a8d3881affb7b0be672af738b180dbc560cbd7",
+      "lua": "portal/mc_out.lua",
+      "lua_sha256": "7f3c6d6935d341b565539bab9a23766b88eba4aae2ab6cc4f96b65835c295813"
+    },
+    {
+      "legacy": "portal/mcout.js",
+      "source_sha256": "90ed4e91112095eceae8ae0745a8d3881affb7b0be672af738b180dbc560cbd7",
+      "lua": "portal/mcout.lua",
+      "lua_sha256": "8009b300d896386ef29601b78afb727c7402978cae2d0388c2612aaebb3fcace"
+    },
+    {
+      "legacy": "portal/merTutorRoom.js",
+      "source_sha256": "d1851d1f0bc15052de21299f318955e9ccb52fb67c56ebd4d152b97c976056db",
+      "lua": "portal/merTutorRoom.lua",
+      "lua_sha256": "04fdfef5232e6131f5d57ba456a8a514684bfa3f2bbd912e3f0dff13bc79afd9"
+    },
+    {
+      "legacy": "portal/met_out.js",
+      "source_sha256": "90ed4e91112095eceae8ae0745a8d3881affb7b0be672af738b180dbc560cbd7",
+      "lua": "portal/met_out.lua",
+      "lua_sha256": "eb8867dda1098ea1964ea73ef7e725b6a9bfa6b9f3bba85338b769c30dac96ae"
+    },
+    {
+      "legacy": "portal/metro_Chat00.js",
+      "source_sha256": "f59b359ac9d0f2d5135d6e22aa3c4e595f7e61fc1f5708a77ede38cf5fcbad1c",
+      "lua": "portal/metro_Chat00.lua",
+      "lua_sha256": "945ae3d15b3d19de5eae276c33301ae099e98b862b166cbd727a45072af81eaf"
+    },
+    {
+      "legacy": "portal/metro_in00.js",
+      "source_sha256": "16ae9b701ba1be053959aabe5ce65f5fbda1b64dd98cba7b16a11c6244d5f706",
+      "lua": "portal/metro_in00.lua",
+      "lua_sha256": "177f48f2d269c14cdac40f7b2b72ac8a8b09faab5d9d7a98aec8ad6ffdeace35"
+    },
+    {
+      "legacy": "portal/minar_SG1.js",
+      "source_sha256": "01825c9367672d6b849d5eb97c9ce1b61f57435c7341ab3200fd52d44522c4c8",
+      "lua": "portal/minar_SG1.lua",
+      "lua_sha256": "c146a7dd009c0a7ba6bba5566b6de3e4e864333260ff7a11d149daaa0cb89504"
+    },
+    {
+      "legacy": "portal/minar_SG2.js",
+      "source_sha256": "d4f6a8f2d2c4cca76410641be0e1dcc2611fd952c1073357e4bc3c9678ae283a",
+      "lua": "portal/minar_SG2.lua",
+      "lua_sha256": "87e55291d763a3d7d025b00b9651d6bdbd7ced777fcee5264c217b531569f76a"
+    },
+    {
+      "legacy": "portal/minar_elli.js",
+      "source_sha256": "54bbd891dc9adc76d7bc73fb99fb8eda53213a87ab9cd130a9513948612218ce",
+      "lua": "portal/minar_elli.lua",
+      "lua_sha256": "986414968a66e7e50ffe59d8d88d90479c6402aabbfc1b0bcc912b9e9520e2a8"
+    },
+    {
+      "legacy": "portal/minar_job4.js",
+      "source_sha256": "770e1800587210d385803ab808a2631bb2bedbdedec3a9b44b868611fc493583",
+      "lua": "portal/minar_job4.lua",
+      "lua_sha256": "86113dd9566fe2117cf8106397a627446d897d2ac24c79efb346248d7b221376"
+    },
+    {
+      "legacy": "portal/moonrabbit_exit.js",
+      "source_sha256": "ffbd64b3a8db1507515eab2d895da7b1c3e8a81e01b755f761d7d0c24260b604",
+      "lua": "portal/moonrabbit_exit.lua",
+      "lua_sha256": "0c4f810fae3608f66cc66e21366783e6508f8c0483ccbc3a2245ed2743ea8e6a"
+    },
+    {
+      "legacy": "portal/move_RieRit.js",
+      "source_sha256": "cfe3f6118c77bd41cebdd9ab5c36dbf0faeb24158e4d7001b754f3a5370378e2",
+      "lua": "portal/move_RieRit.lua",
+      "lua_sha256": "9197fd8b81ec08e0809c24ff7f05246d7a65625a6c322b09e8002c9b3aa76235"
+    },
+    {
+      "legacy": "portal/move_RitRie.js",
+      "source_sha256": "cfe3f6118c77bd41cebdd9ab5c36dbf0faeb24158e4d7001b754f3a5370378e2",
+      "lua": "portal/move_RitRie.lua",
+      "lua_sha256": "223cdfbfc3aeb3af0496de4173c42ef26c9920170ee118c37a3263ed790455b1"
+    },
+    {
+      "legacy": "portal/move_elin.js",
+      "source_sha256": "5651d6929cc9ea902ce849960b787edb97fdf55410c2f5c3ca82c65dce039a59",
+      "lua": "portal/move_elin.lua",
+      "lua_sha256": "3970eecbac7ad9dbaa5075478875e5ffe4feec9b1e0b850d49b088c7a384d767"
+    },
+    {
+      "legacy": "portal/nets_in.js",
+      "source_sha256": "568a03a8d97bfeca5dc7667b9acc3d798272cb0432191833eefeb9101cbbd1a8",
+      "lua": "portal/nets_in.lua",
+      "lua_sha256": "dbbc8b2b6276ef850d45d82591277c5400bdcf3a2ee810aab35e8c86ae13646e"
+    },
+    {
+      "legacy": "portal/nets_out.js",
+      "source_sha256": "f61c51ab32d673d878047f13c945d7c3b4a3a9319c2eba1530d180a8b4ba0c64",
+      "lua": "portal/nets_out.lua",
+      "lua_sha256": "85c925ff8a451530e98e565f594090498594fb3d7251b409f5cb7c091ee6d6fe"
+    },
+    {
+      "legacy": "portal/ninja_Boss.js",
+      "source_sha256": "cff7a11009022746a3b66963b291c3d50b8f493e5c3d34c2b07b3e73d5c67c0e",
+      "lua": "portal/ninja_Boss.lua",
+      "lua_sha256": "003cd9640325245363cfbbe4dae4489b1b52a99c15d68b8627103be652e1d984"
+    },
+    {
+      "legacy": "portal/nooutShip.js",
+      "source_sha256": "98c52a4002c3f1c7c11899751ec9c856c557fa21b37847daf9a5110b698790c0",
+      "lua": "portal/nooutShip.lua",
+      "lua_sha256": "5e289af42549c82238fefb5c430270966cd593fa03bdedf648703fcb1f04d7e8"
+    },
+    {
+      "legacy": "portal/outArchterMap.js",
+      "source_sha256": "6126b625b768c4e820ab51ad212f317d1fcbd4ad281c49efecd51341d06601b0",
+      "lua": "portal/outArchterMap.lua",
+      "lua_sha256": "56b0df4129c1f76e54a490a66deeca46a4cf2a3ef7c9cc4d99eac6dc244cbef2"
+    },
+    {
+      "legacy": "portal/outChild.js",
+      "source_sha256": "874a8ac9f6157ece5c03aa6ab193ff41550c3cc7472208d2061f3dc5f57d70e1",
+      "lua": "portal/outChild.lua",
+      "lua_sha256": "3324c88e187147b5eba101062435c8caf2d08a779d9dd4362f9997c464a2ce71"
+    },
+    {
+      "legacy": "portal/outDarkEreb.js",
+      "source_sha256": "ba0243787f64948be4fa601bc2a8fc4be64e62934b067588018b3d01345f8cce",
+      "lua": "portal/outDarkEreb.lua",
+      "lua_sha256": "bf6e779056346a35aef6039ddb73a51d0aee7049408ea3cab8668289662e24e3"
+    },
+    {
+      "legacy": "portal/outEurel.js",
+      "source_sha256": "3a8d7bf7868ab16be03e53276a379e49a6ac5dd4519c40fe721249094e3f9624",
+      "lua": "portal/outEurel.lua",
+      "lua_sha256": "40025dccbe9c3a9240a0f11b7db0ad34ac2b75377b08b86cc39689647e94fd97"
+    },
+    {
+      "legacy": "portal/outFishing.js",
+      "source_sha256": "14358f1f17933ba9d8dae212929b2dd5e714945031bda5e1e0fe88f9b3517c58",
+      "lua": "portal/outFishing.lua",
+      "lua_sha256": "2e78075a6b7da08bf82f8e88b73926949b86bc0abf06a8058ee3e366d0c942cb"
+    },
+    {
+      "legacy": "portal/out_3rdTrial.js",
+      "source_sha256": "c0a0989cb76b98602561d070b85cf71c361fa21f93d8fc329f88aeb28ab88637",
+      "lua": "portal/out_3rdTrial.lua",
+      "lua_sha256": "d2a4b5cc8509c34ff7e00bc443cbbfc1d9eef3c0cc190d2e713d1250080c516d"
+    },
+    {
+      "legacy": "portal/out_Abby.js",
+      "source_sha256": "8c3afcdbfca751319a46222e06cf53d455f85bbb169b48449ca4a1e178d32c05",
+      "lua": "portal/out_Abby.lua",
+      "lua_sha256": "34a579dbbda2331fc00602efe1746342208026a5a2aef069fd0412d830decb24"
+    },
+    {
+      "legacy": "portal/out_Belem.js",
+      "source_sha256": "6f61205ae70246c7f1d92b5397bca93eb3cf842b5dc335fa8f30f010949c02bc",
+      "lua": "portal/out_Belem.lua",
+      "lua_sha256": "8d1b08193f51a24ffc79ec740c3a403b03bdc63e9689635e4efbcfca29be15a4"
+    },
+    {
+      "legacy": "portal/out_aswan.js",
+      "source_sha256": "38d1ef0f4d7f03ba440c0cc8a6f34ae70fc03b9a2c1c3c1f9dbff4cc7f670a6c",
+      "lua": "portal/out_aswan.lua",
+      "lua_sha256": "08cee5dcb88f58142e29eefcafd79cfb577e93f32d2429a2af71f754145754f8"
+    },
+    {
+      "legacy": "portal/out_banban.js",
+      "source_sha256": "63cde56425f8cdb1bd84d9ae3cdd7eb7543db296f819a3230bbe6a5fa04b32f1",
+      "lua": "portal/out_banban.lua",
+      "lua_sha256": "6728b31605de99c7482157510a6c67b04d0d2648f6add2fce57361bab05acbe6"
+    },
+    {
+      "legacy": "portal/out_cygnusAK.js",
+      "source_sha256": "6b692f21da38f0bcc6585b685b6141cf19b42ba83b4d31e4fc7bbec560f0d6bc",
+      "lua": "portal/out_cygnusAK.lua",
+      "lua_sha256": "06b06ac3f7e545e963c55c9e62f5e098440e088b5687e8399e02e50d71f219b9"
+    },
+    {
+      "legacy": "portal/out_hillah.js",
+      "source_sha256": "94c92e09ff17b2dd9d3076bab74f6315a2c47333cbb070b50bc26d8fb3bd865f",
+      "lua": "portal/out_hillah.lua",
+      "lua_sha256": "15db2d0eeae7b9b91ecd3218ad6505f62afb67dc0c1d499215b9bfcf971eedf7"
+    },
+    {
+      "legacy": "portal/out_profession.js",
+      "source_sha256": "ee7246749fc29b256c0ef9388121dc44a72afe9d2ddd7496c6b09a7e3b7c8b98",
+      "lua": "portal/out_profession.lua",
+      "lua_sha256": "4e8942db0820f48d59a04ff09d7f84bf4986034f3e54ac6ded621ad26d2b6877"
+    },
+    {
+      "legacy": "portal/outrootaBoss.js",
+      "source_sha256": "6b02af6155d9a1d2573a6a83909797c031cfa43459e444e58e753e4aea4980c7",
+      "lua": "portal/outrootaBoss.lua",
+      "lua_sha256": "137daa556932d38478e23b9fb391a0579c71ab47c2074747240489b8bb948a07"
+    },
+    {
+      "legacy": "portal/pField_out.js",
+      "source_sha256": "b0ff87b9d5bc40cd2d70cdd0f793ec05c5365de1b57509777ff0836747a40c84",
+      "lua": "portal/pField_out.lua",
+      "lua_sha256": "ef5621149aae3e8c76ab734f19f463dbfabe419fa948f3ab643eaf93528d7070"
+    },
+    {
+      "legacy": "portal/pachinkoEnter.js",
+      "source_sha256": "cc3ef66535504aaddd40a2a2f4be0f2cae93aaaf1a59acbf1286d6f3b9d64d74",
+      "lua": "portal/pachinkoEnter.lua",
+      "lua_sha256": "1d2d5121e57ecc58eab35b7b3f17d0d8ab1e8f18025545cfd744643f799f165d"
+    },
+    {
+      "legacy": "portal/party2_exit.js",
+      "source_sha256": "bed813ba6d1f3798b73b6f74e098943b96df4837d69e95a76c31d3693aa6bdfc",
+      "lua": "portal/party2_exit.lua",
+      "lua_sha256": "f2f69f157312285cf0043f8f2c811d95ae75eb0d33c15d6cd4bd958cd8d37eeb"
+    },
+    {
+      "legacy": "portal/party3_jailin.js",
+      "source_sha256": "3a136fa5e12c9b99bd7eac1be5debabdfebaa57d8d7ba1027281fc3557dfa237",
+      "lua": "portal/party3_jailin.lua",
+      "lua_sha256": "48fb1d9336e7d6d7b228c908a6e0a3225f0d65de10eed3b03b3aad708584462c"
+    },
+    {
+      "legacy": "portal/party3_r4pt.js",
+      "source_sha256": "850250e5d224e72ec32a7403e5352e8bb352e9f1a034fd0833a83cebcf52e9fc",
+      "lua": "portal/party3_r4pt.lua",
+      "lua_sha256": "87d26533ff906e21241c5e6485d5f41c2e39450c0e37578fe9996c72e123a895"
+    },
+    {
+      "legacy": "portal/party3_r4pt1.js",
+      "source_sha256": "fa7484b5a2ff5f8ef7d6ef8dcba52a85254c3ca7c76141080971fb70074ac12d",
+      "lua": "portal/party3_r4pt1.lua",
+      "lua_sha256": "3217284f11e0f6ba5b7fa586bdd8b7b747192839b4fae0a60bd8658926d22d6a"
+    },
+    {
+      "legacy": "portal/party_exit.js",
+      "source_sha256": "90ed4e91112095eceae8ae0745a8d3881affb7b0be672af738b180dbc560cbd7",
+      "lua": "portal/party_exit.lua",
+      "lua_sha256": "7943377a2885c442ceaae70ebfd8242f540cb6711208769e3d87c86ef906ca1e"
+    },
+    {
+      "legacy": "portal/phasePT_00.js",
+      "source_sha256": "7b66355176082e8fac4c81d50815b1c412630db570eec927eff9834587c7e7a4",
+      "lua": "portal/phasePT_00.lua",
+      "lua_sha256": "39f5b3476a91501cc465f623836ef31eaac482be927e5b6da6b64e9f5101d67b"
+    },
+    {
+      "legacy": "portal/piramid_Chat00.js",
+      "source_sha256": "0a8ce13f94b345349984352484869e6f9892a4a595f953d567f83a81c3203149",
+      "lua": "portal/piramid_Chat00.lua",
+      "lua_sha256": "8d1c363727c5ac978558fddbd167678d6a36b46d4457641e157aaab868bffd75"
+    },
+    {
+      "legacy": "portal/piramid_in00.js",
+      "source_sha256": "87702cdf643337ad18c51955f5174581b7ab31a067d41c2f4e40b529cbda26b5",
+      "lua": "portal/piramid_in00.lua",
+      "lua_sha256": "f686132481a07ea0e2a92a43f4b0f258ef60c0708e97e4c71270fa172eecaad9"
+    },
+    {
+      "legacy": "portal/portalNPC.js",
+      "source_sha256": "fd8d139fda5fb914692cf46ed0124532ab2a29cfb926276620584bf74d17d32d",
+      "lua": "portal/portalNPC.lua",
+      "lua_sha256": "7d55657f79010d1673427adfaa2a9ebea545871938cc4d7af8ff1393cff16d7a"
+    },
+    {
+      "legacy": "portal/portalNPC1.js",
+      "source_sha256": "6b692f21da38f0bcc6585b685b6141cf19b42ba83b4d31e4fc7bbec560f0d6bc",
+      "lua": "portal/portalNPC1.lua",
+      "lua_sha256": "62e996df022cc21d7883de2fb01a059d6e1ebc5e356842b64a6505466b0653fd"
+    },
+    {
+      "legacy": "portal/prisonBreak_exit.js",
+      "source_sha256": "93654b460020b5ac4248548f38e28d25f52f77740ae0efe0f5dcd191b6f39605",
+      "lua": "portal/prisonBreak_exit.lua",
+      "lua_sha256": "2d5c567cadc3dcec76ba295f3eac90a5374d868ba3092d06c7de533052efa37b"
+    },
+    {
+      "legacy": "portal/prison_1stage.js",
+      "source_sha256": "4f70a052eb0a2e78cb83b05a1f0a3d4c0efdfd3568a654351e0d2b58adff05bf",
+      "lua": "portal/prison_1stage.lua",
+      "lua_sha256": "f35dbfbd9992ebf837c1e6c967fa1761dcbb8e49e2fb1148991954143c9c447a"
+    },
+    {
+      "legacy": "portal/prison_5stage.js",
+      "source_sha256": "4f70a052eb0a2e78cb83b05a1f0a3d4c0efdfd3568a654351e0d2b58adff05bf",
+      "lua": "portal/prison_5stage.lua",
+      "lua_sha256": "ca6c797eb5f1a82b9626ec14bd850cc6d7afafc1278874ae3e8bf27f0fc43668"
+    },
+    {
+      "legacy": "portal/profession00.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession00.lua",
+      "lua_sha256": "5ffd748f88ae941da02cdf6ab4f472d3f20c5d7b21c9a584cc60f0c4addf320b"
+    },
+    {
+      "legacy": "portal/profession01.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession01.lua",
+      "lua_sha256": "ed2a86c71872b5cac42810534b240b343045f7bb7a3fd321817edd937bea01cb"
+    },
+    {
+      "legacy": "portal/profession02.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession02.lua",
+      "lua_sha256": "de7be204a69c242ed69f92160ccd68a2e3c5f5af621e5f2b6faeca0a9265e8d6"
+    },
+    {
+      "legacy": "portal/profession03.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession03.lua",
+      "lua_sha256": "e0ed587f48e2b4dfb03af04491d825e0cee31dcd335ecbe6aa8f6e829d9250f1"
+    },
+    {
+      "legacy": "portal/profession04.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession04.lua",
+      "lua_sha256": "5ce3dedd64fd77d9e7c8fce24a23e1ef9c71f84fec8fdc1e625fa92cffa5c18d"
+    },
+    {
+      "legacy": "portal/profession05.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession05.lua",
+      "lua_sha256": "43ccf7fedf70d4fd57ccb8079a3f5bfd6a1a0e3eeb11625abb846526587ba314"
+    },
+    {
+      "legacy": "portal/profession06.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession06.lua",
+      "lua_sha256": "6fa5c834115338dd8008c73a2bb04272f242a3229a934c9e4f0d1b24fa33604c"
+    },
+    {
+      "legacy": "portal/profession07.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession07.lua",
+      "lua_sha256": "d15244be4645797bce71cb7de8e2d32421c66aa2b082392f01647c4ef1c93b56"
+    },
+    {
+      "legacy": "portal/profession08.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession08.lua",
+      "lua_sha256": "350bfd1cc3c69a160b9942f46dbe1ffb543367a66448a1e61d016112cc4001c1"
+    },
+    {
+      "legacy": "portal/profession09.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession09.lua",
+      "lua_sha256": "4f3bf0695b5a18fa4c33bca8ba33bd205b4231fc304d87aea6b8b06a8124ece7"
+    },
+    {
+      "legacy": "portal/profession10.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession10.lua",
+      "lua_sha256": "324c70d6483027862c7178ed8b0460de141a8a28f65d09d4f79894964a6ee7e2"
+    },
+    {
+      "legacy": "portal/profession11.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession11.lua",
+      "lua_sha256": "21151730d9b73762658506340a28da1ea950c1f7cfe36cfe9fe8d4a3fcd51c82"
+    },
+    {
+      "legacy": "portal/profession12.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession12.lua",
+      "lua_sha256": "e8d164c57fefdba32ed178dcadc5b7316dd4170b57112b1f2dafe11abffa04f4"
+    },
+    {
+      "legacy": "portal/profession13.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession13.lua",
+      "lua_sha256": "bd7d5828dcf1b19f7782e238d4314b8439de67241902c7f8fdd738c5c76c141b"
+    },
+    {
+      "legacy": "portal/profession14.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession14.lua",
+      "lua_sha256": "c377ea2145f545a1f2778471ebe6ab0d389e29a99aeb990334c66b752bf771b9"
+    },
+    {
+      "legacy": "portal/profession15.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession15.lua",
+      "lua_sha256": "b48428ab1dd15e9bc136488fa5bb082473711d3505f41fa342b48c474abe4320"
+    },
+    {
+      "legacy": "portal/profession16.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession16.lua",
+      "lua_sha256": "c54798b9705ec75fb41e4714c2881fd1afea13dd9efd18f31e7da38b65b60701"
+    },
+    {
+      "legacy": "portal/profession17.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession17.lua",
+      "lua_sha256": "3ad4244afc39be4bf1a499d0a6f2357f747f038cbb09bf73ca91e646899e0c8c"
+    },
+    {
+      "legacy": "portal/profession18.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession18.lua",
+      "lua_sha256": "e2ba9f67eeefcebe18c80786fbcb309a25afafd44764ffee76ef37fdcc93ab64"
+    },
+    {
+      "legacy": "portal/profession19.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession19.lua",
+      "lua_sha256": "4b704aa58b31e6e91f39382408d00833c9c0ad8b8e5e8176ea0b8d1b4a915fb6"
+    },
+    {
+      "legacy": "portal/profession20.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession20.lua",
+      "lua_sha256": "f0685b55e957c2e15524678a6ea7739b84b3cfb38263bc788b43274b231a7150"
+    },
+    {
+      "legacy": "portal/profession21.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession21.lua",
+      "lua_sha256": "415df77ad7ecc0cfce20a992033f0e72a0abbb1a2f26e44f5e45a2d890bd0e58"
+    },
+    {
+      "legacy": "portal/profession22.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession22.lua",
+      "lua_sha256": "b1f761ad32e6569348029860d4c85d64b5e77e5ca4f29c61841b81575eb9af15"
+    },
+    {
+      "legacy": "portal/profession23.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession23.lua",
+      "lua_sha256": "bfb9966476744fd0b79423372469933f23caf75f31f6072eb0e782c52bfb476e"
+    },
+    {
+      "legacy": "portal/profession24.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession24.lua",
+      "lua_sha256": "26e56752750d2ad778a316df9242dacc3b87bccc538b83eea75eb36b93ef6b52"
+    },
+    {
+      "legacy": "portal/profession25.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession25.lua",
+      "lua_sha256": "97cdb1ed995dc48ac942968b5f3a6254441ac03572fd9677721ec632fe3b6a35"
+    },
+    {
+      "legacy": "portal/profession26.js",
+      "source_sha256": "ecfc433df4f47433d9874226657ea4fb8b78fa95553516d87fc61d92a13aadf3",
+      "lua": "portal/profession26.lua",
+      "lua_sha256": "6e2c7a9bf98de8da00440c134a541b6150a9d14b436892969582bbb24cbe2bff"
+    },
+    {
+      "legacy": "portal/q2073.js",
+      "source_sha256": "d28e59108155d56abada6f69a488ac7eca4892bdaea8103be991de764407bf4b",
+      "lua": "portal/q2073.lua",
+      "lua_sha256": "50c9cc2314812e94cdbe79a70ad66928840476dedcaf652b1336fb69221151e9"
+    },
+    {
+      "legacy": "portal/q3366in.js",
+      "source_sha256": "a4d4298932e947191339f7109e13a6923d83d6217eef0e999a5d643d52bf0703",
+      "lua": "portal/q3366in.lua",
+      "lua_sha256": "c46f8b25a36fa7234ff2fd28376541942663e1c7a9769a1f3d2f421177b60a61"
+    },
+    {
+      "legacy": "portal/q3367in.js",
+      "source_sha256": "f35b503c7f2ad9e773b28c8dd9dccad41562f03947f4bf8e26b1e6718102652f",
+      "lua": "portal/q3367in.lua",
+      "lua_sha256": "3ea3ca6d8247d0702751a999d3bf80ff35faf1a0ab0bf2a8e283244c27285af7"
+    },
+    {
+      "legacy": "portal/q3368in.js",
+      "source_sha256": "17a0c58ae3ff88fe9852f63a5c5e64ec3c7687d445c8809558f48bd5643fc346",
+      "lua": "portal/q3368in.lua",
+      "lua_sha256": "eddc3e84d952ea7ee61c97156a5207a1236a409775cbce3187a20e29167210db"
+    },
+    {
+      "legacy": "portal/raidout.js",
+      "source_sha256": "168c59ebba5097403fa91ff474046ca3e38f2dd35205695b14ec0fa89b698425",
+      "lua": "portal/raidout.lua",
+      "lua_sha256": "4c749b02ea244b4ac87aeffe17b894a8a8719b21270a32d346a4b672e0f7cf7b"
+    },
+    {
+      "legacy": "portal/rankRoom.js",
+      "source_sha256": "e7f158ef65b637aa61240b324ac71ba66c9ecf680c45641685677a6778fdb137",
+      "lua": "portal/rankRoom.lua",
+      "lua_sha256": "0ac77ac6dc538109a420349501997e06c58783b36cbf47ec5ad5cf115aeb2f62"
+    },
+    {
+      "legacy": "portal/reundodraco.js",
+      "source_sha256": "cfe3f6118c77bd41cebdd9ab5c36dbf0faeb24158e4d7001b754f3a5370378e2",
+      "lua": "portal/reundodraco.lua",
+      "lua_sha256": "96771140c918123634b4d1ace843c159a0174962ff3dd0e9a6f79f717c27dc1c"
+    },
+    {
+      "legacy": "portal/rienCaveEnter.js",
+      "source_sha256": "14869d07577932222bfc831e4294571e4f5274134565d5d8f334577330feeec4",
+      "lua": "portal/rienCaveEnter.lua",
+      "lua_sha256": "2c2e8802950bbdf8a8b0f08f0bb9cd4a802632e6d16322100a954d6797e79d5c"
+    },
+    {
+      "legacy": "portal/rienTutor1.js",
+      "source_sha256": "cf4abfe0f19c32c19a7e84f9473f83aa2f419c077c7440665ac8538235b26e23",
+      "lua": "portal/rienTutor1.lua",
+      "lua_sha256": "5b3563d8c470630101a477d13640cc6b9977fbd0e8a47edc459e4891d882ed99"
+    },
+    {
+      "legacy": "portal/rienTutor2.js",
+      "source_sha256": "78e3a56d58ec5e540b4d0e6763f749ec0962f8aeb4fa30965edf0f86c60b78d4",
+      "lua": "portal/rienTutor2.lua",
+      "lua_sha256": "b37203998a3fbab1d5908692c5966628d33b2fda3b4cd337d7fe719a7eeb35e3"
+    },
+    {
+      "legacy": "portal/rienTutor3.js",
+      "source_sha256": "3e0064614f85084ef93568daf75e191af0de1338f62943699a5de4d54bf66bc8",
+      "lua": "portal/rienTutor3.lua",
+      "lua_sha256": "4837fbfc7111812575e1a3a0558a12cbd1aab5a89fd857d57e3bf1f263e1e75e"
+    },
+    {
+      "legacy": "portal/rienTutor4.js",
+      "source_sha256": "1c8ae6595fddb7402589ea86c1a4883028b11a70e846d933ccd081f1b927ed33",
+      "lua": "portal/rienTutor4.lua",
+      "lua_sha256": "d64b2cd84d7a72d6c61ba8c32633b7dd51837a7432ecfccc6530edbaf664cac2"
+    },
+    {
+      "legacy": "portal/rienTutor5.js",
+      "source_sha256": "15e3a4fcecfa8d633d3feba729b06151cfdb80a6e724f1477c23ee822467497e",
+      "lua": "portal/rienTutor5.lua",
+      "lua_sha256": "e6e11e9b207a2c9c3f6f6876124020819c2a3796de9cd6968f356ca0704b6c73"
+    },
+    {
+      "legacy": "portal/rienTutor7.js",
+      "source_sha256": "421fad92750dc3fb1b9e6c789810309ec02570408e09ea2ae02fc99e8bff037a",
+      "lua": "portal/rienTutor7.lua",
+      "lua_sha256": "b10aeb257094a4c97e365c86f96760f089a0088ddc493c913f9ff526c4dc62e6"
+    },
+    {
+      "legacy": "portal/rienTutor8.js",
+      "source_sha256": "c94c5e96252b4db162e48ce108b20b416f37d49b61b6b10176e76cf7e7e0d7d2",
+      "lua": "portal/rienTutor8.lua",
+      "lua_sha256": "9c0e5fecbde08b066a48fa0ca4db5aca3b2e8332e1cd88f3135fc0273208fa30"
+    },
+    {
+      "legacy": "portal/rnj1_out.js",
+      "source_sha256": "ff79adfffdde455e48d38f54040a4197172060578996196b7748e706ed732755",
+      "lua": "portal/rnj1_out.lua",
+      "lua_sha256": "aac2efa82e52827604b25c7628cbe30b4f5fc170f8db847e99a63febcb8493a6"
+    },
+    {
+      "legacy": "portal/rnj_201_0.js",
+      "source_sha256": "3043ab28c690336d33a146d3a1e9ab8cc588610b70ed9a0f7ac6917e9249fb1d",
+      "lua": "portal/rnj_201_0.lua",
+      "lua_sha256": "f2287db74796625c1a633487e1fae2419d89b27c0a18af884fe0b0db8810169c"
+    },
+    {
+      "legacy": "portal/rnj_202.js",
+      "source_sha256": "d7a27f36ebc91f982a8309c3d867574481dab004ff74523ee996d4a837cebee9",
+      "lua": "portal/rnj_202.lua",
+      "lua_sha256": "c56b12d373e6f85c7462ac5152f49113bca5fe8233e48dd2a499db40308334b3"
+    },
+    {
+      "legacy": "portal/rnj_clearQ.js",
+      "source_sha256": "cb0e710c4d9f2881b206c59ebc1e2e46ec081ba7187dc64ad1d23c8a5537ced4",
+      "lua": "portal/rnj_clearQ.lua",
+      "lua_sha256": "a6a2b2bebac7b361e90179d353fbe1944a1e22a7b1dd2d3d740147fba99c675e"
+    },
+    {
+      "legacy": "portal/rnj_exit.js",
+      "source_sha256": "648bb772c616b2459571a8470877641d40564093e654542613085085e4387bba",
+      "lua": "portal/rnj_exit.lua",
+      "lua_sha256": "0ea890ff17eb259afd9beeb039b1e86962edc277c82d21d9019df12dde4abc1a"
+    },
+    {
+      "legacy": "portal/rootafirstDoor.js",
+      "source_sha256": "8c3afcdbfca751319a46222e06cf53d455f85bbb169b48449ca4a1e178d32c05",
+      "lua": "portal/rootafirstDoor.lua",
+      "lua_sha256": "33dd28302f812796dc6574050398d0c61367e51161fa6b55fa72c39f69abbce1"
+    },
+    {
+      "legacy": "portal/rootaforthDoor.js",
+      "source_sha256": "6f61205ae70246c7f1d92b5397bca93eb3cf842b5dc335fa8f30f010949c02bc",
+      "lua": "portal/rootaforthDoor.lua",
+      "lua_sha256": "d74de6f90426fa2a25ebf64d6c046485b1af3779e20c2d68101f8525290d3cf9"
+    },
+    {
+      "legacy": "portal/rootasecondDoor.js",
+      "source_sha256": "63cde56425f8cdb1bd84d9ae3cdd7eb7543db296f819a3230bbe6a5fa04b32f1",
+      "lua": "portal/rootasecondDoor.lua",
+      "lua_sha256": "5b6c5e9dc3f2f66b267c2af9262f156f300348c035e77d1a8b2b43e2d49fc3b3"
+    },
+    {
+      "legacy": "portal/rootathirdDoor.js",
+      "source_sha256": "6b02af6155d9a1d2573a6a83909797c031cfa43459e444e58e753e4aea4980c7",
+      "lua": "portal/rootathirdDoor.lua",
+      "lua_sha256": "b629d97903986f1a11b05bd797e26df410ed0a3c2e59f95a663c767559526641"
+    },
+    {
+      "legacy": "portal/s4firehawk.js",
+      "source_sha256": "432902c4cc4723a16c20b22ce3939ade806f5d8f5dfac4c2c56f118ce74dd470",
+      "lua": "portal/s4firehawk.lua",
+      "lua_sha256": "a9141b830c56052095026bd595d65aaea4fc666c4d8333173f42e239ff85c607"
+    },
+    {
+      "legacy": "portal/s4hitman.js",
+      "source_sha256": "ef9d9d836d9fd82567be69d6cd1a6e91f59170f83cf6f79abe56a9791c0d2b26",
+      "lua": "portal/s4hitman.lua",
+      "lua_sha256": "9ab8f6a493c365d5ee637addceb5b8bd9bf04ec7dff2ee419838bbbd5f1aa538"
+    },
+    {
+      "legacy": "portal/s4iceeagle.js",
+      "source_sha256": "7721912fa2df7cc472bd207395e910269b88c594dec5a278fffeff98a1af1b90",
+      "lua": "portal/s4iceeagle.lua",
+      "lua_sha256": "a96c21d3ff4b0e9615b77896f7c6323a871f2739534d49714f25d94a11d34525"
+    },
+    {
+      "legacy": "portal/s4resur_out.js",
+      "source_sha256": "3aa62d4882ff444d025f48783ae780ecb23213acaeffe9aceb741e0269096120",
+      "lua": "portal/s4resur_out.lua",
+      "lua_sha256": "9d4164b5471b36d6a8497ce8d4558122dc0c3dcf9a3ff533a2cc1660c673420e"
+    },
+    {
+      "legacy": "portal/s4tornado_enter.js",
+      "source_sha256": "1c471e9add37220f342063affd8b70a987479cbf82fc0163c4e36b890fc0faa4",
+      "lua": "portal/s4tornado_enter.lua",
+      "lua_sha256": "711fbb8a5367518467be5118aad15410556c3dab9397927f5ba77a9bd6a0c1da"
+    },
+    {
+      "legacy": "portal/secretDoor.js",
+      "source_sha256": "79bd0eb86d1eae1e2499e33a8b4e9ea770e727329f5264d47bf62ed1d0ec29f2",
+      "lua": "portal/secretDoor.lua",
+      "lua_sha256": "4293d4e279ea0f3178293e9d709501d9dec6378d65a6a8dfe5d820b6e0de56cd"
+    },
+    {
+      "legacy": "portal/secretElevator.js",
+      "source_sha256": "a03e5a72e881a0d2d0f5345e6cc2b0fccc6762c61cb3c42ed10541d5aff554a3",
+      "lua": "portal/secretElevator.lua",
+      "lua_sha256": "d43b1fcf31298909bedfa819f35ae8ff27150e66cb243f5702252a3b55e56360"
+    },
+    {
+      "legacy": "portal/shammos_Gate.js",
+      "source_sha256": "424b70eaa790c0125eee60515ea20b00c1c2143803a150a121a24adda214db7d",
+      "lua": "portal/shammos_Gate.lua",
+      "lua_sha256": "0a25b7230c18a1b91e92c0e233ae6bf840190a86e6390581163ef3f6c90d3261"
+    },
+    {
+      "legacy": "portal/shammos_Govalley.js",
+      "source_sha256": "508c4f50bde191ff7fc2dd53c2556b15bd41a05c5ee4a5ec23f4cb6ebc0bd5e4",
+      "lua": "portal/shammos_Govalley.lua",
+      "lua_sha256": "f861a742bac91c770a4fabde8f3255c386df30077ba331988a1f6de9a904afd2"
+    },
+    {
+      "legacy": "portal/skyrom.js",
+      "source_sha256": "5c1394efed9a5744466e689afdd9f78d48250ea8478334615d5290cae137d721",
+      "lua": "portal/skyrom.lua",
+      "lua_sha256": "788b75dafcb0822cd21e49adc45d5625bad1440313a99d3b233bb1222deface5"
+    },
+    {
+      "legacy": "portal/station_in.js",
+      "source_sha256": "d194c3332b979c48221e4ac8396e7fdc005fdd70669398e4695706e638b691dd",
+      "lua": "portal/station_in.lua",
+      "lua_sha256": "bd408960fc1a446b73666c6554402a4ffdae3a48c3ac81d670af7309109e523a"
+    },
+    {
+      "legacy": "portal/stopIceWall.js",
+      "source_sha256": "6d559248f21e715f1b21ef5623e56168b6a4a35a18189ed63835988b3459f093",
+      "lua": "portal/stopIceWall.lua",
+      "lua_sha256": "3464329daf30a20a55281731d5fc2506cac9151e28e34f2da619881645bc0836"
+    },
+    {
+      "legacy": "portal/stopIceWall2.js",
+      "source_sha256": "6d559248f21e715f1b21ef5623e56168b6a4a35a18189ed63835988b3459f093",
+      "lua": "portal/stopIceWall2.lua",
+      "lua_sha256": "676454ae1860aba3083d042d8fa5afe2ebae3e1f7ca1fc4504c9535e182fe86a"
+    },
+    {
+      "legacy": "portal/subway_in2.js",
+      "source_sha256": "0644059717a9792fecf687c45a69f47a40ec789abf73d8ab80536e48e761e8b3",
+      "lua": "portal/subway_in2.lua",
+      "lua_sha256": "76b4fd5765b9bde4621569b55597850b13ca7ba122d5e245644ba78170b9bc6e"
+    },
+    {
+      "legacy": "portal/summonFishingNPC.js",
+      "source_sha256": "14358f1f17933ba9d8dae212929b2dd5e714945031bda5e1e0fe88f9b3517c58",
+      "lua": "portal/summonFishingNPC.lua",
+      "lua_sha256": "a3387bdf2e90d161db76f004d50ce6ba1b6bf707e1d635b1276fe93fc614bde4"
+    },
+    {
+      "legacy": "portal/tH_Out.js",
+      "source_sha256": "cb6bc523c67f2a874b7f800ad1c7567a8bf924092a3f969ae4f8e7f364b176e8",
+      "lua": "portal/tH_Out.lua",
+      "lua_sha256": "82f8d8e2a46403eeda48952a7d8fddc65e31c3a341b6daf1293ac7187b826efd"
+    },
+    {
+      "legacy": "portal/thief_in1.js",
+      "source_sha256": "8c623a2be514b710f3a651863bae0bd2eab3b7bb84c03ded5b8553728703d5f5",
+      "lua": "portal/thief_in1.lua",
+      "lua_sha256": "03f6b0d755fe12ee8239071bc094f5d7ac9dd1bf3915ec890c6f80997eacf159"
+    },
+    {
+      "legacy": "portal/timeCrack.js",
+      "source_sha256": "f327223721c12f05e63bd0cade2a193922a34d3d7f88de6549c17449efd10ccf",
+      "lua": "portal/timeCrack.lua",
+      "lua_sha256": "e2d880c699a913a4c3f534824581f22b950e2af2caaa9793581308fdd7768f3c"
+    },
+    {
+      "legacy": "portal/timeQuest.js",
+      "source_sha256": "af303af9cd7d86bc994ff006245d685defe9e4add3f28836d498e699dae31d85",
+      "lua": "portal/timeQuest.lua",
+      "lua_sha256": "85a02b4111906203188ecf300c00ee8538a194c9453beb3ff19691f12bc70cec"
+    },
+    {
+      "legacy": "portal/tourgl_exit.js",
+      "source_sha256": "90ed4e91112095eceae8ae0745a8d3881affb7b0be672af738b180dbc560cbd7",
+      "lua": "portal/tourgl_exit.lua",
+      "lua_sha256": "a89786eea82f6a8a7dd75b45ab856a28ba2876ed7ae0a33fbfd86d17f0768bd2"
+    },
+    {
+      "legacy": "portal/tourjp_exit.js",
+      "source_sha256": "ffbd64b3a8db1507515eab2d895da7b1c3e8a81e01b755f761d7d0c24260b604",
+      "lua": "portal/tourjp_exit.lua",
+      "lua_sha256": "5ad64048799ecdc5513e2913446f22745e18d06e5b243a75b0a1c246c8a93849"
+    },
+    {
+      "legacy": "portal/tristanEnter.js",
+      "source_sha256": "0b43d98a518074aab8f2c6ffe14d40505e0b4e76bcec11d9f60277f02718021e",
+      "lua": "portal/tristanEnter.lua",
+      "lua_sha256": "cf43a01f8fd56aa1553471c4ffba9cce3b11c0f265d691b08e032059503f42df"
+    },
+    {
+      "legacy": "portal/tutoChatNPC.js",
+      "source_sha256": "3cbc81a0602fb509e6c9755513c709e750a5f35a7a1abbda404479cc63bb7801",
+      "lua": "portal/tutoChatNPC.lua",
+      "lua_sha256": "06ac659e317075b2cd135369152cac0dbff4add8dc36bc80b1bdb482d4beb3b8"
+    },
+    {
+      "legacy": "portal/tutorMinimap.js",
+      "source_sha256": "b1d7816fb7934e4cf438659c8039a4cafccbd902cdb87e62f940cbb646057963",
+      "lua": "portal/tutorMinimap.lua",
+      "lua_sha256": "a88d35697d191f6909cb397dcadf991fc84d2a6a04c237193e1c1f526f9e7516"
+    },
+    {
+      "legacy": "portal/tutorWorldmap.js",
+      "source_sha256": "dd64e959382f1e7f287f393a2fdc6dbd41ec966b30869ca2b756bb748c8b614e",
+      "lua": "portal/tutorWorldmap.lua",
+      "lua_sha256": "c6851d95c0622616affe6b291ad642ea3d2dfe5496ba80dc40843bcebbc463b1"
+    },
+    {
+      "legacy": "portal/tutorialNPC.js",
+      "source_sha256": "c6256e27cdc67a7e99a931442f196679c28cf136034b17024affc4f29b12f77f",
+      "lua": "portal/tutorialNPC.lua",
+      "lua_sha256": "72683177027148b9854399e13ab6d6ae7382c5500961805059d9cee897ee5aa9"
+    },
+    {
+      "legacy": "portal/tutorquest.js",
+      "source_sha256": "a73ee7da99d4a90d9b25e0d0b73a54ecf5d92aa9d537e2ac7659164d5092fbca",
+      "lua": "portal/tutorquest.lua",
+      "lua_sha256": "5760083a7f89907e994a3123c49e26c98e64c6bc2d9a54248a0a78d327af6b4e"
+    },
+    {
+      "legacy": "portal/unityPortal2.js",
+      "source_sha256": "c4755543f60c1ba3e7fe44ec9a99c4cd21a8f68adf9aa4855ebdb0a679c7d648",
+      "lua": "portal/unityPortal2.lua",
+      "lua_sha256": "6a6851925bdefd06ebe8d0f861515dae19db508ca78834e6a35a3e8f6f087fa5"
+    }
+  ],
+  "pending": [
+    {
+      "legacy": "portal/1032009.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/1stCheck.js",
+      "reason": "pi.getPlayer().getKeyValue is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/2012002.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2012022.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2012024.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2040000.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2041001.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2060009.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2154015.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/2ndTrialEnd.js",
+      "reason": "pi.getPlayer().setKeyValue is not supported (line 13)"
+    },
+    {
+      "legacy": "portal/4thJobOut.js",
+      "reason": "pi.openNpc with 2 arguments (line 11)"
+    },
+    {
+      "legacy": "portal/5th_cakeGL1.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/5th_cakeGL2.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/5th_cakeGL3.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/Aswan_final.js",
+      "reason": "pi.getPlayer().gainExp is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/DragonEggNotice.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/EBoat1.js",
+      "reason": "call .getProperty is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/EBoat2.js",
+      "reason": "call .getProperty is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/EvilSpirit00.js",
+      "reason": "call .getChannel is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/GS_revive.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/JailMap.js",
+      "reason": "call .changeMap is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/LudiElevator.js",
+      "reason": "no enter function (line ?)"
+    },
+    {
+      "legacy": "portal/LudiElevator_in.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/MCrevive1.js",
+      "reason": "call .getTeam is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/MCrevive2.js",
+      "reason": "call .getTeam is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/MCrevive3.js",
+      "reason": "call .getTeam is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/MCrevive4.js",
+      "reason": "call .getTeam is not supported (line 10)"
+    },
+    {
+      "legacy": "portal/MCrevive5.js",
+      "reason": "call .getTeam is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/MCrevive6.js",
+      "reason": "pi.getPlayer().getAvailableCP is not supported (line 10)"
+    },
+    {
+      "legacy": "portal/MD_alien.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_boat.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_burning.js",
+      "reason": "pi.getEventInstance is not supported (line 20)"
+    },
+    {
+      "legacy": "portal/MD_cakeGL1.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/MD_cakeGL2.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/MD_cakeGL3.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/MD_coldeye.js",
+      "reason": "pi.getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/MD_drake.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_drakeroom.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_error.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_golem.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_high.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_longkiss.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_mushroom.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_pig.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_protect.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_rabbit.js",
+      "reason": "pi.getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_remember.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_roundTable.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_sand.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/MD_space.js",
+      "reason": "pi.getEventInstance is not supported (line 20)"
+    },
+    {
+      "legacy": "portal/MD_treasure.js",
+      "reason": "pi.getPlayer().getFame is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/NextMap.js",
+      "reason": "operator | (line 4)"
+    },
+    {
+      "legacy": "portal/Populatus00.js",
+      "reason": "call .getChannel is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/Ravana_Enter.js",
+      "reason": "pi.getDisconnected is not supported (line 21)"
+    },
+    {
+      "legacy": "portal/SkyCave+out.js",
+      "reason": "file name is not a portal script name"
+    },
+    {
+      "legacy": "portal/Sky_BossOut.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/Sky_Next.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/Spacegaga_out0.js",
+      "reason": "call .fallAndGet is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/Spacegaga_out1.js",
+      "reason": "call .fallAndGet is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/Spacegaga_out2.js",
+      "reason": "call .fallAndGet is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/Spacegaga_out3.js",
+      "reason": "call .fallAndGet is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/TD_Boss_enter.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/ThirdJobResi.js",
+      "reason": "object.resetFully is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/apq_door_3.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 32)"
+    },
+    {
+      "legacy": "portal/apq_door_4.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 32)"
+    },
+    {
+      "legacy": "portal/apq_door_5.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 32)"
+    },
+    {
+      "legacy": "portal/apq_trap_0.js",
+      "reason": "pi.getPlayer().getMap is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/apq_trap_1.js",
+      "reason": "pi.getPlayer().getMap is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/apq_trap_2.js",
+      "reason": "pi.getPlayer().getMap is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorArrow0.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorArrow1.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorArrow2.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorArrow3.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorGuide0.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorGuide1.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorGuide2.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorLost.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorMono0.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorMono1.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorMono2.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorMono3.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorOut1.js",
+      "reason": "pi.teachSkill is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/aranTutorOut2.js",
+      "reason": "pi.teachSkill is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/aranTutorOut3.js",
+      "reason": "pi.teachSkill is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/balog_end.js",
+      "reason": "pi.gainExpR is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/cannon_tuto_06.js",
+      "reason": "pi.sendDirectionStatus is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/cannon_tuto_07.js",
+      "reason": "pi.sendDirectionStatus is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/cannon_tuto_09.js",
+      "reason": "pi.sendDirectionStatus is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/cannot3.js",
+      "reason": "pi.openNpc with 2 arguments (line 10)"
+    },
+    {
+      "legacy": "portal/captinsg00.js",
+      "reason": "object.resetFully is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/checkWildeye.js",
+      "reason": "call .findById is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/davy_next1.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/davy_next4.js",
+      "reason": "call .getState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/dojang_next.js",
+      "reason": "pi.haveMonster is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/dojang_up.js",
+      "reason": "pi.haveMonster is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/doorgo.js",
+      "reason": "call .getState is not supported (line 35)"
+    },
+    {
+      "legacy": "portal/dragonNest.js",
+      "reason": "pi.removeNpc is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/ds_tuto_2_0.js",
+      "reason": "pi.sendDirectionStatus is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/ds_tuto_home.js",
+      "reason": "call .length is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/dubl2Tuto10.js",
+      "reason": "pi.mapMessage is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/enterBlackFrog.js",
+      "reason": "pi.getPlayer().gainAp is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/enterDisguise1.js",
+      "reason": "pi.removeNpc is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/enterDisguise2.js",
+      "reason": "pi.removeNpc is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/enterDisguise3.js",
+      "reason": "pi.removeNpc is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/enterDisguise4.js",
+      "reason": "pi.removeNpc is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/enterDisguise5.js",
+      "reason": "pi.removeNpc is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/enterFirstDH.js",
+      "reason": "object.resetFully is not supported (line 13)"
+    },
+    {
+      "legacy": "portal/enterNewWeapon1.js",
+      "reason": "object.resetFully is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/enterNewWeapon2.js",
+      "reason": "object.resetFully is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/enterNewWeapon3.js",
+      "reason": "object.resetFully is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/enterResi_23120.js",
+      "reason": "object.resetFully is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/enterSecJobResi.js",
+      "reason": "object.resetFully is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/enterfourthDH.js",
+      "reason": "object.killAllMonsters is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/enterthirdDH.js",
+      "reason": "object.killAllMonsters is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/evanDollGR.js",
+      "reason": "pi.forceStartQuest with 3 arguments (line 7)"
+    },
+    {
+      "legacy": "portal/evanGolemDoor.js",
+      "reason": "pi.getPlayer().gainSP is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/evanRoom0.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evanRoom1.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk00.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk01.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk02.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk10.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk11.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk20.js",
+      "reason": "pi.MovieClipIntroUI is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk21.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk40.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk41.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk42.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk50.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/evantalk60.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/gaga_success.js",
+      "reason": "call .complete is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/gatherTuto.js",
+      "reason": "pi.getPlayer().getEventCount is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/gendergo.js",
+      "reason": "pi.getPlayerStat is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/ghostShip_next.js",
+      "reason": "pi.isLeader is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/ghostgate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/glpqPortal0.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal00.js",
+      "reason": "call .floor is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal01.js",
+      "reason": "call .floor is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal02.js",
+      "reason": "call .floor is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal03.js",
+      "reason": "call .floor is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal04.js",
+      "reason": "call .floor is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal1.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal2.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal3.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal4.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal5.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/glpqPortal6.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/glpqPortal7.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/goldkey1.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey10.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey2.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey3.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey4.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey5.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey6.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey7.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey8.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/goldkey9.js",
+      "reason": "object.getReactorByName is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/guildwaitingenter.js",
+      "reason": "pi.getEventInstance is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/guildwaitingexit.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 28)"
+    },
+    {
+      "legacy": "portal/guyfawkes0_esc.js",
+      "reason": "property [computed] (line 8)"
+    },
+    {
+      "legacy": "portal/highposition.js",
+      "reason": "pi.updateInfoQuest is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/hillah_next.js",
+      "reason": "pi.warpParty is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/hontale_BR.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/hontale_C.js",
+      "reason": "pi.isLeader is not supported (line 29)"
+    },
+    {
+      "legacy": "portal/hontale_boss1.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/hontale_boss2.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/hontale_morph2.js",
+      "reason": "pi.getMorphState is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/iceman_Next.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/iceman_Revive.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/jailmsg.js",
+      "reason": "object.playerMessage is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/jnr12_in.js",
+      "reason": "pi.getPlayer().isGM is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/jnr1_pt00.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/jnr2_out.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/jnr3_in0.js",
+      "reason": "call .getState is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/jnr3_in1.js",
+      "reason": "call .getState is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/jnr3_out.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/jnr4_r1.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/jnr4_r2.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/jnr4_r3.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/jnr4_r4.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/jnr5_rp.js",
+      "reason": "pi.getEventManager is not supported (line 12)"
+    },
+    {
+      "legacy": "portal/jnr6_act.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/jnr6_out.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/jnr_out300.js",
+      "reason": "pi.warpParty is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/kenta_nextStage.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/kinggate2_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/kinggate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/kpq0.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 28)"
+    },
+    {
+      "legacy": "portal/kpq1.js",
+      "reason": "call .getInstance is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/kpq2.js",
+      "reason": "call .getInstance is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/kpq3.js",
+      "reason": "call .getInstance is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/kpq4.js",
+      "reason": "call .getInstance is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/lpq1.js",
+      "reason": "call .getInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/lpq2.js",
+      "reason": "call .getInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/lpq3.js",
+      "reason": "call .getInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/lpq4.js",
+      "reason": "call .getInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/lpq5.js",
+      "reason": "call .getInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/lpq6.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 29)"
+    },
+    {
+      "legacy": "portal/lpq7.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/lpq8.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/lpqboss.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 28)"
+    },
+    {
+      "legacy": "portal/ludi_s1Clear.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/ludi_s2Clear.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/mPark_final.js",
+      "reason": "pi.givePartyItems is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/mPark_nextStage.js",
+      "reason": "pi.warpParty is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/mapOutset.js",
+      "reason": "object.getForcedReturnId is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/metalgate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/mirtalk00.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/mirtalk01.js",
+      "reason": "pi.getEvanIntroState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/mv_bossEnter.js",
+      "reason": "pi.isLeader is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/next_AswanStage.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/oliviaOut.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/outCG.js",
+      "reason": "saved location CRYSTALGARDEN is not a Legacy SavedLocationType (line 17)"
+    },
+    {
+      "legacy": "portal/outTemple.js",
+      "reason": "pi.useItem is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/out_fm01.js",
+      "reason": "saved location FREE_MARKET_SHOP is not a Legacy SavedLocationType (line 12)"
+    },
+    {
+      "legacy": "portal/party2_rp.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/party2_rp_old.js",
+      "reason": "pi.getEventManager is not supported (line 12)"
+    },
+    {
+      "legacy": "portal/party2_rp_old2.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/party3_gardenin.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_r6pt.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/party3_room1.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_room2.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_room3.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_room4.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_room5.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_room6.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_room8.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party3_roomout.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party5_click.js",
+      "reason": "pi.getPlayer().isGM is not supported (line 11)"
+    },
+    {
+      "legacy": "portal/party6_out.js",
+      "reason": "object.getMonsterById is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage.js",
+      "reason": "object.getReactorByName is not supported (line 14)"
+    },
+    {
+      "legacy": "portal/party6_stage501.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage502.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage503.js",
+      "reason": "call .random is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/party6_stage504.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage505.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage506.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage507.js",
+      "reason": "call .random is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/party6_stage508.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage509.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage510.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage511.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage512.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage513.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage514.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party6_stage515.js",
+      "reason": "call .random is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/party_portal.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/prisonBreak_miro.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/prisonBreak_next.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/raid_stage.js",
+      "reason": "pi.dojoAgent_NextMap is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rand_ola.js",
+      "reason": "call .isRunning is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rienTutor6.js",
+      "reason": "pi.getInfoQuest is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj12_in.js",
+      "reason": "pi.warpParty is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/rnj1_pt00.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj2_out.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj3_in0.js",
+      "reason": "call .getState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj3_in1.js",
+      "reason": "call .getState is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj3_out.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj4_r1.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj4_r2.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj4_r3.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj4_r4.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj5_rp.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj6_act.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj6_out.js",
+      "reason": "pi.getEventManager is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/rnj_out300.js",
+      "reason": "pi.warpParty is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/s4berserk.js",
+      "reason": "pi.getEventManager is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/s4berserk_move.js",
+      "reason": "object.getSpawnedMonstersOnMap is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/s4common-1_clear.js",
+      "reason": "file name is not a portal script name"
+    },
+    {
+      "legacy": "portal/s4common1_clear.js",
+      "reason": "pi.haveMonster is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/s4nest.js",
+      "reason": "pi.getEventManager is not supported (line 9)"
+    },
+    {
+      "legacy": "portal/s4resur_enter.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/s4resurrection.js",
+      "reason": "pi.getEventManager is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/s4rush.js",
+      "reason": "pi.getParty is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/s4ship_out.js",
+      "reason": "pi.getEventManager is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/s4super_out.js",
+      "reason": "pi.getEventManager is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/secretgate1_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/secretgate2_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/secretgate3_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/shammos_Bossout.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/shammos_FakeGate.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 7)"
+    },
+    {
+      "legacy": "portal/shammos_Next.js",
+      "reason": "pi.getPlayer().getParty is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/shammos_Revive.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/singleDungeonout.js",
+      "reason": "saved location MIRROR is not a Legacy SavedLocationType (line 3)"
+    },
+    {
+      "legacy": "portal/space_return.js",
+      "reason": "pi.getPlayer().getSavedLocation is not supported (line 4)"
+    },
+    {
+      "legacy": "portal/speargate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/stage6_portal.js",
+      "reason": "pi.warpParty is not supported (line 10)"
+    },
+    {
+      "legacy": "portal/statuegate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/stonegate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    },
+    {
+      "legacy": "portal/summondragon.js",
+      "reason": "pi.getClient is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/tamepig_out2.js",
+      "reason": "pi.getPlayer().removeAll is not supported (line 23)"
+    },
+    {
+      "legacy": "portal/templeenter.js",
+      "reason": "pi.cancelItem is not supported (line 6)"
+    },
+    {
+      "legacy": "portal/treeboss00.js",
+      "reason": "object.resetFully is not supported (line 5)"
+    },
+    {
+      "legacy": "portal/tutorHelper.js",
+      "reason": "pi.playerSummonHint is not supported (line 3)"
+    },
+    {
+      "legacy": "portal/under30gate.js",
+      "reason": "pi.getPlayerStat is not supported (line 10)"
+    },
+    {
+      "legacy": "portal/undodraco.js",
+      "reason": "pi.cancelItem is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/visitorPT_B.js",
+      "reason": "pi.isLeader is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/visitorPT_Boss.js",
+      "reason": "pi.isLeader is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/visitorPT_L.js",
+      "reason": "pi.isLeader is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/visitorPT_R.js",
+      "reason": "pi.isLeader is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/visitorPT_Revive.js",
+      "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/visitorPT_T.js",
+      "reason": "pi.isLeader is not supported (line 2)"
+    },
+    {
+      "legacy": "portal/watergate_open.js",
+      "reason": "call .getState is not supported (line 8)"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+syntax = "proto3";
+package maple.v1;
+option go_package = "maple-go-server/api/maplev1";
+
+service WorldControl {
+  rpc Status(StatusRequest) returns (StatusResponse);
+  rpc CreateCharacter(CreateCharacterRequest) returns (CreateCharacterResponse);
+}
+message StatusRequest {}
+message StatusResponse {
+  int32 world_id = 1;
+  string instance_id = 2;
+  int64 epoch = 3;
+  bool ready = 4;
+  int32 online = 5;
+}
+message CreateCharacterRequest {
+  int64 account_id = 1;
+  int32 world_id = 2;
+  string name = 3;
+  int32 gender = 4;
+  int32 skin = 5;
+  int32 face = 6;
+  int32 hair = 7;
+  int32 top = 8;
+  int32 bottom = 9;
+  int32 shoes = 10;
+  int32 weapon = 11;
+  string operation_id = 12;
+  string login_session_id = 13;
+  int64 login_generation = 14;
+  // MakeCharInfo family and Explorer sub job (domain.CreationRaceFor).
+  int32 family = 15;
+  int32 sub_job = 16;
+}
+message CreateCharacterResponse {
+  // Detached domain.Character JSON v1. Authenticated internal boundary only.
+  bytes character_json = 1;
+}

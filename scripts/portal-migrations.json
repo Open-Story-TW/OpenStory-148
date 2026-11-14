@@ -1,0 +1,854 @@
+{
+  "version": 1,
+  "method": "exact-unconditional-numeric-or-named-warp",
+  "scripts": [
+    {
+      "legacy": "portal/2ndTowerTop.js",
+      "source_sha256": "ebfeae6c634a380e10f6f4f47f3b2ef7d95e1696b87e333a986769df7cab229f",
+      "lua": "portal/2ndTowerTop.lua",
+      "lua_sha256": "e25b3b67e4dd9243ed829aa433eaaaa11ebf57cb0cf94177ed6b79675cfb3e2b",
+      "map_id": 211060401,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/3rdTowerTop.js",
+      "source_sha256": "0e76f5cb93109c4337d9eff91fc43d831f3bea78bfb41858a7186930b4894dd6",
+      "lua": "portal/3rdTowerTop.lua",
+      "lua_sha256": "0f77464136f198214c311e82dde81c6f1ed039208350064c34e9f04332964823",
+      "map_id": 211060601,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/alian_enter.js",
+      "source_sha256": "2bcc7822123252157e706f5788adee20bf7ebc0b740c36ebc4615089416b7b60",
+      "lua": "portal/alian_enter.lua",
+      "lua_sha256": "722550ae21a40750aa31eb667358b215cf8fd0dfcf3956e4357d716d5fb32298",
+      "map_id": 610040000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/aqua_pq_boss_0.js",
+      "source_sha256": "4ab49f7324e92a410b8ffcde01de7d52bc264f19719915ab3ecbb6a426677bfe",
+      "lua": "portal/aqua_pq_boss_0.lua",
+      "lua_sha256": "b557cf22c18f55ce83c62c33aedbcedf945e2dcb2a1ddc67a6dd9c6dea19c25f",
+      "map_id": 230040420,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/ariantMout.js",
+      "source_sha256": "87d6ad7ceacaff3fd5548607fac1ee84b09d0ff84149e06ce853ff850fcac2d5",
+      "lua": "portal/ariantMout.lua",
+      "lua_sha256": "0d1608117641bb492adef027f6b7f6c321726e9a1da9587290aaed86c4792905",
+      "map_id": 980010020,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/ariantMout2.js",
+      "source_sha256": "6bd80a8811ec7402040e5271f0343e231bb44299f44d7cabbb653585060ce784",
+      "lua": "portal/ariantMout2.lua",
+      "lua_sha256": "7bb257307a46926a61fe6e624944d72f4d3623ecf73cf73548075ac066292576",
+      "map_id": 980010000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/bedroom_out.js",
+      "source_sha256": "15020fa17f885a266e9a0a7091256bf7ff0df93863c7adc8a5f3b6372bdc0fcb",
+      "lua": "portal/bedroom_out.lua",
+      "lua_sha256": "a1e88080fe1ca11017b1f14427bd866ea5fe7c01f961208948a7387567830971",
+      "map_id": 120000200,
+      "portal_name": "bi01"
+    },
+    {
+      "legacy": "portal/bigban.js",
+      "source_sha256": "4bb6f1534c75a5c1f5905e35d1ae53704007a2d1c7cec14f426fc631a11fb23c",
+      "lua": "portal/bigban.lua",
+      "lua_sha256": "5f87b92db7813efe4e573398184e8c582a325b71e782571a8753f84025de4416",
+      "map_id": 600020000,
+      "portal_id": 7
+    },
+    {
+      "legacy": "portal/BPReturn_dunkel.js",
+      "source_sha256": "c00eae31974562c020fce1c4b8d7cd44cecde4086c24954d44db0ddde85cc421",
+      "lua": "portal/BPReturn_dunkel.lua",
+      "lua_sha256": "3cf47a0f5b856d7b60359efcac0c29420f0fc69a2b78899bd903d5d5538493e8",
+      "map_id": 910000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/cannon_tuto_05.js",
+      "source_sha256": "3dd216b2ad7dd9b88cbab215684ddbecb5a31dc223fb4d179ace61890d488e14",
+      "lua": "portal/cannon_tuto_05.lua",
+      "lua_sha256": "1fafc7bb185c769dadf209b66973741aecda9822ee8903d998f4cc26281a11f4",
+      "map_id": 912060100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/cube_out.js",
+      "source_sha256": "5e50452d85a3f25a4b5f696ef668d9b0f745f021e43408d017063fe2760c6e1c",
+      "lua": "portal/cube_out.lua",
+      "lua_sha256": "48697e0fe566b1f16413835fb8b2692a6b202ba3b1b1dfde4fa7c85729660106",
+      "map_id": 502029000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/curseforest.js",
+      "source_sha256": "73df7a13eb5cea813ee4960d659cd2d685ff319cb7ac28fe7bbb63f0495fea93",
+      "lua": "portal/curseforest.lua",
+      "lua_sha256": "cbe8277c56b1ede165ac224b6d2f23556c4b322c7f7f8d02632f141006dbca57",
+      "map_id": 910100000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/DarkErebEnter.js",
+      "source_sha256": "189a6c9f57608ffbb4669b6e4fff543f8dbcac7845f26990bfc5649419116fda",
+      "lua": "portal/DarkErebEnter.lua",
+      "lua_sha256": "d615a2224663ef3089f635b6fe862124cee14ff8b1885d6d814a5a12879a1d46",
+      "map_id": 271000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/davy2_hd1.js",
+      "source_sha256": "ffe693fa26998d2508631c99dc17fe17653aeb429954e51865ab69347de38d3d",
+      "lua": "portal/davy2_hd1.lua",
+      "lua_sha256": "b35c61bff21e38478dbbde547d7a73aa46345898f9bf31f8ee660b36dd31c4b4",
+      "map_id": 925100202,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/davy3_hd1.js",
+      "source_sha256": "2d7fa89fde5c572753d248bfd486c0de853d012428117b3f21139d89d21efbe7",
+      "lua": "portal/davy3_hd1.lua",
+      "lua_sha256": "16fcb4e9422f1d4115c67998019b725c80136b2dad9a5a193eedebfd8b87e17a",
+      "map_id": 925100302,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/dojang_tuto.js",
+      "source_sha256": "30afa53d64983e61ae1bfbf3fc89c00acdc7db960b40230a639127fd59c56dff",
+      "lua": "portal/dojang_tuto.lua",
+      "lua_sha256": "4e91e3d3104dab7f12c26d9936bacf9f29b2b97402e5f0019beb5929ae4e4692",
+      "map_id": 193000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/dracoout.js",
+      "source_sha256": "1f63260e36ffcfbd89d1f5fcf80eadb122971c0776c5682aa2f4832fea03950c",
+      "lua": "portal/dracoout.lua",
+      "lua_sha256": "eddfeb0de8eddb88e6ed63a2e79c9bdbaf31c98dc22bffae0f6399bb3ad725c8",
+      "map_id": 240000100,
+      "portal_name": "east00"
+    },
+    {
+      "legacy": "portal/Dual_moveGate.js",
+      "source_sha256": "0febf5b407d05beb672035c9f9fb14dde1163e6ad7ec5549b0b86aec2885cf28",
+      "lua": "portal/Dual_moveGate.lua",
+      "lua_sha256": "6258dba016e8702038ffb091212d40ac6aa759e7ff86ba32c2ee6449d721e8d9",
+      "map_id": 103050000,
+      "portal_name": "out00"
+    },
+    {
+      "legacy": "portal/edel_jp01.js",
+      "source_sha256": "5c9e57a0609b51f1f7b1544599081b9fff8e6d811a200921094ec81fdcfcb894",
+      "lua": "portal/edel_jp01.lua",
+      "lua_sha256": "5df39a1f3ff5fd894482e9979b4f36adb70853708f9f7b760783d2069bd723fd",
+      "map_id": 104020130,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/eliza_Garden.js",
+      "source_sha256": "559e42b6003fd316620759650979b9034b82385a22c3d2ebefdc430fb97608ec",
+      "lua": "portal/eliza_Garden.lua",
+      "lua_sha256": "45696ef2172f6f1dc8fb01feec2137c379aa5503289d55fdb38cc26ec088858d",
+      "map_id": 920020000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/end_black.js",
+      "source_sha256": "9288032a537ca7464f2b23628330fe446543270877dedd5f6440da08f4ae7807",
+      "lua": "portal/end_black.lua",
+      "lua_sha256": "caae04b0c666609a5c5f1ea246d3ec0131e02e2403334f354d0e44767c7d84f8",
+      "map_id": 120000200,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/end_cow.js",
+      "source_sha256": "5afea7a0b1f4e2cc06872baacd4288bc85f6d243b43305d9752f13f11fad8ec4",
+      "lua": "portal/end_cow.lua",
+      "lua_sha256": "29d2c5c498f5e64275590e87ed1d5b14414470a9836d588fddf7a360a2e81355",
+      "map_id": 120000103,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enter_agit.js",
+      "source_sha256": "562d8d6b37bf98fb7feb1678f35ec54fa978b0228456f45176b5d9f552a1d7e5",
+      "lua": "portal/enter_agit.lua",
+      "lua_sha256": "6673b1df848ebcffab46ec5ce2955d0909c08bcb1f50e67534b3543ae57fd219",
+      "map_id": 200100010,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enter_alcadno.js",
+      "source_sha256": "4c2f385a37d57f670ed80f5d77a8ea42804f40cc214175efc6df34e158b7de10",
+      "lua": "portal/enter_alcadno.lua",
+      "lua_sha256": "003a45416aef139dfe01ec2ba6ebf471723ee0f4f8fb66f66018cdf50996ffe5",
+      "map_id": 261000020,
+      "portal_id": 3
+    },
+    {
+      "legacy": "portal/enter_earth00.js",
+      "source_sha256": "0b965bd318d77e729fef774ba690d561bd1441843fc6dd03d3db31338843facc",
+      "lua": "portal/enter_earth00.lua",
+      "lua_sha256": "c94823cea0c2ed21b1df40fd6f49a8f0b97cd8ac59030a7aacd40e7988a8aaa1",
+      "map_id": 221000300,
+      "portal_name": "earth00"
+    },
+    {
+      "legacy": "portal/enter_earth01.js",
+      "source_sha256": "1769d90882270265558c92070d84302097e6fd0f4cadba3ff4e2b465a4cb8dfe",
+      "lua": "portal/enter_earth01.lua",
+      "lua_sha256": "1a8c20ca748c61003e43e146877b0aa774dc39f1193c4d380078cc40784d7f00",
+      "map_id": 120000101,
+      "portal_name": "earth01"
+    },
+    {
+      "legacy": "portal/enter_VDS.js",
+      "source_sha256": "26db980462c8318964e1bab1f8c8a3f1d74ee603b2f3669fa2684254e53e1fd6",
+      "lua": "portal/enter_VDS.lua",
+      "lua_sha256": "7478083597be29fa94bdcdbbb92b1a1ecf7a68ed3251531bb385d6ba7c66f4ea",
+      "map_id": 105010000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterBackStreet.js",
+      "source_sha256": "82c486d7e5a644b988569a0a5b649f801e538c614018945fd4c16e165cead0de",
+      "lua": "portal/enterBackStreet.lua",
+      "lua_sha256": "504769c48cf35457530761b0646edf989f5ac432ce88bd0579a2c0ee0e5b4f47",
+      "map_id": 925040000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterBlackMine.js",
+      "source_sha256": "232663a25036342af438729df26f8c73b5281748c57b844166250365f430ec4d",
+      "lua": "portal/enterBlackMine.lua",
+      "lua_sha256": "8f8dd13ff8db231699a2988098e7a5a05c16df513cdf047b082615f796356b16",
+      "map_id": 310040200,
+      "portal_id": 3
+    },
+    {
+      "legacy": "portal/enterBlackRoom.js",
+      "source_sha256": "f80e7f2e719fafc24a004048de8b21a98b38a4d9d4e2b63fe4a279df01251009",
+      "lua": "portal/enterBlackRoom.lua",
+      "lua_sha256": "b5b1b19069fd263af2d179c6e63224619650d14698b79fc08ee58dcbfff07dbe",
+      "map_id": 200080601,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterDangerHair.js",
+      "source_sha256": "a6cac3e30f500b6a45c2e5b9ea44e92145d3a6ab90f88d387ecd3c5d27a0665f",
+      "lua": "portal/enterDangerHair.lua",
+      "lua_sha256": "f2c284bf3454ce7dd130ce79b20b769768acf41505f46f8251d05bf51aa2602c",
+      "map_id": 310000003,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterDollWay.js",
+      "source_sha256": "0fcb827f6aa50b4cad9518773b3f33dbd131725f0101c67d9ca98641e2b66c29",
+      "lua": "portal/enterDollWay.lua",
+      "lua_sha256": "b56f3e2f540f5d9e98580891eaa314890054904feca48e8b132733c73c840925",
+      "map_id": 910510100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterEelroom.js",
+      "source_sha256": "72bbe425b7529e55aeef2243f60b82aa680730ffaf2eb71bc818b5c257d1a0ec",
+      "lua": "portal/enterEelroom.lua",
+      "lua_sha256": "ab58606ef27d8cf01b1d892a7de8f3a360f63bb9c534318e8daf4a85d556123a",
+      "map_id": 931020011,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterFranRoom.js",
+      "source_sha256": "64f273836095ec9ad7e734a9f461851e9427aa9a7ad196d3267fcf115ffbb4c5",
+      "lua": "portal/enterFranRoom.lua",
+      "lua_sha256": "01d58895ee48ddf6dc9b69516848dbbc670456d31174c0fbd1b44131c4200710",
+      "map_id": 931020010,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterMansion.js",
+      "source_sha256": "eb50969f1dc720cd71a06e68c9dbfd70f7be6f39b30736fbb9bbf3b50fdee9f1",
+      "lua": "portal/enterMansion.lua",
+      "lua_sha256": "7e5638919599b3e0611b819e1c489fba4ece18a5b559ec2d5a33aad24d38b623",
+      "map_id": 310000004,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterPort.js",
+      "source_sha256": "c04d82d92cafbf3cd3172c4e89ef6743a2eed7e7d9dd88a907acd63ecd94ca0d",
+      "lua": "portal/enterPort.lua",
+      "lua_sha256": "aed982d579535188cfb7da0e550ca363f01b3e1368a00a608b65ebc580f67bd0",
+      "map_id": 140020300,
+      "portal_id": 1
+    },
+    {
+      "legacy": "portal/enterSnowDragon.js",
+      "source_sha256": "d4271ae308ea9e90381b0ab1a32394d11ed69e05b5313a6a5fb5bc5052898455",
+      "lua": "portal/enterSnowDragon.lua",
+      "lua_sha256": "cabb02004ea92f663716e83cf968c95e712add2f9f150e583a46a4bb9f802afa",
+      "map_id": 914100021,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/enterSuar.js",
+      "source_sha256": "a1b551976b25e675aac4ee378a4d538924bf811b349ee725e5eb08141b2e58b6",
+      "lua": "portal/enterSuar.lua",
+      "lua_sha256": "24d418849f0116bdb780e520a17f03e2657e43089fbe050016a56de5848c29b3",
+      "map_id": 931000440,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/EnterSWmer.js",
+      "source_sha256": "56e2fd7a9a8d2152bca36a8a5ec2341820bb873e6be3e1eed232c39f33c6ad7d",
+      "lua": "portal/EnterSWmer.lua",
+      "lua_sha256": "6e1607d02441aaf3a0d00f5920ad423bb42616ab7bba8fd34a82bc79bb5bba55",
+      "map_id": 105000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/evanEntrance.js",
+      "source_sha256": "6d4aec4a20769a493af40d170a8f677d3b0f22e3c52379ad54c2c37425e3cb11",
+      "lua": "portal/evanEntrance.lua",
+      "lua_sha256": "c613a9aacefdcce4719fd682f405219c60544ffa2136089536289051efc0c90b",
+      "map_id": 100030400,
+      "portal_name": "east00"
+    },
+    {
+      "legacy": "portal/evanlivingRoom.js",
+      "source_sha256": "3a6f3d58b7db8eee33d5497c09d523e36c5e3cc4cc20de2bec40d7724bf21be7",
+      "lua": "portal/evanlivingRoom.lua",
+      "lua_sha256": "c43927ca9d109f2be0844ecf85a2bc726c2233596513aff596fd4f711cf0c0cb",
+      "map_id": 100000000,
+      "portal_id": 25
+    },
+    {
+      "legacy": "portal/fishingOut.js",
+      "source_sha256": "1c939df6cbb0aff5c3d9bc825c5bff262adb92b769bcf2323f97905488a68e4b",
+      "lua": "portal/fishingOut.lua",
+      "lua_sha256": "c7cb7b8b6d6759586d9c2d7282d0d95db23148b8e259db6d0e605fd021063733",
+      "map_id": 910000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/foxLaidy_map.js",
+      "source_sha256": "66be9eebd09e516f9a8aba994030274693d28d8cc1684609f972792508bdfd91",
+      "lua": "portal/foxLaidy_map.lua",
+      "lua_sha256": "c57916d0463ce2b428111a0a024e654311d5532a88c1450edc6e905a44a4af42",
+      "map_id": 222010200,
+      "portal_name": "east00"
+    },
+    {
+      "legacy": "portal/GL_SG1.js",
+      "source_sha256": "0d2b5deacbb5dcb9a3a8c437ae6ae8d1eb52c0829b648474d552fc64a5b2858d",
+      "lua": "portal/GL_SG1.lua",
+      "lua_sha256": "387e71e130670c9a92419b047572d0a03a1e45d85e6a32260fe2356526dadb38",
+      "map_id": 600020000,
+      "portal_id": 5
+    },
+    {
+      "legacy": "portal/goldenShrine_Out.js",
+      "source_sha256": "85aa3dda71c7dd5d523be0405fd44f97f401e1d7ebc9e94f791ac293f9b27d4a",
+      "lua": "portal/goldenShrine_Out.lua",
+      "lua_sha256": "fc60bd46063daf723b4277c79f841e95adae13a950ca12046d8f93b4f2640359",
+      "map_id": 950100000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/goQuest_21745.js",
+      "source_sha256": "2b33da6300d60bea572151aeeead6d44fbfad2911dc6ea51aba41d3fc0ae335c",
+      "lua": "portal/goQuest_21745.lua",
+      "lua_sha256": "099dbd3d91a4ace5fa1e26d905c6785d04c55a4588514377d1d02eb0a9f5515a",
+      "map_id": 925041001,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/goQuest_22575.js",
+      "source_sha256": "89f78241441a35f8cbf06253013f958c478da684a5f3261b3fd81bfd1930f4a5",
+      "lua": "portal/goQuest_22575.lua",
+      "lua_sha256": "e1be1e18c4e867bb68e1105c9e208ae6dda29a93064c7873e8c1e84746031b16",
+      "map_id": 921110100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/guild1F00.js",
+      "source_sha256": "7b812570103ca57d7427d7e659a2ba384798545066ecdf6505091453c7ad83a0",
+      "lua": "portal/guild1F00.lua",
+      "lua_sha256": "e874321d5f6d5858eb28a0391ce5c87dfdc0b145ab59141bd99aacfc3683d1d1",
+      "map_id": 990000600,
+      "portal_id": 1
+    },
+    {
+      "legacy": "portal/guild1F01.js",
+      "source_sha256": "0b1d530f2186e92e26b7874358545ff2c88259c30df01f13b8e6abe8a14c8f94",
+      "lua": "portal/guild1F01.lua",
+      "lua_sha256": "05db9a0fbb3cd08d137fe9ad68b545787ce48a35872da4f8a985a3236aecfc58",
+      "map_id": 990000700,
+      "portal_name": "st00"
+    },
+    {
+      "legacy": "portal/guild1F02.js",
+      "source_sha256": "0b1d530f2186e92e26b7874358545ff2c88259c30df01f13b8e6abe8a14c8f94",
+      "lua": "portal/guild1F02.lua",
+      "lua_sha256": "ffffad94f2956833216dc68bc60497ad838f3c2d38a1052fe168426d10de297f",
+      "map_id": 990000700,
+      "portal_name": "st00"
+    },
+    {
+      "legacy": "portal/guild1F03.js",
+      "source_sha256": "0b1d530f2186e92e26b7874358545ff2c88259c30df01f13b8e6abe8a14c8f94",
+      "lua": "portal/guild1F03.lua",
+      "lua_sha256": "bc61370fecd3d81522d52c79e32b871e4b0c622099f307d4fd64c62d6b19fe78",
+      "map_id": 990000700,
+      "portal_name": "st00"
+    },
+    {
+      "legacy": "portal/guild1F04.js",
+      "source_sha256": "0b1d530f2186e92e26b7874358545ff2c88259c30df01f13b8e6abe8a14c8f94",
+      "lua": "portal/guild1F04.lua",
+      "lua_sha256": "3052d23805b8fda7faefba31c2a05e8445775db6bc093a80a0ccf887faff7b64",
+      "map_id": 990000700,
+      "portal_name": "st00"
+    },
+    {
+      "legacy": "portal/hidenPT_0.js",
+      "source_sha256": "eb01b5990a2266829f5dc83594fe4a444dbf3d4cce185265a5f0d492383ee868",
+      "lua": "portal/hidenPT_0.lua",
+      "lua_sha256": "e98a1a2db4469e6439a7105244991f2396889d87f314b93c6d4b7bb4e74a22a2",
+      "map_id": 502010010,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/in_guild.js",
+      "source_sha256": "9140c15032c9aed85af7d51ddd778adf24298169c17e730d35bcf7db89920872",
+      "lua": "portal/in_guild.lua",
+      "lua_sha256": "84a24779b1ad762826b71c97573c0dc5cc096d6d632e6aecee83b99d642c0ca8",
+      "map_id": 200000301,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/in_knights.js",
+      "source_sha256": "5eeffe66ae1e4373d4e370ed7356ff838866f12551a93b44fce6ea84b1c1fd58",
+      "lua": "portal/in_knights.lua",
+      "lua_sha256": "ef77abb1eb6ac111737b248fa5429fd59b4a58bb0bfc81e6ec73f1c37ec00824",
+      "map_id": 271030100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/in_knights01.js",
+      "source_sha256": "5eeffe66ae1e4373d4e370ed7356ff838866f12551a93b44fce6ea84b1c1fd58",
+      "lua": "portal/in_knights01.lua",
+      "lua_sha256": "e2474857494f2623eaf85b9036db6a3ad725b85c58432bdd36dda9a29e2990e7",
+      "map_id": 271030100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/in_secretroom.js",
+      "source_sha256": "046d8665da2b6ead9da947c93d6586bf26214d8eaa29a19cd4fefe4cedd4a49f",
+      "lua": "portal/in_secretroom.lua",
+      "lua_sha256": "63229128fce3d552f913f392bce7c4ac1af985980294db8b6645c4eadac25b9c",
+      "map_id": 106021000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/inERShip.js",
+      "source_sha256": "c6e1a7586c383d40dc0f8b64aed909f80573f3c2798145ed3de44bb8ea531f7e",
+      "lua": "portal/inERShip.lua",
+      "lua_sha256": "1ad0efe3c4e9c4ca33f059d385419eea38ddc60749e937b553fad729c2921f4d",
+      "map_id": 104020120,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/inNix1.js",
+      "source_sha256": "49ab9a509a1f83f0824d874657c34d8790cfeb3b2214e4539e566d5411539706",
+      "lua": "portal/inNix1.lua",
+      "lua_sha256": "b80e56baba567804740c40535807ec923eaae3b8dfaa08f3be5fdc0925996e17",
+      "map_id": 240020600,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/inNix2.js",
+      "source_sha256": "49ab9a509a1f83f0824d874657c34d8790cfeb3b2214e4539e566d5411539706",
+      "lua": "portal/inNix2.lua",
+      "lua_sha256": "4efd7576eb58bb69259becd79a702bca099be973d118215d834585b2f8720255",
+      "map_id": 240020600,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/JP_SG1.js",
+      "source_sha256": "618979b8eba1d12860167595349df8203c9a87dec0eee9d269de1af111b52e6f",
+      "lua": "portal/JP_SG1.lua",
+      "lua_sha256": "73c4cf767ef85eb9f79df6541901efc04b3d6822ea32931c25840e58aff15a3c",
+      "map_id": 800040200,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/JP_SG2.js",
+      "source_sha256": "7902ee7504c1b5a3dfa03b8075d66fad201bc2c4187c5de533f06b21bb9c79fd",
+      "lua": "portal/JP_SG2.lua",
+      "lua_sha256": "6b62cd20b3f26758e83f36269aa05ce58292f48f11269421232494513a118fc5",
+      "map_id": 801040001,
+      "portal_id": 5
+    },
+    {
+      "legacy": "portal/kenta_out00.js",
+      "source_sha256": "4933173194ffce9fe6ad4e813d2f4b174f12d64e2e2f3817e0af698f3c94581a",
+      "lua": "portal/kenta_out00.lua",
+      "lua_sha256": "7b9d42423392eaab3b340a9cc6e060dc66527e7bc700a4b39e13bead858ce1d5",
+      "map_id": 923040000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/lionMask_enter.js",
+      "source_sha256": "d3971b199382eb7ed21f8a63b76558f3b6704b1b37b0545c859112ab1a86e266",
+      "lua": "portal/lionMask_enter.lua",
+      "lua_sha256": "209074ba1f41246c57378809c6e5ed969800172bdf1996be87136aff009c84bb",
+      "map_id": 749040001,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/ludi_SG1.js",
+      "source_sha256": "a3aa7ced0229ca2a9c19af54508c94b96775f13b9e31aa0cbe81140829cb8454",
+      "lua": "portal/ludi_SG1.lua",
+      "lua_sha256": "2bb8087939c6dc944f4a50dd32edadacd67153817729a37502eb5ed324993496",
+      "map_id": 220070000,
+      "portal_id": 5
+    },
+    {
+      "legacy": "portal/ludi_SG2.js",
+      "source_sha256": "fef7fdc6686ad00459bcbdcd8842df589db9848ca4e5d0250dac4cf9157b535d",
+      "lua": "portal/ludi_SG2.lua",
+      "lua_sha256": "574aacff2334c6d1cff5521926fb949137daef863a32adcd9c2829ec08d53073",
+      "map_id": 220060000,
+      "portal_id": 5
+    },
+    {
+      "legacy": "portal/MD_cakeoutGL.js",
+      "source_sha256": "c9c176896c49b7fabf9bbd9ce2e987e2873b0bafa49b6f23b7f3ad03499cc297",
+      "lua": "portal/MD_cakeoutGL.lua",
+      "lua_sha256": "baa648c2ffc7b4e7edb11c7d349654bfb498a707d2c5e503ba781052b259cf8c",
+      "map_id": 683000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/MD_cakeoutGL_5th.js",
+      "source_sha256": "2d7fc6ab92210efbd7cb4d2643c51e97a6b685d43ed9fc0a35d3515ffbe29262",
+      "lua": "portal/MD_cakeoutGL_5th.lua",
+      "lua_sha256": "f7644d0aadc15c98bf09f618564bb672a83ee50521a6db17a9b1e179c170c621",
+      "map_id": 684000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/merTutoFight.js",
+      "source_sha256": "a5ecfc218aa55e0149013d6fef860d2be756515e653bc987aa416c0eb0c2fea0",
+      "lua": "portal/merTutoFight.lua",
+      "lua_sha256": "949e57cb2673a7baed8703eb3615a7e67434fa6809f6b5303466fb701a987c4f",
+      "map_id": 910150003,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/merTutorDoor.js",
+      "source_sha256": "25d09a310f35ef05440b023ae648c6eccdd56be1da393720fa29682278d0c80b",
+      "lua": "portal/merTutorDoor.lua",
+      "lua_sha256": "962a30958355889e71eed0180ada62c576ce4e1c42c765bfcdfd60f5f238bd68",
+      "map_id": 910150002,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/met_in.js",
+      "source_sha256": "13fa2a6427072c8055976387a8278bf49f1b70d27a4be5658c5c1b663b412045",
+      "lua": "portal/met_in.lua",
+      "lua_sha256": "74ff8ac66417950a49f31dfa0b29edf7590dbb479d84cf8369cbde2468d45fd8",
+      "map_id": 910320000,
+      "portal_id": 2
+    },
+    {
+      "legacy": "portal/mihailPortal003.js",
+      "source_sha256": "3411d302e9e4459d593a757df3f4178865b921d9b0bb9c72867c912c8fe32ba5",
+      "lua": "portal/mihailPortal003.lua",
+      "lua_sha256": "72f395162092569e85f8524320b5cbf46509673bca571652975a7782b57e4179",
+      "map_id": 913070030,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/mihile1.js",
+      "source_sha256": "3411d302e9e4459d593a757df3f4178865b921d9b0bb9c72867c912c8fe32ba5",
+      "lua": "portal/mihile1.lua",
+      "lua_sha256": "a8800f02680f990ed4afd1488072cbb5e4ec985280683f6555be4c14eaba0a26",
+      "map_id": 913070030,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/mirrorCave.js",
+      "source_sha256": "84a335fede44b9ef5c5964bf362243702c670d1e136d73db91d25ee49169e55e",
+      "lua": "portal/mirrorCave.lua",
+      "lua_sha256": "b50bccf6c9faab62e932e9a8358030c92cbd9286fb53379a2606c7b7b1a91817",
+      "map_id": 914021000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/moveBefore.js",
+      "source_sha256": "84a335fede44b9ef5c5964bf362243702c670d1e136d73db91d25ee49169e55e",
+      "lua": "portal/moveBefore.lua",
+      "lua_sha256": "90d54ae8554948819b8da81fa8baad9218e1aeff8e42ffcd95dd6bab59073d4b",
+      "map_id": 914021000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/moveNext.js",
+      "source_sha256": "f359b2b407c778798fb0df2440f0df2e2ef36930648b4c75ec3136f4c6e6da3a",
+      "lua": "portal/moveNext.lua",
+      "lua_sha256": "a977995edc1e10f521df09085a8c2954803658099ca1dca532e1a9e761149582",
+      "map_id": 914021010,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/MY_SG1.js",
+      "source_sha256": "606c19b1d2895bf27431fe2593cdb4f028ce785c28cfbde9c4e97af7fba6fc95",
+      "lua": "portal/MY_SG1.lua",
+      "lua_sha256": "7ada385821f654bebb7ace8b299e8e302d2f9e6f12176c3177befe3eda3879f2",
+      "map_id": 551000100,
+      "portal_id": 1
+    },
+    {
+      "legacy": "portal/MY_SG2.js",
+      "source_sha256": "559459c2e487e436e4e75e386cbffed86765e78124bcb9a187f4105f5a8ab28a",
+      "lua": "portal/MY_SG2.lua",
+      "lua_sha256": "6ea92376224de4f833defb890407066318edf4ef1bcded8860e18fbd4aa553cd",
+      "map_id": 541020000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/obstacle.js",
+      "source_sha256": "33e9001d898e3345d0bc35407219589cfdd4c1ace9ede94fbdfc941f6e91a5cd",
+      "lua": "portal/obstacle.lua",
+      "lua_sha256": "c075de56e195a2bff2f5d58a07dd1fb50dd26ff97866c309136478d3e8d5d849",
+      "map_id": 106020400,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/oliviahallOut.js",
+      "source_sha256": "711ab70537ec42c320d9f845fe530af3ba90ced57b5bac57317f10dcbee3b1e3",
+      "lua": "portal/oliviahallOut.lua",
+      "lua_sha256": "b3814bdd77d70d42d26f4831a525688ff77fbd34ab7e572b92785923027a82c4",
+      "map_id": 682000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/out_animalShow.js",
+      "source_sha256": "19b48182e819f0c4d16d55f6079c9bbbcb9e138f7296b04df9b7d2a4260ecae0",
+      "lua": "portal/out_animalShow.lua",
+      "lua_sha256": "1d3790f59e227eabaee8fc75102a2a0793420457082103f0cd81910d951fd73b",
+      "map_id": 223030200,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/out_ghostHouse.js",
+      "source_sha256": "74526ade4bbc7154e79a95ea74b00379c55d45a4be3bda678d7a21d5ae489faf",
+      "lua": "portal/out_ghostHouse.lua",
+      "lua_sha256": "27d761031cc385235680a6bdc429b7b35a15a3641db7bea3e94d6375fc9e7791",
+      "map_id": 223010100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/out_guild.js",
+      "source_sha256": "edce7de8668394db59e61134da6b3dff39bf30a14778434ab3724e4a9bcd6c5d",
+      "lua": "portal/out_guild.lua",
+      "lua_sha256": "a95299dd3e50eb1f36d3f29161cb760feac97ba096ac5f2f90d02807a3424747",
+      "map_id": 200000300,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/out_knights.js",
+      "source_sha256": "ca67aa88508b47e7c8babdacb886dec7ae1b1f33fe7221326012334e7fb5a884",
+      "lua": "portal/out_knights.lua",
+      "lua_sha256": "facee4a8d6810fa1d4a447fd637ef0a616677dbb3f435647eae5ce0b7b7fc337",
+      "map_id": 271030010,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/out_pepeking.js",
+      "source_sha256": "d7ebdeaf9e2f87bbdf6b3f8965bcca01e1160ebc4f11e33f36df65a76aa6e006",
+      "lua": "portal/out_pepeking.lua",
+      "lua_sha256": "f225ff99803c4b24f3596491346f33ee5fec14f26840639e378643d623a854d8",
+      "map_id": 106021400,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/out_Xerxes.js",
+      "source_sha256": "e0f280e2ba84f8189eb2ca76487f7742ec2f5bf1705175730006392644e86587",
+      "lua": "portal/out_Xerxes.lua",
+      "lua_sha256": "cb6c9b9970f2df97d8a726dd207ad02473536e999d874662148d5cbd17e8152a",
+      "map_id": 200101400,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/OutElfKingRoom.js",
+      "source_sha256": "560459a81e2f9d7137a9876ca4572fe3e142af6c8bdb4e5532ce28b0c212cec6",
+      "lua": "portal/OutElfKingRoom.lua",
+      "lua_sha256": "0b19247975acd02cadb393cc9e42d22dff6e59b60d58f053576fc50ef6e43ef5",
+      "map_id": 101050000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/outNix1.js",
+      "source_sha256": "1b427b4ce3dd8417b9c9cd6e66297a2ad19a850367c2b3014800d82fae9c4291",
+      "lua": "portal/outNix1.lua",
+      "lua_sha256": "f5d71c9730294e2472b0641700797a8dfb1c6ff13e06cf6749134dd6386881f0",
+      "map_id": 240020101,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/outNix2.js",
+      "source_sha256": "95b944ecfd4d40be64001b2c3b740ec627c02330ca11d0ba58a2e09e5e3aa575",
+      "lua": "portal/outNix2.lua",
+      "lua_sha256": "d44b60aa679cbc8257b3438f154043ccd63f29e39693d53d2a19658b147d3d2e",
+      "map_id": 240020401,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/outVanLeonPrison.js",
+      "source_sha256": "c1c0d7bd5efc7398f2c81bff0ad2a2eae12223fe48325fbf66c31eef4e0faf08",
+      "lua": "portal/outVanLeonPrison.lua",
+      "lua_sha256": "dfbe8d8255be8b541c5507fd172dcdd031b28dcdccc7aa3128420edc33c02322",
+      "map_id": 211070100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/party3_jail1.js",
+      "source_sha256": "1369a499de20e4522f7eeb9e4b479e4ce7e60252271c1494ae5098a4ac24b699",
+      "lua": "portal/party3_jail1.lua",
+      "lua_sha256": "1f67008cadf770eedd887449605d9a65fa744909942657b76c79ca332a1b3b52",
+      "map_id": 920010910,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/party3_jail2.js",
+      "source_sha256": "15238f7b3f01e518e3aeea51ae1928fef2d68859c54b15dc50c109b74e937630",
+      "lua": "portal/party3_jail2.lua",
+      "lua_sha256": "c80137478b885da13db774ed26a4924012472e4502db2482fd34fed5f38e988e",
+      "map_id": 920010920,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/party3_jail3.js",
+      "source_sha256": "2540ff48c3351fb49d0d8fc8b55347f7cef892733e55043cc25057b33ee10d74",
+      "lua": "portal/party3_jail3.lua",
+      "lua_sha256": "4703f3b2f5f4c869805d8c4f8654d36eeb7bd6d14f2526d46b32379de4b7e17c",
+      "map_id": 920010930,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/party6_stage800.js",
+      "source_sha256": "7d7cdb2dc0edb0e2af16ee63624f47a53e49e998ac8d628f0e13d99ad1469ecc",
+      "lua": "portal/party6_stage800.lua",
+      "lua_sha256": "0c5839d4fcbe8960dd8e78790674049b24dbecf886cb2f7fa5e5f765419b76bc",
+      "map_id": 300030100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/pc_out.js",
+      "source_sha256": "f9309f587bf9dca163b6efeb99141fdd50d4fd0750733c48fc527b43431fbab6",
+      "lua": "portal/pc_out.lua",
+      "lua_sha256": "0323400ea1bee20f7fffb9aae1b77769e5a672da3851b7bfb8b85065f4e89a38",
+      "map_id": 103000000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/Pinkin.js",
+      "source_sha256": "629665883157f85f2c05b98210dc4670cd5f505e629f8b8efc5dda9157fa34f3",
+      "lua": "portal/Pinkin.lua",
+      "lua_sha256": "9631e6ed91c2af9f133e43981fa66110d427340073850530061f78fd31ff9473",
+      "map_id": 270050000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/prisonBreak_out0.js",
+      "source_sha256": "368508652691213ed82eecf33565642b7d5e390ff6ef9701052114b6c75d1b91",
+      "lua": "portal/prisonBreak_out0.lua",
+      "lua_sha256": "b3c5e72b8d8cc720f89cfcf4f960b00f960344dd1989cc7b031a83d60ed62e94",
+      "map_id": 921160000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/q3366out.js",
+      "source_sha256": "c1a241519a3808fe01b89b9051185fec971600c0f5985c46cb92183f45c94591",
+      "lua": "portal/q3366out.lua",
+      "lua_sha256": "6b82aa7ce66689ac21a0edf981f6f0c96ba601f97ff548b0149239ca32f013d4",
+      "map_id": 926130000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/q3367out.js",
+      "source_sha256": "c1a241519a3808fe01b89b9051185fec971600c0f5985c46cb92183f45c94591",
+      "lua": "portal/q3367out.lua",
+      "lua_sha256": "29a98d186a34b75e112d652a5984407ba617678abf25bd7d6ba3f34bcf75de16",
+      "map_id": 926130000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/q3368out.js",
+      "source_sha256": "c1a241519a3808fe01b89b9051185fec971600c0f5985c46cb92183f45c94591",
+      "lua": "portal/q3368out.lua",
+      "lua_sha256": "b379f2627c6d482f3de688a508432e3750e0ed254c6b03e70c888b1b6b893326",
+      "map_id": 926130000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/serch_Colosseum.js",
+      "source_sha256": "75a90dc0fb33976d5dbc84a285903104dae3858c6b9ec1caf7525e6a36c84ad6",
+      "lua": "portal/serch_Colosseum.lua",
+      "lua_sha256": "d9ad6757aed2b9b2e33fe4c1892ee7194f567f649a1172e3f0dabfc6059eb73c",
+      "map_id": 200101100,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/Sky_ReviveOut.js",
+      "source_sha256": "71a91f2c04decb56598e6848663ef8ff8bcf9f607c024bf9fc48d6adb7e92656",
+      "lua": "portal/Sky_ReviveOut.lua",
+      "lua_sha256": "ca6d78f84debac4b073af1749dec366c036edffc7899253b531619031052fd15",
+      "map_id": 240080000,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/spirit00.js",
+      "source_sha256": "c0e1b3837cd82e6c8c896b7981b2be37c6afc7f5042e70d3eb10698977f0e5ea",
+      "lua": "portal/spirit00.lua",
+      "lua_sha256": "531030afc7ccda674dcbaed5a9883d6df74cd7eeff8beadbed443048156bb7c7",
+      "map_id": 271030202,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/TD_MD_Bgate.js",
+      "source_sha256": "050cee3e18fd53b597381c909662912e60c0b3490692d68c4779c7cffe93eeb7",
+      "lua": "portal/TD_MD_Bgate.lua",
+      "lua_sha256": "cc60cfd69baea0e5dab2f511051d4f12721e4900f396c4ce2594ddb1fb559206",
+      "map_id": 106021300,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/TokPQ1.js",
+      "source_sha256": "07acd2fc5ddce8bc3c961606da90201f164094de76eac8101259e19a454fb8f3",
+      "lua": "portal/TokPQ1.lua",
+      "lua_sha256": "21bc3ce9009fd7c508ae7a296c6245f6b02c2f9df5cd3a10db3513a779711e14",
+      "map_id": 802000802,
+      "portal_id": 0
+    },
+    {
+      "legacy": "portal/Van_SG2.js",
+      "source_sha256": "b1550bdf8e2f799d40b792ad5aaef64eb512747f9db2b1aa1390070d79e6f532",
+      "lua": "portal/Van_SG2.lua",
+      "lua_sha256": "88d2570259672cc3d7cb4bdcda10545507757c9a372814872fcabb286518c2d2",
+      "map_id": 211060100,
+      "portal_id": 0
+    }
+  ]
+}

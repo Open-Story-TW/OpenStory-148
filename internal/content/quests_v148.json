@@ -1,0 +1,41 @@
+{
+ "source": "TMS v148 Quest.wz (Check.img, Act.img, QuestInfo.img without dialogue text)",
+ "quests": [
+  {
+   "id": 2622,
+   "check": "<imgdir name=\"2622\"><imgdir name=\"0\"><int name=\"lvmin\" value=\"20\" /><int name=\"subJobFlags\" value=\"2\" /><int name=\"normalAutoStart\" value=\"1\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"job\"><int name=\"0\" value=\"400\" /></imgdir></imgdir><imgdir name=\"1\"><int name=\"npc\" value=\"1056000\" /></imgdir></imgdir>",
+   "act": "<imgdir name=\"2622\"><imgdir name=\"0\"></imgdir><imgdir name=\"1\"></imgdir></imgdir>",
+   "info": "<imgdir name=\"2622\"><string name=\"name\" value=\"雙刀流\" /><int name=\"area\" value=\"14\" /><int name=\"autoStart\" value=\"1\" /><string name=\"type\" value=\"[轉職]\" /></imgdir>"
+  },
+  {
+   "id": 2623,
+   "check": "<imgdir name=\"2623\"><imgdir name=\"0\"><string name=\"startscript\" value=\"q2623s\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"quest\"><imgdir name=\"0\"><int name=\"id\" value=\"2622\" /><int name=\"state\" value=\"2\" /></imgdir></imgdir></imgdir><imgdir name=\"1\"><string name=\"endscript\" value=\"q2623e\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"item\"><imgdir name=\"0\"><int name=\"id\" value=\"4032616\" /><int name=\"count\" value=\"1\" /></imgdir></imgdir></imgdir></imgdir>",
+   "act": "<imgdir name=\"2623\"><imgdir name=\"0\"></imgdir><imgdir name=\"1\"></imgdir></imgdir>",
+   "info": "<imgdir name=\"2623\"><string name=\"name\" value=\"下忍\" /><int name=\"area\" value=\"14\" /><string name=\"type\" value=\"[轉職]\" /></imgdir>"
+  },
+  {
+   "id": 2637,
+   "check": "<imgdir name=\"2637\"><imgdir name=\"0\"><int name=\"lvmin\" value=\"30\" /><int name=\"normalAutoStart\" value=\"1\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"job\"><int name=\"0\" value=\"430\" /></imgdir></imgdir><imgdir name=\"1\"><int name=\"npc\" value=\"1056000\" /></imgdir></imgdir>",
+   "act": "<imgdir name=\"2637\"><imgdir name=\"0\"></imgdir><imgdir name=\"1\"></imgdir></imgdir>",
+   "info": "<imgdir name=\"2637\"><string name=\"name\" value=\"影武者之路1\" /><int name=\"area\" value=\"14\" /><int name=\"autoStart\" value=\"1\" /><string name=\"type\" value=\"[轉職]\" /></imgdir>"
+  },
+  {
+   "id": 2638,
+   "check": "<imgdir name=\"2638\"><imgdir name=\"0\"><string name=\"startscript\" value=\"q2638s\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"quest\"><imgdir name=\"0\"><int name=\"id\" value=\"2637\" /><int name=\"state\" value=\"2\" /></imgdir></imgdir></imgdir><imgdir name=\"1\"><string name=\"endscript\" value=\"q2638e\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"item\"><imgdir name=\"0\"><int name=\"id\" value=\"4031013\" /><int name=\"count\" value=\"30\" /></imgdir></imgdir></imgdir></imgdir>",
+   "act": "<imgdir name=\"2638\"><imgdir name=\"0\"></imgdir><imgdir name=\"1\"></imgdir></imgdir>",
+   "info": "<imgdir name=\"2638\"><string name=\"name\" value=\"影武者之路2\" /><int name=\"area\" value=\"14\" /><string name=\"type\" value=\"[轉職]\" /></imgdir>"
+  },
+  {
+   "id": 2641,
+   "check": "<imgdir name=\"2641\"><imgdir name=\"0\"><int name=\"lvmin\" value=\"55\" /><int name=\"npc\" value=\"1056000\" /><int name=\"normalAutoStart\" value=\"1\" /><imgdir name=\"job\"><int name=\"0\" value=\"431\" /></imgdir></imgdir><imgdir name=\"1\"><int name=\"npc\" value=\"1056000\" /></imgdir></imgdir>",
+   "act": "<imgdir name=\"2641\"><imgdir name=\"0\"></imgdir><imgdir name=\"1\"></imgdir></imgdir>",
+   "info": "<imgdir name=\"2641\"><string name=\"name\" value=\"上忍之路1\" /><int name=\"area\" value=\"14\" /><int name=\"autoStart\" value=\"1\" /><string name=\"type\" value=\"[轉職]\" /></imgdir>"
+  },
+  {
+   "id": 2642,
+   "check": "<imgdir name=\"2642\"><imgdir name=\"0\"><int name=\"npc\" value=\"1056000\" /><imgdir name=\"quest\"><imgdir name=\"0\"><int name=\"id\" value=\"2641\" /><int name=\"state\" value=\"2\" /></imgdir></imgdir></imgdir><imgdir name=\"1\"><string name=\"endscript\" value=\"q2642e\" /><int name=\"npc\" value=\"1056000\" /><imgdir name=\"mob\"><imgdir name=\"0\"><int name=\"id\" value=\"6230600\" /><int name=\"count\" value=\"99\" /></imgdir></imgdir></imgdir></imgdir>",
+   "act": "<imgdir name=\"2642\"><imgdir name=\"0\"></imgdir><imgdir name=\"1\"></imgdir></imgdir>",
+   "info": "<imgdir name=\"2642\"><string name=\"name\" value=\"上忍之路2\" /><int name=\"area\" value=\"14\" /><string name=\"type\" value=\"[轉職]\" /></imgdir>"
+  }
+ ]
+}

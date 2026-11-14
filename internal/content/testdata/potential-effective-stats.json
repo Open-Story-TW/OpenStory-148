@@ -1,0 +1,2122 @@
+{
+  "version": 1,
+  "status": "source foundation and partial consumers; isolated PostgreSQL verified; deployed for bounded QA; live feature MCP pending",
+  "source": {
+    "path": "Item.wz/ItemOption.img.xml",
+    "sha256": "67ab77bf05353362508afbc8651a8a03d9b8eabf515c62f341d9eecbb3b03ffe"
+  },
+  "counts": {
+    "options": 206,
+    "attributes": 52,
+    "pending_runtime_rows": 50,
+    "other_rows_not_a_completion_claim": 156
+  },
+  "attribute_support": {
+    "incSTR": "numeric",
+    "incDEX": "numeric",
+    "incINT": "numeric",
+    "incLUK": "numeric",
+    "incSTRr": "numeric",
+    "incDEXr": "numeric",
+    "incINTr": "numeric",
+    "incLUKr": "numeric",
+    "incMHP": "numeric",
+    "incMMP": "numeric",
+    "incMHPr": "numeric",
+    "incMMPr": "numeric",
+    "incPAD": "numeric",
+    "incMAD": "numeric",
+    "incPADr": "numeric",
+    "incMADr": "numeric",
+    "incACC": "numeric",
+    "incACCr": "numeric",
+    "incCr": "numeric",
+    "incCriticaldamageMax": "numeric",
+    "ignoreTargetDEF": "numeric",
+    "incDAMr": "numeric",
+    "incPDD": "effective_view_only",
+    "incMDD": "effective_view_only",
+    "incPDDr": "effective_view_only",
+    "incMDDr": "effective_view_only",
+    "incSpeed": "effective_view_only",
+    "incJump": "effective_view_only",
+    "incEVAr": "effective_view_only",
+    "incCriticaldamageMin": "effective_view_only",
+    "incAsrR": "effective_view_only",
+    "incTerR": "effective_view_only",
+    "incEVA": "effective_view_only",
+    "RecoveryHP": "numeric",
+    "RecoveryMP": "numeric",
+    "RecoveryUP": "numeric",
+    "HP": "pending_runtime_effect",
+    "MP": "pending_runtime_effect",
+    "ignoreDAM": "pending_runtime_effect",
+    "ignoreDAMr": "pending_runtime_effect",
+    "DAMreflect": "pending_runtime_effect",
+    "incAllskill": "pending_runtime_effect",
+    "mpconReduce": "numeric",
+    "reduceCooltime": "numeric",
+    "incMesoProp": "pending_runtime_effect",
+    "incRewardProp": "pending_runtime_effect",
+    "attackType": "pending_runtime_effect",
+    "level": "pending_runtime_effect",
+    "prop": "pending_runtime_effect",
+    "time": "pending_runtime_effect",
+    "face": "pending_runtime_effect",
+    "boss": "source_selector"
+  },
+  "rows": [
+    {
+      "option_id": 1,
+      "attributes": [
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 2,
+      "attributes": [
+        "incDEX"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 3,
+      "attributes": [
+        "incINT"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 4,
+      "attributes": [
+        "incLUK"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 5,
+      "attributes": [
+        "incMHP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 6,
+      "attributes": [
+        "incMMP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 7,
+      "attributes": [
+        "incACC"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 8,
+      "attributes": [
+        "incEVA"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 9,
+      "attributes": [
+        "incSpeed"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10,
+      "attributes": [
+        "incJump"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 11,
+      "attributes": [
+        "incPAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 12,
+      "attributes": [
+        "incMAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 13,
+      "attributes": [
+        "incPDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 14,
+      "attributes": [
+        "incMDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 901,
+      "attributes": [
+        "face",
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 902,
+      "attributes": [
+        "face",
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 903,
+      "attributes": [
+        "face",
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 904,
+      "attributes": [
+        "face",
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 905,
+      "attributes": [
+        "face",
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10001,
+      "attributes": [
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10002,
+      "attributes": [
+        "incDEX"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10003,
+      "attributes": [
+        "incINT"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10004,
+      "attributes": [
+        "incLUK"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10005,
+      "attributes": [
+        "incMHP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10006,
+      "attributes": [
+        "incMMP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10007,
+      "attributes": [
+        "incACC"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10008,
+      "attributes": [
+        "incEVA"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10009,
+      "attributes": [
+        "incSpeed"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10010,
+      "attributes": [
+        "incJump"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10011,
+      "attributes": [
+        "incPAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10012,
+      "attributes": [
+        "incMAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10013,
+      "attributes": [
+        "incPDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10014,
+      "attributes": [
+        "incMDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10041,
+      "attributes": [
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10042,
+      "attributes": [
+        "incDEXr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10043,
+      "attributes": [
+        "incINTr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10044,
+      "attributes": [
+        "incLUKr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10045,
+      "attributes": [
+        "incMHPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10046,
+      "attributes": [
+        "incMMPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10047,
+      "attributes": [
+        "incACCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10048,
+      "attributes": [
+        "incEVAr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10051,
+      "attributes": [
+        "incPADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10052,
+      "attributes": [
+        "incMADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10053,
+      "attributes": [
+        "incPDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10054,
+      "attributes": [
+        "incMDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 10055,
+      "attributes": [
+        "incCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10070,
+      "attributes": [
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10081,
+      "attributes": [
+        "incDEX",
+        "incINT",
+        "incLUK",
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10151,
+      "attributes": [
+        "RecoveryHP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10156,
+      "attributes": [
+        "RecoveryMP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 10201,
+      "attributes": [
+        "HP",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10206,
+      "attributes": [
+        "MP",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10221,
+      "attributes": [
+        "attackType",
+        "level",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10226,
+      "attributes": [
+        "attackType",
+        "level",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10231,
+      "attributes": [
+        "attackType",
+        "level",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10236,
+      "attributes": [
+        "attackType",
+        "level",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10241,
+      "attributes": [
+        "attackType",
+        "level",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10246,
+      "attributes": [
+        "attackType",
+        "level",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 10291,
+      "attributes": [
+        "ignoreTargetDEF"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20001,
+      "attributes": [
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20002,
+      "attributes": [
+        "incDEX"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20003,
+      "attributes": [
+        "incINT"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20004,
+      "attributes": [
+        "incLUK"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20005,
+      "attributes": [
+        "incMHP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20006,
+      "attributes": [
+        "incMMP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20007,
+      "attributes": [
+        "incACC"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20008,
+      "attributes": [
+        "incEVA"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20009,
+      "attributes": [
+        "incSpeed"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20010,
+      "attributes": [
+        "incJump"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20011,
+      "attributes": [
+        "incPAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20012,
+      "attributes": [
+        "incMAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20013,
+      "attributes": [
+        "incPDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20014,
+      "attributes": [
+        "incMDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20041,
+      "attributes": [
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20042,
+      "attributes": [
+        "incDEXr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20043,
+      "attributes": [
+        "incINTr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20044,
+      "attributes": [
+        "incLUKr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20045,
+      "attributes": [
+        "incMHPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20046,
+      "attributes": [
+        "incMMPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20047,
+      "attributes": [
+        "incACCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20048,
+      "attributes": [
+        "incEVAr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20051,
+      "attributes": [
+        "incPADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20052,
+      "attributes": [
+        "incMADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20053,
+      "attributes": [
+        "incPDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20054,
+      "attributes": [
+        "incMDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 20055,
+      "attributes": [
+        "incCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20070,
+      "attributes": [
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20086,
+      "attributes": [
+        "incDEXr",
+        "incINTr",
+        "incLUKr",
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20201,
+      "attributes": [
+        "HP",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20206,
+      "attributes": [
+        "MP",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20291,
+      "attributes": [
+        "ignoreTargetDEF"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 20351,
+      "attributes": [
+        "ignoreDAM",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20352,
+      "attributes": [
+        "ignoreDAM",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20353,
+      "attributes": [
+        "ignoreDAM",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20366,
+      "attributes": [
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20396,
+      "attributes": [
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20401,
+      "attributes": [
+        "HP",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 20406,
+      "attributes": [
+        "MP",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30001,
+      "attributes": [
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30002,
+      "attributes": [
+        "incDEX"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30003,
+      "attributes": [
+        "incINT"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30004,
+      "attributes": [
+        "incLUK"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30005,
+      "attributes": [
+        "incMHP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30006,
+      "attributes": [
+        "incMMP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30007,
+      "attributes": [
+        "incACC"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30008,
+      "attributes": [
+        "incEVA"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30009,
+      "attributes": [
+        "incSpeed"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30010,
+      "attributes": [
+        "incJump"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30011,
+      "attributes": [
+        "incPAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30012,
+      "attributes": [
+        "incMAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30013,
+      "attributes": [
+        "incPDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30014,
+      "attributes": [
+        "incMDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30041,
+      "attributes": [
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30042,
+      "attributes": [
+        "incDEXr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30043,
+      "attributes": [
+        "incINTr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30044,
+      "attributes": [
+        "incLUKr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30045,
+      "attributes": [
+        "incMHPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30046,
+      "attributes": [
+        "incMMPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30047,
+      "attributes": [
+        "incACCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30048,
+      "attributes": [
+        "incEVAr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30051,
+      "attributes": [
+        "incPADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30052,
+      "attributes": [
+        "incMADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30053,
+      "attributes": [
+        "incPDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30054,
+      "attributes": [
+        "incMDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 30055,
+      "attributes": [
+        "incCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30070,
+      "attributes": [
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30086,
+      "attributes": [
+        "incDEXr",
+        "incINTr",
+        "incLUKr",
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30106,
+      "attributes": [
+        "incAllskill"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30107,
+      "attributes": [
+        "incAllskill"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30291,
+      "attributes": [
+        "ignoreTargetDEF"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30356,
+      "attributes": [
+        "ignoreDAMr",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30357,
+      "attributes": [
+        "ignoreDAMr",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30366,
+      "attributes": [
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30371,
+      "attributes": [
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30551,
+      "attributes": [
+        "RecoveryUP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30601,
+      "attributes": [
+        "boss",
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30602,
+      "attributes": [
+        "boss",
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 30701,
+      "attributes": [
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 30702,
+      "attributes": [
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 31001,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 31002,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 31003,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 31004,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40001,
+      "attributes": [
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40002,
+      "attributes": [
+        "incDEX"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40003,
+      "attributes": [
+        "incINT"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40004,
+      "attributes": [
+        "incLUK"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40005,
+      "attributes": [
+        "incMHP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40006,
+      "attributes": [
+        "incMMP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40007,
+      "attributes": [
+        "incACC"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40008,
+      "attributes": [
+        "incEVA"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40009,
+      "attributes": [
+        "incSpeed"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40010,
+      "attributes": [
+        "incJump"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40011,
+      "attributes": [
+        "incPAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40012,
+      "attributes": [
+        "incMAD"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40013,
+      "attributes": [
+        "incPDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40014,
+      "attributes": [
+        "incMDD"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40041,
+      "attributes": [
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40042,
+      "attributes": [
+        "incDEXr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40043,
+      "attributes": [
+        "incINTr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40044,
+      "attributes": [
+        "incLUKr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40045,
+      "attributes": [
+        "incMHPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40046,
+      "attributes": [
+        "incMMPr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40047,
+      "attributes": [
+        "incACCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40048,
+      "attributes": [
+        "incEVAr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40051,
+      "attributes": [
+        "incPADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40052,
+      "attributes": [
+        "incMADr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40053,
+      "attributes": [
+        "incPDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40054,
+      "attributes": [
+        "incMDDr"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40055,
+      "attributes": [
+        "incCr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40056,
+      "attributes": [
+        "incCriticaldamageMin"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40057,
+      "attributes": [
+        "incCriticaldamageMax"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40070,
+      "attributes": [
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40081,
+      "attributes": [
+        "incDEX",
+        "incINT",
+        "incLUK",
+        "incSTR"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40086,
+      "attributes": [
+        "incDEXr",
+        "incINTr",
+        "incLUKr",
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40106,
+      "attributes": [
+        "incAllskill"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40107,
+      "attributes": [
+        "incAllskill"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40111,
+      "attributes": [
+        "incTerR"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40116,
+      "attributes": [
+        "incAsrR"
+      ],
+      "pending_runtime": false,
+      "view_only": true
+    },
+    {
+      "option_id": 40291,
+      "attributes": [
+        "ignoreTargetDEF"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40292,
+      "attributes": [
+        "ignoreTargetDEF"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40356,
+      "attributes": [
+        "ignoreDAMr",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40357,
+      "attributes": [
+        "ignoreDAMr",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40366,
+      "attributes": [
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40371,
+      "attributes": [
+        "prop",
+        "time"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40376,
+      "attributes": [
+        "DAMreflect",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40377,
+      "attributes": [
+        "DAMreflect",
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40501,
+      "attributes": [
+        "mpconReduce"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40502,
+      "attributes": [
+        "mpconReduce"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40551,
+      "attributes": [
+        "RecoveryUP"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40556,
+      "attributes": [
+        "reduceCooltime"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40557,
+      "attributes": [
+        "reduceCooltime"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40601,
+      "attributes": [
+        "boss",
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40602,
+      "attributes": [
+        "boss",
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40603,
+      "attributes": [
+        "boss",
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 40650,
+      "attributes": [
+        "incMesoProp"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40656,
+      "attributes": [
+        "incRewardProp"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40701,
+      "attributes": [
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40702,
+      "attributes": [
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 40703,
+      "attributes": [
+        "prop"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 41005,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 41006,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 41007,
+      "attributes": [
+        "level"
+      ],
+      "pending_runtime": true,
+      "view_only": false
+    },
+    {
+      "option_id": 60001,
+      "attributes": [
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 60002,
+      "attributes": [
+        "incDEXr",
+        "incINTr",
+        "incLUKr",
+        "incSTRr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    },
+    {
+      "option_id": 60003,
+      "attributes": [
+        "boss",
+        "incDAMr"
+      ],
+      "pending_runtime": false,
+      "view_only": false
+    }
+  ],
+  "actual_consumers": {
+    "checked_entry": [
+      "combat.AttackStats -> CheckedStatsProvider -> skills.PlayerStatsChecked",
+      "content.PreparePotentialPhysicalMaximum -> shared world/Store bound",
+      "content.DerivedVitals -> effective maxima only"
+    ],
+    "four_stats": "Equipment flat and percent phase; existing passive/MapleWarrior/flat-buff phases preserved. INT receives magic-attack percent per Java reference.",
+    "hp_mp": "Physical worn flat then combined passive/potential/HyperBody percentage once-floor; base unchanged, no healing; existing persistence clamps current vitals.",
+    "attack": "Physical/magic base stat/attack inputs, per-line normal/boss damage multipliers and ignore-defense in actual combat ceiling; native critical raw bit routes full-line parser and critical maximum affects CritCeiling. CritRate itself has no server probability consumer.",
+    "accuracy": "Effective view only: current server combat has no Accuracy consumer; actual native hit/miss probability is unverified.",
+    "legacy": "0/1001004/1001005 active potential or native critical uses registered generic full-raw-line pipeline; absent noncritical keeps old legacy. Shared content maximum also revalidates old compatibility Store families.",
+    "fixed_snails": "1000 validates unknown/pending potential and keeps fixed damage; its MP cost uses the shared resource calculation without an invented damage multiplier.",
+    "resource_cost": "mpconReduce and reduceCooltime enter shared self/party/legacy/generic cost calculation and exact Store revalidation. Native integer ordering and the40-skill MPConsume predicate are separate from Java legacy behavior. Already-paid registered summons cost0; general Prepare is never rerun in Store. Four real PG cases passed in recovered full suite; actual client MP/CD acceptance pending.",
+    "recovery": "RecoveryHP/MP enter checked potential0x92 flat recovery independently from ordinary0x91 and the two reviewed4s warrior passive sources. Actual current HP/MP mutation, expiry clamp and admitted component caps have an opt-in server evidence record; native observer pages must match exact body SHA/scope. RecoveryUP is wired only for the positive fixedHP item source described in item_recovery, not a multiplier on91/92 or4s recovery; seven item PG cases passed, but native arithmetic and live MCP remain pending. Neither mutation logs nor outgoing native packets prove durability, cadence or complete original-client policy.",
+    "item_recovery": "Positive primary item fixedHP scales once by the additive active RecoveryUP plus original three learned-passive potion buckets, before hpR/cap. MP, hpR, skill Heal, native91/92 and Java4s sources are not multiplied. Preserved14110003 rows follow Java1400/1410/1411/1412 consumption independently of new-learning eligibility. SQL Apply/immutable receipt/Resolve and exact visit publication are wired; integrated source checks passed; seven real PG cases passed; live MCP pending. Native item RecoveryUP arithmetic remains unproven.",
+    "avoidability": "Native row11 incEVA has an original five-option flat bucket; checked effective stats add it once alongside gear/passive/buff flats. Native row25 incEVAr is a percentage of complete EVA, not standalone dodge probability; potential percentage is exposed separately from server DodgeRate. Full native base/buff phases, native miss ingress and RNG/HP/MCP acceptance remain pending; no new server random miss is introduced."
+  },
+  "incomplete_consumers": {
+    "effective_view_only": [
+      "PDD/MDD and their percentages: no authoritative potential contact-defense consumer",
+      "speed/jump: no new authoritative movement enforcement",
+      "incEVA flat and incEVAr percentage: checked contribution view only; complete native base/percent/miss and HP acceptance pending",
+      "crit minimum: exposed only; no new native-random lower-bound rejection",
+      "ASR/TER: no authoritative potential disease/resistance consumer",
+      "incACC/incACCr and incCr: effective fields only; server does not generate/validate hit or critical probability"
+    ],
+    "pending_runtime": [
+      "HP/MP hit procs",
+      "ignoreDAM/ignoreDAMr and reflection",
+      "incAllskill/skill grants and level/attackType effects",
+      "meso/drop-rate effects",
+      "prop/time/face event hooks, including time-only invulnerability/abnormal-duration options"
+    ],
+    "coverage_warning": "50 rows contain explicit pending attributes; the other156 include view-only and other classifications and are not156 completed options. Native flat EVA mapping is proved, but complete avoidability/OnHit/miss/RNG/HP acceptance is not. Added view separation passed independent scoped source review and the source gate and recovered full isolated PG suite; actual MCP remains pending."
+  },
+  "latest_source_checks": {
+    "manifest": ".local/evidence/avoid-co-checks-20261106-r1/manifest.json",
+    "passed_tests": 1592,
+    "skipped_tests": 193,
+    "vet": "PASS",
+    "diff_check": "PASS",
+    "source_inputs": 1198,
+    "source_inputs_still_identical": true,
+    "independent_review": ".local/evidence/co-self-and-inc-eva-independent-review-20261106.json",
+    "independent_review_sha256": "F856595B499C0662F5E0B74A3189C060337D4573379C0A53755BA9219E4EB7D7",
+    "pg": "NOT RUN",
+    "mcp": "NOT RUN",
+    "historical_pre_recovery_gate": true
+  },
+  "limitations": [
+    "Original Java source phase/order is not a claim of complete native secondary-stat parity.",
+    "Damage factors use conservative floating-point ceiling; no claim to reproduce random rolls/proc probability.",
+    "Source default potential generation gate remains off; current bounded QA world processes explicitly enable it for evidence CIDs4910/4917 and fulltrace. This does not close P5 requirements.",
+    "Original PostgreSQL/Redis restored; full isolated PostgreSQL suite passed and public0072 applied. No new live feature acceptance in this batch.",
+    "Recast, equip/unequip, expiry/relogin, critical hit and dual-character actual-benefit/FX acceptance remain required.",
+    "Opaque unknown revealed tiers0/5..15 are preserved in assets but rejected by the checked physical-worn resolver; hidden/bag/expired/cash sources remain excluded.",
+    "Sparse revealed fifth/fourth option holding a Java sealed FFxx marker is preserved but currently rejected as unknown source; do not skip every ID>=60000 because native fixed60001..60003 are valid."
+  ],
+  "latest_pg_validation": {
+    "status": "PASS_ISOLATED_PG",
+    "manifest": ".local/evidence/recovered-full-pg-20261106-r3/manifest.json",
+    "manifest_sha256": "b05f0bac0e8dbf4d9ff3c943b7ea9ce87dde3f583f4cbe019afbaa897c46e764",
+    "commit": "feafdf64770b6b627bb41840d2a1ea8079e3d846",
+    "passed_tests": 1819,
+    "skipped_tests": 1,
+    "skipped": [
+      {
+        "package": "maple-go-server/internal/content",
+        "test": "TestSkillRangeAndInfoSeedMatchesWZ"
+      }
+    ],
+    "skip_reason": "Existing content test uses a fixed Java Legacy WZ export path that was not present; not counted as PASS.",
+    "vet": "PASS",
+    "diff_check": "PASS",
+    "source_inputs": 1199,
+    "source_inputs_still_identical": true,
+    "outer_schema_removed": true,
+    "new_test_schemas_remaining": [],
+    "public_tables_and_sequences_unchanged": true,
+    "public_before_sha256": "8f18f5c7a586c0b14d7a396813c61461b6918cd8a08d408ba58c294f5d27c4dd",
+    "public_after_sha256": "8f18f5c7a586c0b14d7a396813c61461b6918cd8a08d408ba58c294f5d27c4dd",
+    "r1_failure_receipt_preserved": ".local/evidence/recovered-full-pg-20261106-r1/manifest.json",
+    "live_feature_mcp": "PENDING"
+  },
+  "pg_validation_history": [
+    {
+      "status": "PASS_ISOLATED_PG",
+      "manifest": ".local/evidence/recovered-full-pg-20261106-r2/manifest.json",
+      "manifest_sha256": "bc6715108421140e1734975abd52b7054b7b0af8c8d8a8be04ed5ddb49a415d4",
+      "commit": "7495b4e73ca42d9b5e14a91db0123c86ddf32567",
+      "passed_tests": 1817,
+      "skipped_tests": 1,
+      "skipped": [
+        {
+          "package": "maple-go-server/internal/content",
+          "test": "TestSkillRangeAndInfoSeedMatchesWZ"
+        }
+      ],
+      "skip_reason": "Existing content test uses a fixed Java Legacy WZ export path that was not present; not counted as PASS.",
+      "vet": "PASS",
+      "diff_check": "PASS",
+      "source_inputs": 1198,
+      "source_inputs_still_identical": true,
+      "outer_schema_removed": true,
+      "new_test_schemas_remaining": [],
+      "public_tables_and_sequences_unchanged": true,
+      "r1_failure_receipt_preserved": ".local/evidence/recovered-full-pg-20261106-r1/manifest.json",
+      "live_feature_mcp": "PENDING"
+    }
+  ],
+  "runtime_history": [
+    {
+      "commit": "7495b4e73ca42d9b5e14a91db0123c86ddf32567",
+      "build_manifest": ".local/builds/resume-20261106-recovered-r1/build-manifest.json",
+      "build_manifest_scope": "Compiled artifact receipt; deployment is proved separately by rollout receipts.",
+      "rollout_receipts": [
+        ".local/evidence/go-restart-20261105-232027-recovered-p5-20261106-worlds.json",
+        ".local/evidence/go-restart-20261105-232036-recovered-p5-20261106-cashshop.json",
+        ".local/evidence/go-restart-20261105-232039-recovered-p5-20261106-login.json"
+      ],
+      "artifact_sha256": {
+        "world": "e02f7300ed4be9f06c116002746933eb2879e6a8b76d74ba26234acc4077083f",
+        "login": "ba89e2bf5dbc56b38316e95f3b8816f3acad4e5d28a5e5fe50ca4f469d950277",
+        "cashshop": "b16a1a048c8aac88ff551a5eb41aa4c87bb70ce1f13968db714fd47a04b05593",
+        "migrate": "62b651528648a93c875742b32f63ef741e983197eb1897b9991cd1b5b7cd4701"
+      },
+      "java_unchanged": true,
+      "source_default_potential_enabled": false,
+      "qa_evidence_character_ids": [
+        4910,
+        4917
+      ],
+      "local_environment_file_modified": false,
+      "p5_complete": false,
+      "last_deployment_ready_services": [
+        "world0",
+        "world1",
+        "cashshop",
+        "login"
+      ],
+      "last_launch_qa_process_potential_enabled": true,
+      "go_services_running": false,
+      "current_status": "gracefully_stopped_for_trace_diagnosis"
+    },
+    {
+      "commit": "feafdf64770b6b627bb41840d2a1ea8079e3d846",
+      "build_manifest": ".local/builds/resume-20261106-full-trace-r1/build-manifest.json",
+      "build_manifest_scope": "Compiled artifact receipt; deployment is proved separately by rollout receipts.",
+      "rollout_receipts": [
+        ".local/evidence/go-restart-20261105-234850-full-trace-p5-20261106-worlds.json",
+        ".local/evidence/go-restart-20261105-234855-full-trace-p5-20261106-cashshop.json",
+        ".local/evidence/go-restart-20261105-234858-full-trace-p5-20261106-login.json",
+        ".local/evidence/go-restart-20261106-001623-trace-config-corrected-20261106.json"
+      ],
+      "artifact_sha256": {
+        "world": "97d4e4afe4094340603663d641d202d63f253a19b57d546474d140ea84e3a0b1",
+        "login": "333f4cc55c3e1f15f70a0a6e437117bf5c160802fba52a22e76474518c4d1316",
+        "cashshop": "3e5033e36c0b2468aa6a56443a241942cfd85f72b2c8da0c01e32d664a8b2772",
+        "migrate": "34562bf4c27da10181405559123324580895e6eabb4310a4a0e69a726f03f9b3"
+      },
+      "java_unchanged": true,
+      "source_default_potential_enabled": false,
+      "qa_evidence_character_ids": [
+        4910,
+        4917
+      ],
+      "trace_characters": [
+        4910,
+        4917
+      ],
+      "trace_full_packets": true,
+      "trace_scope": "Authenticated exact-CID opt-in trace installed early; diagnostics are not delivered packet/handler completion proof.",
+      "local_environment_file_modified": true,
+      "go_services_running": false,
+      "current_status": "gracefully_stopped_for_recovery_pose_full_pg",
+      "p5_complete": false,
+      "last_deployment_ready_services": [
+        "world0",
+        "world1",
+        "cashshop",
+        "login"
+      ],
+      "last_deployment_services": [
+        {
+          "name": "world0",
+          "pid": 36920,
+          "epoch": 130
+        },
+        {
+          "name": "world1",
+          "pid": 22068,
+          "epoch": 122
+        },
+        {
+          "name": "cashshop",
+          "pid": 1960,
+          "epoch": 51
+        },
+        {
+          "name": "login",
+          "pid": 44808,
+          "epoch": null
+        }
+      ],
+      "ready": [],
+      "services": [],
+      "config_correction_receipt": ".local/evidence/trace-config-correction-20261106.json",
+      "last_launch_qa_process_potential_enabled": true,
+      "stop_receipt": ".local/evidence/go-restart-20261106-003918-recovery-pose-quiesce-20261106.json",
+      "effective_trace_verified": true
+    }
+  ],
+  "current_status_history": [
+    {
+      "go_services": "all four gracefully stopped for trace diagnosis; not currently ready",
+      "stop_receipt": ".local/evidence/go-restart-20261105-234048-trace-debug-quiesce-20261106.json",
+      "infrastructure": "Docker/PostgreSQL/Redis/Java remain healthy",
+      "mcp_receipt": ".local/evidence/mcp154-b0b1-20261106/aggregate.json",
+      "verified_scope": "154 B0 pair entry CID4910/4917; B1 A QA warp only",
+      "b_warp": "not verified: short BC45 handler did not return; backend committed then disconnected about15ms later",
+      "not_verified": "B warp, mutual visibility, skills; no spawn/attack/Buff/party actions",
+      "client_cleanup": "both normal exit0; B known network dialog closed by root CUA then formal MCP close",
+      "b_close_receipt": ".local/evidence/mcp154-b0b1-20261106/b-already-exited-formal-close-result.json",
+      "trace_source": "authenticated exact-CID opt-in fulltrace/early-install added; fullPG R3 pending",
+      "previous_pg_scope": "R2 1817PASS/1SKIP and1198identical inputs apply only to7495b4e, not new trace source"
+    }
+  ],
+  "current_runtime_snapshot_before_centralization": {
+    "commit": "2a940918c9ad6996eae0b655591ac89d78148f5d",
+    "build_manifest": ".local/builds/resume-20261106-recovery-pose-r1/build-manifest.json",
+    "build_manifest_scope": "Compiled artifact receipt; deployment is proved separately by rollout receipts.",
+    "rollout_receipts": [
+      ".local/evidence/go-restart-20261106-004637-recovery-pose-p5-20261106-worlds.json",
+      ".local/evidence/go-restart-20261106-004642-recovery-pose-p5-20261106-cashshop.json",
+      ".local/evidence/go-restart-20261106-004645-recovery-pose-p5-20261106-login.json"
+    ],
+    "artifact_sha256": {
+      "world": "c3b61e257d549ec786592814d57e6e1edf8cf2194866d09bf8145f0db25f6fce",
+      "login": "05ba5e04e79a21a91e1a10829ff2e0face6cfb44dd29692b595b7d817bc5ee12",
+      "cashshop": "fb830df86f1c34493614a28b71983bf6f518d439f3a1606cd550808950233501",
+      "migrate": "fb2a2f737a19a685bbbe745cf14c7166f3b4f1fd5e63c2878e0be008f4b92f75"
+    },
+    "java_unchanged": true,
+    "source_default_potential_enabled": false,
+    "qa_evidence_character_ids": [
+      4910,
+      4917
+    ],
+    "trace_characters": [
+      4910,
+      4917
+    ],
+    "trace_full_packets": true,
+    "trace_scope": "Authenticated exact-CID opt-in trace installed early; diagnostics are not delivered packet/handler completion proof.",
+    "local_environment_file_modified": true,
+    "go_services_running": false,
+    "current_status": "gracefully_stopped_for_critical_fix_R5",
+    "p5_complete": false,
+    "last_deployment_ready_services": [
+      "login",
+      "world0",
+      "world1",
+      "cashshop"
+    ],
+    "last_deployment_services": [
+      {
+        "name": "login",
+        "pid": 11488,
+        "epoch": null
+      },
+      {
+        "name": "world0",
+        "pid": 41544,
+        "epoch": 132
+      },
+      {
+        "name": "world1",
+        "pid": 21748,
+        "epoch": 124
+      },
+      {
+        "name": "cashshop",
+        "pid": 7392,
+        "epoch": 52
+      }
+    ],
+    "ready": [],
+    "services": [],
+    "config_correction_receipt": ".local/evidence/trace-config-correction-20261106.json",
+    "last_launch_qa_process_potential_enabled": true,
+    "stop_receipt": ".local/evidence/go-restart-20261106-010737-critical-envelope-quiesce-20261106.json",
+    "effective_trace_verified": true
+  },
+  "current_status_snapshot_before_centralization": {
+    "go_services": "All four gracefully stopped for reviewed critical fix R5; last verified binary2a94091.",
+    "infrastructure": "Original Docker/PostgreSQL/Redis data preserved, no factory reset.",
+    "pg_manifest": ".local/evidence/recovered-full-pg-20261106-r4/manifest.json",
+    "mcp": {
+      "natural_recovery": {
+        "status": "LIVE_HP_AND_NORMAL_SAVE_RELOGIN_VERIFIED",
+        "runtime_receipt": ".local/evidence/mcp154-natural-recovery-20261106/b-natural-hp40-to50-verified.json",
+        "persistence_receipt": ".local/evidence/mcp154-natural-recovery-backend-review-20261106/relogin-persistence-review.json",
+        "actual_hp": "40->50",
+        "actual_mp": "5->5",
+        "old_generation": 13,
+        "relogin_generation": 15,
+        "restart_or_crash_verified": false,
+        "whole_policy_verified": false
+      },
+      "attack_1311001": {
+        "status": "ACTUAL_HP_REMOVAL_VERIFIED_CRITICAL_CAP_BUG_PENDING_FIX",
+        "receipt": ".local/evidence/mcp154-combat-backend-review-20261106/independent-review.json",
+        "raw_damage": 3098,
+        "actual_hp_removed": 2871,
+        "targets": 3,
+        "lines_each": 3,
+        "critical_cause": ".local/evidence/mcp154-cap348-readonly-20261106/contract.json",
+        "known_difference": "Native critical hits426/346/497 have bit31 clear. Existing Go normal cap348 clipped426 and497 by total227HP. Fix not deployed.",
+        "outside_single_target": "Original outgoing attack target_count0; no backend damage commit.",
+        "full_range_boundaries_verified": false,
+        "whole_skill_verified": false
+      },
+      "buff_numeric_and_reentry": {
+        "status": "NUMERIC_LATEENTRY_AND_NATURAL_EXPIRY_VERIFIED_HB_FX_PENDING",
+        "receipt": ".local/evidence/hyperbody-capture-capability-20261106/numeric-review.json",
+        "ironbody": "WDEF296->496, MP1454->1440, source200; original generated-avatar ghost separately observed in captured JPEGs.",
+        "hyperbody": "B max50/5->80/8, current50/5 unchanged on apply; lateentry retained with both peers alive.",
+        "hyperbody_fx": "Dedicated capture unsupported. Type1 foreign13B and type2 local8B/foreign12B returned; no A self type1 observed. Packets/resources are not visible-pixel proof.",
+        "wire_receipt": ".local/evidence/hyperbody-capture-capability-20261106/live-effect-wire.json",
+        "expiry_verified": true,
+        "whole_skill_verified": false,
+        "expiry_receipt": ".local/evidence/mcp154-natural-recovery-20261106/buffs-iron-hyperbody-lateentry-expiry.json",
+        "expiry_result": "WDEF496->296; A max5152/2326->3220/1454; B80/8->50/5; icons removed, both clients alive. Overflow vitals clamped, not damage/heal."
+      }
+    },
+    "p5_complete": false,
+    "stop_receipt": ".local/evidence/go-restart-20261106-010737-critical-envelope-quiesce-20261106.json",
+    "known_visual_difference": "A retained rendered9300306 images after native mob list empty; B reentry saw none. Pixel clearing not accepted."
+  },
+  "current_acceptance_reference": "current-acceptance-20261106.json",
+  "snapshot_scope": "Runtime/PG/native release snapshots in this file are historical. Read current_acceptance_reference for latest verified scope and current phase."
+}

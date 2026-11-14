@@ -1,0 +1,45 @@
+package skills
+
+import (
+	"maple-go-server/internal/domain"
+
+	"os"
+	"testing"
+	"time"
+)
+
+func TestReviewedPeriodicRecoverySourcePolicy(t *testing.T) {
+	if os.Getenv("MAPLEGO_WZ_ROOT") == "" {
+		t.Skip("original WZ required")
+	}
+	now := time.Now()
+	for _, tc := range []struct{ id, job, hp, mp int }{{1110000, 111, 110, 71}, {1110000, 112, 110, 71}, {11110000, 1111, 0, 71}, {11110000, 1112, 0, 71}} {
+		c := domain.Character{MapID: 40000, Job: tc.job, Level: 120, HP: 1, MP: 1, MaxHP: 1000, MaxMP: 1000, INT: 80, Skills: []domain.SkillState{{ID: tc.id, Level: 20}}}
+		plans, err := ReviewedRecoveryPlans(c, now)
+		if err != nil || len(plans) != 1 || plans[0].HP != tc.hp || plans[0].MP != tc.mp || plans[0].Interval != 4*time.Second {
+			t.Fatal(tc, plans, err)
+		}
+		c.Skills[0].ExpiresAt = now
+		if p, err := ReviewedRecoveryPlans(c, now); err != nil || len(p) != 0 {
+			t.Fatal("expired source ran", p, err)
+		}
+		c.Skills[0].ExpiresAt = time.Time{}
+		c.Job = 3112
+		if p, err := ReviewedRecoveryPlans(c, now); err != nil || len(p) != 0 {
+			t.Fatal("foreign source recovered Demon Fury", p, err)
+		}
+	}
+}
+
+func TestReviewedPeriodicRecoveryOriginalWZMapRates(t *testing.T) {
+	if os.Getenv("MAPLEGO_WZ_ROOT") == "" {
+		t.Skip("original WZ required")
+	}
+	for _, tc := range []struct{ mapID, job, id, hp, mp int }{{105000011, 111, 1110000, 40, 34}, {105000012, 111, 1110000, 60, 51}, {105000011, 1111, 11110000, 0, 34}, {105000012, 1111, 11110000, 0, 51}} {
+		c := domain.Character{MapID: tc.mapID, Job: tc.job, Level: 120, HP: 1, MP: 1, MaxHP: 1000, MaxMP: 1000, INT: 80, Skills: []domain.SkillState{{ID: tc.id, Level: 2}}}
+		plans, err := ReviewedRecoveryPlans(c, time.Now())
+		if err != nil || len(plans) != 1 || plans[0].HP != tc.hp || plans[0].MP != tc.mp {
+			t.Fatal(tc, plans, err)
+		}
+	}
+}

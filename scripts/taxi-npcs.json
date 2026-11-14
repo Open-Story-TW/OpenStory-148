@@ -1,0 +1,14 @@
+{
+  "scripts": [
+    {
+      "legacy": "scripts/npc/1002007.js",
+      "source_sha256": "01e30d95f6912da9ae7a32bd17ed4f1a35f74c9105b28694b7c9b10e1f8d4234",
+      "lua": "npc/1002007.lua",
+      "lua_sha256": "1a0737784db8d0c7b906a0b57e7adbc1902711ceeab425f49ec314302d79295f",
+      "npc_id": 1002007,
+      "source_map_id": 104000000,
+      "scope": "Exact Lith regular cab: four destinations, beginner discount, Henesys coupon, sequential Back/No/End; one atomic asset+saved-map command.",
+      "native_mcp": "pending"
+    }
+  ]
+}
