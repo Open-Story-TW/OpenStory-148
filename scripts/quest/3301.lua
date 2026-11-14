@@ -11,7 +11,7 @@ function start(mode, type, selection)
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Then wait for awhile. I'll go and get the stuff to help you pass the test of Chief Zenumist.")
+    qm.sendNext("那你先等一下。我去拿能幫你通過卡帕萊特會長考驗的東西來。")
     qm.forceCompleteQuest()
     qm.dispose()
 end

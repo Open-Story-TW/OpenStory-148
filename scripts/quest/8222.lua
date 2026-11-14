@@ -7,19 +7,19 @@ __quest = 8222
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find 10 Stormbreaker Badges.")
+    qm.sendNext("收集10個風暴破壞者徽章。")
     qm.forceStartQuest()
     qm.dispose()
 end
 
 function finish(mode, type, selection)
     if qm.haveItem(4032006, 10) then
-        qm.sendNext("Good job!")
+        qm.sendNext("做得好！")
         qm.gainExp(85000)
         qm.forceCompleteQuest()
         qm.gainItem(4032006, (-10))
     else
-        qm.sendNext("Please find 10 Stormbreaker Badges.")
+        qm.sendNext("請找來10個破風者徽章。")
     end
     qm.dispose()
 end

@@ -7,7 +7,7 @@ __quest = 8224
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find Phantom Seeds.")
+    qm.sendNext("尋找幻影種子。")
     qm.forceStartQuest()
     qm.dispose()
 end

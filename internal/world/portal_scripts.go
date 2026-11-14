@@ -93,10 +93,16 @@ func (s *Server) openPortalNPC(ctx context.Context, channel int, live *liveChara
 		s.npcGMNotice(live, sink, npcID, "未處理(傳點要開啟的 %s 腳本不存在)", name)
 		return sink.WritePacket(protocol.EnableActions())
 	}
+	return s.startRemoteScript(ctx, channel, live, sink, npcID, name, "由傳點開啟")
+}
+
+// startRemoteScript runs a script whose NPC is not on the character's map.
+// The conversation is bound to the map the character stands on instead.
+func (s *Server) startRemoteScript(ctx context.Context, channel int, live *liveCharacter, sink packetSink, npcID int, name, origin string) error {
 	live.mu.Lock()
 	snapshot := live.session
 	live.mu.Unlock()
-	if snapshot.ChannelID != channel || snapshot.Character.HP <= 0 || s.tradeActive(live) {
+	if s.scripts == nil || snapshot.ChannelID != channel || snapshot.Character.HP <= 0 || s.tradeActive(live) {
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	s.cancelNPCScriptState(live, false)
@@ -107,7 +113,7 @@ func (s *Server) openPortalNPC(ctx context.Context, channel int, live *liveChara
 	s.scripts.mu.Unlock()
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.gmNotice("%s 開始 (由傳點開啟)", name)
+	a.gmNotice("%s 開始 (%s)", name, origin)
 	session, event, err := s.scripts.engine.Start(ctx, a.identity, name, scripting.StartOptions{Host: a})
 	a.session = session
 	if err != nil {

@@ -12,18 +12,18 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("I know it's not a tough task, so come back to me if you're ready.")
+            qm.sendOk("我知道這不是什麼困難的任務，準備好了就回來找我吧。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("Oh, I almost forgot! What was I thinking? I need you to hand this #bSample of Killer Mushroom Spores#k to #bMinister of Magic#k and report the results.")
+        qm.sendAcceptDecline("啊，我差點忘了！我到底在想什麼？我需要你把這份#b殺人菇孢子樣本#k交給#b魔法大臣#k，再把結果回報給我。")
     end
     if (status == 1) then
         qm.forceStartQuest()
         qm.gainItem(4032389, 1)
-        qm.sendOk("The #bMinister of Magic#k told me once the #bKiller Mushroom Spores#k is complete, that he'll want a sample of it as well. I'll give you the sample; now go please hand it in to our #bMinister of Magic.#k")
+        qm.sendOk("#b魔法大臣#k曾經跟我說過，等#b殺人菇孢子#k完成後，他也想要一份樣本。我把樣本交給你，請你拿去交給我們的#b魔法大臣。#k")
         qm.dispose()
     end
 end
@@ -39,12 +39,12 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Are the #bKiller Mushroom Spores#k finally completed?")
+        qm.sendOk("#b殺人菇孢子#k終於完成了嗎？")
     end
     if (status == 1) then
         qm.gainExp(4200)
         qm.gainItem(4032389, (-1))
-        qm.sendOk("Okay, so this is the #bKiller Mushroom Spores.#k Thank you, thank you, and please tell #bScarrs#k the same.")
+        qm.sendOk("好，這就是#b殺人菇孢子。#k謝謝你，真的很謝謝你，也請替我向#b史卡斯#k道謝。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

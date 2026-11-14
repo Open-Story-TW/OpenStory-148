@@ -143,7 +143,11 @@ func (s *Server) handleQuest(ctx context.Context, channel int, live *liveCharact
 			return sink.WritePacket(protocol.EnableActions())
 		}
 		oid, ok := s.questNPC(live, request.NPCID)
-		if !ok {
+		// The client starts a normalAutoStart quest wherever the character
+		// stands (the medal quests of NPC 9000040), so its generated start
+		// script runs without the NPC; completion still happens at the NPC.
+		remote := !ok && request.Action == 4 && scripts.LegacyQuest(name) && s.questAutoStart(request.QuestID, request.NPCID)
+		if !ok && !remote {
 			s.questGMNotice(live, sink, request, before, "未處理(附近找不到這個 NPC)")
 			return sink.WritePacket(protocol.EnableActions())
 		}
@@ -154,6 +158,9 @@ func (s *Server) handleQuest(ctx context.Context, channel int, live *liveCharact
 			}
 		}
 		s.questGMNotice(live, sink, request, before, "啟動腳本 "+name)
+		if remote {
+			return s.startRemoteScript(ctx, channel, live, sink, request.NPCID, name, "自動開始的任務")
+		}
 		_, err = s.startScriptAtNPC(ctx, channel, live, sink, oid, name)
 		return err
 	}
@@ -165,6 +172,13 @@ func (s *Server) handleQuest(ctx context.Context, channel int, live *liveCharact
 	}
 	s.questGMNotice(live, sink, request, before, "成功")
 	return nil
+}
+
+// questAutoStart reports whether the WZ data lets the client offer this quest
+// away from its start NPC.
+func (s *Server) questAutoStart(questID, npcID int) bool {
+	definition, err := content.QuestDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), questID)
+	return err == nil && definition.Start.AutoStart && definition.Start.NPCID == npcID
 }
 
 // legacyQuestBlocked is Legacy NPCScriptManager.startQuest/endQuest: a start

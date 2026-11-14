@@ -29,6 +29,10 @@ function __truthy(v)
     return v ~= nil and v ~= false and v ~= 0 and v ~= ""
 end
 
+function __int(v)
+    return math.tointeger(v >= 0 and math.floor(v) or math.ceil(v))
+end
+
 function __add(a, b)
     if math.type(a) ~= nil and math.type(b) ~= nil then return a + b end
     local function text(v)
@@ -80,6 +84,7 @@ qm = {
     askAcceptDecline = function(text) prompt("accept", text) end,
     sendNextS = function(text, kind) prompt("say", text, false, true, speaker(kind)) end,
     sendNextPrevS = function(text, kind) prompt("say", text, true, true, speaker(kind)) end,
+    sendPrevS = function(text, kind) prompt("say", text, true, false, speaker(kind)) end,
     sendOkS = function(text, kind) prompt("say", text, false, false, speaker(kind)) end,
     sendPlayerToNpc = function(text) prompt("say", text, false, true, 3) end,
     PlayerToNpc = function(text) prompt("say", text, true, true, 3) end,
@@ -145,6 +150,7 @@ if npc:quest_state(__quest) == 1 then phase = finish end
 if phase == nil then return end
 
 local mode, kind, selection = 1, 0, 0
+local refused = {}
 while true do
     pending = nil
     phase(mode, kind, selection)
@@ -174,6 +180,12 @@ while true do
         mode, kind = npc:ask_accept(p.text) and 1 or 0, 14
     else
         mode, kind = npc:say(p.text, p.back, p.next, p.speaker) and 1 or 0, 0
+    end
+    -- A script that sends a refusal back to an earlier line would ask the same
+    -- question for ever; refusing it a second time ends the conversation.
+    if mode == 0 and (p.kind == "yes_no" or p.kind == "accept") then
+        if refused[p.text] then return end
+        refused[p.text] = true
     end
     if disposed then return end
 end

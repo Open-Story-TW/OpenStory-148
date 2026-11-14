@@ -11,26 +11,26 @@ function start(mode, type, selection)
         status = status + 1
     else
         if (status == 2) then
-            qm.sendNext("You may be hesitant now, but I can see an incredible amount of courage behind your eyes. Close your eyes and feel the courage and passion inside of you.")
+            qm.sendNext("你現在或許還在猶豫，但我能從你的眼神深處看見驚人的勇氣。閉上眼睛，感受你心中的勇氣與熱情吧。")
             qm.safeDispose()
             do return end
         end
         status = status - 1
     end
     if (status == 0) then
-        qm.sendNext("Did you know? Maple World may look peaceful, but certain areas are filled with forces of darkness. The Black Mage and those who want to revive the Black Mage are threatening Maple World.")
+        qm.sendNext("你知道嗎？楓之谷世界看起來雖然和平，但有些地方卻充滿了黑暗的勢力。黑魔法師以及企圖讓黑魔法師復活的那些人，正威脅著楓之谷世界。")
     elseif (status == 1) then
-        qm.sendNextPrev("We can't just sit here and do nothing while our enemies get stronger. Our own fear will only come back to haunt us.")
+        qm.sendNextPrev("我們不能眼睜睜看著敵人越來越強，自己卻坐在這裡什麼都不做。我們自己的恐懼只會回過頭來糾纏我們。")
     elseif (status == 2) then
-        qm.askAcceptDecline("But I won't worry too much. Someone as determined as you will be able to protect Maple World from danger, right? If you are brave enough to volunteer to become one of the Knights, I know I can count on you. \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i1142065# #t1142065# - 1")
+        qm.askAcceptDecline("不過我不會太擔心。像你這樣意志堅定的人，一定能保護楓之谷世界免於危險，對吧？既然你有勇氣自願成為騎士的一員，我知道你值得信賴。 \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i1142065# #t1142065# - 1")
     elseif (status == 3) then
         if (qm.getQuestStatus(20015) == 0) then
             qm.gainItem(1142065, 1)
             qm.forceCompleteQuest()
         end
-        qm.sendNext("Heehee, I knew you'd say that. But you know you still have a ways to go before you can fight for Maple World, right?")
+        qm.sendNext("嘻嘻，我就知道你會這麼說。不過你也知道，想要為楓之谷世界而戰，你還有很長的路要走吧？")
     elseif (status == 4) then
-        qm.sendPrev("#p1101002#, my Tactician, who is standing right next to me, will help you become an honorable Knight. I'll be looking forward to your progress. I'm counting on you!")
+        qm.sendPrev("站在我身旁的軍師#p1101002#會協助你成為一名光榮的騎士。我很期待你的成長。就拜託你了！")
         qm.safeDispose()
     end
 end

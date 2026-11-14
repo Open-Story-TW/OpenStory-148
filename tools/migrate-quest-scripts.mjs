@@ -18,6 +18,8 @@ const acorn = require('acorn')
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = path.join(root, 'scripts', 'quest')
 const manifestPath = path.join(root, 'scripts', 'legacy-quests.json')
+// English dialogue -> Traditional Chinese, applied to whole string literals.
+const zh = JSON.parse(fs.readFileSync(path.join(root, 'tools', 'quest-zh.json'), 'utf8'))
 
 // qm call -> [minimum arguments, maximum arguments]. Mirrors quest_driver.lua.
 const QM = {
@@ -29,13 +31,15 @@ const QM = {
   haveItem: [1, 2], canHold: [1, 2],
   getQuestStatus: [1, 1], isQuestActive: [1, 1], isQuestFinished: [1, 1],
   getJob: [0, 0], getQuestCustomData: [0, 0], setQuestCustomData: [1, 1], warp: [1, 2],
-  sendNextS: [2, 2], sendNextPrevS: [1, 2], sendOkS: [2, 2], sendPlayerToNpc: [1, 1], PlayerToNpc: [1, 1],
+  sendNextS: [2, 2], sendNextPrevS: [1, 2], sendPrevS: [1, 2], sendOkS: [2, 2], sendPlayerToNpc: [1, 1], PlayerToNpc: [1, 1],
   isQuestCompleted: [1, 1], removeAll: [1, 1],
   // Presentation only: the driver accepts and shows nothing for these.
   summonMsg: [1, 1], playerSummonHint: [1, 1], AranTutInstructionalBubble: [1, 1], evanTutorial: [2, 2],
   showWZEffect: [1, 1], ShowWZEffect: [1, 1], MovieClipIntroUI: [1, 1],
 }
 const BOOLEAN_QM = new Set(['haveItem', 'canHold', 'isQuestActive', 'isQuestFinished', 'isQuestCompleted'])
+// Sources that convert but cannot run as written.
+const SKIP = { 20020: 'declining the preview returns to its menu without end' }
 const PLAYER = new Set(['getJob', 'getLevel'])
 const RESERVED = new Set(['and', 'break', 'do', 'else', 'elseif', 'end', 'false', 'for', 'function', 'goto', 'if', 'in', 'local', 'nil', 'not', 'or', 'repeat', 'return', 'then', 'true', 'until', 'while', 'global',
   'qm', 'npc', 'start', 'finish', 'math', 'string', 'table', 'tostring', 'tonumber', 'pairs', 'ipairs', 'select', 'next', 'error', 'assert', 'pcall'])
@@ -92,7 +96,7 @@ function convert(source, id) {
     switch (node.type) {
       case 'Literal':
         if (node.value === null) return 'nil'
-        if (typeof node.value === 'string') return text(node.value)
+        if (typeof node.value === 'string') return text(Object.hasOwn(zh, node.value) ? zh[node.value] : node.value)
         if (typeof node.value === 'number' || typeof node.value === 'boolean') return String(node.value)
         return fail(node, 'unsupported literal')
       case 'Identifier': return name(node.name)
@@ -106,6 +110,8 @@ function convert(source, id) {
       case 'BinaryExpression': {
         const l = expr(node.left), r = expr(node.right)
         const numeric = (n) => n.type === 'Literal' && typeof n.value === 'number'
+        // `x | 0` is the Legacy idiom for dropping the fraction.
+        if (node.operator === '|' && node.right.type === 'Literal' && node.right.value === 0) return `__int(${l})`
         switch (node.operator) {
           case '+': return numeric(node.left) && numeric(node.right) ? `(${l} + ${r})` : `__add(${l}, ${r})`
           case '-': case '*': case '/': case '%': case '<': case '<=': case '>': case '>=': return `(${l} ${node.operator} ${r})`
@@ -268,6 +274,7 @@ const manifest = [], rejected = []
 for (const id of ids) {
   const target = path.join(outDir, `${id}.lua`)
   if (fs.existsSync(target) && !fs.readFileSync(target, 'utf8').startsWith('-- legacy-quest-state-machine')) { rejected.push([id, 'hand-converted source exists']); continue }
+  if (SKIP[id]) { rejected.push([id, SKIP[id]]); continue }
   const raw = fs.readFileSync(path.join(dir, `${id}.js`))
   const source = raw.toString('utf8')
   if (!Buffer.from(source, 'utf8').equals(raw)) { rejected.push([id, 'source is not UTF-8']); continue }

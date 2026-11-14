@@ -14,7 +14,7 @@ function start(mode, type, selection)
             status = status + 1
         end
         if (status == 0) then
-            qm.sendNext("Are you sure you want to leave right now? The boss is not easy to battle against, so if you can gather some friends, then do it! Let me know when you're ready, so I can take you to the spot where it awaits. Okay?")
+            qm.sendNext("你確定現在就要出發嗎？那個BOSS可不好對付，如果能找些朋友一起來就盡量找吧！準備好了再告訴我，我會帶你到牠所在的地方。好嗎？")
         elseif (status == 1) then
             qm.warp(802000209, 0)
             qm.dispose()

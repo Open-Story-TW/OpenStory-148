@@ -7,13 +7,13 @@ __quest = 3122
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Go to Rex, but don't put your hands on the seal. Got it? You can enter Ice Ravine through the entrance in Ice Valley II.")
+    qm.sendNext("去找雷克斯，但是千萬別把手放到封印上，懂了嗎？你可以從冰雪峽谷II的入口進入冰河峽谷。")
     qm.forceStartQuest(3122, "0")
     qm.dispose()
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Thank you.")
+    qm.sendNext("謝謝你。")
     qm.forceCompleteQuest()
     qm.dispose()
 end

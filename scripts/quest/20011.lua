@@ -11,7 +11,7 @@ function start(mode, type, selection)
         status = status + 1
     else
         if (status == 2) then
-            qm.sendNext("You don't want to? It's not even that hard, and you'll receive special equipment as a reward! Well, give it some thought and let me know if you change your mind.")
+            qm.sendNext("你不想做？這又不難，而且還能得到特別的裝備當作獎勵耶！嗯，你再考慮看看，改變心意的話再告訴我。")
             qm.safeDispose()
             do return end
         end

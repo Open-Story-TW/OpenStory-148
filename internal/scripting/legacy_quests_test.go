@@ -163,18 +163,20 @@ func TestGeneratedLegacyQuestsRunToCompletion(t *testing.T) {
 			}
 			return r
 		}
-		for _, state := range []int64{0, 1} {
-			for round, pick := range []func(*Prompt) Response{accept, decline, chaotic, chaotic, chaotic, accept, accept} {
-				h := &legacyQuestHost{script: m.Lua, states: map[int64]int64{quest: state}, data: map[int64]string{}, items: map[int64]int64{}}
-				switch round {
-				case 5: // the player owns everything a script may ask for
-					h.items = everyItem{}.fill(source)
-				case 6: // rewards cannot be stored
-					h.full = true
+		t.Run(m.Lua, func(t *testing.T) {
+			for _, state := range []int64{0, 1} {
+				for round, pick := range []func(*Prompt) Response{accept, decline, chaotic, chaotic, chaotic, accept, accept} {
+					h := &legacyQuestHost{script: m.Lua, states: map[int64]int64{quest: state}, data: map[int64]string{}, items: map[int64]int64{}}
+					switch round {
+					case 5: // the player owns everything a script may ask for
+						h.items = everyItem{}.fill(source)
+					case 6: // rewards cannot be stored
+						h.full = true
+					}
+					runLegacyQuest(t, e, m.Lua, h, pick)
 				}
-				runLegacyQuest(t, e, m.Lua, h, pick)
 			}
-		}
+		})
 	}
 }
 

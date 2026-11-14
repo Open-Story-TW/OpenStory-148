@@ -11,19 +11,19 @@ function start(mode, type, selection)
         status = status + 1
     else
         if (status == 1) then
-            qm.sendNext("I'm sure it will come in handy during your journey. Please, don't decline my offer.")
+            qm.sendNext("我相信它在你的旅途中一定會派上用場。請不要拒絕我的心意。")
             qm.dispose()
             do return end
         end
         status = status - 1
     end
     if (status == 0) then
-        qm.sendSimple("Ah, you're the hero. I've been dying to meet you.  \r\n#b#L0#(Seems a bit shy...)#l")
+        qm.sendSimple("啊，你就是英雄啊。我一直好想見你一面。  \r\n#b#L0#（好像有點害羞…）#l")
     elseif (status == 1) then
-        qm.askAcceptDecline("I have something I''ve been wanting to give you as a gift for a very long time... I know you''re busy, especially since you''re on your way to town, but will you accept my gift?")
+        qm.askAcceptDecline("我有一樣東西，很久以前就想送給你當禮物了…我知道你很忙，尤其是你正要趕往村莊，不過你願意收下我的禮物嗎？")
     elseif (status == 2) then
         qm.forceStartQuest()
-        qm.sendNextS("The parts of the gift have been packed inside a box nearby. Sorry to trouble you, but could you break the box and bring me a #b#t4032309##k and some #b#t4032310##k? I''ll assemble them for you right away.", 1)
+        qm.sendNextS("禮物的零件裝在附近的箱子裡。不好意思要麻煩你，可以請你打破箱子，幫我拿一個#b#t4032309##k和一些#b#t4032310##k回來嗎？我馬上就幫你組裝起來。", 1)
     elseif (status == 3) then
         qm.summonMsg(18)
         qm.dispose()
@@ -35,23 +35,23 @@ function finish(mode, type, selection)
         status = status + 1
     else
         if (status == 0) then
-            qm.sendNext("What? You don't want the potion?")
+            qm.sendNext("什麼？你不要藥水嗎？")
             qm.dispose()
             do return end
         end
         status = status - 1
     end
     if (status == 0) then
-        qm.sendNext("Ah, you've brought all the components. Give me a few seconds to assemble them... Like this... And like that... and... \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i3010062# 1 #t3010062# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 95 exp")
+        qm.sendNext("啊，材料都帶來了啊。給我幾秒鐘組裝一下…這樣…再這樣…然後… \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i3010062# 1 #t3010062# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 95 經驗值")
     elseif (status == 1) then
         if (qm.getQuestStatus(21013) == 1) then
             qm.gainItem(3010062, 1)
             qm.gainExp(95)
             qm.forceCompleteQuest()
         end
-        qm.sendNextPrevS("Here, a fully-assembled chair, just for you! I''ve always wanted to give you a chair as a gift, because I know a hero can occasionally use some good rest. Tee hee.", 1)
+        qm.sendNextPrevS("來，這是一張組裝好的椅子，專門為你準備的！我一直都想送你一張椅子當禮物，因為我知道英雄偶爾也需要好好休息一下。嘻嘻。", 1)
     elseif (status == 2) then
-        qm.sendNextPrevS("A hero is not invincible. A hero is human. I''m sure you will face challenges and even falter at times. But you are a hero because you have what it takes to overcome any obstacles you may encounter.", 1)
+        qm.sendNextPrevS("英雄並非無敵，英雄也是人。我相信你會遭遇挑戰，有時甚至會動搖。但你之所以是英雄，正是因為你擁有克服一切阻礙的力量。", 1)
     elseif (status == 3) then
         qm.summonMsg(19)
         qm.dispose()

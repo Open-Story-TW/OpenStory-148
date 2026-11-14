@@ -7,7 +7,7 @@ __quest = 8228
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Wow. Hold on while I translate this..")
+    qm.sendNext("哇。等我一下，我來翻譯這個…")
     if qm.haveItem(4032032, 1) then
         qm.gainItem(4032032, (-1))
         qm.forceStartQuest()
@@ -16,7 +16,7 @@ function start(mode, type, selection)
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Here you are!")
+    qm.sendNext("來，給你！")
     if qm.canHold(4032018, 1) then
         qm.gainItem(4032018, 1)
         qm.forceCompleteQuest()

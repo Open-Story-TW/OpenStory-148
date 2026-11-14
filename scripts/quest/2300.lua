@@ -13,27 +13,27 @@ function start(mode, type, selection)
             status = status - 2
         else
             if (status == 0) then
-                qm.sendOk("Really? It's an urgent matter, so if you have some time, please see me.")
+                qm.sendOk("真的嗎？這件事很緊急，有空的話請來找我。")
                 qm.dispose()
                 do return end
             elseif (status == 3) then
-                qm.sendNext("Okay. In that case, I'll just give you the routes to the Kingdom of Mushroom. #bNear the west entrance of Henesys,#k you'll find an #bempty house#k. Enter the house, and turn left to enter#b<Themed Dungeon : Mushroom Castle>#k. That's the entrance to the Kingdom of Mushroom. There's not much time!")
+                qm.sendNext("好吧。既然如此，我就告訴你前往菇菇王國的路線。#b在弓箭手村西邊入口附近，#k你會找到一間#b空屋#k。進入屋子後往左走，就能進入#b<主題副本：菇菇城堡>#k。那裡就是菇菇王國的入口。時間不多了！")
                 qm.forceStartQuest()
                 do return end
             end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("Now that you have made the job advancement, you look like you're ready for this. I have something I'd like to ask you for help. Are you willing to listen?")
+        qm.sendAcceptDecline("既然你已經完成轉職，看來你已經準備好了。我有件事想請你幫忙。你願意聽聽看嗎？")
     end
     if (status == 1) then
-        qm.sendNext("What happened is that the #bKingdom of Mushroom#k is currently in disarray. Kingdom of Mushroom is located near Henesys, featuring the peace-loving, intelligent King Mush. Recently, he began to feel ill, so he decided to appoint his only daughter #bPrincess Violetta#k. Something must have happened since then for the kingdom to be in its current state.")
+        qm.sendNext("事情是這樣的，#b菇菇王國#k目前陷入了一片混亂。菇菇王國位於弓箭手村附近，由愛好和平又充滿智慧的菇菇國王統治。最近他開始感到身體不適，於是決定傳位給他的獨生女#b菲歐娜公主#k。一定是在那之後發生了什麼事，王國才會變成現在這個樣子。")
     end
     if (status == 2) then
-        qm.sendNext("I am not aware of the exact details, but it's obvious something terrible had taken place, so I think it'll be better if you go there and assess the damage yourself. An explorer like you seem more than capable of saving Kingdom of Mushroom. I have just written you a #brecommendation letter#k, so I suggest you head over to Kingdom of Mushroom immediately and look for the #bHead Patrol Officer#k.\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v4032375# #t4032375#")
+        qm.sendNext("詳細情況我並不清楚，但很明顯發生了可怕的事，所以我想你最好親自過去確認受害的情形。像你這樣的冒險家，看起來絕對有能力拯救菇菇王國。我剛剛幫你寫了一封#b推薦信#k，建議你立刻前往菇菇王國，去找#b巡邏隊長#k。\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v4032375# #t4032375#")
     end
     if (status == 3) then
-        qm.sendYesNo("By the way, do you know where Kingdom of Mushroom is located? It'll be okay if you can find your way there, but if you don't mind, I can take you straight to the entrance.")
+        qm.sendYesNo("對了，你知道菇菇王國在哪裡嗎？如果你能自己找到路當然沒問題，不過你不介意的話，我可以直接送你到入口。")
     end
     if (status == 4) then
         qm.gainItem(4032375, 1)
@@ -53,10 +53,10 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendNext("Hmmm? Is that a #brecommendation letter from the job instructor#k??! What is this, are you the one that came to save us, the Kingdom of Mushroom?")
+        qm.sendNext("嗯？那是#b轉職教官的推薦信#k嗎？！這是怎麼回事，難道你就是來拯救我們菇菇王國的人嗎？")
     end
     if (status == 1) then
-        qm.sendNextPrev("Hmmm... okay. Since the letter is from the job instructor, I suppose you are really the one. I apologize for not introducing myself to you earlier. I'm the #bHead Security Officer#k in charge of protecting King Mush. As you can see, this temporary hideout is protected by the team of security and soldiers. Our situation may be dire, but nevertheless, welcome to Kingdom of Mushroom.")
+        qm.sendNextPrev("嗯…好吧。既然這封信是轉職教官寫的，那你應該真的就是那個人了。很抱歉沒有早點向你自我介紹。我是負責保護菇菇國王的#b警備隊長#k。如你所見，這個臨時避難所是由警備隊和士兵們守護著。雖然我們的處境很艱難，但還是歡迎你來到菇菇王國。")
     end
     if (status == 2) then
         qm.gainItem(4032375, (-1))

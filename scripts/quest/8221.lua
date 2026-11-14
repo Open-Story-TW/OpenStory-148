@@ -7,7 +7,7 @@ __quest = 8221
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find 10 Gold Ore, 4 Typhon Feather, 1 Power Crystal Ore.")
+    qm.sendNext("收集10個黃金母礦、4根泰龐的羽毛、1個力量水晶母礦。")
     qm.forceStartQuest()
     qm.dispose()
 end

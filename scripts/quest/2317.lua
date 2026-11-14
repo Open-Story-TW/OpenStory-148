@@ -12,17 +12,17 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("Breaking through the barrier will require the Poison Mushroom Cap. Talk to me when you change your mind.")
+            qm.sendOk("要突破結界就需要毒菇的菇傘。等你改變心意再來找我吧。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("Ah! If I am not mistaken, I saw the #bKiller Mushroom Spores#k way back when I was a kid in a book. Now I remember... it's made out of extracts of powerful poisons from Poison Mushrooms, which means you'll need some Poison Mushroom Caps. If you can get me those, I think I'll be able to make it.")
+        qm.sendAcceptDecline("啊！如果我沒記錯的話，我小時候曾經在書上看過#b殺人菇孢子#k。我想起來了…那是用毒菇的劇毒萃取物製成的，所以你需要一些毒菇的菇傘。只要你幫我弄來，我應該就做得出來。")
     end
     if (status == 1) then
         qm.forceStartQuest()
-        qm.sendOk("Please defeat #bPoison Mushrooms#k and bring back #b100 Poison Mushroom Caps#k in return.")
+        qm.sendOk("請打倒#b毒菇#k，並帶回#b100個毒菇的菇傘#k。")
         qm.dispose()
     end
 end
@@ -38,12 +38,12 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Have you gathered up the 100 Poison Mushroom Caps like I asked you to get?")
+        qm.sendOk("我拜託你收集的100個毒菇的菇傘，都收集好了嗎？")
     end
     if (status == 1) then
         qm.gainExp(13500)
         qm.gainItem(4000500, (-100))
-        qm.sendOk("I am amazed that you were able to gather up these 100 Poison Mushroom Caps, which is considered a difficult feat. I think I'll be able to make #bKiller Mushroom Spores#k our of these.")
+        qm.sendOk("你竟然能收集到這100個毒菇的菇傘，真讓我驚訝，這可是公認很困難的事。我想用這些應該就能做出#b殺人菇孢子#k了。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

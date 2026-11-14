@@ -14,13 +14,13 @@ function start(mode, type, selection)
         status = status + 1
     end
     if (status == 0) then
-        qm.sendSimple("Are you ready to take on a mission? If you can't pass this test, then you won't be able to call yourself a real Knight. Are you sure you can do this? If you are afraid to do this, let me know. I won't tell Neinheart. \r\n #L0#I'll try this later.#l \r\n #L1#I'm not afraid. Let's do this.#l")
+        qm.sendSimple("準備好接受任務了嗎？要是通不過這項考驗，你就沒資格自稱是真正的騎士。你確定辦得到嗎？如果你害怕的話就告訴我，我不會跟那因哈特說的。 \r\n #L0#我晚點再試。#l \r\n #L1#我不怕。開始吧。#l")
     elseif (selection == 0) then
-        qm.sendNext("If you call yourself a Knight, then do not hesitate. Show everyone how much courage you have in you.")
+        qm.sendNext("既然自稱是騎士，就不要猶豫。讓大家看看你有多大的勇氣吧。")
         qm.dispose()
     elseif (selection == 1) then
         choice1 = selection
-        qm.sendSimple("I'm glad you didn't run away, but... are you sure you want to become a Knight-in-Training? What I am asking is whether you're okay with being a Cygnus Knight, and therefore being tied to the Empress at all times? She may be an Empress, but she's also still just a kid. Are you sure you can fight for her? I won't let Neinheart know so just tell me what you really feel. \r\n #L2#If the Empress wants peace in the Maple World, then I'm down for whatever.#l \r\n #L3#As long as I can become a knight I'll endure whatever #l")
+        qm.sendSimple("很高興你沒有逃走，不過……你確定要成為見習騎士嗎？我想問的是，成為皇家騎士團的一員，從此時時刻刻都要與女皇綁在一起，你真的可以接受嗎？她雖然是女皇，但終究還只是個孩子。你確定能為她而戰嗎？我不會告訴那因哈特的，把你真正的想法告訴我吧。 \r\n #L2#只要女皇希望楓之谷世界和平，我什麼都願意做。#l \r\n #L3#只要能成為騎士，我什麼都能忍受 #l")
         qm.forceStartQuest()
         qm.forceCompleteQuest()
     end

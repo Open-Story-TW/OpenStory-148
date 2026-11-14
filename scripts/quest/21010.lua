@@ -11,26 +11,26 @@ function start(mode, type, selection)
         status = status + 1
     else
         if (status == 3) then
-            qm.sendNext("No no no, you don't have to say no. It's just a potion, anyway. Besides, for a hero like you, I can give you these all day! Let me know when you change your mind.")
+            qm.sendNext("不不不，你不用拒絕啦。反正只是一瓶藥水而已。再說，對你這樣的英雄，要我給多少都行！等你改變心意再告訴我吧。")
             qm.dispose()
             do return end
         end
         status = status - 1
     end
     if (status == 0) then
-        qm.sendNext("Hmmm? What's human doing here? Wait, hey there #p1201000#. What brought you here? Oh and... do you know this person, #p1201000#? What? A hero?")
+        qm.sendNext("嗯？人類來這裡做什麼？等等，嗨，#p1201000#。什麼風把你吹來了？還有…你認識這個人嗎，#p1201000#？什麼？英雄？")
     elseif (status == 1) then
         qm.sendNextPrev("     #i4001170#")
     elseif (status == 2) then
-        qm.sendNextPrev("Wait, so I am looking at the very person that your race has been waiting for hundreds of years? Wow!! I could tell the hero looked a bit different from the rest...")
+        qm.sendNextPrev("等等，所以我眼前的這位，就是你們一族等待了數百年的人？哇！！我就覺得這位英雄看起來跟其他人有點不一樣…")
     elseif (status == 3) then
-        qm.askAcceptDecline("But because of that curse of the Black Wizard that got you trapped in ice for hundreds of years, you do look quite weak. #bHere's a potion for recovery. Please take it#k.")
+        qm.askAcceptDecline("不過，因為黑魔法師的詛咒讓你被困在冰裡好幾百年，你看起來相當虛弱。#b這是恢復用的藥水，請喝下吧#k。")
     elseif (status == 4) then
-        qm.sendNext("Just drink it up first, then we'll continue our talk!")
+        qm.sendNext("先把它喝下去，我們再繼續聊！")
         qm.gainItem(2000022, 1)
         qm.forceStartQuest()
     elseif (status == 5) then
-        qm.sendNextPrevS("#b(Wait, how do I drink this? I don't remember...)#k", 3)
+        qm.sendNextPrevS("#b（等等，這個要怎麼喝？我想不起來…）#k", 3)
     elseif (status == 6) then
         qm.summonMsg(14)
         qm.dispose()
@@ -44,11 +44,11 @@ function finish(mode, type, selection)
         status = status - 1
     end
     if (status == 0) then
-        qm.sendNext("I've been searching through blocks of ice inside the cave in hopes of finding our hero, but... I didn't think I'd actually see one in front of me right now! The prophecy is correct! #p1201000#, you were right! Now that the hero has been resurrected, we won't have to worry about the Black Wizard anymore, right?")
+        qm.sendNext("我一直在洞窟裡的冰塊之間尋找，希望能找到我們的英雄，可是……沒想到現在真的有一位出現在我眼前！預言是真的！#p1201000#，你說對了！既然英雄已經復活，我們就不用再擔心黑魔法師了，對吧？")
     elseif (status == 1) then
-        qm.sendNextPrev("Wait, I have been holding onto you for too long. I'm sorry, but I bet you other penguins will react the same way as I did. I know you're busy and all, but on your way to town, #bplease go strike up a conversation with other penguins#k. Everyone will be shocked if the hero is the one initiating a conversation with them! \n\r #fUI/UIWindow.img/QuestIcon/4/0# \r #i2000022# #t2000022# 5 \r #i2000023# #t2000023# 5 \n\r #fUI/UIWindow.img/QuestIcon/8/0# 16 exp")
+        qm.sendNextPrev("哎呀，我耽擱你太久了。真不好意思，不過我敢說其他企鵝的反應一定也跟我一樣。我知道你很忙，不過在前往村莊的路上，#b請你也去跟其他企鵝聊聊天吧#k。要是英雄主動跟他們搭話，大家一定都會嚇一跳的！\n\r #fUI/UIWindow.img/QuestIcon/4/0# \r #i2000022# #t2000022# 5 \r #i2000023# #t2000023# 5 \n\r #fUI/UIWindow.img/QuestIcon/8/0# 16 經驗值")
     elseif (status == 2) then
-        qm.sendNextPrev("Wow, you managed to level up! That means you may have acquired skill points too. In the world of Maple, every level up means 3 skill points. Press #bK#k to open the skill window and find out.")
+        qm.sendNextPrev("哇，你升級了！這表示你可能也獲得了技能點數。在楓之谷世界裡，每升一級就能得到3點技能點數。按下#bK#k打開技能視窗確認看看吧。")
         if (qm.getQuestStatus(21010) == 1) then
             qm.gainExp(16)
             qm.gainItem(2000022, 5)
@@ -56,7 +56,7 @@ function finish(mode, type, selection)
             qm.forceCompleteQuest()
         end
     elseif (status == 3) then
-        qm.sendNextPrevS("#b(These penguins are so nice to me in every way possible, yet I don't remember them one bit. I better check the skill window first... but how do I do that?)#k")
+        qm.sendNextPrevS("#b（這些企鵝對我處處照顧，我卻一點也不記得他們。還是先看看技能視窗吧…可是要怎麼看呢？）#k")
     elseif (status == 4) then
         qm.summonMsg(15)
         qm.dispose()

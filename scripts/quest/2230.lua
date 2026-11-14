@@ -10,7 +10,7 @@ function start(mode, type, selection)
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Snail Roon is no longer available.")
+    qm.sendNext("蝸牛符文已無法再使用。")
     qm.forceCompleteQuest()
     qm.dispose()
 end

@@ -14,7 +14,7 @@ function start(mode, type, selection)
             status = status + 1
         end
         if (status == 0) then
-            qm.sendNext("Okay, so you are going to the battle as well. Thanks... Just letting you know, the enemy is probably more powerful than anything you've ever faced, Are you ready?")
+            qm.sendNext("好，原來你也要參戰。謝謝你……先提醒你一聲，敵人恐怕比你以往遇過的任何對手都還要強大。你準備好了嗎？")
         elseif (status == 1) then
             qm.warp(802000409, 0)
             qm.dispose()

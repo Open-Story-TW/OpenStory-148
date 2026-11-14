@@ -13,7 +13,7 @@ end
 function finish(mode, type, selection)
     status = status + 1
     if (status == 0) then
-        qm.sendNext("What? You found my glasses? I better put it on first, to make sure that it''s really mine. Oh, it really is mine. Thank you so much!\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v2030019# 5 #t2030019#s\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0#  1000 EXP")
+        qm.sendNext("什麼？你找到我的眼鏡了？我先戴上看看，確認是不是真的是我的。噢，真的是我的。太感謝你了！\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v2030019# 5 個#t2030019#\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0#  1000 經驗值")
     else
         qm.gainItem(2030019, 5)
         qm.gainExp(1000)

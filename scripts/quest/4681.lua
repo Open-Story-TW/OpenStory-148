@@ -12,7 +12,7 @@ function start(mode, type, selection)
         do return end
     elseif (mode == 0) then
         if (status == 40) then
-            qm.sendOk("I understand that you feel trepidations about helping out a strange town like Zipangu. I am the one that is unaffected by #bThe Spell of Acacia#k, which means I will have to risk my life to save this town from total destruction.")
+            qm.sendOk("我明白你對於幫助日本這樣陌生的村莊感到不安。我是不受#b阿卡夏的咒語#k影響的人，這也代表我必須賭上性命，拯救這個村莊免於徹底毀滅。")
             qm.dispose()
             do return end
         end
@@ -23,156 +23,156 @@ function start(mode, type, selection)
     local __s1 = status
     if __s1 == 0 then
         if (qm.getQuestCustomData() ~= nil) then
-            qm.sendSimple("Good to see you back, Mapler. How did you fare against the goblin? #b \n\r #L0#I was able to defeat the monster of Ninja Castle!#l \n\r #L1#No, I wasn't able to.#l")
+            qm.sendSimple("很高興看到你回來，冒險家。你和妖怪交手的結果如何？ #b \n\r #L0#我成功打倒了忍者城的怪物！#l \n\r #L1#不，我沒能打倒牠。#l")
             status = 99
         else
-            qm.sendNext("My name is #p9120025#, and I am the protector of Zipangu at \n#m802000101#.")
+            qm.sendNext("我的名字是#p9120025#，是在\n#m802000101#守護日本的人。")
         end
     elseif __s1 == 1 then
-        qm.sendNextPrev("(#p9120025# flashed a smile.)")
+        qm.sendNextPrev("（#p9120025#露出了微笑。）")
     elseif __s1 == 2 then
-        qm.sendNextPrev("Oh... I see that you have been making proper strides. \n\n&lt;Grit... you were right...&gt;")
+        qm.sendNextPrev("喔……看來你一直都在穩健地進步。 \n\n&lt;葛利特……你說得沒錯……&gt;")
     elseif __s1 == 3 then
-        qm.sendNextPrev("I remember when you first stepped into Maple Island, looking very green to say the least... and here you are, standing right in front of me looking every bit like a true Mapler. As someone that closely followed your path, I feel... a rush of satisfaction seeing you all grown up.\n\n(#p9120025# begins to well up)")
+        qm.sendNextPrev("我還記得你第一次踏上楓之島的時候，看起來實在是生澀得很…而現在，你站在我面前，已經是個不折不扣的冒險家了。身為一路看著你走過來的人，看到你長大成人，我感到…一陣滿足。\n\n(#p9120025#的眼眶開始泛淚)")
     elseif __s1 == 4 then
-        qm.sendNextPrev("...I apologize for speaking in a way that makes you feel that I know you more than I really do. I'm sorry.")
+        qm.sendNextPrev("…說得好像我有多了解你似的，其實並沒有，真是抱歉。")
     elseif __s1 == 5 then
-        qm.sendNextPrev("My task is to determine who actually has power, and who is in need of one.")
+        qm.sendNextPrev("我的任務是判斷誰真正擁有力量，而誰需要力量。")
     elseif __s1 == 6 then
-        qm.sendNextPrev("And in the end, my ultimate goal is to find the person that is capable of rescuing Zipangu from destruction.")
+        qm.sendNextPrev("而我最終的目標，就是找到能夠拯救日本免於毀滅的人。")
     elseif __s1 == 7 then
-        qm.sendNextPrev("This land right here is the lowest, most distant land you'll find in #m802000101#.")
+        qm.sendNextPrev("這片土地，就是#m802000101#裡最低、最偏遠的地方。")
     elseif __s1 == 8 then
-        qm.sendNextPrev("I will now give you a dose of truth on Zipangu.")
+        qm.sendNextPrev("現在就讓我告訴你關於日本的真相。")
     elseif __s1 == 9 then
-        qm.sendNextPrev("Zipangu...")
+        qm.sendNextPrev("日本…")
     elseif __s1 == 10 then
-        qm.sendNextPrev("Zipangu... will be destroyed a 100 years from now.")
+        qm.sendNextPrev("日本…將在100年後毀滅。")
     elseif __s1 == 11 then
-        qm.sendNextPrev("...Yes, Zipangu will one day completely disappear from this world without a trace. I saw it with my own eyes how this ball of #bdistortion#k appeared from the sky and completely swallowed up Zipangu as a whole.")
+        qm.sendNextPrev("…沒錯，日本總有一天會從這個世界上徹底消失，不留一絲痕跡。我親眼看見那團#b扭曲#k從天而降，把整個日本完全吞噬。")
     elseif __s1 == 12 then
-        qm.sendNextPrev("Zipangu in the ancient days was a hotbed for black magic, and I am a magician in Zipangu who grew up learning the intricacies of the black magic.")
+        qm.sendNextPrev("古代的日本是黑魔法盛行之地，而我就是在日本從小鑽研黑魔法奧秘長大的魔法師。")
     elseif __s1 == 13 then
-        qm.sendNextPrev("At the time, Zipangu had strong ties with Magatia, sharing valuable informations with one another. You may be living in an age where science rules the world, but back in the day, Magatia was home to various studies regarding the black magic.")
+        qm.sendNextPrev("當時日本與瑪迦提亞關係密切，彼此交換珍貴的情報。你或許生活在科學主宰世界的時代，但在從前，瑪迦提亞可是各種黑魔法研究的重鎮。")
     elseif __s1 == 14 then
-        qm.sendNextPrev("Magatia, the forefront of magic powers.\nThat's where I met a wizard, who taught me everything and... in the end... I was able to acquire a special power that allowed me to achieve #bimmortality#k.")
+        qm.sendNextPrev("瑪迦提亞，魔法力量的最前線。\n我在那裡遇見了一位魔法師，他教會了我一切……最後……我得到了一股特殊的力量，讓我獲得了#b永生#k。")
     elseif __s1 == 15 then
-        qm.sendNextPrev("It was the magic that no one could achieve until then. I used it wisely for the sake of Zipangu.\n As time went on, however, new generations came and went, and immortality became an outlawed practice. All of a sudden, I was considered an outcast, embraced by no one. I lost everything; fame, fortune, country, you name it, I lost it. In the end, I went into seclusion in the mountains of Zipangu, eager to use my power of immortality to view the apocalypse, the day the world ends for good.")
+        qm.sendNextPrev("那是在此之前沒有人能達成的魔法。我為了日本而善用這股力量。\n 然而隨著時光流逝，世代更迭，永生成了被禁止的禁術。轉眼間，我成了無人接納的異類。我失去了一切：名聲、財富、國家，你想得到的我全都失去了。最後我隱居在日本的深山裡，一心想用永生的力量親眼見證末日，也就是世界徹底終結的那一天。")
     elseif __s1 == 16 then
-        qm.sendNextPrev("But the apocalypse... came much, much sooner than I anticipated.")
+        qm.sendNextPrev("但是末日…來得比我預料的還要早得多。")
     elseif __s1 == 17 then
-        qm.sendNextPrev("The moment Zipangu got swallowed up by a giant \n#bdistortion#k and vanished, I used a time-warp magic to enter the world after the vanishment. And that's where I found it.")
+        qm.sendNextPrev("就在日本被巨大的\n#b扭曲#k吞噬並消失的那一瞬間，我用了時空跳躍魔法，進入了消失之後的世界。我就是在那裡找到它的。")
     elseif __s1 == 18 then
-        qm.sendNextPrev("That's where I found the truth of Zipangu.")
+        qm.sendNextPrev("我就是在那裡發現了日本的真相。")
     elseif __s1 == 19 then
-        qm.sendNextPrev("It turned out that the history of Zipangu is chronicled in a single book.")
+        qm.sendNextPrev("原來日本的歷史全都記載在一本書裡。")
     elseif __s1 == 20 then
-        qm.sendNextPrev("The history of Zipangu was just a reenactment of the contents listed in the book.")
+        qm.sendNextPrev("日本的歷史，只不過是把書上記載的內容重演一遍罷了。")
     elseif __s1 == 21 then
-        qm.sendNextPrev("The fact that a supernatural book that chronicles every move of every resident of Zipangu exists... the book that's called #bAcacia Chronicle#k...")
+        qm.sendNextPrev("竟然存在著一本記載了日本所有居民一舉一動的超自然之書…那本書就叫做#b阿卡夏記錄#k…")
     elseif __s1 == 22 then
-        qm.sendNextPrev("I don't know about you, but I was furious. Furious at the thought of my life being pre-determined by this miniscule copy of a book...")
+        qm.sendNextPrev("我不知道你怎麼想，但我當時非常憤怒。一想到我的人生竟然被這麼一本小小的書預先決定，我就怒不可遏…")
     elseif __s1 == 23 then
-        qm.sendNextPrev("In that world of distortion, I was able to get my hands on \n#bAcacia Chronicle#k, and started reading it.")
+        qm.sendNextPrev("在那個扭曲的世界裡，我得到了\n#b阿卡夏記錄#k，並開始閱讀它。")
     elseif __s1 == 24 then
-        qm.sendNextPrev("And then I realized...")
+        qm.sendNextPrev("然後我才明白…")
     elseif __s1 == 25 then
-        qm.sendNextPrev("I realized that #bAcacia Chronicle#k did not include informations about me.")
+        qm.sendNextPrev("我發現#b阿卡夏記錄#k裡並沒有關於我的記載。")
     elseif __s1 == 26 then
-        qm.sendNextPrev("I was someone that did not exist, according to the book.")
+        qm.sendNextPrev("根據那本書，我是個不存在的人。")
     elseif __s1 == 27 then
-        qm.sendNextPrev("It might be that the reason why I was freed from the #bcurse of Acacia Chronicle#k was because I was able to form a close bond with someone outside Zipangu, which in the end led me to achieve #bimmortality#k.")
+        qm.sendNextPrev("我之所以能擺脫#b阿卡夏記錄的詛咒#k，或許是因為我和日本以外的人建立了深厚的羈絆，最終讓我得到了#b永生#k。")
     elseif __s1 == 28 then
-        qm.sendNextPrev("It also remained to be seen whether #bAcacia Chronicle#k can be subject to change in contents for revised editions.")
+        qm.sendNextPrev("至於#b阿卡夏記錄#k的內容能否在修訂版中有所更動，當時也還是未知數。")
     elseif __s1 == 29 then
-        qm.sendNextPrev("So my plan was to return to the past and alter the history myself, so the part where the #bdistortion#k appeared in the book would be destroyed at the last minute, and prevent Zipangu from a certain destruction.")
+        qm.sendNextPrev("所以我的計畫是回到過去，親手改寫歷史，讓書中出現#b扭曲#k的那一段在最後一刻被抹除，使日本免於註定的毀滅。")
     elseif __s1 == 30 then
-        qm.sendNextPrev("But in the end, I realized that tampering with the past, even if it meant saving Zipangu, would be a foolish act.\nAltering the past through the book would most certainly wipe out the very existence of all those people that would be born in the future.")
+        qm.sendNextPrev("但最後我明白了，即使是為了拯救日本，竄改過去也是愚蠢的行為。\n透過那本書改變過去，必定會抹去未來將要誕生的所有人的存在。")
     elseif __s1 == 31 then
-        qm.sendNextPrev("In the end, I came to conclusion that the best course of action would be to alter the history of Zipangu RIGHT BEFORE the destruction.")
+        qm.sendNextPrev("最後我得出結論，最好的辦法就是在日本毀滅的「前一刻」改變它的歷史。")
     elseif __s1 == 32 then
-        qm.sendNextPrev("The problem is that altering the history is not a one-time deal. History has its ability to revise itself, so even if I alter a portion of it, the history would try to remedy that by returning to its pre-alteration stage.")
+        qm.sendNextPrev("問題在於，改寫歷史並不是一次就能了結的事。歷史具有自我修正的能力，就算我改變了其中一部分，歷史也會試圖回復到被改寫之前的樣子來彌補。")
     elseif __s1 == 33 then
-        qm.sendNextPrev("Today, I spend my days observing Zipangu which is right on the verge of destruction, with the starting point being #m802000101#.")
+        qm.sendNextPrev("如今，我以#m802000101#為起點，每天觀察著瀕臨毀滅的日本。")
     elseif __s1 == 34 then
-        qm.sendNextPrev("And... one more thing...")
+        qm.sendNextPrev("還有…一件事…")
     elseif __s1 == 35 then
-        qm.sendNextPrev("I see a huge wave of history revision coming soon, and it's such that even I can't do anything about it.")
+        qm.sendNextPrev("我預見一場巨大的歷史改寫浪潮即將來臨，那股力量連我也無能為力。")
     elseif __s1 == 36 then
-        qm.sendNextPrev("I am fully aware that since this is all about Zipangu, it's only right that a resident of Zipangu should take care of this in-house.")
+        qm.sendNextPrev("我很清楚，既然這全都是日本的事，本來就應該由日本的居民自己來解決。")
     elseif __s1 == 37 then
-        qm.sendNextPrev("Unfortunately, #bThe Spell of Acacia#k has prevented Zipanguans from directly altering the history themselves.")
+        qm.sendNextPrev("很遺憾，#b阿卡夏的咒語#k讓日本人無法親手直接改寫歷史。")
     elseif __s1 == 38 then
-        qm.sendNextPrev("For the future of Zipangu...")
+        qm.sendNextPrev("為了日本的未來…")
     elseif __s1 == 39 then
-        qm.sendNextPrev("(#p9120025# suddenly gets down on her knees)")
+        qm.sendNextPrev("（#p9120025#突然跪了下來）")
     elseif __s1 == 40 then
-        qm.sendYesNo("I would like for you to help us save Zipangu, the one that is unaffected by #bThe Spell of Acacia#k. Will you?")
+        qm.sendYesNo("我希望你能幫助我們拯救日本，那個不受#b阿卡夏的咒語#k影響的日本。你願意嗎？")
     elseif __s1 == 41 then
         qm.setQuestCustomData("readHistory")
-        qm.sendNextPrev("Thank you, Mapler... thank you...#p9120025# breathes a heavy sigh of relief)")
+        qm.sendNextPrev("謝謝你，冒險家…謝謝…#p9120025#深深地鬆了一口氣）")
     elseif __s1 == 42 then
-        qm.sendNextPrev("With the kind of power you possess, I have no doubt in my mind that you are capable of holding your own against the powerful foes from era.")
+        qm.sendNextPrev("以你所擁有的力量，我毫不懷疑你有能力對抗那個時代的強大敵人。")
     elseif __s1 == 43 then
-        qm.sendNextPrev("That being said... I want to see the extent of your power with my very own eyes.")
+        qm.sendNextPrev("話雖如此…我還是想親眼確認你的實力究竟到什麼程度。")
     elseif __s1 == 44 then
-        qm.sendNextPrev("I had been in search of someone that possessed immense talent and power for the past few thousand years.\nThe era where Zipangu is on the verge of destruction is a scientifically-advanced era where the monsters you'll face against are beyond your wildest imagination.")
+        qm.sendNextPrev("過去數千年來，我一直在尋找擁有非凡才能與力量的人。\n日本瀕臨毀滅的那個時代，是科學高度發達的時代，你將面對的怪物遠遠超乎你的想像。")
     elseif __s1 == 45 then
-        qm.sendNextPrev("To find someone that's capable of battling those monsters, I formulated a test that'll weed out the bad candidates.")
+        qm.sendNextPrev("為了找出有能力對抗那些怪物的人，我設計了一項測驗來淘汰不合格的候選人。")
     elseif __s1 == 46 then
-        qm.sendNextPrev("Zipangu used to be divided by a number of forces, each hoping to conquer and unify the land.")
+        qm.sendNextPrev("日本曾經被許多勢力割據，每一股勢力都想要征服並統一這片土地。")
     elseif __s1 == 47 then
-        qm.sendNextPrev("The force that was the most prominent was the one that based itself on Ninja Castle. \nWith the outstanding soldiers they call Ninjas protecting the castle, Zipangu under the Ninja Castle was peaceful to say the least.")
+        qm.sendNextPrev("其中最強大的勢力，就是以忍者城為據點的那一股。\n有被稱為忍者的優秀戰士守護著城池，在忍者城統治下的日本可說是一片祥和。")
     elseif __s1 == 48 then
-        qm.sendNextPrev("This should have been the beginning of an era where peace and tranquility rule the land, but that wasn't the case. A goblin that noticed the immense power of ninjas decided to enter the body of the castle lord and wound up taking over the Ninja Castle.")
+        qm.sendNextPrev("這本該是一個由和平與安寧主宰大地的時代的開始，但事實並非如此。一隻妖怪注意到了忍者們強大的力量，決定附身在城主身上，最後佔領了忍者城。")
     elseif __s1 == 49 then
-        qm.sendNextPrev("For the next 10 years, the lord of the castle that was controlled by the goblin made life here miserable, but one day, a brave Samurai appeared in Zipangu and proceeded to defeat the goblin, bringing peace back to this place.")
+        qm.sendNextPrev("在那之後的10年間，被妖怪操控的城主讓這裡的人們過得苦不堪言。但是有一天，一位勇敢的武士出現在日本，打倒了妖怪，讓這個地方重獲和平。")
     elseif __s1 == 50 then
-        qm.sendNextPrev("In the history of Zipangu, monsters and goblins that possess the special powers of Ninjas have been notorious for their immense power.")
+        qm.sendNextPrev("在日本的歷史上，擁有忍者特殊能力的怪物與妖怪，一向以強大無比的力量而惡名昭彰。")
     elseif __s1 == 51 then
-        qm.sendNextPrev("The goblin in the Ninja Castle, I believe, is a good indicator of gauging the powers of prospective candidates that will later battle the monsters of the future.")
+        qm.sendNextPrev("我認為忍者城裡的那隻妖怪，正好可以用來衡量候選人的實力，看看他們將來能不能對抗未來的怪物。")
     elseif __s1 == 52 then
-        qm.sendNextPrev("I also realized that the goblin, which had reigned supreme for 10 years, does not affect the course of the future of Zipangu if defeated by an individual that is unaffected by \n#bThe Spell of Acacia#k.")
+        qm.sendNextPrev("我還發現，稱霸了10年的那個妖怪，如果是被不受\n#b阿卡夏的咒語#k影響的人打倒，就不會改變日本未來的走向。")
     elseif __s1 == 53 then
-        qm.sendNextPrev("I prepared the Worm Hole at Mushroom Shrine, which will allow one to travel to the past, and brought residents of the Maple World to the Ninja Castle to test out their strength and see whether they were strong enough to battle the monsters from the future.")
+        qm.sendNextPrev("我在菇菇神社準備了能夠穿越到過去的蟲洞，並把楓之谷世界的居民帶到忍者城測試他們的實力，看看他們是否強到足以對抗來自未來的怪物。")
     elseif __s1 == 54 then
-        qm.sendNextPrev("If you cannot defeat the goblin in the castle, then you will not be able to even compete against those monsters from the future.")
+        qm.sendNextPrev("如果你連城裡的妖怪都打不倒，就更不可能與那些來自未來的怪物抗衡了。")
     elseif __s1 == 55 then
-        qm.sendNextPrev("I am sure you are plenty strong enough, but I want concrete proof that you can do it.")
+        qm.sendNextPrev("我相信你的實力絕對足夠，但我想要看到你辦得到的具體證明。")
     elseif __s1 == 56 then
-        qm.sendNext("Please defeat the Ninja Goblin at the Ninja Castle and bring back the following items as proof: #b300 #t04000340#s, 1 #t04000342#, and 1 #t04000343#.")
+        qm.sendNext("請打倒忍者城的忍者妖怪，並帶回下列物品作為證明：#b300個#t04000340#、1個#t04000342#以及1個#t04000343#。")
         qm.dispose()
     elseif __s1 == 100 then
         if (selection == 0) then
             if ((qm.haveItem(4000343, 1) and qm.haveItem(4000340, 300)) and qm.haveItem(4000342, 1)) then
                 status = 119
-                qm.sendNextPrev("Brilliant.")
+                qm.sendNextPrev("太棒了。")
             else
-                qm.sendNext("This isn't enough for me to gauge the extent of your power. I want you to defeat more monsters inside the castle and bring sufficient amount of evidence, okay? #b300 #t04000340#s, 1 #t04000342#, and 1 #t04000343#.")
+                qm.sendNext("這樣還不足以讓我判斷你的實力。我要你在城裡打倒更多怪物，帶回足夠的證據來，可以嗎？#b300個#t04000340#、1個#t04000342#，還有1個#t04000343#。")
                 qm.dispose()
             end
         else
             if qm.haveItem(5252002, 1) then
                 status = 129
-                qm.sendNextPrev("Brilliant.")
+                qm.sendNextPrev("太棒了。")
             else
                 status = 109
-                qm.sendNext("If you do not have evidence that you have defeated the goblin at the castle, then I can't send you to the future. The future is full of monsters that far exceeds that of the goblin.")
+                qm.sendNext("如果你沒有打倒城裡妖怪的證據，我就不能送你去未來。未來充滿了遠比那妖怪強大的怪物。")
             end
         end
     elseif __s1 == 110 then
-        qm.sendNextPrev("Please defeat the goblin at Ninja Castle and bring me an evidence.")
+        qm.sendNextPrev("請打倒忍者城的妖怪，並把證據帶來給我。")
     elseif __s1 == 111 then
-        qm.sendPrev("I hear stories that you may buy your evidence at a place called Cash Shop... but if you are good at combat, then you really don't need to spend money on stuff like that. I already feel the wave of restoration hitting this place. I'll now leave it up to you.")
+        qm.sendPrev("我聽說可以在一個叫做購物商城的地方買到證物…不過如果你擅長戰鬥，其實根本不需要把錢花在那種東西上。我已經感覺到復興的浪潮正湧向這裡了。接下來就交給你了。")
         qm.dispose()
     elseif __s1 == 120 then
-        qm.sendNextPrev("Now I know for sure that you are more than capable of battling the monsters of the future from Zipangu.")
+        qm.sendNextPrev("現在我可以確定，你絕對有能力對抗日本未來的怪物了。")
     elseif __s1 == 121 then
-        qm.sendNextPrev("I will now hand you a #bLv 1 Gate Pass#k. It's an evidence that you're from #m802000101#, and the pass is required for you to enter the future of Zipangu. Please do not lose this pass.")
+        qm.sendNextPrev("現在我要交給你一張#b等級1通行證#k。這是證明你來自#m802000101#的憑證，要進入日本的未來就必須持有這張通行證。請千萬別弄丟了。")
     elseif __s1 == 122 then
-        qm.sendNextPrev("This will not enable you to open the door to Zipangu's future, and take part in altering the history of this great town.")
+        qm.sendNextPrev("這樣是無法讓你打開通往日本未來的門，參與改寫這座偉大城鎮歷史的。")
     elseif __s1 == 123 then
-        qm.sendNextPrev("I have a mission for you right now that I'd like for you to accept immediately. Are you ready?")
+        qm.sendNextPrev("我現在有一項任務要交給你，希望你能立刻接下。你準備好了嗎？")
     elseif __s1 == 124 then
         qm.gainItem(4000343, (-1))
         qm.gainItem(4000340, (-300))
@@ -180,13 +180,13 @@ function start(mode, type, selection)
         qm.forceStartQuest()
         qm.dispose()
     elseif __s1 == 130 then
-        qm.sendNextPrev("Now I know for sure that you are more than capable of battling the monsters of the future from Zipangu.")
+        qm.sendNextPrev("現在我可以確定，你絕對有能力對抗日本未來的怪物了。")
     elseif __s1 == 131 then
-        qm.sendNextPrev("I will now hand you a #bLv 1 Gate Pass#k. It's an evidence that you're from #m802000101#, and the pass is required for you to enter the future of Zipangu. Please do not lose this pass.")
+        qm.sendNextPrev("現在我要交給你一張#b等級1通行證#k。這是證明你來自#m802000101#的憑證，要進入日本的未來就必須持有這張通行證。請千萬別弄丟了。")
     elseif __s1 == 132 then
-        qm.sendNextPrev("This will not enable you to open the door to Zipangu's future, and take part in altering the history of this great town.")
+        qm.sendNextPrev("這樣是無法讓你打開通往日本未來的門，參與改寫這座偉大城鎮歷史的。")
     elseif __s1 == 133 then
-        qm.sendNextPrev("I have a mission for you right now that I'd like for you to accept immediately. Are you ready?")
+        qm.sendNextPrev("我現在有一項任務要交給你，希望你能立刻接下。你準備好了嗎？")
     elseif __s1 == 134 then
         qm.gainItem(5252002, (-1))
         qm.forceStartQuest()

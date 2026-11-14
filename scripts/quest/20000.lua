@@ -16,11 +16,11 @@ function start(mode, type, selection)
             status = status - 1
         end
         if (status == 0) then
-            qm.sendNext("Ah, you've come... this is exhilarating. I am grateful for your decision to become a Cygnus Knight. I have been waiting a long time for someone like you. Someone that is courageous enough to face the Black Mage and not flinch...")
+            qm.sendNext("啊，你來了…真是令人振奮。感謝你決定成為皇家騎士團的一員。我等待像你這樣的人已經很久了。一個有勇氣面對黑魔法師而毫不退縮的人…")
         elseif (status == 1) then
-            qm.sendNext("The battle against the evil nature of the Black Mage who wants to swallow up Maple World as a whole, the cunning nature of his disciples, and the physical battle against the crazy monsters will await you. There will also come a time where even you may turn against yourself into an enemy and torment you ...")
+            qm.sendNext("等待著你的，將是與企圖吞噬整個楓之谷世界的黑魔法師那邪惡本性的對抗、與他那些狡猾手下的周旋，以及與瘋狂怪物的血肉搏鬥。總有一天，甚至連你自己都會化為敵人來折磨你…")
         elseif (status == 2) then
-            qm.sendOk("But I won't worry about that. I am confident that you will be able to fight through all that and protect Maple World from the Black Mage. Of course, you'll have to become a bit stronger than you are right now, right?")
+            qm.sendOk("不過我並不擔心。我相信你一定能克服這一切，從黑魔法師手中守護楓之谷世界。當然，你得比現在再強一點才行，對吧？")
         elseif (status == 3) then
             qm.gainItem(1142065, 1)
             qm.gainExp(20)

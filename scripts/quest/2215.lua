@@ -8,7 +8,7 @@ status = (-1)
 
 function start(mode, type, selection)
     if (not qm.canHold(4031894, 1)) then
-        qm.sendNext("Please make some space..")
+        qm.sendNext("請空出一些欄位。")
     else
         qm.gainItem(4031894, 1)
         qm.forceCompleteQuest()
@@ -18,7 +18,7 @@ end
 
 function finish(mode, type, selection)
     if (not qm.canHold(4031894, 1)) then
-        qm.sendNext("Please make some space..")
+        qm.sendNext("請空出一些欄位。")
     else
         qm.gainItem(4031894, 1)
         qm.forceCompleteQuest()

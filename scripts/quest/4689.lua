@@ -14,7 +14,7 @@ function start(mode, type, selection)
             status = status + 1
         end
         if (status == 0) then
-            qm.sendNext("I don't think you can escape from here now. If you do plan on battling here, you'll need more teammates to make it an even fight. What do you want to do? Do you still want to battle?")
+            qm.sendNext("我想你現在已經無法從這裡逃走了。如果你打算在這裡戰鬥，就需要更多隊友才能勢均力敵。你打算怎麼做？還是要戰鬥嗎？")
         elseif (status == 1) then
             qm.warp(802000309, 0)
             qm.dispose()

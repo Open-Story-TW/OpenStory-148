@@ -7,7 +7,7 @@ __quest = 3185
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Thank you so much.")
+    qm.sendNext("真的非常感謝你。")
     qm.forceCompleteQuest()
     qm.forceCompleteQuest(3186)
     qm.forceCompleteQuest(3187)
@@ -15,7 +15,7 @@ function start(mode, type, selection)
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Thank you so much.")
+    qm.sendNext("真的非常感謝你。")
     qm.forceCompleteQuest()
     qm.forceCompleteQuest(3186)
     qm.forceCompleteQuest(3187)

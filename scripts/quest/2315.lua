@@ -12,17 +12,17 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("Please do not forget our plea for help.")
+            qm.sendOk("請不要忘記我們的求助。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("A powerful barrier of magic, huh? Then what should we do...? If we can't find a way to break that barrier, then we can't save the princess. If it's impossible to physically break through, as you mentioned, then how about requesting help from our #bMinister of Magic#k?")
+        qm.sendAcceptDecline("強大的魔法結界嗎？那我們該怎麼辦…？要是找不到打破結界的方法，就救不了公主了。如果像你說的，用蠻力無法突破，那去請我們的#b魔法大臣#k幫忙如何？")
     end
     if (status == 1) then
         qm.forceStartQuest()
-        qm.sendOk("Please go see him immediately. The #bMinister of Magic#k may seem a bit on the edge, but he's very knowledgeable, and I'm sure he'll know what to do.")
+        qm.sendOk("請立刻去見他。#b魔法大臣#k看起來或許有點神經質，但他學識淵博，我相信他一定知道該怎麼做。")
         qm.dispose()
     end
 end
@@ -38,11 +38,11 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("What? You investigated the barrier at the Mushroom Forest?")
+        qm.sendOk("什麼？你去調查了菇菇森林的結界？")
     end
     if (status == 1) then
         qm.gainExp(4000)
-        qm.sendOk("Hmmm...this is interesting. It's a barrier set up by someone with a powerful force of magic, which means there's no way we can manually break through it.")
+        qm.sendOk("嗯…這可有意思了。這是擁有強大魔力的人所設下的結界，也就是說，我們沒辦法用蠻力突破它。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

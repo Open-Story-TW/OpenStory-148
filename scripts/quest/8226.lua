@@ -7,7 +7,7 @@ __quest = 8226
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find Elder Ashes.")
+    qm.sendNext("尋找長老的骨灰。")
     qm.forceStartQuest()
     qm.dispose()
 end

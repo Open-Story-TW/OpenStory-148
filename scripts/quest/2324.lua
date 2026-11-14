@@ -12,23 +12,23 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("This will be the only way for you to enter the castle. Please think it through")
+            qm.sendOk("這是你進入城裡的唯一方法。請仔細考慮清楚")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendNext("Ah! There might be a way... if you can utilize the spine vine that we have grown for the protection of our castle, then you just might be able to enter the premise!")
+        qm.sendNext("啊！說不定有辦法…如果能利用我們為了保護城堡而栽種的荊棘藤蔓，你或許就能進到裡面去！")
     end
     if (status == 1) then
-        qm.sendAcceptDecline("If you can somehow eliminate the spines from the spine vine, then you'll be able to climb over the castle wall using the vine. Of course, that'll also require a Vine Remover...")
+        qm.sendAcceptDecline("只要能想辦法把荊棘藤蔓上的刺除掉，就可以順著藤蔓爬過城牆。當然，那還需要藤蔓去除劑……")
     end
     if (status == 2) then
-        qm.sendOk("The #bSpine Remover#k is created out of extracts from mysterious herbs at the highlands of El Naths. King Pepe used these herbs to intoxicate the pigs and take over the Mushroom Forest. #bIntoxicated Pig Tail#k is where you'll find the extracts of the herb. Please gather up #b100 Intoxicated Pig Tails#k and take them over to #bMinister of Magic.#k")
+        qm.sendOk("#b荊棘去除劑#k是用冰原雪域高地上神秘藥草的萃取物製成的。企鵝王就是用這些藥草讓肥肥中毒，進而佔領了菇菇森林。在#b中毒肥肥的尾巴#k裡就能找到這種藥草的萃取物。請你收集#b100個中毒肥肥的尾巴#k，然後拿去交給#b魔法大臣。#k")
     end
     if (status == 3) then
         qm.gainExp(11000)
-        qm.sendOk("Good job navigating through the area.")
+        qm.sendOk("你順利通過了這個區域，做得好。")
         qm.forceCompleteQuest()
         qm.dispose()
     end
@@ -45,11 +45,11 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Hmmm I see... so they have completely shut off the entrance and everything.")
+        qm.sendOk("嗯，原來如此…所以他們把入口那些地方全都封死了啊。")
     end
     if (status == 1) then
         qm.gainExp(11000)
-        qm.sendOk("Good job navigating through the area.")
+        qm.sendOk("你順利通過了這個區域，做得好。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

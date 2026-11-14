@@ -7,7 +7,7 @@ __quest = 3108
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Ah, a clue! Let's go back to Scadur.")
+    qm.sendNext("啊，有線索了！我們回去找斯卡多吧。")
     qm.forceCompleteQuest()
     qm.dispose()
 end

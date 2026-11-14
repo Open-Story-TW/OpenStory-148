@@ -12,17 +12,17 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("Why did you even ask if you were going to say no to this?#")
+            qm.sendOk("既然你打算拒絕，那一開始幹嘛還要問？#")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("I think i've heard of a potion that breaks these kinds of barriers. I think it's called #bKiller Mushroom Spores#k? Hmmm... outside, you'll find the Mushroom Scholar #bScarrs#k waiting outside. #bScarrs#k is an expert on mushrooms, so go talk to him.")
+        qm.sendAcceptDecline("我好像聽說過一種能夠破除這類結界的藥水。我記得是叫做#b殺人菇孢子#k？嗯…你到外面去，就會看到菇菇學者#b斯卡斯#k在那裡等著。#b斯卡斯#k是菇菇方面的專家，去找他談談吧。")
     end
     if (status == 1) then
         qm.forceStartQuest()
-        qm.sendOk("I am confident #kScarrs#k will do everything to help you.")
+        qm.sendOk("我相信#k斯卡斯#k一定會盡全力幫助你的。")
         qm.dispose()
     end
 end
@@ -38,11 +38,11 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Ah, so you're the explorer people were talking about. I'm #bScarrs, the Royal Mushroom Scholar#k representing the Kingdom of Mushroom. So you need some #kKiller Mushroom Spores#k?")
+        qm.sendOk("啊，原來你就是大家口中的那位冒險家。我是代表菇菇王國的#b王室菇菇學者斯卡斯#k。你需要#k殺人菇孢子#k是嗎？")
     end
     if (status == 1) then
         qm.gainExp(4200)
-        qm.sendOk("#kKiller Mushroom Spores#k... I think i've heard of them before...")
+        qm.sendOk("#k殺人菇孢子#k…我好像在哪裡聽過…")
         qm.forceCompleteQuest()
         qm.dispose()
     end

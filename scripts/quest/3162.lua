@@ -7,7 +7,7 @@ __quest = 3162
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Royal Guard Ani comes out every hour, but right now he's not feeling like fighting.")
+    qm.sendNext("皇家守衛阿尼每個小時都會出現，不過他現在沒有戰鬥的心情。")
     qm.forceStartQuest()
     qm.dispose()
 end

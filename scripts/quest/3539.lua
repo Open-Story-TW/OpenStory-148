@@ -16,7 +16,7 @@ function start(mode, type, selection)
             status = status - 1
         end
         if (status == 0) then
-            qm.sendNext("Oh my gosh, you've grown so much since we first met! You've lost your memories? I'll take care of that.")
+            qm.sendNext("天啊，從我們第一次見面到現在，你成長了好多！你失去記憶了？這件事交給我吧。")
             qm.forceCompleteQuest()
             qm.forceCompleteQuest(3507)
             qm.dispose()
@@ -34,7 +34,7 @@ function finish(mode, type, selection)
             status = status - 1
         end
         if (status == 0) then
-            qm.sendNextPrev("Test")
+            qm.sendNextPrev("測試")
             qm.dispose()
         end
     end

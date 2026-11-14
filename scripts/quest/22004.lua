@@ -12,7 +12,7 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendNext("Hm, #p1013101# would have done it at the drop of a hat.")
+            qm.sendNext("嗯，換作是#p1013101#的話，二話不說就會去做了。")
             qm.dispose()
             do return end
         end

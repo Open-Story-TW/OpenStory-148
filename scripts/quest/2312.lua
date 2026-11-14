@@ -12,17 +12,17 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("Hmmm... you must be unsure of your combat skills. We'll be here waiting for you, so come see us when you're ready.")
+            qm.sendOk("嗯…看來你對自己的戰鬥實力還沒有把握。我們會在這裡等你，準備好了再來找我們吧。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("We need your help, noble explorer. Our kingdom is currently facing a big threat, and we are in desperate need of a courageous explorer willing to fight for us, and that's how you ended up here. Please understand, though, that since we need place our faith in you, we'll have to test your skills first before we can stand firmly behind you. Will it be okay for you to do this for us?")
+        qm.sendAcceptDecline("尊貴的冒險家，我們需要你的幫助。我們的王國目前正面臨巨大的威脅，迫切需要一位願意為我們而戰的勇敢冒險家，所以才會把你請到這裡來。不過也請你諒解，既然我們要把希望寄託在你身上，就必須先測試你的實力，才能全力支持你。你願意為我們接受測試嗎？")
     end
     if (status == 1) then
         qm.forceStartQuest()
-        qm.sendOk("Keep moving forward, and you'll see #bRenegade Spores#k, the Spores that turned their backs on the Kingdom of Mushroom. We'd appreciate it if you can teach them a lesson or two, and bring back #b50 Mutated Spores#k in return.")
+        qm.sendOk("繼續往前走，你會看到#b叛變的菇菇寶貝#k，也就是背叛了菇菇王國的菇菇寶貝。希望你能好好教訓牠們一頓，並帶回#b50個變異的孢子#k。")
         qm.dispose()
     end
 end
@@ -38,13 +38,13 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Did you teach those Renegade Spores a lesson?")
+        qm.sendOk("你有好好教訓那些叛逆的菇菇寶貝了嗎？")
     end
     if (status == 1) then
         qm.forceCompleteQuest()
         qm.gainExp(11500)
         qm.gainItem(4000499, (-50))
-        qm.sendOk("That was amazing. I apologize for doubting your abilities. Please save our Kingdom of Mushroom from this crisis!")
+        qm.sendOk("太厲害了。我為懷疑你的能力向你道歉。請你拯救我們菇菇王國脫離這場危機！")
         qm.dispose()
     end
 end

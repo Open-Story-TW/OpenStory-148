@@ -7,7 +7,7 @@ __quest = 8230
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find the Crimsonwood Keystone.")
+    qm.sendNext("尋找緋紅之木基石。")
     qm.forceStartQuest()
     if ((not qm.isQuestActive(8223)) and (not qm.isQuestFinished(8223))) then
         qm.forceStartQuest(8223)
@@ -17,10 +17,10 @@ end
 
 function finish(mode, type, selection)
     if (not qm.isQuestFinished(8223)) then
-        qm.sendNext("Please, find it!")
+        qm.sendNext("拜託，一定要找到它！")
     else
         qm.forceCompleteQuest()
-        qm.sendNext("Good job. Now we can proceed.")
+        qm.sendNext("做得好。這樣我們就可以繼續前進了。")
     end
     qm.dispose()
 end

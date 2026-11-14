@@ -11,23 +11,23 @@ function start(mode, type, selection)
         status = status + 1
     else
         if (status == 2) then
-            qm.sendNext("Hm... You don''t think that would help? Think about it. It could help, you know...")
+            qm.sendNext("嗯…你覺得那樣沒有幫助嗎？再想想看吧。說不定真的有用喔…")
             qm.dispose()
             do return end
         end
         status = status - 1
     end
     if (status == 0) then
-        qm.sendNext("Welcome hero! What's that? You want to know how I knew who you were? That's easy. I eavesdropped on some people talking loudly next to me. I''m sure the rumor has spread through the entire island already. Everyone knows that you've returned!")
+        qm.sendNext("歡迎你，英雄！什麼？你想知道我怎麼知道你是誰？很簡單啊，我偷聽到旁邊的人在大聲聊天。我想這個消息一定已經傳遍整座島了。大家都知道你回來了！")
     elseif (status == 1) then
-        qm.sendNextPrev("Anyway, what's with the long face? Is something wrong? Hm? You''re not sure whether you''re really a hero or not? You lost your memory?! No way... It must be because you were trapped inside the ice for hundreds and hundreds of years.")
+        qm.sendNextPrev("話說回來，你怎麼愁眉苦臉的？出了什麼事嗎？嗯？你不確定自己是不是真的英雄？你失去記憶了？！不會吧…一定是因為你被困在冰裡好幾百年的關係。")
     elseif (status == 2) then
-        qm.askAcceptDecline("Hm, how about you trying out that sword? Wouldn't that bring back some memories? How about #bfighting some monsters#k?")
+        qm.askAcceptDecline("嗯，你要不要試試那把劍？說不定能喚起一些回憶呢？去#b打幾隻怪物#k怎麼樣？")
     elseif (status == 3) then
         qm.forceStartQuest()
-        qm.sendNext("It just so happens that there are a lot of #r#o9300383#s#k near here. How about defeating just #r3#k of them? It could help you remember a thing or two.")
+        qm.sendNext("剛好這附近有很多#r#o9300383##k。去打倒#r3#k隻怎麼樣？說不定能讓你想起一些事情。")
     elseif (status == 4) then
-        qm.sendNextPrevS("Ah, you''ve also forgotten how to use your skills? #bPlace skills in the quick slots for easy access.#k You can also place consumable items in the slots, so use the slots to your advantage.", 1)
+        qm.sendNextPrevS("啊，你連怎麼使用技能都忘了嗎？#b把技能放進快捷欄就能輕鬆使用。#k消耗道具也可以放進快捷欄，好好善用吧。", 1)
     elseif (status == 5) then
         qm.summonMsg(17)
         qm.dispose()
@@ -39,20 +39,20 @@ function finish(mode, type, selection)
         status = status + 1
     else
         if (status == 0) then
-            qm.sendNext("What? You don't want the potion?")
+            qm.sendNext("什麼？你不要藥水嗎？")
             qm.dispose()
             do return end
         end
         status = status - 1
     end
     if (status == 0) then
-        qm.sendYesNo("Hm... Your expression tells me that the exercise didn''t jog any memories. But don''t you worry. They''ll come back, eventually. Here, drink this potion and power up! \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i2000022# 10 #t2000022# \r\n#i2000023# 10 #t2000023# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 57 exp")
+        qm.sendYesNo("嗯…看你的表情，這次的練習似乎沒有讓你想起什麼。不過別擔心，記憶總有一天會回來的。來，喝下這些藥水打起精神吧！ \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i2000022# 10 #t2000022# \r\n#i2000023# 10 #t2000023# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 57 經驗值")
     elseif (status == 1) then
         qm.gainItem(2000022, 10)
         qm.gainItem(2000023, 10)
         qm.gainExp(57)
         qm.forceCompleteQuest()
-        qm.sendOkS("#b(Even if you''re really the hero everyone says you are... What good are you without any skills?)#k", 2)
+        qm.sendOkS("#b（就算你真的是大家口中的英雄…連一個技能都沒有，又有什麼用呢？）#k", 2)
         qm.dispose()
     end
 end

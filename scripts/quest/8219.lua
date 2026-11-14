@@ -7,7 +7,7 @@ __quest = 8219
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find my bro.")
+    qm.sendNext("去找我的兄弟。")
     qm.forceStartQuest()
     qm.dispose()
 end

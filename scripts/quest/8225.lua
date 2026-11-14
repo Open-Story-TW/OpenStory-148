@@ -7,7 +7,7 @@ __quest = 8225
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("...Wow.")
+    qm.sendNext("…哇。")
     qm.gainExp(35935)
     qm.forceCompleteQuest()
     qm.dispose()

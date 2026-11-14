@@ -7,13 +7,13 @@ __quest = 4659
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Please talk to Marr the Fairy of Ellinia instead.")
+    qm.sendNext("請改去找魔法森林的妖精瑪兒談談。")
     qm.forceCompleteQuest()
     qm.dispose()
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Please talk to Marr the Fairy of Ellinia instead.")
+    qm.sendNext("請改去找魔法森林的妖精瑪兒談談。")
     qm.forceCompleteQuest()
     qm.dispose()
 end

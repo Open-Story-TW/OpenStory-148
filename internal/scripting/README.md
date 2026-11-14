@@ -79,7 +79,7 @@ Quest persistence currently supports server-authoritative start/complete/forfeit
 
 ## Generated legacy quest state machines
 
-`tools/migrate-quest-scripts.mjs` converts Legacy `scripts/quest/<id>.js` sources whose JavaScript and `qm` calls fall inside a fixed subset. The output keeps the legacy `start`/`end` state machine statement for statement (`end` becomes `finish`) and opens with the `-- legacy-quest-state-machine` marker. `scripts.Source` appends `scripts/legacy/quest_driver.lua` to such a file; the driver supplies `qm`, calls `finish` for a started quest and `start` otherwise, and feeds each answer back as the Legacy `(mode, type, selection)`. `scripts/legacy-quests.json` records every generated source with both hashes. These conversions are mechanical: they are covered by a simulation test that drives every source through both phases, not by a per-script review or native acceptance.
+`tools/migrate-quest-scripts.mjs` converts Legacy `scripts/quest/<id>.js` sources whose JavaScript and `qm` calls fall inside a fixed subset. The output keeps the legacy `start`/`end` state machine statement for statement (`end` becomes `finish`) and opens with the `-- legacy-quest-state-machine` marker. `scripts.Source` appends `scripts/legacy/quest_driver.lua` to such a file; the driver supplies `qm`, calls `finish` for a started quest and `start` otherwise, and feeds each answer back as the Legacy `(mode, type, selection)`. `scripts/legacy-quests.json` records every generated source with both hashes. English dialogue is replaced through `tools/quest-zh.json` (whole string literal -> Traditional Chinese) at generation time. A refusal the script sends back to an earlier line ends the conversation the second time, so a source without its own exit cannot loop. These conversions are mechanical: they are covered by a simulation test that drives every source through both phases, not by a per-script review or native acceptance.
 
 One legacy call is one transaction. The driver collects `gainItem`, `gainExp`, `gainMeso`, `forceStartQuest`, `forceCompleteQuest` and `setQuestCustomData` during a call and commits them as a single `exchange` when the call returns, before the prompt of that call is shown. A refused exchange (full bag, missing item) ends the dialogue with a notice and changes nothing, where Legacy silently skipped the item and still completed the quest.
 
@@ -97,7 +97,7 @@ Tutorials whose Legacy decline branch stepped back a line and looped until ESC (
 
 Quest 7707 (凌晨重置任務) is a v148 client system quest the v145 Quest.wz lacks. The client starts it by itself once a day wherever the character is; the server records it as finished for the day (TMS time) without an NPC.
 
-A `normalAutoStart` quest without a start script is offered by the client wherever the character stands, so its start transition does not need the NPC on the map; every other start requirement still applies. Scripted auto-start quests still run at the NPC.
+A `normalAutoStart` quest without a start script is offered by the client wherever the character stands, so its start transition does not need the NPC on the map; every other start requirement still applies. A generated start script of such a quest (the medal quests of NPC 9000040) also runs away from the NPC, bound to the map the character stands on; hand-written start scripts and every completion script still run at the NPC.
 
 ### Dual Blade (v148 line)
 

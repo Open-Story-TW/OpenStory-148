@@ -12,20 +12,20 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendNext("Really? Is there another way you can penetrate the castle? If you don't know of one, then just come see me.")
+            qm.sendNext("真的嗎？還有其他方法能潛入城堡嗎？如果你想不到，就來找我吧。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendYesNo("Like I told you, just breaking the barrier cannot be a cause for celebration. That's because our castle for the Kingdom of Mushroom completely denies entry of anyone outside our kingdom, so it'll be hard for you to do that. Hmmm... to figure out a way to enter, can you...investigate the outer walls of the castle first?")
+        qm.sendYesNo("就像我說過的，光是打破結界還不值得慶祝。因為我們菇菇王國的城堡完全不讓王國以外的人進入，所以你很難進得去。嗯……為了找出進去的方法，你能不能……先去調查一下城堡的外牆？")
     end
     if (status == 1) then
-        qm.sendNext("Walk past the Mushroom Forest and when you reach the #bSplit Road of Choice#k, just walk towards the castle. Good luck.")
+        qm.sendNext("穿過菇菇森林，到了#b選擇的岔路#k之後，往城堡的方向走就對了。祝你好運。")
     end
     if (status == 2) then
         qm.gainExp(11000)
-        qm.sendOk("Good job navigating through the area.")
+        qm.sendOk("你順利通過了這個區域，做得好。")
         qm.forceCompleteQuest()
         qm.dispose()
     end
@@ -42,11 +42,11 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Hmmm I see... so they have completely shut off the entrance and everything.")
+        qm.sendOk("嗯，原來如此…所以他們把入口那些地方全都封死了啊。")
     end
     if (status == 1) then
         qm.gainExp(11000)
-        qm.sendOk("Good job navigating through the area.")
+        qm.sendOk("你順利通過了這個區域，做得好。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

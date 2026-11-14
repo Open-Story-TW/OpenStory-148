@@ -7,7 +7,7 @@ __quest = 2561
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("The monkey is giving you an apple..")
+    qm.sendNext("猴子遞給你一顆蘋果…")
     qm.forceCompleteQuest()
     qm.dispose()
 end

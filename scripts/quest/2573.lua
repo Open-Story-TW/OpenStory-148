@@ -14,9 +14,9 @@ function start(mode, type, selection)
         do return end
     end
     if (status == 0) then
-        qm.sendNext("Greetings! Isn't this just the perfect weather for a journey? I'm SKipper, the captain of this fine ship. You must be a new Explorer, eh? Nice to meet you.")
+        qm.sendNext("你好啊！這不正是最適合出航的好天氣嗎？我是史奇普，這艘好船的船長。你一定是新來的冒險家吧？很高興認識你。")
     elseif (status == 1) then
-        qm.sendAcceptDecline("We're not quite ready to leave, so feel free to look around the ship while we're waiting.")
+        qm.sendAcceptDecline("我們還沒準備好出發，在等待的期間你可以在船上隨意逛逛。")
     elseif (status == 2) then
         qm.forceCompleteQuest()
         qm.warp(3000000, 0)

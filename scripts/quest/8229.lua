@@ -7,13 +7,13 @@ __quest = 8229
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Wow. Get this to Jack!")
+    qm.sendNext("哇。快把這個拿給傑克！")
     qm.forceStartQuest()
     qm.dispose()
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Thanks!")
+    qm.sendNext("謝啦！")
     if qm.haveItem(4032018, 1) then
         qm.gainItem(4032018, (-1))
         qm.forceCompleteQuest()

@@ -12,17 +12,17 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("You don't seem to follow instructions well. Come see me when you are ready.")
+            qm.sendOk("你好像不太會照指示做事。等你準備好了再來找我。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("Now you'll be able to penetrate the spiny vine barrier of Mushroom Forest, but before that, #bMinister of Home Affairs#k wants to have a word with you. Please go see him immediately.")
+        qm.sendAcceptDecline("現在你可以穿過菇菇森林的荊棘藤蔓結界了，不過在那之前，#b內務大臣#k想和你談談。請立刻去見他。")
     end
     if (status == 1) then
         qm.forceStartQuest()
-        qm.sendOk("Good luck.")
+        qm.sendOk("祝你好運。")
         qm.dispose()
     end
 end
@@ -38,11 +38,11 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("I have been keeping up on your fabulour work. I am aware that you have successfully created the #bKiller Mushroom Spores#k, which penetrates through the unpenetrable barrier of the forest. Congratulations!")
+        qm.sendOk("我一直在關注你出色的表現。我知道你已經成功製作出能夠穿透森林那道堅不可破的結界的#b殺人菇孢子#k。恭喜你！")
     end
     if (status == 1) then
         qm.gainExp(2500)
-        qm.sendOk("The problem now is to figure out how to enter the castle.")
+        qm.sendOk("現在的問題是要想辦法進入城裡。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

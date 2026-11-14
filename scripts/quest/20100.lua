@@ -14,9 +14,9 @@ function start(mode, type, selection)
         do return end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("Ahhh, you're back. I can see that you're at level 10 now. It looks like you're flashing a glimmer of hope towards becoming a Knight. The basic training has now ended, and it's time for you to make the decision.")
+        qm.sendAcceptDecline("啊，你回來了。看來你已經10級了。你身上似乎閃耀著成為騎士的希望之光。基礎訓練到此結束，現在是你做出決定的時候了。")
     elseif (status == 1) then
-        qm.sendOk("Now look to the left. The leaders of the Knights will be waiting for you. There will be 5 paths for you to choose from. All you need to do is choose one of them. All 5 of them will lead you to the path of a Knight, so... I suggest you pay attention to what each path offers, and select the one you'd most like to take.")
+        qm.sendOk("現在往左邊看。騎士團長們正在等著你。你有5條道路可以選擇，只要從中選出一條就行了。這5條路都通往騎士之道，所以……我建議你仔細看看每條道路的特色，再選出你最想走的那一條。")
         qm.forceStartQuest()
         qm.forceCompleteQuest()
         qm.dispose()

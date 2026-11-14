@@ -12,20 +12,20 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendNext("Please do not lose faith in our Kingdom of Mushroom.")
+            qm.sendNext("請不要對我們菇菇王國失去信心。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendYesNo("In order to rescue the princess, you must first navigate the Mushroom Forest. King Pepe set up a powerful barrier forbidding anyone from entering the castle. Please investigate this matter for us.")
+        qm.sendYesNo("想要救出公主，必須先穿越菇菇森林。企鵝王設下了強大的結界，不讓任何人進入城堡。請替我們調查這件事。")
     end
     if (status == 1) then
-        qm.sendNext("You'll run into the barrier at the Mushroom Forest by heading east of where you are standing right now. Please be careful. I hear that the area is infested with crazy, fear-inducing monsters.")
+        qm.sendNext("從你現在站的地方往東走，就會遇到菇菇森林的結界。請務必小心。聽說那一帶到處都是瘋狂又令人恐懼的怪物。")
     end
     if (status == 2) then
         qm.gainExp(8300)
-        qm.sendOk("I see, so it was indeed not a regular barrier by any means. Great work there. If not for you help, we wouldn't have had a clue as to what that was all about.")
+        qm.sendOk("原來如此，那果然不是普通的結界。辛苦你了。要不是有你幫忙，我們根本不會知道那到底是怎麼回事。")
         qm.forceCompleteQuest()
         qm.dispose()
     end
@@ -42,11 +42,11 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("I see that you have thoroughly investigated the barrier at the Mushroom Forest. What was it like?")
+        qm.sendOk("看來你已經徹底調查過菇菇森林的結界了。情況如何？")
     end
     if (status == 1) then
         qm.gainExp(8300)
-        qm.sendOk("I see, so it was indeed not a regular barrier by any means. Great work there. If not for you help, we wouldn't have had a clue as to what that was all about.")
+        qm.sendOk("原來如此，那果然不是普通的結界。辛苦你了。要不是有你幫忙，我們根本不會知道那到底是怎麼回事。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

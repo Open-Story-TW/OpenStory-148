@@ -12,37 +12,37 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendNext("Oh, was it confusing? Then I'll explain it to you again.")
+            qm.sendNext("喔，聽不太懂嗎？那我再說明一次。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendNext("Hi there, aaroncsn1! You may have heard by now that Aran has returned to the world of Maple, right? To celebrate his triumphant return,I,the Maple Administrator, and Lirin, the girl who waited patiently for Aran have a special present for you.")
+        qm.sendNext("你好，aaroncsn1！你應該已經聽說狂狼勇士回到楓之谷世界的消息了吧？為了慶祝他的凱旋歸來，我楓之谷管理員，還有一直耐心等待狂狼勇士的少女莉琳，為你準備了一份特別的禮物。")
     end
     if (status == 1) then
-        qm.sendNextPrev("#v1112405# AllStat + 3 Weapon ATT +3 Magic ATT +3 HP +30 MP +30 \r\nOnce you reach Level 50 as Aran. Lirin will give you a ring that she treasures.")
+        qm.sendNextPrev("#v1112405# 全屬性 +3 物理攻擊力 +3 魔法攻擊力 +3 HP +30 MP +30 \r\n當狂狼勇士達到50級時，莉琳會送你一枚她珍藏的戒指。")
     end
     if (status == 2) then
-        qm.sendNextPrev("The item is normally untradeable, but that means only the Arans are allowed to use it, so I decided to do something about it.")
+        qm.sendNextPrev("這個道具原本是無法交易的，但這樣一來就只有狂狼勇士才能使用，所以我決定想點辦法。")
     end
     if (status == 3) then
-        qm.sendNextPrev("I have changed the settings so that her ring can be transferred within the account. The ring cannot be traded with other users, but you can use the ring with different characters on your account.")
+        qm.sendNextPrev("我已經更改了設定，讓她的戒指可以在帳號內轉移。這枚戒指無法與其他玩家交易，但你可以讓帳號內的不同角色使用它。")
     end
     if (status == 4) then
-        qm.sendAcceptDecline("Did you get all that?")
+        qm.sendAcceptDecline("都聽懂了嗎？")
     end
     if (status == 5) then
         if (not qm.canHold(2031008)) then
-            qm.sendNext("Hmmm...I was going to give you Rien Teleport Ticket, which is very useful for Arans, but... your 'use' inventory seems to be full. Please make at least a single slot available.")
+            qm.sendNext("嗯…我本來想給你對狂狼勇士非常有用的瑞恩傳送券，可是…你的「消耗」欄好像已經滿了。請至少空出一格來。")
             qm.dispose()
         else
             qm.gainItem(2031008, 1)
-            qm.sendNext("I have just give you the Rien Teleport Ticket, which will allow you to teleport directly to Rien, where Lirin resides. If you ever become a Level 50 Aran, then use it!")
+            qm.sendNext("我剛剛給了你瑞恩傳送券，它可以讓你直接傳送到莉琳所在的瑞恩。等你成為等級50的狂狼勇士之後，就拿來用吧！")
             qm.forceCompleteQuest()
         end
         if (status == 6) then
-            qm.sendPrev("Now I hope each and every one of you enjoy the festives that come with the return of Aran!")
+            qm.sendPrev("現在，希望各位都能盡情享受狂狼勇士歸來的慶典！")
             qm.dispose()
         end
     end

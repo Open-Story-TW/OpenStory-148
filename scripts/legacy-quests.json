@@ -10,241 +10,241 @@
       "legacy": "quest/2148.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2148.lua",
-      "lua_sha256": "9a0ab34aeb1362890c6c52c19616a4725cc022f69c1721021b8f30e7e04b6f61"
+      "lua_sha256": "3c2243421c4239bdd11dcb7a84f858d84a208dad07748bd465dd00602c57245f"
     },
     {
       "legacy": "quest/2149.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2149.lua",
-      "lua_sha256": "e1d91758d60d2972ed6d5709115c54bf4ed6ff3e7edc6ecfa6a1d9d734a973dd"
+      "lua_sha256": "363b3ccf17a73497a2255b900138aa19c9731a679ae8a7dfaa2bc514d7d17772"
     },
     {
       "legacy": "quest/2150.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2150.lua",
-      "lua_sha256": "c48efccaebd437bbd4af9f1dc28b7c6518d37c62bb098b99a449db1aec7ed864"
+      "lua_sha256": "18977902b52958938698272065b6c96fe3eee215e80b779355a8c9dcb6dc32f6"
     },
     {
       "legacy": "quest/2151.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2151.lua",
-      "lua_sha256": "90d7825148ba5c78a2161eb93c0946df2a910878e50dd70f8f7dcb02defd27b0"
+      "lua_sha256": "cbeebbcd09089fd54270b383e8bbfab1d06664676144161d071efca259211932"
     },
     {
       "legacy": "quest/2152.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2152.lua",
-      "lua_sha256": "22db5f72e897a0b94b24ec77e9dca898f5d74f083aa92ca2a610295b9cf1915f"
+      "lua_sha256": "069338574e3e2ff73899f42b900771c33ba1189bb49ab6510261741f7babb8ff"
     },
     {
       "legacy": "quest/2156.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2156.lua",
-      "lua_sha256": "b24fc5a093973d7ebf7b4c78c03957d63ad4c6b3025bf1516c088012153abb76"
+      "lua_sha256": "878294c4b7d2d0fc87f33509f6e9fac77640561d7fb14954ce2ffb62d74a0693"
     },
     {
       "legacy": "quest/2186.js",
       "source_sha256": "b8af3aad973ecfaa968cc9347ef98576ff9825e3a4699c0de890e68fb5a591e9",
       "lua": "quest/2186.lua",
-      "lua_sha256": "30cf5712b85dbec909c273660fd5723e1345f89894abd46159fc29be31c09a4f"
+      "lua_sha256": "8368126234a36fbeac748356c815edcd3dcf5c634b7459e7221708c5faf8842f"
     },
     {
       "legacy": "quest/2197.js",
       "source_sha256": "2611fe2a5d0afae112fe7bd668a202600104d459132c9c031694a95caa86f4d4",
       "lua": "quest/2197.lua",
-      "lua_sha256": "3d4677b67884eea5360fab461d78fdd8034ac4132d4708688717b64f05c6f479"
+      "lua_sha256": "d8adf0f35d3ff256653008ee3e1bd3cb9d797d7ece71ee9500e6c5e517d101e5"
     },
     {
       "legacy": "quest/2214.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2214.lua",
-      "lua_sha256": "92b9ae287c7eb0719d266f801e4d481b716d9057c50f9c1af00c97d7f021d336"
+      "lua_sha256": "c7cba4b7b3b0bb6da91e5ba99f375a1302ac33cf1b1d99b91d20010682f26a1e"
     },
     {
       "legacy": "quest/2215.js",
       "source_sha256": "0f249698748971767daf48c39f71a85dc62ece5f304962c057604ad81569abf0",
       "lua": "quest/2215.lua",
-      "lua_sha256": "b7bf03e8011d78c89a25a3fb77dbbaeb79bb86f7f7eb4571150c3036d1c27dc3"
+      "lua_sha256": "7325e18881345ff884cc9ce9a0b793e2bf94f6e922238ae9d073e0b9e28c3788"
     },
     {
       "legacy": "quest/2216.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2216.lua",
-      "lua_sha256": "fcb9ee6971bbd3d8667a71d61c7bf83cd5861d053e61de755f028a715431a3cb"
+      "lua_sha256": "0e4d7393d88a7b7018cb9ec8ca25278e9ea8fa1637e7b40e47dffee0433766e2"
     },
     {
       "legacy": "quest/2217.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2217.lua",
-      "lua_sha256": "b746f4a12ad441df63ad97588f2096f843e796e53651911b33b9026e8898130f"
+      "lua_sha256": "4c3b64bab3cc913775fd2a7b1e71929ef86d001fb0198dfdddf3c9244576f782"
     },
     {
       "legacy": "quest/2218.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2218.lua",
-      "lua_sha256": "23e3595b3c7c10697ada27ebe8fbeb427a4f166c500627e5b00123a814e9ecde"
+      "lua_sha256": "b07bbaf577b4381c5a6ac6283a6e7bdf67bcf25e59a74e9f1e1bf02f349635bf"
     },
     {
       "legacy": "quest/2219.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2219.lua",
-      "lua_sha256": "82ca6aa1bb703146170f9644913c0fd7a8c8b7fd8e8d660eb3a191750e8425a6"
+      "lua_sha256": "e70c179ea86c45ffa6a1fb99edc8d6ac5b02aa5a75bd79b2addb1d8abfd0cae7"
     },
     {
       "legacy": "quest/2228.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2228.lua",
-      "lua_sha256": "2036b8ac5eca72625930d19fcda001f5bf3a02f83681cdd39969ff6660104bfa"
+      "lua_sha256": "7e4ff26164061f1308ff45b56a4d926279c623fb5801a9abeafcca79827f3bd3"
     },
     {
       "legacy": "quest/2230.js",
       "source_sha256": "ed8ae4d0942154e1a77753c205fd0cda6d32db56d5ca54ece0eb2ab51477f0da",
       "lua": "quest/2230.lua",
-      "lua_sha256": "d3fa3ee6144dcbe1706dbdae7c6da52fffe9e7544886c66f82f942e620b7dc69"
+      "lua_sha256": "817ed11908fc0aff89822208ca5b3ab3872599d2216a98d01d484a4822d3a22d"
     },
     {
       "legacy": "quest/2238.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/2238.lua",
-      "lua_sha256": "99a1693b54076b1f9fd4a4d214d63668a62e47ef6e536420c14c0e87d64d2d33"
+      "lua_sha256": "cd01b5c7e127562a53684f9e7e0eafdb84b94cc97813148e4dd8d610f9c286bf"
     },
     {
       "legacy": "quest/2251.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/2251.lua",
-      "lua_sha256": "b1d1faa80720464d56c091ba01d4b1ce573b81fbe6d28301446f65653dd0c7aa"
+      "lua_sha256": "ab0c84df60fcc93bb4dc3ebaa01bfd88bc28c478f03722038dbb94e322b858e9"
     },
     {
       "legacy": "quest/2300.js",
       "source_sha256": "cbaee2441652d1d156abb01dc5150873381bfb9d70a343c68de66d37c7934a5f",
       "lua": "quest/2300.lua",
-      "lua_sha256": "216a84f9c060c094a41833630f3c9c3d53911768a4ddf53e053a902d05586864"
+      "lua_sha256": "0107a27266d7ebec48d4b115dafe6bcd64308883765dc8ee2cb469df037aab92"
     },
     {
       "legacy": "quest/2301.js",
       "source_sha256": "4a5946087581d464af55af310913fdbc5c4621c848e5b06ad67f7a7ad9e42742",
       "lua": "quest/2301.lua",
-      "lua_sha256": "7bb8604da23151ebf5f66f776925dcb78f703df27ee0560aca60058dfd78e00f"
+      "lua_sha256": "a4a4d469df622abbb31eccf432c20a5775785725f488f510b44ba19a49607d92"
     },
     {
       "legacy": "quest/2302.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2302.lua",
-      "lua_sha256": "c1f96f9215d1b2ffb873b970e3cee2164ed284abe62f4faf718fa657ae3439c3"
+      "lua_sha256": "f645d5f9c4eed2f4c2ab904f967387501c8d259eedfd456bfed10c81946dbf92"
     },
     {
       "legacy": "quest/2303.js",
       "source_sha256": "b21e225a19d79611b24a2e8c5c97fca39b60796d44e17eb100cc6e361a00a2a1",
       "lua": "quest/2303.lua",
-      "lua_sha256": "74759ff04aca140e6a1b9d2676dbaaec64c4e025b33c47eb4d6a9bce7034b054"
+      "lua_sha256": "a939456a261849426f22ec9a3ff4b9eeba9311874c93843bc9df496a790de6ba"
     },
     {
       "legacy": "quest/2304.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2304.lua",
-      "lua_sha256": "b20d033f076b6f21bc10d2f58da4f1c597832ccfdceb727a874acbe86b9260c3"
+      "lua_sha256": "539e569a6981d7e06553f630f9b8e31505bce2ae8c67b7375d4610b073f9e358"
     },
     {
       "legacy": "quest/2305.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2305.lua",
-      "lua_sha256": "33c349993a958b4e439f9d863b040e05f0e2f50cf289528dd5e84ec087fbe739"
+      "lua_sha256": "d972133c0c3d2fa1e8b0f4f13edd7caa8265dfc53c2f0744d4f6cdc6e84c5f4f"
     },
     {
       "legacy": "quest/2306.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2306.lua",
-      "lua_sha256": "45b8a87eb05dfaa1152dcb73c61b2b5678e8ddb4e3eebb537fceb58574d0e1bd"
+      "lua_sha256": "8c2537a51a92b975fba6c23a9b4bdd9457bf866177445582fe45e255ef03aa67"
     },
     {
       "legacy": "quest/2307.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2307.lua",
-      "lua_sha256": "9533983b63c57e9e07672bc36f42a6d9024d04a4c902bf776d65ad3e81020879"
+      "lua_sha256": "c3697c09180309fe39acd35bb01a2d4f37c39bdf5d83e271f002c1287364ed95"
     },
     {
       "legacy": "quest/2308.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2308.lua",
-      "lua_sha256": "1ab38730bd142b8fd17c7f50136a085a3daaadc1bfe157bd1207aa6b1e083752"
+      "lua_sha256": "57e57420d1b2211758b53da63070111c900a7633341cce1d5845aa46c1ee75d4"
     },
     {
       "legacy": "quest/2309.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2309.lua",
-      "lua_sha256": "eba7a21312e3c6cd6d168882099fdc866b96eec16401ad08ffd4b7b78ffaa162"
+      "lua_sha256": "2a1883aeff6ddb11e788d7d1415f581afc6a2c661c0f013b9d0f3f9509200aa1"
     },
     {
       "legacy": "quest/2310.js",
       "source_sha256": "242ed52d432d7155056489a8847cf75b45b1965dfac22c8842939fea88d8b55f",
       "lua": "quest/2310.lua",
-      "lua_sha256": "dc0a2f980a9087a178ed629c448984b58d1cbe58d48d3044d8107410d521d8b2"
+      "lua_sha256": "75bf19a33b8a9e3e27c97b51b85b9992b4e4dfb36a6b756779a9e7ad6021b751"
     },
     {
       "legacy": "quest/2312.js",
       "source_sha256": "2d4b39a916f7c033d4b344d3d5d6e15e3f5465813a83e186957f2dce2bd48ea2",
       "lua": "quest/2312.lua",
-      "lua_sha256": "5fe4d785a1504cd90192ade6829ff31b25150afbcb90154579498bcd3817c955"
+      "lua_sha256": "a1b57fdda73fc3e97b0965e1bea4687c8a4ab0ad55e51bd70cfb1defa4ae48bb"
     },
     {
       "legacy": "quest/2314.js",
       "source_sha256": "cd382de9237f7736f37d7e7f9df1971ec29a79c254f80b7b100b4403048a157f",
       "lua": "quest/2314.lua",
-      "lua_sha256": "f452f52fe63d0b46b54a7cbbfe23c3eda1f586db6bde53dd31e291a69acde9cf"
+      "lua_sha256": "c1e3dc2e9ee9879af4f992a69a1b134991c8d322fd3896ab81b86506a2185a71"
     },
     {
       "legacy": "quest/2315.js",
       "source_sha256": "2cf800c4c9739ba2594f69c42abcf4d6be68cac27c05d4abef9b4f9352b32156",
       "lua": "quest/2315.lua",
-      "lua_sha256": "f6918326fc04c72cf3de5d429abc243570641b0283395fafb6ef4fb20f125e82"
+      "lua_sha256": "e6b34f7b9e692a7557c33c3d52c38f35c693094573b6a1ad0bd98037d527f960"
     },
     {
       "legacy": "quest/2316.js",
       "source_sha256": "2ebca22ae1ef5f564da67c4d71e521b6263ff8bbcc54ffc3644193f08f9e6d03",
       "lua": "quest/2316.lua",
-      "lua_sha256": "9f9fca735c15526775a4e3229459e3ab93d4a3fa8abcafd865c364e180ce618a"
+      "lua_sha256": "8aba46ced7c605901df7faf6b7d77bec621d184ad9b0bd767fd51b3586fc5dee"
     },
     {
       "legacy": "quest/2317.js",
       "source_sha256": "2cf8446e256ae438cd4c23cb03d869fb20b3b4e180b6dc72bf0d8d1e78447bfc",
       "lua": "quest/2317.lua",
-      "lua_sha256": "e29270f2aa5292332b0ea891ca8a3bc021d574f10e8941cf1372300d23cd8abe"
+      "lua_sha256": "ad9a9d264178cbfd8f70e490244901ce68e31c84949b38e41c9b3c32d8078170"
     },
     {
       "legacy": "quest/2318.js",
       "source_sha256": "a07724087dfd1144e8ed93b38073a0dab516ef9119fa888916948fba1e765198",
       "lua": "quest/2318.lua",
-      "lua_sha256": "cdf9ebfd4c7e37ddf01697e98ca4b7f164d88c9734f37fbc0b4d874fd62b2a8a"
+      "lua_sha256": "4d230987e398b49042c67d8c9471368e8dfd1d91c415f3b0dbcedbe3059feb28"
     },
     {
       "legacy": "quest/2319.js",
       "source_sha256": "2c116c7cea5abbf7ccc6961f446b28709ddb97e88541fc159d965372b1a4ad0d",
       "lua": "quest/2319.lua",
-      "lua_sha256": "1b67989944b11376a6389c0a884c9044cf07d5e04f2dc5d9a1c809eb7aea0e69"
+      "lua_sha256": "0a726fbd1e2830071ccb9a1ad7e9dfbc9263d07980aec43b0436de7789cdb736"
     },
     {
       "legacy": "quest/2320.js",
       "source_sha256": "be599c4a05ea43e7f850625bb50d9a9851b9d669fa52c27405910a23949b09d7",
       "lua": "quest/2320.lua",
-      "lua_sha256": "6a52e6a17890e440620d8a095a8834ab17dc70755d9174f0e7a0b90dabb4178a"
+      "lua_sha256": "2b81e55282910d6ab0e167f66552d3edc3223f5cf664365456cc4789c1231561"
     },
     {
       "legacy": "quest/2321.js",
       "source_sha256": "308149731a485b0239ad13dbcf972096dfba2a913d57587c41897da37db96d39",
       "lua": "quest/2321.lua",
-      "lua_sha256": "f89d4644ef70cb85a4cd50d93c063bc01d25e4d22cd2b6bb0f2b537c26a0d448"
+      "lua_sha256": "81b925b778fa80b304c6a8e60c3fff64f8bad54234a117d87af31d55a4511bf0"
     },
     {
       "legacy": "quest/2322.js",
       "source_sha256": "559455954eee9fac107d3d72cc325888cdc4ac53bb6e5c2871538ec0b4a4ab27",
       "lua": "quest/2322.lua",
-      "lua_sha256": "9fcadfa8152536dc9e0aaf64c2f307a9237b04f687511ce4487c575f5a9ac243"
+      "lua_sha256": "9176daefe88859d97d15a5149c0f3cf97b4f6dc86664cb34e09834d280473a59"
     },
     {
       "legacy": "quest/2324.js",
       "source_sha256": "93ca91303a42e413c755f2193fcfd41e660342fbb28e9ad55171f7bacf849c90",
       "lua": "quest/2324.lua",
-      "lua_sha256": "78828a302a9445100209e464d6405168a0a9244b0851ceb01646e597705cd413"
+      "lua_sha256": "8e68b1a847819ff627e5c82badba3ccca049e4035c22acb7cc9a3f12a389da9f"
     },
     {
       "legacy": "quest/2325.js",
@@ -286,13 +286,13 @@
       "legacy": "quest/2344.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2344.lua",
-      "lua_sha256": "18a4a1027cb24495b5565bf7b2440d98e850aeb7adccaadcd7ea430b192f0f6b"
+      "lua_sha256": "c08d33b2d91333b0bd8c9523ebc88b86789952eda540a1b6750598e9e9e8f5b1"
     },
     {
       "legacy": "quest/2345.js",
       "source_sha256": "0f864ba91b11ad378f78d44882f6dce654e1d8ee77d0052143c8b583fb48db50",
       "lua": "quest/2345.lua",
-      "lua_sha256": "e04453cfd514a415edd0123a651d2cb5f60c565e130a36dea4ad6e32a920012e"
+      "lua_sha256": "a7203ea89cf3293d57693de18a832d3de2126b9efcb7380d968f996766452b94"
     },
     {
       "legacy": "quest/2490.js",
@@ -346,13 +346,13 @@
       "legacy": "quest/2560.js",
       "source_sha256": "9c32c29c5938e31e1cf729813ef59bfd2085b21fa2e279d49040f89bd1f1350b",
       "lua": "quest/2560.lua",
-      "lua_sha256": "a2016fd176fc7778b897157150ea493d7f0652b19d03c29b9375fb4c6f3842ab"
+      "lua_sha256": "427bc0bad3dcbeea17e3a0d8ad0b3390fb3aed19fe7c91c63f5302f12b39ccfc"
     },
     {
       "legacy": "quest/2561.js",
       "source_sha256": "53bed5f0a67765ed6849203ef14f8b86b94a82a28d4066ea80095005cb0c3cb1",
       "lua": "quest/2561.lua",
-      "lua_sha256": "4ed97082f6189aec4631c80ecb88441b735ee67263a579afc7de3f822882238d"
+      "lua_sha256": "1a5471c91d73586812329a5f15dbc2b53be916d9f58bb21408bee3e2d3d20906"
     },
     {
       "legacy": "quest/2568.js",
@@ -364,91 +364,91 @@
       "legacy": "quest/2573.js",
       "source_sha256": "8d1e81ca9f7d4bea00fdd0077878b45deaf8b640c541448b4047449402254551",
       "lua": "quest/2573.lua",
-      "lua_sha256": "19841ebbd134f15a9a0800c26d986a3690a48953f0fa35ecee500a33bfe68098"
+      "lua_sha256": "5c56e07bf324f35a640fb96c86deef87a0e1fe9c42b54a146d4830ae3abb79eb"
     },
     {
       "legacy": "quest/3108.js",
       "source_sha256": "0464682accb7a5fa6095d1d8a4528fd10a9cc21d95cfb3c2809191e9a8c46732",
       "lua": "quest/3108.lua",
-      "lua_sha256": "26c708c82329d8da984d6f977ee6d60ed6566d034d83b5281f1a0d10f5cc5381"
+      "lua_sha256": "a42ee1bd0ddbb6f7ab405559ab58633fd47744402163a163321056725b93edc6"
     },
     {
       "legacy": "quest/3116.js",
       "source_sha256": "b4cc31aefd6725dc3eb7f51743a56b8a39d72f1d2ca996cec7f02f210a7ee3d4",
       "lua": "quest/3116.lua",
-      "lua_sha256": "10ae59ddd84060d93a7888bc54bd1d5ac1fa6a34bf0cd4aba08e860c33e2887e"
+      "lua_sha256": "33327e4326a903eb526738c15419bc025ef222f01e2e623dd204dd7f7a86e8cc"
     },
     {
       "legacy": "quest/3118.js",
       "source_sha256": "b4cc31aefd6725dc3eb7f51743a56b8a39d72f1d2ca996cec7f02f210a7ee3d4",
       "lua": "quest/3118.lua",
-      "lua_sha256": "d2b00a2cf6b0473f39431b051eb5ca9534da8d2b9bc4f0d241ca8732abdeaac7"
+      "lua_sha256": "b7adb6e8553d5fb5b50f3eab9acbba61b7b668b7f79ccc1e4e9f32b4e770a834"
     },
     {
       "legacy": "quest/3122.js",
       "source_sha256": "e29e1c7dfb467bdc00f17ffc8803009d0f417f61d7062cfe8332a8eef28f3685",
       "lua": "quest/3122.lua",
-      "lua_sha256": "6b2fbdb8f0f763a76dabe83ed44d377b069e14ec596f03b34a3ce44dd7ac4f5b"
+      "lua_sha256": "a888aaa8067ed74428f8cfd14fa58b3a1d52cdd60eaa75227f7a0a8a4c7bf2cb"
     },
     {
       "legacy": "quest/3162.js",
       "source_sha256": "d1dfac42412a1a4613afc52bf4cd00ad59161a4c27bef590736d52c25c5fc957",
       "lua": "quest/3162.lua",
-      "lua_sha256": "172fc46a963bd1e579ee349af9cee9ac65d309c9fd9147467a397744171ebb73"
+      "lua_sha256": "d9c6a55aa7af06fac98582539be999cefc4d7e0ed6311a30a619059e4babbd03"
     },
     {
       "legacy": "quest/3182.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3182.lua",
-      "lua_sha256": "7d2fc7d294c4dc8ee700c2e7976e6e1ea6c2870346bc4dd9e0eb459ae28ae017"
+      "lua_sha256": "dd3b34bae69f90399a2f3c0077b9a7b5fafa83a18a4462fad2accf15e0688aa8"
     },
     {
       "legacy": "quest/3184.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3184.lua",
-      "lua_sha256": "3c6487bbcbb7aba7df2f9007e5b31fda656b5ca5d8e5968e48989630ead39874"
+      "lua_sha256": "ac44c49090b2008172d7a188a57a832aed8b19edce36ade278c94cbeafd3b9ca"
     },
     {
       "legacy": "quest/3185.js",
       "source_sha256": "38a43b82538b0b54e79c81401ecb50ad8d3f462ed1daa0900b8e6a3d872957b4",
       "lua": "quest/3185.lua",
-      "lua_sha256": "570b4fc7119879905c4f712db47087e74b7871c5d32665dd550aff7dfbd13aca"
+      "lua_sha256": "07396aaba1abc383f778a6c7f3ec8dcdd100d704eb86714f8d155c8c6d69d10e"
     },
     {
       "legacy": "quest/3191.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/3191.lua",
-      "lua_sha256": "211e5dbfcacb1fa56fa63d38ecf4f9080cd23f3bee3766e8bb6eeb1359cc9000"
+      "lua_sha256": "10db276a2476661459d1b4d14731e0fc4a1d146b65603713c1c1329579f0c6ff"
     },
     {
       "legacy": "quest/3192.js",
       "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
       "lua": "quest/3192.lua",
-      "lua_sha256": "83581b7d01980eae90c0709a70d64bbd375785556c863c811bc5778e3000f047"
+      "lua_sha256": "1cb962d2f4c14822ab41c6908a80bc7c57b777f16ca137547e21d6351d1a9ce9"
     },
     {
       "legacy": "quest/3301.js",
       "source_sha256": "91a187a58ddd39b6dab44ead18db3cbd8b88af517ee0a2572369c7460f65e52e",
       "lua": "quest/3301.lua",
-      "lua_sha256": "f7d0a08f50df0abb02b9e1a8fe17b6feffecb2eed7b5dcceb0aa560f24e2d69c"
+      "lua_sha256": "9a6916fadc840da37d46e2022e6940b7172395b26a131a8d877bd114ca2a2f1b"
     },
     {
       "legacy": "quest/3303.js",
       "source_sha256": "2fa32faf1b6652d0ff9b7e7d7d868065cf93064c69992b008d30d76dd3416b9a",
       "lua": "quest/3303.lua",
-      "lua_sha256": "ea02bdafb8ae4d9a38d6b312c222da39a0fc7b6299b5308161ea8073362899eb"
+      "lua_sha256": "fd01c8d6e6444ad0aa6f04c047b3ee4997452635459635e7141ab5771a3de44c"
     },
     {
       "legacy": "quest/3314.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3314.lua",
-      "lua_sha256": "65e8d10f4d33af6a4a41661b252cf01aba388c0ec2340ef89e92e6e434bc52f0"
+      "lua_sha256": "4368914826faee90cea258b9747a6997893a0d2dacda84b7b778d5b4735b5522"
     },
     {
       "legacy": "quest/3452.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3452.lua",
-      "lua_sha256": "324d9fb53c3671f6860608d38d028e4357d0df3e16f699fbc9dbb2214c448384"
+      "lua_sha256": "b0216f703c076163908d0008a98c3bbe6bebcf51bc686833c76f4d09e889064e"
     },
     {
       "legacy": "quest/3514.js",
@@ -460,55 +460,55 @@
       "legacy": "quest/3523.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3523.lua",
-      "lua_sha256": "38a7dabfa32de23dce544624e6e266f4f3145516196b8c49077c464bbf601326"
+      "lua_sha256": "cd99338afcca60d1f178788944fda0aad8dc0de92672676a7cae1d70f0515db7"
     },
     {
       "legacy": "quest/3524.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3524.lua",
-      "lua_sha256": "2a575cdf37c7639b44a61f7646957d443dcebdf6af8113a1fba422f19c440eec"
+      "lua_sha256": "bb3658339aec65f8823a85f0faeabd89966f89ecdba0a760c27f70aad5f27a75"
     },
     {
       "legacy": "quest/3525.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3525.lua",
-      "lua_sha256": "68ba8885b20bfa34cda40351a967c4dccedba0b1f2fc9645288f08b02a1e4e31"
+      "lua_sha256": "2fde35a6dc0791efa873ffe32eda61755ddbaec38d10b214f5746786ad6b9cb2"
     },
     {
       "legacy": "quest/3526.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3526.lua",
-      "lua_sha256": "36b89d0a0f723dc23b6f79abf33b4df5b49e060e6ba9b0e98f5d9fcdf400b653"
+      "lua_sha256": "86bbff314b481dbb7fae10340d2bb2630e92c7dacfd9fc60851de165a43ad8e4"
     },
     {
       "legacy": "quest/3527.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3527.lua",
-      "lua_sha256": "79db5f4ec258f82c1ef459bfb0d8bca6d11b530a2070dd9e3db1558673b4cc51"
+      "lua_sha256": "b0eb55b298938f5c9c7fd3eac0441c4abbc31d547a4ae6f1a5c5a283db9e1a01"
     },
     {
       "legacy": "quest/3529.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3529.lua",
-      "lua_sha256": "05cb39f9b3c425909502aa94f0cff9d2cd8a6a0f0f4132d40dd4a507193579ec"
+      "lua_sha256": "463055bff2557b41e5f90d36e0b81df0334099557c53ebdd2821ae232651d66a"
     },
     {
       "legacy": "quest/3539.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3539.lua",
-      "lua_sha256": "0985d2b447d859596dfc248b9fcb1def927eaff4cbb8db679a51ef3248200724"
+      "lua_sha256": "dc3511fe677e605589e271ecc502090fe5a2558e8ed09db5d1b1ceda358750d3"
     },
     {
       "legacy": "quest/3540.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3540.lua",
-      "lua_sha256": "b663f7948a1bcd00e2fb1b8562c1d8665a54ba4e7a37ac2a14bce9f83abd14ef"
+      "lua_sha256": "c47954216dbb12eea7800e9a3ec6ad81c55a82974b1092f6d4184ce182b3b5cd"
     },
     {
       "legacy": "quest/3541.js",
       "source_sha256": "d70a09a26e4fefef34faea8b6b9493d6267957eaa6b1ffd664ff38b02d4b745a",
       "lua": "quest/3541.lua",
-      "lua_sha256": "60f81b793bea5d79603d1f9b507bee6656f3a0afcaea7773bd2ae80c1ce5c4d6"
+      "lua_sha256": "42039d30d781359d5bc8bd24d46d1f83261dc85eee8d42a5ee0bdddbcbf7c3cb"
     },
     {
       "legacy": "quest/3715.js",
@@ -520,67 +520,67 @@
       "legacy": "quest/3833.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3833.lua",
-      "lua_sha256": "5d64a3e2289809e4352fa599becfb1410e0e8a155ef35218d9f31798105d5164"
+      "lua_sha256": "a874157488de5417f114c762534913ed0bfa84b83d35d53526a28feacc7cfcbb"
     },
     {
       "legacy": "quest/3933.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3933.lua",
-      "lua_sha256": "44afbdcd3dcbcfd446b556a57d642e649bb6ab14d7d310fa9188cca5171af3f5"
+      "lua_sha256": "6815b2292dcbdf43c981e9b1bda28fa6d833f9a99165c27714588ac6ff0ad2a3"
     },
     {
       "legacy": "quest/3941.js",
       "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
       "lua": "quest/3941.lua",
-      "lua_sha256": "1e6906bbfe5388daa52a0ca315364debc88b7f88b9075a08287a1ca5a0085218"
+      "lua_sha256": "e89315b96ed1e47213a78308a666042fbaef103049682cabe6eb25af6e53a86e"
     },
     {
       "legacy": "quest/4647.js",
       "source_sha256": "e5febc9dd66e1b5237c203b0f51cf5f4331da7c45c4b17b6c29daffe0fd63750",
       "lua": "quest/4647.lua",
-      "lua_sha256": "2f31fcf2ffe9fe520c50cb609754dce9bea43aded492e528e083bb05b308aefc"
+      "lua_sha256": "ba0a5bd5dc71e4f9dfb70c4d49a05eeae8750b3aacfc4f7c51475e1b6c4129f5"
     },
     {
       "legacy": "quest/4659.js",
       "source_sha256": "44fea4e96b6a67706655ba33d7df98f38a4526fd487be4883fa2b1df2e2a9b81",
       "lua": "quest/4659.lua",
-      "lua_sha256": "3cc800f272b5dd08d635be4e35b888245a479bc71aaa58bcd68aefceca9e80e0"
+      "lua_sha256": "b8d1ec1d6a4b2c405019027a15f925bdccf663ac5f160f8014fb2cf346896657"
     },
     {
       "legacy": "quest/4681.js",
       "source_sha256": "7ddd56f469ac8bd0192abd158c36b8b91e754ce09f7687a19def8d909eba77db",
       "lua": "quest/4681.lua",
-      "lua_sha256": "c433cebc3835c463d38ce8318f31075f3f3270048ec0a0208ead7af6d4d22d23"
+      "lua_sha256": "d01d36a407d4bdc6a84652a1114ab97f3078c9c40ba53479274bf6a0c816ad99"
     },
     {
       "legacy": "quest/4686.js",
       "source_sha256": "7a1e671513864ff073a4f3e0d4ffa51fe687f7739242667878548a8486ed0ffd",
       "lua": "quest/4686.lua",
-      "lua_sha256": "23bfa11d3169cb3ccdb1f9677c8722dd0fbf122911c766e9acf273a395ec3be9"
+      "lua_sha256": "67949c2a6b77ee1c82d9a5c5f408057577561208bc0ccff51da7691613f62760"
     },
     {
       "legacy": "quest/4689.js",
       "source_sha256": "dbe413121b07d1d5b0601fe732f41e80ace434b5a1526311181ac5a9d28ede63",
       "lua": "quest/4689.lua",
-      "lua_sha256": "0541eb5ab8e7c58b6a54772bc8b9461db24b8167befa1b78b581f94010671b4b"
+      "lua_sha256": "4a55ab1eebeb32e4dc1438563909b6d654de9234e373e9c9674684e00c1fe950"
     },
     {
       "legacy": "quest/4693.js",
       "source_sha256": "b56f2f0ecb9568ed7a4bb5bcac780be2f4893b21e56c492e4a2fbb944c44af92",
       "lua": "quest/4693.lua",
-      "lua_sha256": "70b9d0053f289f563a0ec889fb50ec3ce023e9941d31bffdf1edac740a92a13d"
+      "lua_sha256": "0fe44e9a9cd9d7574425588dc1205a091fafec80b1bc34c51da78a37b972a9dd"
     },
     {
       "legacy": "quest/4696.js",
       "source_sha256": "986b917065d6563bef9053a30d6f8ef608df98f274fc6e15f6c7b0e94304d51e",
       "lua": "quest/4696.lua",
-      "lua_sha256": "e04b542a7fa6e49f1046061728c92b98df9fb0aac491d1bbca60f7f29bcff6ff"
+      "lua_sha256": "85880b01616e496add1eda3917592c021f9e3e7427c676fe2cf3641fd6fc44a1"
     },
     {
       "legacy": "quest/4698.js",
       "source_sha256": "f07d0128f75557e0e1d5d496b88c77675abff28b9805cf5778209e3f781851c3",
       "lua": "quest/4698.lua",
-      "lua_sha256": "e9a8428a94f9870799ebd661f4723e72c73e74f9861bb608fa547f7c312a5950"
+      "lua_sha256": "b69ebf9c5579feccbba6186ba4f7bc11ba389e6ba55b27705d172bce4b77c4b3"
     },
     {
       "legacy": "quest/4900.js",
@@ -688,73 +688,73 @@
       "legacy": "quest/8185.js",
       "source_sha256": "44fea4e96b6a67706655ba33d7df98f38a4526fd487be4883fa2b1df2e2a9b81",
       "lua": "quest/8185.lua",
-      "lua_sha256": "2b305ae8b8a40cdc58c6b101133a0dd6285fd401ae249ae6d21130ef430336ef"
+      "lua_sha256": "83790fd7fe77cab3cabe12bea0384e52a3c79b9f2d0686bb147a5968dbaa0edc"
     },
     {
       "legacy": "quest/8189.js",
       "source_sha256": "44fea4e96b6a67706655ba33d7df98f38a4526fd487be4883fa2b1df2e2a9b81",
       "lua": "quest/8189.lua",
-      "lua_sha256": "2341d58e6f142a6f1a7a172610d6a37de1e350f36d189eec2e4c60d0274d7708"
+      "lua_sha256": "80d665df225224cbd24e48ca8c9875f9157440dba7e13d44d71162bde71b01ed"
     },
     {
       "legacy": "quest/8219.js",
       "source_sha256": "6b5634e0acd406d461360e3adf678ce5ac1eb6855c5b388080994c2841d1e6da",
       "lua": "quest/8219.lua",
-      "lua_sha256": "eaa9c197bd360e67b6e7a9709b33e1ef688daaf3bcea6ac0b85054e1e413c95e"
+      "lua_sha256": "4cbbdf1d894cca5f92965552da125ef368f5ac3bbbc363b5693c2c03b08f519e"
     },
     {
       "legacy": "quest/8221.js",
       "source_sha256": "d876b9d020ba6a0b812c424b542801ae229fd5ef8ca1bb90957f83f64ab5eee3",
       "lua": "quest/8221.lua",
-      "lua_sha256": "eb8fde6e97922c2569fa9b9487ecfb520fc1c57849c38035eb300e3fb8ba429a"
+      "lua_sha256": "7811e645e72318dc773b81f1fd1c2e5376d68052ab6a3a488ce458ddbef2bb0b"
     },
     {
       "legacy": "quest/8222.js",
       "source_sha256": "f911b0efdb061bbb6905f386c8e52d0524f62659c8ab87d79b55dcadc1f81e26",
       "lua": "quest/8222.lua",
-      "lua_sha256": "f94896ce4d581ffe37606322d2d01a16fdcc1b3efa74fca46072cfedf97150eb"
+      "lua_sha256": "f2916340c3e448e6ae2e6a421572e0375a11a608a6ac902636e2242596c3cf6d"
     },
     {
       "legacy": "quest/8224.js",
       "source_sha256": "5a3b01e24cc67030caca2a9be9d8d02d0dcfb9549073eccf9f2af878eefab39d",
       "lua": "quest/8224.lua",
-      "lua_sha256": "91d5849feb5fca588c0b13a76705c43a4f7293722d4b2c0c567868a6c6d457ac"
+      "lua_sha256": "f6a16c61f8212112c5563c1fc48bb7be1e23642b18a64e8c44462b7cee20b86e"
     },
     {
       "legacy": "quest/8225.js",
       "source_sha256": "2697cfc293e82adc2967844d743e830e21bb84dcaf64947e7f87a7c4883245dc",
       "lua": "quest/8225.lua",
-      "lua_sha256": "58d7a16b9580e5ebe5440a6cf219ec1fa2dfc1b0ec08d271568edd32811e28ad"
+      "lua_sha256": "994d4bedfad270f907a76a18d748985f0ecd47c5213487fafecd7123de1cac14"
     },
     {
       "legacy": "quest/8226.js",
       "source_sha256": "cffc86fb9259485514bcfe7566868bb2c77a420a01d72cdf3fac54516f8be10f",
       "lua": "quest/8226.lua",
-      "lua_sha256": "d8bdb24e15f0698a1c79521387438471d7fb5aaeef03f530f98bbbbd835754fe"
+      "lua_sha256": "cf889454a7f8abc9109dfc25cd71f04b030380bda5c06bb089fe7a1c9f8fd5e1"
     },
     {
       "legacy": "quest/8227.js",
       "source_sha256": "534e5c1bfca9ad34bac163738eb2964d1a5d5066aa887d7a52ae8cadbe8cb881",
       "lua": "quest/8227.lua",
-      "lua_sha256": "8ba019d7880173ee9c5ab07a223926d1438b3870706897ba9d79929cfc8362ea"
+      "lua_sha256": "09e9164bbea67a66d90c19e94e60bcb8cc90020e88b3c363807677fb3413d7d5"
     },
     {
       "legacy": "quest/8228.js",
       "source_sha256": "da025595b0a77eec21e0c96b87096bbe1d0474a8d9a32b9c3bb146b99d835796",
       "lua": "quest/8228.lua",
-      "lua_sha256": "5e6385bfc84580a9ef129fd3d2ee3e286f2de9c52bfe5e9004558b490cff4198"
+      "lua_sha256": "de65cb51b7d55cdaf37d4e475d427d43ab99fa8037c140d690674e31417afadf"
     },
     {
       "legacy": "quest/8229.js",
       "source_sha256": "3580ad86cba82fbcdf69f58a0cf21c80a926b01a91dabf1f2f3a441a9a3b695c",
       "lua": "quest/8229.lua",
-      "lua_sha256": "890694def318c93a50275643b5967d8d3839f27abd1384480e4a05c944c35b40"
+      "lua_sha256": "7fbd89405655d2e104fdd6ad3903c0af482d27b50bf8f3e507f6a7ffb5c341c0"
     },
     {
       "legacy": "quest/8230.js",
       "source_sha256": "009d2a1c4880aff186c65b246d124b3f94e87be3c035d7c852223d5fa8996217",
       "lua": "quest/8230.lua",
-      "lua_sha256": "24974ddce3071b6219751e6cdf919db0d06762932d4fac1eccc7a8daa7bf8b76"
+      "lua_sha256": "76704e8598f809b7c56dd11c8fc9f9de3385a4af7249ed193b5d6da2191170a0"
     },
     {
       "legacy": "quest/8248.js",
@@ -766,7 +766,7 @@
       "legacy": "quest/10380.js",
       "source_sha256": "5a0030a7fdb59fd27bb2d1b1bd5d05b18bd5f6af343cd78c85bcba53173ddfdb",
       "lua": "quest/10380.lua",
-      "lua_sha256": "964593d447ec3cecf8f5939d71468a95f44d94992a28ada68333069805a94abc"
+      "lua_sha256": "c11559d9086683c2e4bf1c779fb8ad3e1291ada7cc11470f94d14eea5800f864"
     },
     {
       "legacy": "quest/10579.js",
@@ -916,13 +916,13 @@
       "legacy": "quest/20000.js",
       "source_sha256": "2facf992497d91fccbc59b5c0ba00e234f285eb7ad257a311fbc0ba9a8df08c0",
       "lua": "quest/20000.lua",
-      "lua_sha256": "9c1395f5cd751536bbbbf3c662034038251c2bcfce293f42b5483a239ea11670"
+      "lua_sha256": "da63f71417ea57dc13910534b62bd1c645f73308b93172c301be1fecd4ad4f61"
     },
     {
       "legacy": "quest/20008.js",
       "source_sha256": "0eca59d78eb6a6311525070ec560c926eacd7e293d7185841a0aea9d7359ff82",
       "lua": "quest/20008.lua",
-      "lua_sha256": "cc36d50ed712d5e38821dc277b4ef0495161f448db0c51424bab988ca3ed2709"
+      "lua_sha256": "d4a3a56d0708d15c03c4d0ce6e40a3f697e6c1b8630053a8039b3307e13981eb"
     },
     {
       "legacy": "quest/20010.js",
@@ -934,7 +934,7 @@
       "legacy": "quest/20011.js",
       "source_sha256": "39396162119bfcc90b9bc3f187fdebeca6be7dff2528f20ac5c3a6aad26ba2bb",
       "lua": "quest/20011.lua",
-      "lua_sha256": "4c7f5a80442a86e674a76d8a93ecae9af1da2b07c835a4cb6094e08243932a8f"
+      "lua_sha256": "845a33f7bb964b37d40a2a823bc8b3d5569742fba7783b0f7aff5e3c17947e64"
     },
     {
       "legacy": "quest/20012.js",
@@ -946,13 +946,67 @@
       "legacy": "quest/20015.js",
       "source_sha256": "8703d551d8931fdb721dd49c7611dfd1eb6d4aeaf06c11c533166f48c16de1af",
       "lua": "quest/20015.lua",
-      "lua_sha256": "882704676ad3974e84cd3c96bf93f39408d96d1333ea9639ef5c885622f06210"
+      "lua_sha256": "fd596b57eab31f045f67b5bc04bb3ac8529786ea10ce301c294bb4085e085258"
     },
     {
       "legacy": "quest/20100.js",
       "source_sha256": "1fe11edebe54cfbe9f04deaca13e2f76251dc30a2d2670de0ca4fe4f271ed376",
       "lua": "quest/20100.lua",
-      "lua_sha256": "00babc14181cafd00b58403723ece0a3324ff9aab2c7f923aadba0c472a27e67"
+      "lua_sha256": "9160580aa256ceca43add023e0e798e2a2d9f7d43cc9af7239bd3d8653ebfde1"
+    },
+    {
+      "legacy": "quest/20200.js",
+      "source_sha256": "601fa0a96954a0a499e3d281c19ba963e9e86b2c2863d03bcf4ea94b6f6e9f2b",
+      "lua": "quest/20200.lua",
+      "lua_sha256": "4fdb16923b4b69a25e6f00558d43e6b1eebb769ede18622ae3bd2373d58d27dd"
+    },
+    {
+      "legacy": "quest/20400.js",
+      "source_sha256": "81d1d1136e0a4622f43f04ee5575dfe27b8c4b9c47b6813b60090c08fa25b2dc",
+      "lua": "quest/20400.lua",
+      "lua_sha256": "ffe366430a0ed765a82c96519598a0eb6ffe557538d7aa58d2466927283e657f"
+    },
+    {
+      "legacy": "quest/20401.js",
+      "source_sha256": "9a5f17162b69f9f6a88201a1ba1dda1c97a888ba3ba0b0f3af52d799d469d438",
+      "lua": "quest/20401.lua",
+      "lua_sha256": "5216e16d06d8f8d67105e425404c319995967c85c75219fbdc65d34e84ce8921"
+    },
+    {
+      "legacy": "quest/20405.js",
+      "source_sha256": "292232ffbd7decd5597c8b3ce7deec567508a78ceb25ee80f8511e9b3e734a7d",
+      "lua": "quest/20405.lua",
+      "lua_sha256": "20e2161e2f1beac588056fab0d127d6c7243c4959773563f40fa9acdb8782b44"
+    },
+    {
+      "legacy": "quest/20406.js",
+      "source_sha256": "cb31bb0d057c36c427bd6e31e2ec2ae2c811364004ab5adc192159ecc15c78e1",
+      "lua": "quest/20406.lua",
+      "lua_sha256": "ae166e759a2fd8f0c0dba470c1caa5a5ad351e06aea9ee22c15110be28cac8cb"
+    },
+    {
+      "legacy": "quest/20520.js",
+      "source_sha256": "becb029b40509591b2340223385965c88fc0016550f9050996c034994cdc2d20",
+      "lua": "quest/20520.lua",
+      "lua_sha256": "af7d3e1c9088922e043c51eb9781845e98edfd61fc61207eb9a860861bb385e3"
+    },
+    {
+      "legacy": "quest/20600.js",
+      "source_sha256": "2962ca4f09d27aed5dfb72793a2b48f0d44984b815a9a88bb2d8a7ee928ac288",
+      "lua": "quest/20600.lua",
+      "lua_sha256": "91845926da5537ed4dd7bb4c414af235eeb6a2391871c95433aa91a28b8314f7"
+    },
+    {
+      "legacy": "quest/20610.js",
+      "source_sha256": "b87c3925d4feb0761bf19e6da9af3c9ccdbe32200b565a2bfef702a6523e37d7",
+      "lua": "quest/20610.lua",
+      "lua_sha256": "34b81a530c3fb53f137c13167ad06b05d172e1efda4cceb00890a8722913107b"
+    },
+    {
+      "legacy": "quest/20700.js",
+      "source_sha256": "83a44cbbd7b3f300dc40bde5535498ac8b57911d81bea5df37532c230b59ec8f",
+      "lua": "quest/20700.lua",
+      "lua_sha256": "7a765552d19399ffa9a2d6cb6b85644006ada5ff0f9dd4c09c4faab75cde56b0"
     },
     {
       "legacy": "quest/21000.js",
@@ -970,25 +1024,25 @@
       "legacy": "quest/21010.js",
       "source_sha256": "b686b437165cbb2be580e567b18ec0cf476ec76663de891aa490d04cef737180",
       "lua": "quest/21010.lua",
-      "lua_sha256": "750d9712458219f7f455b6a3d233e7b4df4eb24b66cae0444ddfc17e95ad8f35"
+      "lua_sha256": "52ffe9b11792889cbc9c5a80be13ad6f97e428602ca83c9332fe628f8b4396be"
     },
     {
       "legacy": "quest/21011.js",
       "source_sha256": "fb286609253918e1ff9d1638b51490d9427c3b46d7422ba5037defa2d87165cd",
       "lua": "quest/21011.lua",
-      "lua_sha256": "4f3568bb9ef9cba7708eff4ad6fd8f73b1faf4bc5ef72fbc5f4a7f08687fe28d"
+      "lua_sha256": "fd368f0f4fe66944c1d1a65745e7a5abc4c7816d16cf163eb6be57efeee308f6"
     },
     {
       "legacy": "quest/21012.js",
       "source_sha256": "f88002bf9784fee3b9db58156398ac95827be2d50f79a8fb59d20ae2bbe0f48e",
       "lua": "quest/21012.lua",
-      "lua_sha256": "14d29cadd6bd67c5404e0859632806af682825d25de987f354359eee7886b126"
+      "lua_sha256": "3280841579b49a1b15ea8a83d6b7d38ac2c38c3f49ab9f6fb267559c841ded37"
     },
     {
       "legacy": "quest/21013.js",
       "source_sha256": "0dd729e9ee48d20c7b77636cbd02ca6306f85828fcf458bc04e4c31c63c4fd54",
       "lua": "quest/21013.lua",
-      "lua_sha256": "845d5cb07a9ce52bd7350e152cd3641cd623e3bb8ffe5ce04769e83fdb4da357"
+      "lua_sha256": "213dbb6f53099433bce26d8537f5315272f7abb69b7ea2857e29e9160da35f2b"
     },
     {
       "legacy": "quest/21015.js",
@@ -1021,6 +1075,96 @@
       "lua_sha256": "d088793b744050aa2b03b37cd0c4bb64242b9c33e0023dd1dddb3110788b2c65"
     },
     {
+      "legacy": "quest/21200.js",
+      "source_sha256": "95e9861bc31eeb689999b991c14d9cf9e64d18dffa21064cf276ccaa1d4f5472",
+      "lua": "quest/21200.lua",
+      "lua_sha256": "76cd331b816caa60273a07bf059847eac4aa60c8f8884dbbc7aac8dcda70bfff"
+    },
+    {
+      "legacy": "quest/21201.js",
+      "source_sha256": "84ef642e571cffa0637acca7d351ff9ca46052dcf0f4a333f3bc879b218aee61",
+      "lua": "quest/21201.lua",
+      "lua_sha256": "e394e2bd8ed9bd7f2c4da9faaae2300018f99eae126fc017e315bf01a6e17251"
+    },
+    {
+      "legacy": "quest/21300.js",
+      "source_sha256": "8a9acb7b6c011af6957415f19325d58d66d00ded452c55e99762961aae55355b",
+      "lua": "quest/21300.lua",
+      "lua_sha256": "056335f961d38d01b250195d4d48ab32977eacd87e58ab6e63d9a3a3ccd7ab89"
+    },
+    {
+      "legacy": "quest/21400.js",
+      "source_sha256": "b6b9d7de31c9765cfdbea7eb6fff9a6cbb3dd9d3f31e8f4b8cd20316d2bd0a33",
+      "lua": "quest/21400.lua",
+      "lua_sha256": "245f5c67ec42f1da9c9a37dd3d366e05ad65adae8c7836fa572b33bd336f98f8"
+    },
+    {
+      "legacy": "quest/21600.js",
+      "source_sha256": "0a2e52c6dd0d4da1a92fd3f97008ff4a8f992e10abad31cd1fea7196214dfc8b",
+      "lua": "quest/21600.lua",
+      "lua_sha256": "bd19aef0d2e9f79dc43a56d2ad15689c56551111b3b327cb552fb68baaa6771a"
+    },
+    {
+      "legacy": "quest/21604.js",
+      "source_sha256": "0a2e52c6dd0d4da1a92fd3f97008ff4a8f992e10abad31cd1fea7196214dfc8b",
+      "lua": "quest/21604.lua",
+      "lua_sha256": "acf8a8301f4c1b26f81c2f3aa5f297f84285f845e8336a5d53032dba09c8dacc"
+    },
+    {
+      "legacy": "quest/21613.js",
+      "source_sha256": "0a2e52c6dd0d4da1a92fd3f97008ff4a8f992e10abad31cd1fea7196214dfc8b",
+      "lua": "quest/21613.lua",
+      "lua_sha256": "d2a393c9e8d26930ee970ccebf6cee96155dd456df4706ae44550369971a51f9"
+    },
+    {
+      "legacy": "quest/21618.js",
+      "source_sha256": "0a2e52c6dd0d4da1a92fd3f97008ff4a8f992e10abad31cd1fea7196214dfc8b",
+      "lua": "quest/21618.lua",
+      "lua_sha256": "dd4b56125c3856b222b6bbab5dc19b37a9ac086f5db646864c6a2bd1f637a0bc"
+    },
+    {
+      "legacy": "quest/21700.js",
+      "source_sha256": "43cb04d360cd099490d58374d367109dd2e1bc0a7019bb719e8df130dc80530b",
+      "lua": "quest/21700.lua",
+      "lua_sha256": "23a7a26c0a25e07efc55b2eee2c14e3a97889a5f10a8d5c1e6f1d2185ee4883c"
+    },
+    {
+      "legacy": "quest/21704.js",
+      "source_sha256": "05b27deac7e902a8a6924ab77ce85300fbf402a2907545407c4287aa2e1930aa",
+      "lua": "quest/21704.lua",
+      "lua_sha256": "058ce6d7d59350317d0b0da9483213b96303ce8b731b131911f311763012fa23"
+    },
+    {
+      "legacy": "quest/21712.js",
+      "source_sha256": "3e1d39edfe6088d44aef56dec5a1caf135f687c56375f255a2efab777b367951",
+      "lua": "quest/21712.lua",
+      "lua_sha256": "7a98336000e843c5118c89d9cc26e056ba7328beb63350aafd3c2edaa9fed8dd"
+    },
+    {
+      "legacy": "quest/21716.js",
+      "source_sha256": "c76a73c4822386448487162e36f43c664f38114f0544a76f1a52fc021b151b10",
+      "lua": "quest/21716.lua",
+      "lua_sha256": "cd4df3b6b8b9448d5cf51f6758a1a34713f7a1acf7aba26d905a295d168c6f76"
+    },
+    {
+      "legacy": "quest/21719.js",
+      "source_sha256": "208123483f8e12aa2ffdfe9ae5d668c758bdff7aa600196937062bb1645f36bb",
+      "lua": "quest/21719.lua",
+      "lua_sha256": "557591aa6f2664a850b7a6c6a8ccebcf1b252c8af3b6372a4b9fcea28b85aecf"
+    },
+    {
+      "legacy": "quest/21766.js",
+      "source_sha256": "6742c89142d8d7d71deaa5cbad5264f1da4fce4ca5f0783c8ad0fb6e2a95b7fd",
+      "lua": "quest/21766.lua",
+      "lua_sha256": "5c9e27a136c5ba5955229aad5e3e3db76bc6d87be38d2d853a67bbd856ffe573"
+    },
+    {
+      "legacy": "quest/21767.js",
+      "source_sha256": "b2f761d64a3b94f76c1e2f1e61fc8fbf0c146fc36a625ef9abae4918aa95758f",
+      "lua": "quest/21767.lua",
+      "lua_sha256": "5a9daae0bbec46a56f13318a534edcc3715822ff494c5347f3203f7e4e4284c4"
+    },
+    {
       "legacy": "quest/22000.js",
       "source_sha256": "1eaa215ae9fe3dac8ebae43306ecea32db527273f16b97bcd2a7b90ff7bfec7e",
       "lua": "quest/22000.lua",
@@ -1030,7 +1174,7 @@
       "legacy": "quest/22001.js",
       "source_sha256": "46a3194e7fa117b728b7da80b65d96286d8b3964de6650e95d1e27289d1cccee",
       "lua": "quest/22001.lua",
-      "lua_sha256": "47f2f75a9a4edfb61600f3b0ddfdba8d5988b5de1046cdf0b8d82f6fba5d7dfd"
+      "lua_sha256": "70200fd971e530b748b3e72ac39b7a9f39259b3303e06873c6101cb434abc10e"
     },
     {
       "legacy": "quest/22002.js",
@@ -1048,7 +1192,7 @@
       "legacy": "quest/22004.js",
       "source_sha256": "d30d229bbb938ed9550bb738b8a4b29ad4981f5d06dcdb482b1912be4765af92",
       "lua": "quest/22004.lua",
-      "lua_sha256": "378a8daa794ad1122a068d51d73c91bf750be6e4f3a3f599c6b5b11e9759d434"
+      "lua_sha256": "cb2b717537c9592f3a1836ae5a62e45f9448075b906ccd67b7bec8e865d0b734"
     },
     {
       "legacy": "quest/22007.js",
@@ -1057,10 +1201,1030 @@
       "lua_sha256": "5f9a830b4185ccc1dad93454b9550176ca5e49e5a5f0875db6167917c5a87f05"
     },
     {
+      "legacy": "quest/22008.js",
+      "source_sha256": "6b395acf252de200ed14a4b584d4474b456b40975ff4c3968b45a73de0bb0c4e",
+      "lua": "quest/22008.lua",
+      "lua_sha256": "3181ac5f67464340740f25b03357588096c90276de4a41029a5805463f7e6135"
+    },
+    {
+      "legacy": "quest/22009.js",
+      "source_sha256": "2bf296930866159a37201194274b8f2e73058f69b4c91e41aecf156f27208265",
+      "lua": "quest/22009.lua",
+      "lua_sha256": "ea998171be46a7aa3c7012ac0ace5a08fe8531f15ba2ec21efd5422610b3472d"
+    },
+    {
+      "legacy": "quest/22010.js",
+      "source_sha256": "6294e264c29dc4b4d65c2796841149958b18a2ac4453bccf8b5d7ee6de18ab18",
+      "lua": "quest/22010.lua",
+      "lua_sha256": "4b492f4b15d8d4b7993f0a9a4171dfbe4bd0e27ebb9188aad9e08c2986570222"
+    },
+    {
       "legacy": "quest/22100.js",
       "source_sha256": "031acbfd6bddb11cf3528ce36994ac539100fa567e00693b5d4f28aeecd057f1",
       "lua": "quest/22100.lua",
       "lua_sha256": "f7292e0465e193a5f79da45e58c1d74c99620fe129c4cee76fcbe10aa88c1035"
+    },
+    {
+      "legacy": "quest/22101.js",
+      "source_sha256": "6e0deeea8266ac40df03ae18f8081e33ebb131c9801b30cc8cf4541e36ea37bf",
+      "lua": "quest/22101.lua",
+      "lua_sha256": "dd1bf2b0d75edac696b39cad04134d15e2302ca4090f41ebe49e9ebcf7307710"
+    },
+    {
+      "legacy": "quest/22102.js",
+      "source_sha256": "71f3cd6322d2d871ac9d867688448b25d65b8622a079a5b7dce84cbf88212a3b",
+      "lua": "quest/22102.lua",
+      "lua_sha256": "496f4c56e962c152901c5c080336e0846b7a0b07b663c33889defa462d583e72"
+    },
+    {
+      "legacy": "quest/22103.js",
+      "source_sha256": "958e1f747fcc2281f40415241bbaae8d3846e64832f8531fa309d21af967dadc",
+      "lua": "quest/22103.lua",
+      "lua_sha256": "bc2cac739f38f566b59875bd05f9746434190cf5816ecebcba6c868da66b3999"
+    },
+    {
+      "legacy": "quest/22104.js",
+      "source_sha256": "3b7869a92e486c47edf143f8cfe1c4da5c3bd96cad52781c7550ec4285e57a46",
+      "lua": "quest/22104.lua",
+      "lua_sha256": "2f7e00a5132e866c01df137078e2a30e3de5f6e496c66deb85d14fddd57788d6"
+    },
+    {
+      "legacy": "quest/22105.js",
+      "source_sha256": "7c2584a0c1b98ee4dbc3b4d303aa3f2e1d01887c828bb332fda26a46dca3e866",
+      "lua": "quest/22105.lua",
+      "lua_sha256": "ac89e3de3e8ba4653cfc68701eb78e9abd77a95059d4ef93c12a245dc477271f"
+    },
+    {
+      "legacy": "quest/22106.js",
+      "source_sha256": "dc9663ec22e642bc1190c4be3e5974645eba6d5c8cbc087d7a560752f8fc4585",
+      "lua": "quest/22106.lua",
+      "lua_sha256": "0ffccd55571037371c96812f1158bfd91914b8882c156f161a169f26beb4a37a"
+    },
+    {
+      "legacy": "quest/22107.js",
+      "source_sha256": "2c1e1a90c9c0bad623198f028ad2d7eb8e795ed5638ddff88dd3b3ec7f8dacaf",
+      "lua": "quest/22107.lua",
+      "lua_sha256": "261adc5f6b1f9e689134725951665d5bda4dee0db1bcbaeb8987fdd3aceaca5b"
+    },
+    {
+      "legacy": "quest/22108.js",
+      "source_sha256": "15a6036e019f2127d160f48c7c5ba3887ba9b31e2a4ca5358ab1b6934cb50cf7",
+      "lua": "quest/22108.lua",
+      "lua_sha256": "8e5740386e289331abba7b0b51b44d31a72eb9c7234276ddb453299e413c4f92"
+    },
+    {
+      "legacy": "quest/22109.js",
+      "source_sha256": "a05082998df9c4d8e20a70082072d1fd2283f884990c2520ccca6284c5d4356c",
+      "lua": "quest/22109.lua",
+      "lua_sha256": "a676ebc3267783aaf7ef97063719195c1ad66a49fe28b584a99b5120d6038c91"
+    },
+    {
+      "legacy": "quest/22401.js",
+      "source_sha256": "5aa103831f6b5e595f782f4d981a68a1391303ac6b1c1ce5fbf60eb2c30a8d9d",
+      "lua": "quest/22401.lua",
+      "lua_sha256": "3dc272c2f3c849938d50e2beef4fa7e35978859181e2b7aebff47fd009fb4d2a"
+    },
+    {
+      "legacy": "quest/22403.js",
+      "source_sha256": "5aa103831f6b5e595f782f4d981a68a1391303ac6b1c1ce5fbf60eb2c30a8d9d",
+      "lua": "quest/22403.lua",
+      "lua_sha256": "0f20c6c515b93f759cb756a5beb3a7b739c245f2997d691bdf61b48303166a2b"
+    },
+    {
+      "legacy": "quest/22406.js",
+      "source_sha256": "5aa103831f6b5e595f782f4d981a68a1391303ac6b1c1ce5fbf60eb2c30a8d9d",
+      "lua": "quest/22406.lua",
+      "lua_sha256": "a7a40a3d15af3c43bb93a84c9eeb2dffd22d386d6791abcc04e9ef1a2864fe73"
+    },
+    {
+      "legacy": "quest/22411.js",
+      "source_sha256": "5aa103831f6b5e595f782f4d981a68a1391303ac6b1c1ce5fbf60eb2c30a8d9d",
+      "lua": "quest/22411.lua",
+      "lua_sha256": "07844afc1ffb9cbd4c514abac551e2b010b6f54a4027d295b80612421b429d30"
+    },
+    {
+      "legacy": "quest/22500.js",
+      "source_sha256": "b4d558f6279ac366576962023ff6d3322f0fec70fbc0ab6f589547dcee364445",
+      "lua": "quest/22500.lua",
+      "lua_sha256": "2998d53ec0148df211f7190096770cfdceb18eeabb634924328d7b2962d12ea2"
+    },
+    {
+      "legacy": "quest/22501.js",
+      "source_sha256": "0ec14bbc39ab23146cc495416647540e30c824fa55cbd6cdc7432a6cb1c001e5",
+      "lua": "quest/22501.lua",
+      "lua_sha256": "07156236f6a10e345f54fa0a1dbd1f04bd05151c863f7fcd607c8b459e5557cf"
+    },
+    {
+      "legacy": "quest/22502.js",
+      "source_sha256": "bc544d551c5a8abcaf4eb0c94e5bfe07e255de32be41099fb973994a82c99b3e",
+      "lua": "quest/22502.lua",
+      "lua_sha256": "2d8cba3d0744a166ae50c7adca53b41763917d9081315ed4193ac56995cde9c5"
+    },
+    {
+      "legacy": "quest/22503.js",
+      "source_sha256": "ef853e9604f8339ae0df452ff8476a6c5c5b23fd95bf563219939d7241cc2b1d",
+      "lua": "quest/22503.lua",
+      "lua_sha256": "85643c361dcf53da260a58abebc7bdbb1e2eb6f5c859cb24027a0150ab4bf43b"
+    },
+    {
+      "legacy": "quest/22504.js",
+      "source_sha256": "fda9d9a4775f0e9fd6bb8ef6b4c5308611882725120f1e5b225f1710fb6c9e63",
+      "lua": "quest/22504.lua",
+      "lua_sha256": "6d460ef9301a6e0a233a877f43d9cc68d6468da6353235f2131a7d561e029552"
+    },
+    {
+      "legacy": "quest/22505.js",
+      "source_sha256": "48321d3658a6b8e7ceceb62dac61e26b2beda0fe082942dbd0ee9ee289e75039",
+      "lua": "quest/22505.lua",
+      "lua_sha256": "e5eb49577e6c78cf9c7ed1917902a192ac56c1f606593b42c9dde7d37e466984"
+    },
+    {
+      "legacy": "quest/22507.js",
+      "source_sha256": "cd240168f2aaa7b4dd307f0258d6c24011d5ae063fdfb006f05d9ddcc2330b10",
+      "lua": "quest/22507.lua",
+      "lua_sha256": "e7babfb707262da7c89a62d75000c15265d9db13317090eb3229e750ba47d989"
+    },
+    {
+      "legacy": "quest/22512.js",
+      "source_sha256": "0bb59d1aa42f9d34db5eec488be600c3dbd3084ca5d63594c4124bb8c0d3f59b",
+      "lua": "quest/22512.lua",
+      "lua_sha256": "f23fa05bdabf0d99efb8ebe33d3c100f80259ad8ac52fe58beaff57365b87a13"
+    },
+    {
+      "legacy": "quest/22514.js",
+      "source_sha256": "2864e2df8bbfe6a3ac05b4ff64f2daab0e34ed7e050817eb8facefcb36e3dba7",
+      "lua": "quest/22514.lua",
+      "lua_sha256": "a6971d3a63f69e3b727739e929367e6a2c0ca737e2a38e4b671f1534f67a9751"
+    },
+    {
+      "legacy": "quest/22536.js",
+      "source_sha256": "f30ca08167aec91f435cd087ebabc60a2efd5745773d943a4c67eb7e0b840c53",
+      "lua": "quest/22536.lua",
+      "lua_sha256": "22891140287cf94ba81992e6e7b516d6b0020caf9c5be657ac915390975284ef"
+    },
+    {
+      "legacy": "quest/22541.js",
+      "source_sha256": "f2f4f4b20fd5239115e77128cc161ea9c9ba448dda602dc682f2621ac76e9157",
+      "lua": "quest/22541.lua",
+      "lua_sha256": "eda98e6b3f6e7a862c8ed346b56a954f6da6d8ea83e666f2a309543e48457d6a"
+    },
+    {
+      "legacy": "quest/22546.js",
+      "source_sha256": "80c3b38aaa2b351641be0d7b3e9842bf4d5a28012151920b23ebcaca55aeb434",
+      "lua": "quest/22546.lua",
+      "lua_sha256": "4e1a87bbe52025b4d22ad5a490a6e0b2563a766f3ddd91425ceab07abbfa41be"
+    },
+    {
+      "legacy": "quest/22560.js",
+      "source_sha256": "8b6b7397b877a0817f8c22192962d4d4f6bc2e9be18017d0d8b116c35d5f35a7",
+      "lua": "quest/22560.lua",
+      "lua_sha256": "ecc577ed892a9b100f35795ce27a850bc710505e54ebf0b3ea302cfdcbffb43a"
+    },
+    {
+      "legacy": "quest/22581.js",
+      "source_sha256": "3dcdf17ceea533b28092db21498af7ed93d22cf12c28add3a5ca941d34107399",
+      "lua": "quest/22581.lua",
+      "lua_sha256": "6a17964a6e0397f9851ccff232f7bedf7da0fcf549df7db5de48dbca6b4be719"
+    },
+    {
+      "legacy": "quest/22582.js",
+      "source_sha256": "bb1cd15b0844fbd4f2441c47845ca79a71dfbab5c109646636e28005d2148fa7",
+      "lua": "quest/22582.lua",
+      "lua_sha256": "49a929b838585c3e9ade4f694f5792b826841076d9320ab6e2b784385db1e935"
+    },
+    {
+      "legacy": "quest/22587.js",
+      "source_sha256": "b9e82b3b7f5ba8ffa912e1a81594531640d0e5800af3c5951c81e7edac398380",
+      "lua": "quest/22587.lua",
+      "lua_sha256": "03b174bd0c336c8f3786e70e87b3eae79c7b31e17d544ffbcb9edbd460cbceb0"
+    },
+    {
+      "legacy": "quest/22591.js",
+      "source_sha256": "3575ee99b64329cc2401d4b1a431839152e2c235b7fc2b1085b6ac008e01c791",
+      "lua": "quest/22591.lua",
+      "lua_sha256": "3702c3fd21c1dfbbd7a8a3b02be96e8d4b57cf631643ca7083bd23a39258171f"
+    },
+    {
+      "legacy": "quest/22593.js",
+      "source_sha256": "b5b29eba6da32f0f6856fd03e4defaef82ef90911b1eeb6992a28b3cb628bd50",
+      "lua": "quest/22593.lua",
+      "lua_sha256": "5d61fdb220248668534b619a1ebafd964d4a626750351d52ff6bf15cb2beaac5"
+    },
+    {
+      "legacy": "quest/22594.js",
+      "source_sha256": "9ea5dbb3a5c13a3e825d81e1f09065817ae55446f51f5b32ee1e581db896f090",
+      "lua": "quest/22594.lua",
+      "lua_sha256": "598adb3b6b9e94b87f7f1fa277eb295ecbe5b824b8cf8e4a15dd5cef6f58bdd1"
+    },
+    {
+      "legacy": "quest/22595.js",
+      "source_sha256": "697ba21215fd2e136e9d85932ef07cb141cab90a75def88fb149f93576ddb0c5",
+      "lua": "quest/22595.lua",
+      "lua_sha256": "15de64744973e523b188ed325059eab8b2c0beee061b269d6aa9cc47de687012"
+    },
+    {
+      "legacy": "quest/22602.js",
+      "source_sha256": "151d875e71971e3bdfa22972d0d53fce40b24f5b19c5fe9b4382f188a4266359",
+      "lua": "quest/22602.lua",
+      "lua_sha256": "7f68722cb56b654f31e8168e42f46b4c58a70de6836b219f17da700f5811a154"
+    },
+    {
+      "legacy": "quest/22603.js",
+      "source_sha256": "f78fe475f4b724e145d0c2d72ae35341b5d8dab4cf0f75f598b1bbf83e3a05d3",
+      "lua": "quest/22603.lua",
+      "lua_sha256": "99e063f565e9b33c5fca68fda6b5acf2d33f45d6afd59185e5489342065fd799"
+    },
+    {
+      "legacy": "quest/22606.js",
+      "source_sha256": "cf6e3b6bd5b77ae6ce6d01cb4325f888788057f7e3d731687dfd3190a1148e2c",
+      "lua": "quest/22606.lua",
+      "lua_sha256": "083bea28634a9be90e980e879336a9c978b1b961fb2ff6c44d0c3b60f74d1af0"
+    },
+    {
+      "legacy": "quest/22607.js",
+      "source_sha256": "1ac967c3d91119e418437bd4e7965d55cb9c6815fe14f5178ca3d49f6fd9aba5",
+      "lua": "quest/22607.lua",
+      "lua_sha256": "d6e1d10159377387fa29c4d5f747673b153da1bd00082fe69f68f7dfdd6d8e13"
+    },
+    {
+      "legacy": "quest/23015.js",
+      "source_sha256": "10c98db4f58638f264b109c03fa3da7aec7bc964b7bfa174af313b55dd2808aa",
+      "lua": "quest/23015.lua",
+      "lua_sha256": "9851cb63a17879eddb7a05c961468f8deec7b11b5f3a8dc8ff34f6c47f93b63d"
+    },
+    {
+      "legacy": "quest/23049.js",
+      "source_sha256": "0c5943a6a6b0162b8f8a1ab5393b0f380376c9420211db64107572cc847d973e",
+      "lua": "quest/23049.lua",
+      "lua_sha256": "6e0ad3e859df81f5b803b0c306a7be8f30c6ea2a39f0c825bef91ee093ef3a6c"
+    },
+    {
+      "legacy": "quest/23050.js",
+      "source_sha256": "0c5943a6a6b0162b8f8a1ab5393b0f380376c9420211db64107572cc847d973e",
+      "lua": "quest/23050.lua",
+      "lua_sha256": "63b36c6e230f7317090ef627382678517bb23cd9e52be450aa165e9099ca3371"
+    },
+    {
+      "legacy": "quest/23051.js",
+      "source_sha256": "0c5943a6a6b0162b8f8a1ab5393b0f380376c9420211db64107572cc847d973e",
+      "lua": "quest/23051.lua",
+      "lua_sha256": "dd729816745cfab0d08e1e1b32e577e63a5de35c272a591dc942cd2dd603fe5b"
+    },
+    {
+      "legacy": "quest/23100.js",
+      "source_sha256": "7a03ac2f559886702d5011ffe2a88d620f9d6386e24c321073cacdf2ef97d9cd",
+      "lua": "quest/23100.lua",
+      "lua_sha256": "4849d54cec9c2fbf6c80c7cdd9823417049b295949321fa8a54e0ea4002d5798"
+    },
+    {
+      "legacy": "quest/23101.js",
+      "source_sha256": "7a03ac2f559886702d5011ffe2a88d620f9d6386e24c321073cacdf2ef97d9cd",
+      "lua": "quest/23101.lua",
+      "lua_sha256": "d87dbb12261553e63e3159c71d43877b956d27fa0268736c55b0ff74c0730821"
+    },
+    {
+      "legacy": "quest/23102.js",
+      "source_sha256": "7a03ac2f559886702d5011ffe2a88d620f9d6386e24c321073cacdf2ef97d9cd",
+      "lua": "quest/23102.lua",
+      "lua_sha256": "4de1211d060e8566bdd23be0a448379ff59b6cf1c96255057e9b7c74486cb7c0"
+    },
+    {
+      "legacy": "quest/23107.js",
+      "source_sha256": "bb83db8cefe4ba1f046859d6a2c498cb9b9392eb7ed46bc2456c295d1f45ce08",
+      "lua": "quest/23107.lua",
+      "lua_sha256": "4e8a279c24e1d26f8f689d7118bbeb4c5a73f9f3a1b4262e462049b3f772f65f"
+    },
+    {
+      "legacy": "quest/23108.js",
+      "source_sha256": "bb83db8cefe4ba1f046859d6a2c498cb9b9392eb7ed46bc2456c295d1f45ce08",
+      "lua": "quest/23108.lua",
+      "lua_sha256": "263f7e4c8feddf924ca6595df7e85ce22ef10a3ff02468eaa551009eca26028a"
+    },
+    {
+      "legacy": "quest/23109.js",
+      "source_sha256": "bb83db8cefe4ba1f046859d6a2c498cb9b9392eb7ed46bc2456c295d1f45ce08",
+      "lua": "quest/23109.lua",
+      "lua_sha256": "83940fb4beedbd29070c13ac65a4f4337d6f06c6a58082869befafbcff92cbdd"
+    },
+    {
+      "legacy": "quest/23127.js",
+      "source_sha256": "c6fbdfad0707d23d1af0d650f1e84cfb79205cd6e1d49c7e13d2ece121049733",
+      "lua": "quest/23127.lua",
+      "lua_sha256": "ef8f42b0a0246a40503d918712e374d1721f27d7ef5e24088b5cabe28e13d060"
+    },
+    {
+      "legacy": "quest/23903.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23903.lua",
+      "lua_sha256": "bad40d938576784726979a9fb1e7538d0a175f562340fb70023279bc1f8a517c"
+    },
+    {
+      "legacy": "quest/23905.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23905.lua",
+      "lua_sha256": "edc4c8201221d541d02894a103dd1454eb394faa1505e9b001932b7cfb894a1d"
+    },
+    {
+      "legacy": "quest/23907.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23907.lua",
+      "lua_sha256": "809e74a9cfdc805fdb1a4bcc7e298ab50d4e96944cb561712cf373dc777e91f5"
+    },
+    {
+      "legacy": "quest/23908.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23908.lua",
+      "lua_sha256": "37cc445ca5d04fdbf8ae6ec062636495944f4a16dfc9fa80176a9acddb46104b"
+    },
+    {
+      "legacy": "quest/23909.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23909.lua",
+      "lua_sha256": "1c1ea369ae3d3b467de917f4674cb14ba76482907e4bd814157283f9ee8d34e2"
+    },
+    {
+      "legacy": "quest/23928.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23928.lua",
+      "lua_sha256": "3a763a7574f290ed4bf43e2cee917b116633d38440ba40136e71fb020b3d81ee"
+    },
+    {
+      "legacy": "quest/23951.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23951.lua",
+      "lua_sha256": "ce364f7d841d629bc6b5ee8963c3aaeede331b42df792737945a87066f3e6516"
+    },
+    {
+      "legacy": "quest/23961.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23961.lua",
+      "lua_sha256": "a82d999b62b1ac0f245c67b09eab554496456c3c9c02221027373a435cc082ef"
+    },
+    {
+      "legacy": "quest/23963.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23963.lua",
+      "lua_sha256": "3de0de32ccc47d871bc449996ba2c857fdf5e918638e6e66e4f600b1028c35cc"
+    },
+    {
+      "legacy": "quest/23968.js",
+      "source_sha256": "40925c248a3a2b2fadea791f31fdc9274fcc50ca02796bce9666bac320de67ee",
+      "lua": "quest/23968.lua",
+      "lua_sha256": "223ca281e3c590fc3b762a6e06637c6c327acdf5a25ada51c9aebdcad7f3b690"
+    },
+    {
+      "legacy": "quest/24002.js",
+      "source_sha256": "cf1e001bc204ce6eb7a5f75f79e0985b6e7c17c5f6131d4b0984d3f218dcfe90",
+      "lua": "quest/24002.lua",
+      "lua_sha256": "801ab674bc6bbf9d4218b8460f8d907869d595e84d0204f8cad871fefea6038a"
+    },
+    {
+      "legacy": "quest/24003.js",
+      "source_sha256": "2407ca2f85b48e8e47caa3c21995b9541e61b890668bbff42d293172b4c48dd9",
+      "lua": "quest/24003.lua",
+      "lua_sha256": "7c7066f68dc21cb7861b45f7d9db99c968ba23f8eca52355058b532bc3de9b64"
+    },
+    {
+      "legacy": "quest/24004.js",
+      "source_sha256": "dedb0b3c5ec28597ca4dd915d855ba2c0d57f74cd752777c834c3424b37aca37",
+      "lua": "quest/24004.lua",
+      "lua_sha256": "fbc08a24e98c8af423d8833c90036d0c4e63b1a7d61442d439367babd7078d48"
+    },
+    {
+      "legacy": "quest/24040.js",
+      "source_sha256": "1a364193a5a366e367c886a3ad5200b9c898db66297ec3278a3cdba998ae62a8",
+      "lua": "quest/24040.lua",
+      "lua_sha256": "dab7ddefe9ac9128df4d358b1e85ffc7aec6c907b75cc767b420f953f99130a8"
+    },
+    {
+      "legacy": "quest/24051.js",
+      "source_sha256": "bbe5ea9fa147dd1373ec4065f6f12781cf86c19d545487c0b909b1c4d452781a",
+      "lua": "quest/24051.lua",
+      "lua_sha256": "4a28783cc97080f3f2988049740ad6dfcc26fd9f711bda623dd34cd218a841ac"
+    },
+    {
+      "legacy": "quest/24061.js",
+      "source_sha256": "d7b7a20b178a29d3f87ade3ee664068f09fd76fe6f0a7a8d07fb3808152cbd72",
+      "lua": "quest/24061.lua",
+      "lua_sha256": "5e7d81fae17d96ea59411d1ebed5492a927efc589c474ee273f377e094e2801b"
+    },
+    {
+      "legacy": "quest/24063.js",
+      "source_sha256": "d7b7a20b178a29d3f87ade3ee664068f09fd76fe6f0a7a8d07fb3808152cbd72",
+      "lua": "quest/24063.lua",
+      "lua_sha256": "120c075453b24d7a662272326d5cb6555744e4099d08f4afcfc0f6c28ff8b1a6"
+    },
+    {
+      "legacy": "quest/24064.js",
+      "source_sha256": "d7b7a20b178a29d3f87ade3ee664068f09fd76fe6f0a7a8d07fb3808152cbd72",
+      "lua": "quest/24064.lua",
+      "lua_sha256": "0ed999c399dd3cc35ffcd380f17f6cb451b0193ab380d72f112e02b0fba98568"
+    },
+    {
+      "legacy": "quest/24065.js",
+      "source_sha256": "d7b7a20b178a29d3f87ade3ee664068f09fd76fe6f0a7a8d07fb3808152cbd72",
+      "lua": "quest/24065.lua",
+      "lua_sha256": "0a24e0b3b451fd114c683de2c4ad9650e7f777ec100ddd4ee8231c0738767706"
+    },
+    {
+      "legacy": "quest/24066.js",
+      "source_sha256": "d7b7a20b178a29d3f87ade3ee664068f09fd76fe6f0a7a8d07fb3808152cbd72",
+      "lua": "quest/24066.lua",
+      "lua_sha256": "957a09dad71b97ab3375976f8d4e70ef8d8505171bb8fa9ba1859c47bc7a41f1"
+    },
+    {
+      "legacy": "quest/24068.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24068.lua",
+      "lua_sha256": "64ff184b65d829dbdc727e9e620b9cf1d662f939043782fa5b71dd3a389271dd"
+    },
+    {
+      "legacy": "quest/24069.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24069.lua",
+      "lua_sha256": "08af8870dbf9848dd2e974027b2f1e2e69bcefef251d3a9fab0486908d658d51"
+    },
+    {
+      "legacy": "quest/24071.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24071.lua",
+      "lua_sha256": "848f74e1913e2e2bf771cc5ceb964f44768cc2cae329f5bbbdf255cc93a6392e"
+    },
+    {
+      "legacy": "quest/24072.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24072.lua",
+      "lua_sha256": "54647a61d1e7583d86bb7cfe89d09cc9ee319cf74496bda2cb00d3331f6cdd67"
+    },
+    {
+      "legacy": "quest/24073.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24073.lua",
+      "lua_sha256": "070cb85d5015fb6756bbe1a3a0d9789eee90b5b48a69161219e0a35bcba476fd"
+    },
+    {
+      "legacy": "quest/24090.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24090.lua",
+      "lua_sha256": "b1a340837ceb785a67d68f81c3c285515469e724f489d2b2c625f0d06711eb09"
+    },
+    {
+      "legacy": "quest/24091.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24091.lua",
+      "lua_sha256": "75e68e06972fe43cd8e1167667192fa0ae5a38c708e1024d1bc3058d3ee708da"
+    },
+    {
+      "legacy": "quest/24097.js",
+      "source_sha256": "c0499004fe2f6472252842947ffe86798afb5c5257123199d082e22adba95f63",
+      "lua": "quest/24097.lua",
+      "lua_sha256": "f69abf149594a5e91d739c65ef0a2355e6cf3cc4be25af2189efda58a992b438"
+    },
+    {
+      "legacy": "quest/28433.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28433.lua",
+      "lua_sha256": "396cbe83927d15babd0acec2cab9b586d99c9c326104fbbf53f9cdf42951b7b1"
+    },
+    {
+      "legacy": "quest/28539.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28539.lua",
+      "lua_sha256": "c9c1f09fe7942b7930e7f3792c59e204da6d8712f2ff45139373ef77b55560fd"
+    },
+    {
+      "legacy": "quest/28546.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28546.lua",
+      "lua_sha256": "533263b68ef4915776e46cf17d1959a970eaa2fbe4c82f36d51ae2ba1b099908"
+    },
+    {
+      "legacy": "quest/28553.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28553.lua",
+      "lua_sha256": "cbf05d4b021ce7c4725939eb8fe897d7b8f03a4efc5907c0ea6440e04e31cfcb"
+    },
+    {
+      "legacy": "quest/28555.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28555.lua",
+      "lua_sha256": "72e0e4c30e9efb693e148c2329448d2cf4370997285169871db046a7c6f6da2d"
+    },
+    {
+      "legacy": "quest/28556.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28556.lua",
+      "lua_sha256": "53ec9d28916aa898e742037f21fd98bd289ba21334e540d57af3a212dd92ee35"
+    },
+    {
+      "legacy": "quest/28557.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28557.lua",
+      "lua_sha256": "e0276d07a2538290837b929cf681e10b49c94b31239c2a7f055627cdcf759ced"
+    },
+    {
+      "legacy": "quest/28558.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28558.lua",
+      "lua_sha256": "397e4a15aac58c19ee6ec6222876006b2264a04b48f55f5dec61f644cf6550f5"
+    },
+    {
+      "legacy": "quest/28559.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28559.lua",
+      "lua_sha256": "4c13c4300b473c625be01a764c0cef7ad82343e6e4a823ac886aaf944e4366cf"
+    },
+    {
+      "legacy": "quest/28560.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28560.lua",
+      "lua_sha256": "eeed10daebccb4fa98988b176fb73f49f31968b84911aae289e4fd35cafe8c51"
+    },
+    {
+      "legacy": "quest/28561.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28561.lua",
+      "lua_sha256": "67b924c58b0d7040dd4805e4cd58ef36c10a042b4520889be31336fb1e82debb"
+    },
+    {
+      "legacy": "quest/28562.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28562.lua",
+      "lua_sha256": "5194e05a5cac2005360569e114036df846b13774559e02e4eeeef90d6155d86b"
+    },
+    {
+      "legacy": "quest/28563.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28563.lua",
+      "lua_sha256": "a71a0ae1104c9a5e8028a5e3a917eb8b03a7c1b1fbb1434789ed7dcc145bc120"
+    },
+    {
+      "legacy": "quest/28564.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28564.lua",
+      "lua_sha256": "9c6d61e5258ad0e4c63f695a4e034b91c6dbf7e5ffd959f2fc3e48cf3bf6b755"
+    },
+    {
+      "legacy": "quest/28565.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28565.lua",
+      "lua_sha256": "9686f61e75ed3195ab744ef2f04574bfde1d6bfd3fac42b9da4d5a38ea55b8c4"
+    },
+    {
+      "legacy": "quest/28566.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28566.lua",
+      "lua_sha256": "cf7eec380c52300ba49509d62ac0706b99da28a5ad131ca5166ff5744e37e6a6"
+    },
+    {
+      "legacy": "quest/28569.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28569.lua",
+      "lua_sha256": "d2f197aa5394e302c5ff5d806dcab3344114824cec45b8c17152145d34e2028d"
+    },
+    {
+      "legacy": "quest/28570.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28570.lua",
+      "lua_sha256": "4e339f6a0949148ba413bc46fbfa7fccbfcb0e562321881f21b67e08d3066234"
+    },
+    {
+      "legacy": "quest/28571.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28571.lua",
+      "lua_sha256": "8e8dd8143239e986b4e08113ae601bad5bdc82187319e7584ecd34fbda697941"
+    },
+    {
+      "legacy": "quest/28572.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/28572.lua",
+      "lua_sha256": "3859c1acdfc5f1c435f9310d09fcddd7b41dd38d40e8a16bc4ee2e104cd8eba3"
+    },
+    {
+      "legacy": "quest/29002.js",
+      "source_sha256": "53b1c5969c61ba99eb56dcdb70fe1790ac7e4928cd75a4e6b5242a6572a8f26d",
+      "lua": "quest/29002.lua",
+      "lua_sha256": "4072b912c784cd31ae48d994ae17cf280b52e1ec3279b17e107fdd1b5295626e"
+    },
+    {
+      "legacy": "quest/29016.js",
+      "source_sha256": "5a8c54bdf3db933212d43ffb1b4608404d2fde0ce92de8e397617044d4ba0fe6",
+      "lua": "quest/29016.lua",
+      "lua_sha256": "ab7d7e6692dd2110d5dd4413166519e357d61d3dfdea27f3dfda91d859c41ad3"
+    },
+    {
+      "legacy": "quest/29017.js",
+      "source_sha256": "48cc3bd8dee50734f1e86409a7406ba93b6914f58bb082c52be5f00a0e5263d1",
+      "lua": "quest/29017.lua",
+      "lua_sha256": "45e43b802f331fec82bb8c431f15509fbdd938b7f63285bed23dd25072566816"
+    },
+    {
+      "legacy": "quest/29018.js",
+      "source_sha256": "4721ef83f2b1f74f78dff4e793ff5b7b24c4c7801d03d8cc80c73ae7271b56da",
+      "lua": "quest/29018.lua",
+      "lua_sha256": "b6cff5065903d66fd78be0cc3f13c8aa8073f33e270b40ffcf8a5fc27981fa39"
+    },
+    {
+      "legacy": "quest/29019.js",
+      "source_sha256": "2a176609ae26e1fa0d84275531fcff6c562d0ea8586c5c3027661745fc5a037b",
+      "lua": "quest/29019.lua",
+      "lua_sha256": "205c119615a19350cce18fc96e4e7556516e730a02560fa0df34e80da630c935"
+    },
+    {
+      "legacy": "quest/29300.js",
+      "source_sha256": "07f69c82e26ad3bddbefc19b60d42df205eb338d353207d44e07f29c5f5319a9",
+      "lua": "quest/29300.lua",
+      "lua_sha256": "717e68beb1f8b48ffb7eb5ea7d593b17afa86a8bc210d6c1e4c372ca57a3c1bd"
+    },
+    {
+      "legacy": "quest/29301.js",
+      "source_sha256": "5cbc8d78f1c956668cbaef75cc097799a4aa0170d395f1c54b317e9c1e8d1986",
+      "lua": "quest/29301.lua",
+      "lua_sha256": "fc2248e9536e6da7e2077b3197ced92cadbead23b2f3318f76e723b5eaae9ff2"
+    },
+    {
+      "legacy": "quest/29302.js",
+      "source_sha256": "11f8d92d0bb1e4f2cb5de55a6c18ba6d8cae02320f7c41edf21c0ec0531d60c2",
+      "lua": "quest/29302.lua",
+      "lua_sha256": "329676fce686975cac7e7db9933f855bacceb12748dac6acc483bb79e921530f"
+    },
+    {
+      "legacy": "quest/29303.js",
+      "source_sha256": "ee180bba2b952a2498b4d5947175104a4cf5926416613f350d1268110cd61440",
+      "lua": "quest/29303.lua",
+      "lua_sha256": "6b1db0c42f6c0c593dff84858b5e0ec9f6ccfe33e30d9792db6acaaee85c4bf4"
+    },
+    {
+      "legacy": "quest/29304.js",
+      "source_sha256": "f75b42aa9f7995e6b5a936fc8cbdc04bb67bc7d4a1d2f8e09d6f4b7d28e66900",
+      "lua": "quest/29304.lua",
+      "lua_sha256": "9d5a930bfaae54915006b0482548bd810f6050e8da388e2df0a3d0eadf87fe5d"
+    },
+    {
+      "legacy": "quest/29400.js",
+      "source_sha256": "bb81064d595e7122b2f16d04a69d49a00660e6cc97f488ca8802c79e66636c4d",
+      "lua": "quest/29400.lua",
+      "lua_sha256": "c1e36d976d130cbf0086dd472e98513424305e6041e4a84e1184f63e13d72b50"
+    },
+    {
+      "legacy": "quest/29503.js",
+      "source_sha256": "22bac3d1617c12a423da3e7660fe5d54989a07884fd2db7eeaa7efd2f06daa84",
+      "lua": "quest/29503.lua",
+      "lua_sha256": "d53d7630728bd2969fabd2c6692d9ae277449b619a6d6e666dcef9a80f7481b2"
+    },
+    {
+      "legacy": "quest/29900.js",
+      "source_sha256": "19bd87684259e4bc096cba38880cad178d24ae3b74fe12eec25fbc9df53e0bcd",
+      "lua": "quest/29900.lua",
+      "lua_sha256": "a3d53a5d86a0bcc1666076268de25e45ee1333e2c268e0dbc667292a44aa313b"
+    },
+    {
+      "legacy": "quest/29901.js",
+      "source_sha256": "3cbaf3500444a31bbb98ed03eabfb9a8dfe4af624dfeb47fee1bd598119a29dc",
+      "lua": "quest/29901.lua",
+      "lua_sha256": "843f61aa83645e2d7b35ad5c833f7417acdce4175ec67cecff14ff94b8bbe9ef"
+    },
+    {
+      "legacy": "quest/29902.js",
+      "source_sha256": "dbd3b967c3718d5c92b1d66f4ebdd17d367a98fdeb3677963ee6a97c1a040c44",
+      "lua": "quest/29902.lua",
+      "lua_sha256": "6203618dce3604a59ab8a18d8603d8f4d50af7cd613e3b16b895ff67d7ee26fe"
+    },
+    {
+      "legacy": "quest/29903.js",
+      "source_sha256": "786f741d458f06681d3bc87a4e339725e0f6b7387be9da2ab0296d5c4f1856cb",
+      "lua": "quest/29903.lua",
+      "lua_sha256": "864d57d88f58f2ef06e84ba7b029d8a135381273335bce6bf37c66935a1be08a"
+    },
+    {
+      "legacy": "quest/29904.js",
+      "source_sha256": "167788b84abdf350d85f0830a868243862323a524a7483b3423281c529247dd3",
+      "lua": "quest/29904.lua",
+      "lua_sha256": "46882a2bb3e6fa01a612658114bb2aa25d90d1c0896d469522bc09e1c270d476"
+    },
+    {
+      "legacy": "quest/29905.js",
+      "source_sha256": "167788b84abdf350d85f0830a868243862323a524a7483b3423281c529247dd3",
+      "lua": "quest/29905.lua",
+      "lua_sha256": "08e2fd942a8e32bad7c408ee23f4bab24292ee87de9d49b64b79e291b1e51331"
+    },
+    {
+      "legacy": "quest/29906.js",
+      "source_sha256": "2753836965172e56debf0e3260bc1601a2adbd80ff153df035444bc1b39975f4",
+      "lua": "quest/29906.lua",
+      "lua_sha256": "58bcb8b4dcf006551fd3169ca6758211043c60caecdf9faaec6c67538ea23983"
+    },
+    {
+      "legacy": "quest/29907.js",
+      "source_sha256": "58ec042c3710f8298d511f668f1eaa7949757cbe14936404bc951e4fc6845a8a",
+      "lua": "quest/29907.lua",
+      "lua_sha256": "c19c618e5565d4eba1dc3c040c65823c59642105e516ca7757ed18fb69a3a078"
+    },
+    {
+      "legacy": "quest/29908.js",
+      "source_sha256": "1fa4fe1c9088e7b138d50b6bfbf05dd2eba40959868bf24969e411b634037b89",
+      "lua": "quest/29908.lua",
+      "lua_sha256": "783fbf06eeac749a84bc89d9a0405ecfbed22c6cd100f2e026f649521f88ec3c"
+    },
+    {
+      "legacy": "quest/29909.js",
+      "source_sha256": "6dfdde7e6077f4626905a31e50822605b80ebc4c2edffeb4d364d0093f683f66",
+      "lua": "quest/29909.lua",
+      "lua_sha256": "f6b22bbeb381201f6dc87abb9c18bbde60c78940df4ef46c60d406f487515b6e"
+    },
+    {
+      "legacy": "quest/29910.js",
+      "source_sha256": "07f69c82e26ad3bddbefc19b60d42df205eb338d353207d44e07f29c5f5319a9",
+      "lua": "quest/29910.lua",
+      "lua_sha256": "c0d964ff9e45ec306a57eb196c5030d9cd09bee97d91c06fc957c4b88b340012"
+    },
+    {
+      "legacy": "quest/29911.js",
+      "source_sha256": "5cbc8d78f1c956668cbaef75cc097799a4aa0170d395f1c54b317e9c1e8d1986",
+      "lua": "quest/29911.lua",
+      "lua_sha256": "ffe87f1bd276a19f001bb64e25a28b79f8498830032e227a411b539ebfa75ed6"
+    },
+    {
+      "legacy": "quest/29912.js",
+      "source_sha256": "11f8d92d0bb1e4f2cb5de55a6c18ba6d8cae02320f7c41edf21c0ec0531d60c2",
+      "lua": "quest/29912.lua",
+      "lua_sha256": "2af7cab71f283a7e626e09e7d28f77c5d6eb56fc6287c3ffc80fdaf3e000bd35"
+    },
+    {
+      "legacy": "quest/29913.js",
+      "source_sha256": "ee180bba2b952a2498b4d5947175104a4cf5926416613f350d1268110cd61440",
+      "lua": "quest/29913.lua",
+      "lua_sha256": "b9cfaad6d37cb2135e335938c1df643d3045f791579cae1c214f9b16adb448b6"
+    },
+    {
+      "legacy": "quest/29914.js",
+      "source_sha256": "f75b42aa9f7995e6b5a936fc8cbdc04bb67bc7d4a1d2f8e09d6f4b7d28e66900",
+      "lua": "quest/29914.lua",
+      "lua_sha256": "d845a12ffd113781bfd92939455c41fd8e2e42ceb61a8eaa96036b98289a26fd"
+    },
+    {
+      "legacy": "quest/29924.js",
+      "source_sha256": "38eef31b2a0d00ca735c72fea6271018bc3c6b5c81e337a308f0b3785f8db5d4",
+      "lua": "quest/29924.lua",
+      "lua_sha256": "8fdbd051705315d255c45c182db6495e4c83b7014f1710e845e9da61650e60a6"
+    },
+    {
+      "legacy": "quest/29925.js",
+      "source_sha256": "3cfb92c815b56eeec36834830bd033e85527af9138e2bf3ffae1e632c90cfa97",
+      "lua": "quest/29925.lua",
+      "lua_sha256": "649bcc7f5202af9082fd94f8d254a3140fc743bf76a426924919033b785abf7c"
+    },
+    {
+      "legacy": "quest/29926.js",
+      "source_sha256": "4fa7aff8a2b8b50e2d0834858f560a18b350807dd2cf4ec2e7e5f1d5a2386875",
+      "lua": "quest/29926.lua",
+      "lua_sha256": "4ffeb002062eac37841d8d32e86736cf24a67da93f0c12eb450737ed79e31224"
+    },
+    {
+      "legacy": "quest/29927.js",
+      "source_sha256": "06cf2705c98316dcdfc9cd721947a6124c4468e617e94f22ba28d8af53b18ef2",
+      "lua": "quest/29927.lua",
+      "lua_sha256": "120654c8f28afe5e082d9fe62dafcaf77e19f4be746962231960960dd9f1cef9"
+    },
+    {
+      "legacy": "quest/29928.js",
+      "source_sha256": "7d9654b67dd49e27861d43a79a4e7b7bc18a633fedaffa541e6628429d219407",
+      "lua": "quest/29928.lua",
+      "lua_sha256": "7ee3eb7b09966a9b8e05ab7283c96c887720ac066cca894a592cd17ea7f1b3e2"
+    },
+    {
+      "legacy": "quest/29938.js",
+      "source_sha256": "131ca1196243df54bb666f471aa71fcb9202b67497084ec6464376325d7c8ae4",
+      "lua": "quest/29938.lua",
+      "lua_sha256": "11039c087b3d8bcef6b0cd6429c01f73854454f6f113575c81e0e6b040afeb10"
+    },
+    {
+      "legacy": "quest/29939.js",
+      "source_sha256": "f13da1b4df6d04edf63840ef32e00aee7f9dc289b1f6a86de79e86fd4272eb97",
+      "lua": "quest/29939.lua",
+      "lua_sha256": "7bb39e2ebee027342922f74b88ba4b7676a78734e84d918068f68f1b127763ac"
+    },
+    {
+      "legacy": "quest/29940.js",
+      "source_sha256": "4ac54933c4f77f6f53e218cd6d81d6e99129762a9dfe3c36f3e4eebbed635394",
+      "lua": "quest/29940.lua",
+      "lua_sha256": "85737ed3fc8ceea8a720173e449680da2663a73f40732a3da21376d6f53fd7ee"
+    },
+    {
+      "legacy": "quest/29941.js",
+      "source_sha256": "48fd42b3050e0834d5cb824508b9f09e1013a03453973b68acd6e3d0b2bc29ea",
+      "lua": "quest/29941.lua",
+      "lua_sha256": "2d6708b08d7d35e1a6cfb3763ddfd84508ec01c1604664e663f399bcc78a45bb"
+    },
+    {
+      "legacy": "quest/29942.js",
+      "source_sha256": "8c6642473a7de1cd242ba92848982e241bc394f6f0d7346f668105d3c7ede7bd",
+      "lua": "quest/29942.lua",
+      "lua_sha256": "d4d034c6aa702ed54ece071393f46635ad4f093a6e0960b5f51aa4b3bf87ad4e"
+    },
+    {
+      "legacy": "quest/29943.js",
+      "source_sha256": "e1b712882df1a0698267e1c2059f6c0c86397335df2b715b1a3129ea71d2b419",
+      "lua": "quest/29943.lua",
+      "lua_sha256": "5bc6ada93d150b8704163226dd803c6adacb77e43306c0ab79d18c2400995fd7"
+    },
+    {
+      "legacy": "quest/29944.js",
+      "source_sha256": "7d1561db1e98b663fbd68e787e01165bc75d554f16f59e7931ae21850781c1c7",
+      "lua": "quest/29944.lua",
+      "lua_sha256": "92a1bf404cde6a6c115ee9e56bbe8c94898b36607bfe5ed40d1e387317fdbfae"
+    },
+    {
+      "legacy": "quest/29945.js",
+      "source_sha256": "245a8140737a0b8aa2bbc1f2ac7ad68981a34b83ecf108331b7fcd45eaaf7fa0",
+      "lua": "quest/29945.lua",
+      "lua_sha256": "720c3c32c4d9078c6b18546dfbd9e107d61aebfb85fef3484af75523cf7b0dd4"
+    },
+    {
+      "legacy": "quest/29947.js",
+      "source_sha256": "fa3f1a2f84489d6aeabaad6abfff6c418eddb2eef1ae1a7967e3c2ed2afdf4ed",
+      "lua": "quest/29947.lua",
+      "lua_sha256": "c43671bffa5c9734aa526703c253cd4fe4e51a7353aec9835039fde0eae408e3"
+    },
+    {
+      "legacy": "quest/29948.js",
+      "source_sha256": "fa3be52b11b50d27469d5574ee525af96a90d4880a13ba32202caa77ca7a271d",
+      "lua": "quest/29948.lua",
+      "lua_sha256": "9bda02caf7b0b6094ff8f9dd8860ca98464cbea6a96ae281556f6be3e1a11561"
+    },
+    {
+      "legacy": "quest/31000.js",
+      "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
+      "lua": "quest/31000.lua",
+      "lua_sha256": "3d12363d216d365630b6e77355044a664e2b6d4dcb0f1dd4638efec39dcd70ea"
+    },
+    {
+      "legacy": "quest/31010.js",
+      "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
+      "lua": "quest/31010.lua",
+      "lua_sha256": "d4599c96bf39442b3c902f4f4981476660d75cacd2b483e10e01eb6fabefb0b2"
+    },
+    {
+      "legacy": "quest/31013.js",
+      "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
+      "lua": "quest/31013.lua",
+      "lua_sha256": "7d6f3c1b190f72af3b62795e2100330acf9fe643dba38c17af474ed1942b91f6"
+    },
+    {
+      "legacy": "quest/31105.js",
+      "source_sha256": "d5d6c4688b4b3634a0c3cd0e5c3d53ab6d9a057603e757b6773426e4897e6b2d",
+      "lua": "quest/31105.lua",
+      "lua_sha256": "a565224f00731c461c397d334ec294548320c18fe39b23aeeecb4a04ec9fc5ca"
+    },
+    {
+      "legacy": "quest/31119.js",
+      "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
+      "lua": "quest/31119.lua",
+      "lua_sha256": "8d3503254bf54bb9a927ddf8a27f38a57c0292fa9da32b0cfb512f041c6c68f4"
+    },
+    {
+      "legacy": "quest/31146.js",
+      "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
+      "lua": "quest/31146.lua",
+      "lua_sha256": "6636a0bf0067881eed72d4cf4b24f46fc9fa3f31424c96ff42eb1d8b00a15aa2"
+    },
+    {
+      "legacy": "quest/31158.js",
+      "source_sha256": "91361d4d333d88448fa48c86ce56b82ea7751061c66b8dd7512c534c803910f7",
+      "lua": "quest/31158.lua",
+      "lua_sha256": "60e346c8ea39af0b8c27e32053503902f512954d681b1f95a963b5ab309380da"
+    },
+    {
+      "legacy": "quest/50003.js",
+      "source_sha256": "a4f383672de193ddbd00565994ff3d5e35ca20d06ee12a685a5124c9408d28f1",
+      "lua": "quest/50003.lua",
+      "lua_sha256": "cdec4c56e17507d2414dbcf341c2cb431f91ef654c88527eb9e7cba5a21d133b"
+    },
+    {
+      "legacy": "quest/50004.js",
+      "source_sha256": "3782ef34fb01618351f90c341141f471a51ea6a146d81237ae13df860bf64025",
+      "lua": "quest/50004.lua",
+      "lua_sha256": "b8dfec3d7ba907bf5db1dafe6c2156d7ae5867a9d605270c5d375d2460bcf934"
+    },
+    {
+      "legacy": "quest/50005.js",
+      "source_sha256": "851f32764d2f4825f88642ebfd16f5f4b8beae843c40ecf988984a4e0bdb6e62",
+      "lua": "quest/50005.lua",
+      "lua_sha256": "ef1a80eb4a28fc2a67e786e86030cd96cf0866abe02e96fdc4b22d0b49119220"
+    },
+    {
+      "legacy": "quest/50012.js",
+      "source_sha256": "d4f3264abcc47027a53f62d05990ea284ebcf4c5be8a4f2a34ceaa76b353110f",
+      "lua": "quest/50012.lua",
+      "lua_sha256": "86cb57ba818d6cfa6e5eff0fe7f6e72a35aa7c015fd2ee9bef19636495bd52eb"
+    },
+    {
+      "legacy": "quest/50016.js",
+      "source_sha256": "255b117c47241fe8d03376c20a9d4b17b685397a0b9314cbd86d9a81557ec047",
+      "lua": "quest/50016.lua",
+      "lua_sha256": "8b57ec52e2a23b5fb1bff9ec53e2b3f69cd88830faea0bb72dcdcabe4b1d7b86"
+    },
+    {
+      "legacy": "quest/50670.js",
+      "source_sha256": "84010347631b9cbb86d67c5eacbb9682fc52046c540290a2f403be02789771bb",
+      "lua": "quest/50670.lua",
+      "lua_sha256": "3207e116e27b3da624d78bae5391d0dd94b2d9b2a28ff04d5ffc57793d2d64e1"
+    },
+    {
+      "legacy": "quest/50673.js",
+      "source_sha256": "3d35f2a66d603f9ddf76e21a73cbe0ca020cc73793a9db5f77b9f023225b0bbb",
+      "lua": "quest/50673.lua",
+      "lua_sha256": "127d8b19aa7d038d4cba9fffd70fcfccdd1a9aae301599635978f55437bac5ef"
+    },
+    {
+      "legacy": "quest/50679.js",
+      "source_sha256": "4971775e5db4873f61394b39f9b627bc85b9ff657f34902697a0c7d3fe0d83d0",
+      "lua": "quest/50679.lua",
+      "lua_sha256": "c1160583e649809b0b30caeb353691167b2e53a78fbb047df48ac76c0cdb7e22"
+    },
+    {
+      "legacy": "quest/50683.js",
+      "source_sha256": "5f1f9ed1d6fcfe9d6dbcde4a3ef59ab2957a41c6af5cd7afc46d55d8b0100484",
+      "lua": "quest/50683.lua",
+      "lua_sha256": "b0dd577c852dc637a8a29d4e92aa236a2401e57ad94440d6b58598e9e65d0317"
+    },
+    {
+      "legacy": "quest/50688.js",
+      "source_sha256": "aa505d32dc9b9f7d449026fbc758802633572bec63fb63e8549fa24ba4efbe5d",
+      "lua": "quest/50688.lua",
+      "lua_sha256": "ea7e7b6486d21dee6365495e8304193cb9b617f0ee67c86932f0c7e0f4e87ede"
+    },
+    {
+      "legacy": "quest/50689.js",
+      "source_sha256": "aa505d32dc9b9f7d449026fbc758802633572bec63fb63e8549fa24ba4efbe5d",
+      "lua": "quest/50689.lua",
+      "lua_sha256": "fcadb0617955324a598572ce0254e76316f0e1fb5f55875631babc07cd991028"
+    },
+    {
+      "legacy": "quest/50691.js",
+      "source_sha256": "a7daeceb73d859ea0fddabebc322d33c177a2984b05a62c6ee13cb8eb5eba834",
+      "lua": "quest/50691.lua",
+      "lua_sha256": "002725bcfdd42e3ff243f2618f03b95cd7442ef565233a6a4cdbe49f29f58b99"
+    },
+    {
+      "legacy": "quest/50692.js",
+      "source_sha256": "a7daeceb73d859ea0fddabebc322d33c177a2984b05a62c6ee13cb8eb5eba834",
+      "lua": "quest/50692.lua",
+      "lua_sha256": "aba8db68c4f79a77689ef9c7b50a30c1007a599a42a550e0c56282652b7c6a95"
+    },
+    {
+      "legacy": "quest/50698.js",
+      "source_sha256": "c8cacd1b1719188f631e1247dd7729b26710cc6c84fb95b6885446ca54e10c0c",
+      "lua": "quest/50698.lua",
+      "lua_sha256": "d927fac2a4b9c07c0cc1d62d6c6346695c98552e41b0a6024ed42f6814f177a7"
+    },
+    {
+      "legacy": "quest/50699.js",
+      "source_sha256": "c8cacd1b1719188f631e1247dd7729b26710cc6c84fb95b6885446ca54e10c0c",
+      "lua": "quest/50699.lua",
+      "lua_sha256": "e66312bb9759ccc6d977f59ef9876c877ec39fe1cb63982e623b188312af831b"
+    },
+    {
+      "legacy": "quest/50704.js",
+      "source_sha256": "9629358f4433d083179fe5593f80245a9ebff3e5d012097b28754f4ba35e2158",
+      "lua": "quest/50704.lua",
+      "lua_sha256": "a0d543bfa522fe4d3d4a3770814b9d8cc79930eb5b205c5cee0f8beed9a8707b"
+    },
+    {
+      "legacy": "quest/50706.js",
+      "source_sha256": "b560516b447f3a9ebb6bbf20e136249c9129f50ffed55fb1d270dc9c59c225c5",
+      "lua": "quest/50706.lua",
+      "lua_sha256": "8555760e66497b135daf20682fbadf9a61c5fb5d355c34e12b925840ec67e7b7"
+    },
+    {
+      "legacy": "quest/50707.js",
+      "source_sha256": "b560516b447f3a9ebb6bbf20e136249c9129f50ffed55fb1d270dc9c59c225c5",
+      "lua": "quest/50707.lua",
+      "lua_sha256": "886e8a692b086be45f5ae3c8f0414c7ef0a3b882c653a47739380da39fff1873"
+    },
+    {
+      "legacy": "quest/50711.js",
+      "source_sha256": "1576ffcca99afe8b6ea9b78b3232af1ba8819c3cdcf99c81dbe5d53b1b2f3ce3",
+      "lua": "quest/50711.lua",
+      "lua_sha256": "052441cde03f9525bb05a5d367e99fd62e0a60be8fc32ae4b0177c59bce88fc3"
+    },
+    {
+      "legacy": "quest/50712.js",
+      "source_sha256": "1576ffcca99afe8b6ea9b78b3232af1ba8819c3cdcf99c81dbe5d53b1b2f3ce3",
+      "lua": "quest/50712.lua",
+      "lua_sha256": "0bb498972748649abec8e9278de1997098c6c69f15226b84ee938fb0ee201262"
+    },
+    {
+      "legacy": "quest/51418.js",
+      "source_sha256": "b101b0b61bcdea42625a35dbd08297d472dee7cc83300430130f127178feefc3",
+      "lua": "quest/51418.lua",
+      "lua_sha256": "27c564edd7fb0f92659948bc0b20d20d7985b059c04af8caa923b0e8c7f733c0"
+    },
+    {
+      "legacy": "quest/53222.js",
+      "source_sha256": "a4ed95ad970635d12b92f1be9e211a062b427996a0069df71a305837d8c7be06",
+      "lua": "quest/53222.lua",
+      "lua_sha256": "4fecd3822056ef2fe80d210cde67adcccc8ea141bd3bf0e10322efa139f39b16"
     }
   ]
 }

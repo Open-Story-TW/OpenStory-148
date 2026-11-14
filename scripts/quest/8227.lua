@@ -7,7 +7,7 @@ __quest = 8227
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Find someone to translate this.")
+    qm.sendNext("找個人來翻譯這個。")
     if qm.canHold(4032032, 1) then
         qm.gainItem(4032032, 1)
         qm.forceCompleteQuest()

@@ -7,13 +7,13 @@ __quest = 2197
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Oh, you already have monster book.")
+    qm.sendNext("喔，你已經有怪物圖鑑了。")
     qm.forceCompleteQuest()
     qm.dispose()
 end
 
 function finish(mode, type, selection)
-    qm.sendNext("Oh, you already have monster book.")
+    qm.sendNext("喔，你已經有怪物圖鑑了。")
     qm.forceCompleteQuest()
     qm.dispose()
 end

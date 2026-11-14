@@ -12,18 +12,18 @@ function start(mode, type, selection)
         if ((type == 1) and (mode == 0)) then
             status = status - 2
         else
-            qm.sendOk("I wanted you to personally give this piece of good news to #bBruce#k, but I understand if you're busy.")
+            qm.sendOk("我本來希望由你親自把這個好消息告訴#b布魯斯#k，不過如果你很忙的話，我也能理解。")
             qm.dispose()
             do return end
         end
     end
     if (status == 0) then
-        qm.sendAcceptDecline("I have just one more request for you. Would you like to take a listen?")
+        qm.sendAcceptDecline("我還有最後一個請求。你願意聽聽看嗎？")
     end
     if (status == 1) then
         qm.forceStartQuest()
         qm.gainItem(4032389, 1)
-        qm.sendOk("To be honest, these #bKiller Mushroom Spores#k are not completely out of my own work. Do you remember #bBruce#k from #bHenesys#k? I have been friends with him since childhood, and #bKiller Mushroom Spores#k was completed after he shared the results of his studies with me. This was all thanks to him, so I'd like for you to give this to him for me.")
+        qm.sendOk("老實說，這些#b殺人菇孢子#k並不完全是我一個人的成果。你還記得#b弓箭手村#k的#b布魯斯#k嗎？我跟他從小就是朋友，是他把研究成果分享給我之後，#b殺人菇孢子#k才得以完成。這一切都多虧了他，所以我想請你替我把這個交給他。")
         qm.dispose()
     end
 end
@@ -39,12 +39,12 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendOk("Oh! You're here on behalf of #bScarrs#k? \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#fUI/UIWindow.img/QuestIcon/8/0# 8800 exp")
+        qm.sendOk("喔！你是代替#b史卡斯#k來的嗎？ \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#fUI/UIWindow.img/QuestIcon/8/0# 8800 經驗值")
     end
     if (status == 1) then
         qm.gainExp(8800)
         qm.gainItem(4032389, (-1))
-        qm.sendOk("Ahh, so this is the #bKiller Mushroom Spores#k that I was working on in the past. I had a tough time gathering up the ingredients, so I left it in theory only, but he was able to complete it, with a sample to show for as well. Please tell him I appreciate his good work.")
+        qm.sendOk("啊，原來這就是我以前研究過的#b殺人菇孢子#k。當時材料實在太難蒐集，所以我只停留在理論階段，沒想到他不但完成了，還做出了樣本。請替我轉告他，我很感謝他的努力。")
         qm.forceCompleteQuest()
         qm.dispose()
     end

@@ -43,16 +43,16 @@ function finish(mode, type, selection)
         end
     end
     if (status == 0) then
-        qm.sendNext("#b(You place food in Bulldog's bowl.)#k")
+        qm.sendNext("#b（你把食物放進了鬥牛犬的碗裡。）#k")
     end
     if (status == 1) then
-        qm.sendOk("#b(Bulldog is totally sweet. Utah is just a coward.)#k\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 35 exp")
+        qm.sendOk("#b（鬥牛犬真是太可愛了。猶他根本就是個膽小鬼。）#k\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 35 經驗值")
     end
     if (status == 2) then
         qm.forceCompleteQuest()
         qm.gainItem(4032447, (-1))
         qm.gainExp(35)
-        qm.sendOk("#b(Looks like Bulldog has finished eating. Return to Utah and let him know.)#k")
+        qm.sendOk("#b（鬥牛犬好像吃完了。回去告訴猶他吧。）#k")
         qm.dispose()
     end
 end

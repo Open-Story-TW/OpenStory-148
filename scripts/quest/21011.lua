@@ -15,7 +15,7 @@ function finish(mode, type, selection)
         status = status + 1
     else
         if (status == 4) then
-            qm.sendNext("*sniff sniff* Isn''t this sword good enough for you, just for now? I''d be so honored...")
+            qm.sendNext("*吸吸鼻子* 這把劍暫時先湊合著用，不行嗎？那會是我的榮幸…")
             qm.dispose()
             do return end
         end
@@ -27,22 +27,22 @@ function finish(mode, type, selection)
             qm.dispose()
             do return end
         end
-        qm.sendNext("Wait, are you... No way... Are you the hero that #p1201000# has been talking about all this time?! #p1201000#! Don''t just nod... Tell me! Is this the hero you''ve been waiting for?!")
+        qm.sendNext("等等，你該不會是…不會吧…你就是#p1201000#一直掛在嘴邊的那位英雄嗎？！#p1201000#！不要只是點頭…快告訴我！這就是你一直在等待的英雄嗎？！")
     elseif (status == 1) then
         qm.sendNextPrev("   #i4001171#")
     elseif (status == 2) then
-        qm.sendNextPrev("I''m sorry. I''m just so overcome with emotions... *Sniff sniff* My goodness, I''m starting to tear up. You must be so happy, #p1201000#.")
+        qm.sendNextPrev("對不起，我實在是太激動了……（吸鼻子）天啊，我都快哭出來了。#p1201000#，你一定很開心吧。")
     elseif (status == 3) then
-        qm.sendNextPrev("Wait a minute... You''re not carrying any weapons. From what I''ve heard, each of the heroes had a special weapon. Oh, you must have lost it during the battle against the Black Mage.")
+        qm.sendNextPrev("等一下…你身上沒有帶任何武器。我聽說每位英雄都有一把專屬的武器。噢，一定是在和黑魔法師戰鬥的時候弄丟了。")
     elseif (status == 4) then
-        qm.sendYesNo("This isn''t good enough to replace your weapon, but #bcarry this sword with you for now#k. It''s my gift to you. A hero can''t be walking around empty-handed. \r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i1302000# 1 #t1302000# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 35 exp")
+        qm.sendYesNo("這雖然不足以取代你原本的武器，不過#b你先帶著這把劍吧#k。這是我送你的禮物。英雄可不能兩手空空地到處走。\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0# \r\n#i1302000# 1 #t1302000# \r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 35 經驗值")
     elseif (status == 5) then
         if (qm.getQuestStatus(21011) == 1) then
             qm.gainItem(1302000, 1)
             qm.gainExp(35)
         end
         qm.forceCompleteQuest()
-        qm.sendNextPrevS("#b(Your skills are nowhere close to being hero-like... But a sword? Have you ever even held a sword in your lifetime? You can''t remember... How do you even equip it?)#k", 3)
+        qm.sendNextPrevS("#b（你的實力離英雄還差得遠呢…不過，劍？你這輩子有拿過劍嗎？完全想不起來…到底要怎麼裝備啊？）#k", 3)
     elseif (status == 6) then
         qm.summonMsg(16)
         qm.dispose()

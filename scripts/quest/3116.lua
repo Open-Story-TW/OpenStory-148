@@ -7,7 +7,7 @@ __quest = 3116
 status = (-1)
 
 function start(mode, type, selection)
-    qm.sendNext("Please come see me, I am in the Chief's Residence of Elnath.")
+    qm.sendNext("請來找我，我在冰原雪域的長老公館。")
     qm.forceStartQuest()
     qm.dispose()
 end
