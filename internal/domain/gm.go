@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
@@ -47,11 +48,57 @@ type GMCommandRequest struct {
 	Name        string           `json:"name"`
 	Args        []int64          `json:"args"`
 	RuntimeID   string           `json:"runtime_id,omitempty"`
+	// Text is the one free-text argument: a character name or a notice.
+	Text string `json:"text,omitempty"`
 }
+
+// Limits of the standing GM commands.
+const (
+	GMNoticeMax = 200     // bytes of one !notice
+	GMNameMax   = 32      // bytes of a character name argument
+	GMWalletMax = 1000000 // one !cash or !points grant
+)
+
+// GMStandingCommand reports the commands that act on other players or on the
+// whole world. They need a standing grant (no expiry, given in the web admin);
+// a timed QA grant keeps the self-only test commands.
+func GMStandingCommand(name string) bool {
+	switch name {
+	case "map", "goto", "warphere", "notice", "dc", "npc", "cash", "points":
+		return true
+	}
+	return false
+}
+
+// ValidGMStandingCommand checks the argument shape of a standing GM command.
+func ValidGMStandingCommand(name string, args []int64, text string) bool {
+	for _, c := range text {
+		if c < 0x20 || c == 0x7f {
+			return false
+		}
+	}
+	one := func(low, high int64) bool { return text == "" && len(args) == 1 && args[0] >= low && args[0] <= high }
+	switch name {
+	case "map":
+		return one(0, 999999998)
+	case "npc":
+		return one(1, 9999999)
+	case "cash", "points":
+		return one(1, GMWalletMax)
+	case "goto", "warphere", "dc":
+		return len(args) == 0 && text != "" && len(text) <= GMNameMax && !strings.ContainsAny(text, " \t")
+	case "notice":
+		return len(args) == 0 && strings.TrimSpace(text) != "" && len(text) <= GMNoticeMax
+	}
+	return false
+}
+
 type GMCommandResult struct {
 	Character  Character `json:"character"`
 	Name       string    `json:"name"`
 	Args       []int64   `json:"args"`
+	Text       string    `json:"text,omitempty"`     // the request's text, kept for the audit
+	Standing   bool      `json:"standing,omitempty"` // the grant has no expiry
 	Changed    bool      `json:"changed"`
 	Replayed   bool      `json:"replayed"`
 	Denied     bool      `json:"denied"`

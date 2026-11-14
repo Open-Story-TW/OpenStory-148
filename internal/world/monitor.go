@@ -13,7 +13,6 @@ import (
 	"unicode/utf8"
 
 	"maple-go-server/internal/domain"
-	"maple-go-server/internal/protocol"
 )
 
 // The monitor lets the web admin watch a world without the world depending on
@@ -193,28 +192,5 @@ func (s *Server) monitorNotice(w http.ResponseWriter, r *http.Request) {
 		debugJSON(w, 400, map[string]string{"error": "invalid_request"})
 		return
 	}
-	if s.maps == nil {
-		debugJSON(w, 200, map[string]int{"delivered": 0})
-		return
-	}
-	packet := protocol.Notice(req.Message)
-	var sinks []packetSink
-	s.maps.mu.Lock()
-	for key, room := range s.maps.rooms {
-		if req.Channel != 0 && key.channel != req.Channel || req.MapID != 0 && key.mapID != req.MapID {
-			continue
-		}
-		for _, member := range room {
-			sinks = append(sinks, member.sink)
-		}
-	}
-	s.maps.mu.Unlock()
-	// Write outside the room lock: a slow connection must not stall movement.
-	delivered := 0
-	for _, sink := range sinks {
-		if sink.WritePacket(packet) == nil {
-			delivered++
-		}
-	}
-	debugJSON(w, 200, map[string]int{"delivered": delivered})
+	debugJSON(w, 200, map[string]int{"delivered": s.broadcastNotice(req.Channel, req.MapID, req.Message)})
 }

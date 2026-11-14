@@ -99,7 +99,7 @@ func (s *Store) ResolveGMCommand(ctx context.Context, r domain.GMCommandRequest)
 }
 
 func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest) (domain.GMCommandResult, error) {
-	if !validGMOperation(r.OperationID) || len(r.Name) < 1 || len(r.Name) > 32 || len(r.Args) > 4 {
+	if !validGMOperation(r.OperationID) || len(r.Name) < 1 || len(r.Name) > 32 || len(r.Args) > 4 || len(r.Text) > domain.GMNoticeMax {
 		return domain.GMCommandResult{}, domain.ErrInvalidInput
 	}
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -111,7 +111,7 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 	if err != nil {
 		return domain.GMCommandResult{}, err
 	}
-	result := domain.GMCommandResult{Character: c, Name: r.Name, Args: append([]int64(nil), r.Args...)}
+	result := domain.GMCommandResult{Character: c, Name: r.Name, Args: append([]int64(nil), r.Args...), Text: r.Text}
 	var now time.Time
 	if err = tx.QueryRowContext(ctx, `SELECT clock_timestamp()`).Scan(&now); err != nil {
 		return result, err
@@ -177,6 +177,21 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 	c.X, c.Y, c.SpawnPoint = r.Session.Character.X, r.Session.Character.Y, r.Session.Character.SpawnPoint
 	result.Character = c
 	before = gmAuditState(c)
+	result.Standing = !grant.ExpiresAt.Before(domain.QAGMPermanentExpiry)
+	if domain.GMStandingCommand(r.Name) {
+		// Authorization and audit only: the world acts after this commit.
+		if !result.Standing {
+			result.Detail = "this command needs a standing GM grant from the web admin"
+			return finish("standing_grant_required")
+		}
+		if !domain.ValidGMStandingCommand(r.Name, r.Args, r.Text) {
+			return finish("unsupported_or_invalid_command")
+		}
+		return finish("")
+	}
+	if r.Text != "" {
+		return finish("unsupported_or_invalid_command")
+	}
 	if r.Name == "debuff" {
 		// QA self-debuff to test dispels and heals: a monster-skill status
 		// (Java giveDebuff: source = mob skill | level<<16) for N seconds.
@@ -319,8 +334,15 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 	deny := func(reason string) (bool, int, bool, error) {
 		return false, 0, false, fmt.Errorf("%w: %s", domain.ErrInvalidInput, reason)
 	}
-	if r.Name == "whereami" || r.Name == "effstats" || r.Name == "help" {
+	if r.Name == "whereami" || r.Name == "effstats" || r.Name == "online" || r.Name == "rates" {
 		if len(r.Args) != 0 {
+			return invalid()
+		}
+		return false, 0, false, nil
+	}
+	if r.Name == "help" {
+		// !help, or !help <page>: the world checks the page number.
+		if len(r.Args) > 1 {
 			return invalid()
 		}
 		return false, 0, false, nil
@@ -481,6 +503,18 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 				return false, 0, false, e
 			}
 		}
+	case "ap":
+		// !ap <points>: sets the unspent ability points.
+		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 32767 {
+			return deny("AP must be 0..32767")
+		}
+		c.AP = int(r.Args[0])
+	case "sp":
+		// !sp <points>: sets the unspent skill points of the current job.
+		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 1000 {
+			return deny("SP must be 0..1000")
+		}
+		c.SP = int(r.Args[0])
 	case "vitals":
 		// !vitals <maxhp> <maxmp>: QA sets the base max HP and MP (before
 		// equipment and passives), then fills both.

@@ -29,9 +29,14 @@ func parseGMChat(text string) (string, []int64, bool) {
 	name := strings.TrimPrefix(fields[0], "!")
 	want := -1
 	switch name {
-	case "heal", "whereami", "effstats", "clearmobs", "help": // !effstats: read-only server stat view
+	case "heal", "whereami", "effstats", "clearmobs", "online", "rates": // !effstats: read-only server stat view
 		want = 0
-	case "level", "job", "warp", "buffreset", "hp":
+	case "help": // !help [page]
+		want = len(fields) - 1
+		if want > 1 {
+			want = -1
+		}
+	case "level", "job", "warp", "buffreset", "hp", "ap", "sp", "map", "npc", "cash", "points":
 		want = 1
 	case "petfood", "mesos", "alliance", "mobhold": // !mobhold <0|1>
 		want = 1
@@ -78,15 +83,118 @@ func parseGMChat(text string) (string, []int64, bool) {
 	return name, args, true
 }
 
-// gmHelpLines is the !help reply. It names every command parseGMChat accepts
-// (a test checks this), grouped so the list fits the chat window.
-var gmHelpLines = []string{
-	"GM 指令只作用在自己身上，參數都是數字，[ ] 內可省略。",
-	"角色：!heal 補滿、!hp <值>、!level <等級>（只能升）、!job <職業代碼>、!stats <力> <敏> <智> <幸>、!vitals <最大HP> <最大MP>",
-	"技能：!skill <技能代碼> <等級>（不扣 SP）、!debuff <狀態位元> [秒數]、!buffreset <狀態位元>",
-	"物品：!item <道具代碼> [數量]、!mesos <楓幣>、!petfood <數量>、!petexpire <寵物序號> <秒>、!cashexpire <保管箱序號> <秒>",
-	"地圖：!warp <地圖代碼>（僅測試地圖）、!spawn <怪物代碼> <數量> [X]、!clearmobs、!mobhold <0|1>（僅測試地圖）",
-	"其他：!alliance <對方角色ID>（0 為解散）、!whereami 目前位置、!effstats 伺服器計算的攻擊數值、!help",
+// parseGMCommand adds the commands with one text argument (a character name
+// or a notice) to parseGMChat's numeric grammar.
+func parseGMCommand(text string) (name string, args []int64, arg string, handled bool) {
+	fields := strings.Fields(text)
+	if len(fields) > 0 {
+		switch fields[0] {
+		case "!notice":
+			arg = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(text), "!notice"))
+			if arg == "" || len(arg) > domain.GMNoticeMax {
+				return "", nil, "", true
+			}
+			return "notice", nil, arg, true
+		case "!goto", "!warphere", "!dc":
+			if len(fields) != 2 || len(fields[1]) > domain.GMNameMax {
+				return "", nil, "", true
+			}
+			return fields[0][1:], nil, fields[1], true
+		}
+	}
+	name, args, handled = parseGMChat(text)
+	return name, args, "", handled
+}
+
+// The !help reply: a menu of pages, then one page per !help <number>, one
+// command a line. Every command the parser accepts is listed (a test checks).
+type gmHelpEntry struct{ usage, about string }
+type gmHelpPage struct {
+	title   string
+	entries []gmHelpEntry
+}
+
+var gmHelpPages = []gmHelpPage{
+	{"角色", []gmHelpEntry{
+		{"!heal", "補滿 HP 和 MP"},
+		{"!hp <數值>", "設定目前 HP，0 會死亡"},
+		{"!level <等級>", "升到指定等級，只能往上"},
+		{"!job <職業代碼>", "轉職"},
+		{"!stats <力量> <敏捷> <智力> <幸運>", "設定四項能力值"},
+		{"!vitals <最大HP> <最大MP>", "設定最大 HP 和 MP 並補滿"},
+		{"!ap <點數>", "設定未分配的能力點"},
+		{"!sp <點數>", "設定未分配的技能點"},
+	}},
+	{"技能", []gmHelpEntry{
+		{"!skill <技能代碼> <等級>", "學會技能，不扣技能點"},
+		{"!debuff <狀態編號> [秒數]", "讓自己中異常狀態"},
+		{"!buffreset <狀態編號>", "清除一種狀態"},
+	}},
+	{"物品", []gmHelpEntry{
+		{"!item <道具代碼> [數量]", "取得道具"},
+		{"!mesos <金額>", "取得楓幣"},
+		{"!cash <數量>", "取得 Gash"},
+		{"!points <數量>", "取得楓葉點數"},
+		{"!petfood <數量>", "取得寵物飼料"},
+		{"!petexpire <寵物序號> <秒>", "設定寵物幾秒後到期"},
+		{"!cashexpire <保管箱序號> <秒>", "設定商城道具幾秒後到期"},
+	}},
+	{"地圖", []gmHelpEntry{
+		{"!map <地圖代碼>", "傳送到任何地圖"},
+		{"!warp <地圖代碼>", "傳送到測試地圖"},
+		{"!whereami", "顯示所在地圖和座標"},
+		{"!npc <NPC代碼>", "不用走到 NPC 旁就開啟對話"},
+		{"!spawn <怪物代碼> <數量> [X座標]", "在測試地圖召喚怪物"},
+		{"!clearmobs", "清除自己召喚的怪物"},
+		{"!mobhold <0或1>", "1 讓測試地圖的怪物打不死"},
+	}},
+	{"玩家", []gmHelpEntry{
+		{"!online", "列出線上玩家和所在地圖"},
+		{"!goto <角色名稱>", "傳送到該玩家所在地圖"},
+		{"!warphere <角色名稱>", "把該玩家傳送到自己的地圖"},
+		{"!dc <角色名稱>", "讓該玩家斷線"},
+		{"!notice <內容>", "對全伺服器發公告"},
+		{"!alliance <對方角色ID>", "建立聯盟，0 為解散"},
+	}},
+	{"伺服器", []gmHelpEntry{
+		{"!rates", "顯示經驗、楓幣、掉寶倍率"},
+		{"!effstats", "顯示伺服器計算的攻擊數值"},
+		{"!help [編號]", "顯示這份說明"},
+	}},
+}
+
+// gmHelpLines returns the menu (page 0) or one page; ok is false for a page
+// that does not exist. ★ marks a command that needs a standing grant.
+func gmHelpLines(page int) (lines []string, ok bool) {
+	if page == 0 {
+		lines = []string{"═════ GM 指令說明 ═════", "輸入 !help 加編號，查看該類指令："}
+		row := ""
+		for i, p := range gmHelpPages {
+			row += fmt.Sprintf("　%d %s（%d 個）", i+1, p.title, len(p.entries))
+			if i%3 == 2 || i == len(gmHelpPages)-1 {
+				lines = append(lines, row)
+				row = ""
+			}
+		}
+		return append(lines, "例：!help 1　　< > 必填，[ ] 可省略"), true
+	}
+	if page < 1 || page > len(gmHelpPages) {
+		return nil, false
+	}
+	p := gmHelpPages[page-1]
+	lines = []string{fmt.Sprintf("═════ %d %s ═════", page, p.title)}
+	standing := false
+	for _, e := range p.entries {
+		mark := "　"
+		if domain.GMStandingCommand(strings.TrimPrefix(strings.Fields(e.usage)[0], "!")) {
+			mark, standing = "★", true
+		}
+		lines = append(lines, mark+e.usage+"　→　"+e.about)
+	}
+	if standing {
+		lines = append(lines, "★ 需要後台給的永久 GM 授權")
+	}
+	return lines, true
 }
 
 func (s *Server) gmBusy(live *liveCharacter) bool {
@@ -141,12 +249,17 @@ func gmFeedback(sink packetSink, message string) error {
 }
 
 func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink packetSink, text string) (bool, error) {
-	name, args, handled := parseGMChat(text)
+	name, args, arg, handled := parseGMCommand(text)
 	if !handled {
 		return false, nil
 	}
 	if name == "" {
-		return true, gmFeedback(sink, "Unsupported command or arguments.")
+		return true, gmFeedback(sink, "Unsupported command or arguments. 輸入 !help 查看指令。")
+	}
+	if name == "help" && len(args) == 1 {
+		if _, ok := gmHelpLines(int(args[0])); !ok {
+			return true, gmFeedback(sink, fmt.Sprintf("沒有這一頁，請輸入 !help 1 到 !help %d。", len(gmHelpPages)))
+		}
 	}
 	// Raymond approved QA warps to the reviewed test fields only. The store
 	// authorizes and audits; the fenced field transition runs afterwards.
@@ -170,7 +283,7 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 	if s.gmBusy(live) {
 		return true, gmFeedback(sink, "Finish the active trade, dialogue, transition or settlement first.")
 	}
-	req := domain.GMCommandRequest{Session: session, OperationID: "gm-native-" + platform.NewID(), Name: name, Args: args}
+	req := domain.GMCommandRequest{Session: session, OperationID: "gm-native-" + platform.NewID(), Name: name, Args: args, Text: arg}
 	if name == "spawn" || name == "clearmobs" {
 		if s.gameplay == nil || !domain.ValidQAMobCommand(name, args, session.Character.MapID) {
 			return true, qaMobDenied(sink, "spawn/clearmobs require the empty QA field and bounded arguments")
@@ -279,7 +392,12 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 					}
 				}
 			}
-			if name == "stats" {
+			if name == "sp" {
+				if err = sink.WritePacket(protocol.JobAdvancementStats(next.Character)); err != nil {
+					return true, err
+				}
+			}
+			if name == "stats" || name == "ap" {
 				if err = sink.WritePacket(protocol.AttributeStats(next.Character)); err != nil {
 					return true, err
 				}
@@ -385,11 +503,23 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 		return true, gmFeedback(sink, fmt.Sprintf("CID %d world %d channel %d map %d (%d,%d), level %d job %d.", next.CharacterID, next.Lease.WorldID, next.ChannelID, next.Character.MapID, next.Character.X, next.Character.Y, next.Character.Level, next.Character.Job))
 	}
 	if name == "help" {
-		for _, line := range gmHelpLines {
-			if err := gmFeedback(sink, line); err != nil {
-				return true, err
-			}
+		page := 0
+		if len(args) == 1 {
+			page = int(args[0])
 		}
+		lines, _ := gmHelpLines(page)
+		return true, gmLines(sink, lines)
+	}
+	if name == "online" {
+		return true, gmLines(sink, s.gmOnlineLines())
+	}
+	if name == "rates" {
+		return true, gmFeedback(sink, fmt.Sprintf("目前倍率：經驗 x%d、楓幣 x%d、掉寶 x%d。", domain.ExpRate(), domain.MesoRate(), domain.DropRate()))
+	}
+	if domain.GMStandingCommand(name) {
+		// After this command's persistMu: a warp takes it itself, and the
+		// other effects must not run under one character's lock.
+		go s.gmStanding(session, live, sink, req)
 		return true, nil
 	}
 	if name == "effstats" {

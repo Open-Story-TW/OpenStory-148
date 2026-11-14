@@ -269,32 +269,78 @@ func TestGMChatDenialIsFollowedByItsCause(t *testing.T) {
 }
 
 func TestGMChatHelpListsEveryCommand(t *testing.T) {
-	help := strings.Join(gmHelpLines, "\n")
+	help := ""
+	for page := 1; page <= len(gmHelpPages); page++ {
+		lines, ok := gmHelpLines(page)
+		if !ok {
+			t.Fatal("page", page)
+		}
+		help += strings.Join(lines, "\n") + "\n"
+	}
 	// One valid line per command: adding a command to the parser without
 	// listing it in !help should fail here.
-	for _, text := range []string{"!heal", "!whereami", "!effstats", "!clearmobs", "!help", "!level 1", "!job 1", "!warp 1", "!buffreset 1", "!hp 1",
-		"!petfood 1", "!mesos 1", "!alliance 1", "!mobhold 1", "!item 1", "!debuff 1", "!skill 1 1", "!cashexpire 1 1", "!petexpire 1 1", "!vitals 1 1", "!spawn 1 1", "!stats 4 4 4 4"} {
-		name, _, _ := parseGMChat(text)
+	samples := []string{"!heal", "!whereami", "!effstats", "!clearmobs", "!help", "!help 2", "!online", "!rates", "!level 1", "!job 1", "!warp 1", "!buffreset 1", "!hp 1",
+		"!ap 1", "!sp 1", "!map 1", "!npc 1", "!cash 1", "!points 1", "!petfood 1", "!mesos 1", "!alliance 1", "!mobhold 1", "!item 1", "!debuff 1", "!skill 1 1",
+		"!cashexpire 1 1", "!petexpire 1 1", "!vitals 1 1", "!spawn 1 1", "!stats 4 4 4 4", "!goto Someone", "!warphere Someone", "!dc Someone", "!notice two words"}
+	known := map[string]bool{}
+	for _, text := range samples {
+		name, _, _, _ := parseGMCommand(text)
 		if name == "" || !strings.Contains(help, "!"+name) {
 			t.Fatalf("%q is not a listed command", text)
 		}
+		known[name] = true
 	}
-	if name, _, handled := parseGMChat("!help 1"); !handled || name != "" {
-		t.Fatal("help takes no arguments")
+	// And the other way: every listed command is one the parser accepts.
+	listed := 0
+	for _, page := range gmHelpPages {
+		for _, e := range page.entries {
+			listed++
+			if !known[strings.TrimPrefix(strings.Fields(e.usage)[0], "!")] {
+				t.Fatalf("help lists %q, which no sample parses", e.usage)
+			}
+		}
+	}
+	if listed != len(known) {
+		t.Fatalf("%d listed, %d parsed", listed, len(known))
+	}
+	for _, text := range []string{"!help 1 2", "!notice", "!goto", "!dc two names", "!map x"} {
+		if name, _, _, handled := parseGMCommand(text); !handled || name != "" {
+			t.Fatalf("grammar accepted %q", text)
+		}
+	}
+	if _, _, arg, _ := parseGMCommand("!notice  server  restarts at 3 "); arg != "server  restarts at 3" {
+		t.Fatalf("notice text %q", arg)
 	}
 	s, live, sink, repo := gmWorldFixture(t)
+	want := 0
 	repo.execute = func(q domain.GMCommandRequest) (domain.GMCommandResult, error) {
-		if q.Name != "help" || len(q.Args) != 0 {
+		if q.Name != "help" || len(q.Args) != want {
 			t.Fatalf("request %+v", q)
 		}
 		return domain.GMCommandResult{Character: live.session.Character, Name: q.Name}, nil
 	}
+	menu, _ := gmHelpLines(0)
 	before := sink.count(0x58)
-	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help"); !handled || err != nil {
-		t.Fatal("help handling", err)
+	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help"); !handled || err != nil || sink.count(0x58)-before != len(menu) {
+		t.Fatal("help menu", err, sink.count(0x58)-before)
 	}
-	if sink.count(0x58)-before != len(gmHelpLines) {
-		t.Fatalf("help lines: %d", sink.count(0x58)-before)
+	want = 1
+	page, _ := gmHelpLines(5)
+	before = sink.count(0x58)
+	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help 5"); !handled || err != nil || sink.count(0x58)-before != len(page) {
+		t.Fatal("help page", err, sink.count(0x58)-before)
+	}
+	if !strings.Contains(strings.Join(page, "\n"), "★!dc") || strings.Contains(strings.Join(page, "\n"), "★!online") {
+		t.Fatalf("standing marks %q", page)
+	}
+	// A page that does not exist is answered without asking the store.
+	repo.execute = func(domain.GMCommandRequest) (domain.GMCommandResult, error) {
+		t.Fatal("unknown page reached the store")
+		return domain.GMCommandResult{}, nil
+	}
+	before = sink.count(0x58)
+	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help 9"); !handled || err != nil || sink.count(0x58)-before != 1 {
+		t.Fatal("unknown page", err)
 	}
 	// Without a grant the list stays hidden behind the ordinary denial.
 	repo.execute = func(domain.GMCommandRequest) (domain.GMCommandResult, error) {
@@ -303,6 +349,56 @@ func TestGMChatHelpListsEveryCommand(t *testing.T) {
 	before = sink.count(0x58)
 	if handled, err := s.handleGMChat(context.Background(), live, sink, "!help"); !handled || err != nil || sink.count(0x58)-before != 1 {
 		t.Fatal("ungranted help", err)
+	}
+}
+
+func TestGMStandingCommandsCarryTextAndActAfterTheStore(t *testing.T) {
+	for name, ok := range map[string]bool{"notice": true, "dc": true, "goto": true, "warphere": true, "map": true, "npc": true, "cash": true, "points": true, "warp": false, "online": false, "item": false} {
+		if domain.GMStandingCommand(name) != ok {
+			t.Fatal(name)
+		}
+	}
+	for _, c := range []struct {
+		name string
+		args []int64
+		text string
+		ok   bool
+	}{{"notice", nil, "hello all", true}, {"notice", nil, " ", false}, {"notice", nil, "a\nb", false}, {"notice", []int64{1}, "x", false},
+		{"dc", nil, "Name", true}, {"dc", nil, "two names", false}, {"goto", nil, "", false}, {"map", []int64{100000000}, "", true}, {"map", []int64{1}, "x", false},
+		{"cash", []int64{domain.GMWalletMax}, "", true}, {"cash", []int64{domain.GMWalletMax + 1}, "", false}, {"points", []int64{0}, "", false}, {"heal", nil, "", false}} {
+		if domain.ValidGMStandingCommand(c.name, c.args, c.text) != c.ok {
+			t.Fatalf("%s %v %q", c.name, c.args, c.text)
+		}
+	}
+	s, live, sink, repo := gmWorldFixture(t)
+	var got domain.GMCommandRequest
+	repo.execute = func(q domain.GMCommandRequest) (domain.GMCommandResult, error) {
+		got = q
+		return domain.GMCommandResult{Denied: true, Reason: "standing_grant_required", Detail: "this command needs a standing GM grant from the web admin"}, domain.ErrForbidden
+	}
+	before := sink.count(0x58)
+	if handled, err := s.handleGMChat(context.Background(), live, sink, "!dc Nobody"); !handled || err != nil || got.Name != "dc" || got.Text != "Nobody" || len(got.Args) != 0 {
+		t.Fatalf("dc request %+v %v", got, err)
+	}
+	if sink.count(0x58)-before != 2 {
+		t.Fatalf("denial plus reason: %d", sink.count(0x58)-before)
+	}
+	// Authorized: the effect runs and reports. Nobody by that name is online.
+	req := domain.GMCommandRequest{Session: live.session, OperationID: "gm-native-test", Name: "dc", Text: "Nobody"}
+	before = sink.count(0x58)
+	s.gmStanding(live.session, live, sink, req)
+	if sink.count(0x58)-before != 1 {
+		t.Fatal("missing target feedback")
+	}
+	req.Name, req.Text = "notice", "hello all"
+	before, notices := sink.count(0x58), sink.count(0x63)
+	s.gmStanding(live.session, live, sink, req)
+	if sink.count(0x58)-before != 1 || sink.count(0x63) < notices {
+		t.Fatal("notice feedback")
+	}
+	lines := s.gmOnlineLines()
+	if len(lines) != 2 || !strings.Contains(lines[0], "1 人") {
+		t.Fatalf("online %q", lines)
 	}
 }
 
