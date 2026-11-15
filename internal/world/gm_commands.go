@@ -284,6 +284,7 @@ func (s *Server) gmCurrent(session domain.CharacterSession, live *liveCharacter,
 }
 
 func gmFeedback(sink packetSink, message string) error {
+	gmFeedbackTap(sink, message)
 	return sink.WritePacket(protocol.PortalTrainingMessage("[QA GM] " + message))
 }
 

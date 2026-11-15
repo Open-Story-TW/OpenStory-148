@@ -138,6 +138,9 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	health.Handle("/debug/scripts", http.HandlerFunc(s.scriptDebugger))
 	health.Handle("/admin/gm-grants", http.HandlerFunc(s.gmAuthorizations))
 	health.Handle("/admin/qa-mobs/snapshot", http.HandlerFunc(s.qaMobSnapshot))
+	if qaAdminCommandsEnabled() {
+		health.Handle("/admin/gm-command", http.HandlerFunc(s.gmCommandAdmin))
+	}
 	health.Handle("/admin/pets", http.HandlerFunc(s.petAdmin))
 	health.Handle("/admin/qa-family", http.HandlerFunc(s.qaFamilyAdmin))
 	health.Handle("/admin/monitor/players", http.HandlerFunc(s.monitorPlayers))
