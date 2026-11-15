@@ -8,6 +8,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"maple-go-server/internal/domain"
 )
 
 type WorldConfig struct {
@@ -20,13 +22,17 @@ type WorldConfig struct {
 }
 
 type Config struct {
-	Kind                string
-	InstanceID          string
-	DatabaseURL         string
-	RedisAddr           string
-	RedisPassword       string
-	RedisDB             int
-	Bind                string
+	Kind          string
+	InstanceID    string
+	DatabaseURL   string
+	RedisAddr     string
+	RedisPassword string
+	RedisDB       int
+	Bind          string
+	// TailnetBind, when set, is this machine's Tailscale address. The login,
+	// channel and cash shop listeners open on it as well as on Bind, so the
+	// operator's other tailnet devices can play. Nothing else listens there.
+	TailnetBind         string
 	LoginPort           int
 	CashshopPort        int
 	HealthAddr          string
@@ -59,12 +65,14 @@ func integer(name string, fallback int) (int, error) {
 	return v, nil
 }
 
-// Load accepts only isolated loopback development endpoints. Production network
-// exposure requires a client handoff credential with a reviewed security contract.
+// Load accepts only isolated loopback development endpoints, plus the game
+// listeners on the operator's own tailnet when MAPLEGO_TAILNET_BIND is set.
+// Production network exposure requires a client handoff credential with a
+// reviewed security contract.
 func Load(kind string) (Config, error) {
 	c := Config{Kind: kind, InstanceID: value("MAPLEGO_INSTANCE_ID", NewID()),
 		DatabaseURL: os.Getenv("MAPLEGO_DATABASE_URL"), RedisAddr: value("MAPLEGO_REDIS_ADDR", "127.0.0.1:16379"),
-		RedisPassword: os.Getenv("MAPLEGO_REDIS_PASSWORD"), Bind: value("MAPLEGO_BIND", "127.0.0.1"),
+		RedisPassword: os.Getenv("MAPLEGO_REDIS_PASSWORD"), Bind: value("MAPLEGO_BIND", "127.0.0.1"), TailnetBind: os.Getenv("MAPLEGO_TAILNET_BIND"),
 		RPCToken: os.Getenv("MAPLEGO_RPC_TOKEN"), StopFile: os.Getenv("MAPLEGO_STOP_FILE"), ScriptsDir: os.Getenv("MAPLEGO_SCRIPTS_DIR"),
 		AllowLegacyLoopback: value("MAPLEGO_LEGACY_LOOPBACK", "true") == "true"}
 	var err error
@@ -125,6 +133,9 @@ func (c Config) Validate() error {
 	if !loopback(c.Bind) || !loopbackEndpoint(c.HealthAddr) || !loopbackEndpoint(c.RedisAddr) {
 		return fmt.Errorf("all runtime endpoints must bind to loopback")
 	}
+	if c.TailnetBind != "" && !domain.TailnetIP(c.TailnetBind) {
+		return fmt.Errorf("MAPLEGO_TAILNET_BIND must be a Tailscale address (100.64.0.0/10)")
+	}
 	if c.LoginPort < 1 || c.LoginPort > 65535 || c.CashshopPort < 1 || c.CashshopPort > 65535 {
 		return fmt.Errorf("invalid service port")
 	}
@@ -152,6 +163,14 @@ func (c Config) Validate() error {
 		return fmt.Errorf("world %d is absent from directory", c.WorldID)
 	}
 	return nil
+}
+
+// ListenHosts are the addresses the game listeners open on.
+func (c Config) ListenHosts() []string {
+	if c.TailnetBind == "" {
+		return []string{c.Bind}
+	}
+	return []string{c.Bind, c.TailnetBind}
 }
 
 func (c Config) World(id int) (WorldConfig, bool) {

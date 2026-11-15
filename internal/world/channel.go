@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"net"
 	"time"
 
 	"maple-go-server/internal/domain"
@@ -28,7 +27,7 @@ type channelTransfer struct {
 }
 
 func (s *Server) prepareChannel(ctx context.Context, live *liveCharacter, target int, ip string) error {
-	if target < 1 || target > s.wcfg.ChannelCount || !net.ParseIP(ip).IsLoopback() {
+	if target < 1 || target > s.wcfg.ChannelCount || !domain.TrustedClientIP(ip) {
 		return domain.ErrInvalidInput
 	}
 	// The aggregate still travels in memory, but a crash or timeout before the

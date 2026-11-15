@@ -183,7 +183,8 @@ type TransferClaim struct {
 	Token        string
 	ClientIP     string
 	Lease        WorldLease
-	// Explicit development-only compatibility; both endpoints must be loopback.
+	// Explicit development-only compatibility; the client must be on loopback
+	// or on the operator's tailnet (TrustedClientIP).
 	// Production must require Token or a verified client-side equivalent.
 	AllowLegacyLoopback bool
 }

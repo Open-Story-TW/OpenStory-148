@@ -38,8 +38,10 @@ func Run(ctx context.Context, cfg platform.Config, repo domain.Repository, healt
 	}
 	g := platform.NewTCPGroup()
 	defer g.Close()
-	if err := g.Listen(ctx, net.JoinHostPort(cfg.Bind, strconv.Itoa(cfg.LoginPort)), s.handle); err != nil {
-		return err
+	for _, host := range cfg.ListenHosts() {
+		if err := g.Listen(ctx, net.JoinHostPort(host, strconv.Itoa(cfg.LoginPort)), s.handle); err != nil {
+			return err
+		}
 	}
 	health.Detail("login_port", cfg.LoginPort)
 	health.Detail("worlds", cfg.Worlds)

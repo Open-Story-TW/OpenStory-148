@@ -166,9 +166,11 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	defer g.Close()
 	for channel := 1; channel <= wcfg.ChannelCount; channel++ {
 		channelID := channel
-		address := net.JoinHostPort(cfg.Bind, strconv.Itoa(wcfg.ChannelBasePort+channel-1))
-		if err = g.Listen(ctx, address, func(ctx context.Context, c net.Conn) { s.handle(ctx, c, channelID) }); err != nil {
-			return err
+		for _, host := range cfg.ListenHosts() {
+			address := net.JoinHostPort(host, strconv.Itoa(wcfg.ChannelBasePort+channel-1))
+			if err = g.Listen(ctx, address, func(ctx context.Context, c net.Conn) { s.handle(ctx, c, channelID) }); err != nil {
+				return err
+			}
 		}
 	}
 	s.ready.Store(true)
@@ -706,7 +708,7 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 			s.tradeLeave(live)
 			s.merchantLeave(live)
 			s.closeEconomyDialog(live)
-			if c.WritePacket(protocol.ChannelChange(s.wcfg.Host, s.wcfg.ChannelBasePort+target-1)) == nil {
+			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), s.wcfg.Host), s.wcfg.ChannelBasePort+target-1)) == nil {
 				awaitRedirectDisconnect(c)
 			}
 			return
@@ -737,7 +739,7 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 			s.merchantLeave(live)
 			s.closeEconomyDialog(live)
 			s.leaveScene(live, c)
-			if c.WritePacket(protocol.ChannelChange(s.cfg.Bind, s.cfg.CashshopPort)) == nil {
+			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), s.cfg.Bind), s.cfg.CashshopPort)) == nil {
 				awaitRedirectDisconnect(c)
 			}
 			return

@@ -14,6 +14,7 @@ func TestConfigRejectsAccidentalPublicOrUnrelatedEndpoints(t *testing.T) {
 		change func(*Config)
 	}{
 		{"public-bind", func(c *Config) { c.Bind = "0.0.0.0" }},
+		{"public-tailnet-bind", func(c *Config) { c.TailnetBind = "192.0.2.10" }},
 		{"public-health", func(c *Config) { c.HealthAddr = "0.0.0.0:19080" }},
 		{"remote-cache", func(c *Config) { c.RedisAddr = "192.0.2.1:16379" }},
 		{"unrelated-database", func(c *Config) { c.DatabaseURL = "postgres://u:p@127.0.0.1:5432/production" }},
@@ -33,6 +34,20 @@ func TestConfigRejectsAccidentalPublicOrUnrelatedEndpoints(t *testing.T) {
 				t.Fatal("configuration must be rejected")
 			}
 		})
+	}
+}
+
+func TestTailnetBindAddsOneListenHost(t *testing.T) {
+	c := validConfig()
+	if hosts := c.ListenHosts(); len(hosts) != 1 || hosts[0] != "127.0.0.1" {
+		t.Fatalf("hosts = %v", hosts)
+	}
+	c.TailnetBind = "100.64.0.10"
+	if err := c.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	if hosts := c.ListenHosts(); len(hosts) != 2 || hosts[1] != "100.64.0.10" {
+		t.Fatalf("hosts = %v", hosts)
 	}
 }
 

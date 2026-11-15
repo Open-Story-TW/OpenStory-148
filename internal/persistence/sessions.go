@@ -200,7 +200,7 @@ func (s *Store) ConsumeTransfer(ctx context.Context, c domain.TransferClaim) (do
 		return domain.CharacterSession{}, domain.ErrTransferInvalid
 	}
 	legacy := c.Token == ""
-	if legacy && (!c.AllowLegacyLoopback || c.ClientHandle <= 0 || !net.ParseIP(c.ClientIP).IsLoopback()) {
+	if legacy && (!c.AllowLegacyLoopback || c.ClientHandle <= 0 || !domain.TrustedClientIP(c.ClientIP)) {
 		return domain.CharacterSession{}, domain.ErrTransferInvalid
 	}
 	var id, hash, sourceIP, sessionID, target string
@@ -225,7 +225,7 @@ func (s *Store) ConsumeTransfer(ctx context.Context, c domain.TransferClaim) (do
 	if sourceIP != c.ClientIP || target != c.Lease.InstanceID || epoch != c.Lease.Epoch {
 		return domain.CharacterSession{}, domain.ErrTransferInvalid
 	}
-	if legacy && !net.ParseIP(sourceIP).IsLoopback() {
+	if legacy && !domain.TrustedClientIP(sourceIP) {
 		return domain.CharacterSession{}, domain.ErrTransferInvalid
 	}
 	tx, err := s.client.Tx(ctx)

@@ -60,8 +60,10 @@ func Run(parent context.Context, cfg platform.Config, repository domain.Reposito
 	}
 	g := platform.NewTCPGroup()
 	defer g.Close()
-	if err = g.Listen(ctx, net.JoinHostPort(cfg.Bind, strconv.Itoa(cfg.CashshopPort)), s.handle); err != nil {
-		return err
+	for _, host := range cfg.ListenHosts() {
+		if err = g.Listen(ctx, net.JoinHostPort(host, strconv.Itoa(cfg.CashshopPort)), s.handle); err != nil {
+			return err
+		}
 	}
 	health.Detail("cashshop_port", cfg.CashshopPort)
 	health.Detail("purchases_enabled", true)
@@ -448,7 +450,7 @@ func (s *server) handle(ctx context.Context, raw net.Conn) {
 				continue
 			}
 			handedOff = true
-			if c.WritePacket(protocol.ChannelChange(world.Host, world.ChannelBasePort+transfer.ChannelID-1)) == nil {
+			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), world.Host), world.ChannelBasePort+transfer.ChannelID-1)) == nil {
 				awaitRedirectDisconnect(c)
 			}
 			return

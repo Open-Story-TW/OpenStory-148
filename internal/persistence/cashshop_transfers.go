@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"net"
 	"time"
 
 	"maple-go-server/internal/domain"
@@ -111,7 +110,7 @@ func (s *Store) beginCashStage(ctx context.Context, session domain.CharacterSess
 }
 
 func createServiceTicket(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, handle int64, ip, target string, channel int, instance string, epoch int64) (domain.CashTransfer, error) {
-	if handle < 1 || handle > 2147483647 || net.ParseIP(ip) == nil || !net.ParseIP(ip).IsLoopback() || channel < 1 || channel > 20 {
+	if handle < 1 || handle > 2147483647 || !domain.TrustedClientIP(ip) || channel < 1 || channel > 20 {
 		return domain.CashTransfer{}, domain.ErrInvalidInput
 	}
 	id, err := randomToken(16)
@@ -222,7 +221,7 @@ func (s *Store) ConsumeCashReturn(ctx context.Context, handle int64, world, chan
 }
 
 func consumeServiceTicket(ctx context.Context, tx *sql.Tx, target string, handle int64, world, channel int, ip, instance string, epoch int64, leaseExpiry time.Time) (domain.CharacterSession, int, error) {
-	if net.ParseIP(ip) == nil || !net.ParseIP(ip).IsLoopback() {
+	if !domain.TrustedClientIP(ip) {
 		return domain.CharacterSession{}, 0, domain.ErrTransferInvalid
 	}
 	var id, sessionID, ticketIP, ticketInstance string
