@@ -43,6 +43,7 @@ func (s *Server) moveSceneVisit(v *sceneVisit, r *protocol.Reader) error {
 	if move.Changed {
 		live.dirty = true
 	}
+	live.movedAt = time.Now()
 	snapshot := live.session
 	live.mu.Unlock()
 	if len(move.Fragments) > 0 {

@@ -61,6 +61,7 @@ type liveCharacter struct {
 	nativeHandle     int64
 	god              bool // GM !god; guarded by mu, lost on relog or channel change.
 	session          domain.CharacterSession
+	movedAt          time.Time                 // when the client last reported session.Character.X/Y; guarded by mu
 	longDamage       protocol.LongDamageLedger // Owned by the session's read loop.
 	statDetail       []byte                    // Last 0x614 frame sent; guarded by mu.
 	panelClicks      int                       // Demo panel presses this session; guarded by mu.

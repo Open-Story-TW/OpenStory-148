@@ -98,7 +98,11 @@ const (
 	defaultSummonRange   = 500
 	summonStatusDuration = 4 * time.Second
 	rangeTolerance       = 30
-	verticalRange        = 160
+	// rangeSlack widens the horizontal reach (skill range plus the mob's half
+	// body): a mob keeps walking between its controller's movement reports, so
+	// the room's position trails the one the attacking client aimed at.
+	rangeSlack    = 2
+	verticalRange = 160
 )
 
 func admits(ctx AttackContext, t TargetInfo) bool {
@@ -106,9 +110,12 @@ func admits(ctx AttackContext, t TargetInfo) bool {
 	if ctx.Effect.Box.Set {
 		// Either mirror is accepted: the facing bit is not reliable for every
 		// skill packet (the same tolerance as world mobCastReaches).
-		pad := rangeTolerance + t.HalfWidth
+		pad := t.HalfWidth * rangeSlack
 		for _, left := range []bool{ctx.Attack.FacingLeft(), !ctx.Attack.FacingLeft()} {
 			lt, rb := ctx.Effect.Box.At(origin, left)
+			// Only outwards: a box that starts away from the caster keeps its near edge.
+			lt.X = min(lt.X, origin.X+(lt.X-origin.X)*rangeSlack)
+			rb.X = max(rb.X, origin.X+(rb.X-origin.X)*rangeSlack)
 			if t.X >= lt.X-pad && t.X <= rb.X+pad && t.Y >= lt.Y-rangeTolerance && t.Y-t.BodyHeight <= rb.Y+rangeTolerance {
 				return true
 			}
@@ -139,7 +146,7 @@ func withinRange(ctx AttackContext, t TargetInfo, origin Point, extra int) bool 
 		}
 	}
 	dx, dy := t.X-origin.X, t.Y-origin.Y
-	return max(dx, -dx) <= r+extra+t.HalfWidth+rangeTolerance && max(dy, -dy) <= verticalRange+t.BodyHeight
+	return max(dx, -dx) <= (r+extra+t.HalfWidth)*rangeSlack && max(dy, -dy) <= verticalRange+t.BodyHeight
 }
 
 // PlanAttack validates counts, range, ceilings and cost and resolves on-hit

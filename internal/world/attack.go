@@ -167,6 +167,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	}()
 	live.mu.Lock()
 	session := cloneCombatSession(live.session)
+	movedAt := live.movedAt
 	live.mu.Unlock()
 	session.Lease = s.currentLease()
 	c := session.Character
@@ -186,7 +187,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 		}
 		return reject("skill_not_learned_or_unregistered", nil)
 	}
-	if !within(c.X, c.Y, int(a.X), int(a.Y), attackReach(a.SkillID, effect)) {
+	if !within(c.X, c.Y, int(a.X), int(a.Y), attackReach(a.SkillID, effect)+playerDrift(movedAt, now)) {
 		return reject("position", nil)
 	}
 	stats, err := combat.AttackStats(c, now)
@@ -737,6 +738,23 @@ func recordCharacterPacket(logger *slog.Logger, direction string, characterID in
 		fields = append(fields, "wire_hex", hex.EncodeToString(p))
 	}
 	logger.Info(direction, fields...)
+}
+
+// A player keeps moving between movement reports, so the attack position runs
+// ahead of the stored one: a jump or fall covers up to playerDriftSpeed (the
+// client's terminal fall speed, 670) until the next report arrives.
+const (
+	playerDriftSpeed  = 670 // pixels a second
+	playerDriftWindow = 500 * time.Millisecond
+)
+
+// playerDrift is how far the character may be from its stored position at now.
+func playerDrift(movedAt, now time.Time) int {
+	since := playerDriftWindow
+	if !movedAt.IsZero() {
+		since = min(max(now.Sub(movedAt), 0), playerDriftWindow)
+	}
+	return int(since * playerDriftSpeed / time.Second)
 }
 
 // attackReach is how far the attack position may be from the server position:

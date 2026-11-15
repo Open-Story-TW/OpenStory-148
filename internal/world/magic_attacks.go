@@ -30,14 +30,15 @@ func (s *Server) magicGameplay(ctx context.Context, channel int, live *liveChara
 	}()
 	live.mu.Lock()
 	session := cloneCombatSession(live.session)
+	movedAt := live.movedAt
 	live.mu.Unlock()
 	session.Lease = s.currentLease()
 	c := session.Character
 	reject := func() error { return sink.WritePacket(protocol.UpdateHPMP(c.HP, c.MP)) }
-	if c.HP <= 0 || a.SkillID != 1000 || a.TByte&15 != 1 || int(a.TByte>>4) != len(a.Targets) || len(a.Targets) > 1 || !within(c.X, c.Y, int(a.X), int(a.Y), 64) {
+	now := time.Now()
+	if c.HP <= 0 || a.SkillID != 1000 || a.TByte&15 != 1 || int(a.TByte>>4) != len(a.Targets) || len(a.Targets) > 1 || !within(c.X, c.Y, int(a.X), int(a.Y), 64+playerDrift(movedAt, now)) {
 		return reject()
 	}
-	now := time.Now()
 	if _, err := content.PreparePotentialPhysicalMaximum(os.Getenv("MAPLEGO_WZ_ROOT"), c, now); err != nil {
 		return reject()
 	}

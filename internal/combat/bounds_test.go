@@ -100,10 +100,10 @@ func TestProjectileReachesRangePlusBlast(t *testing.T) {
 	if err := plan(Shoot, protocol.RecvShootAttack, 195); err != nil {
 		t.Fatalf("live Arrow Blow distance rejected: %v", err)
 	}
-	if err := plan(Shoot, protocol.RecvShootAttack, 420+120+30+1); !errors.Is(err, ErrRange) {
+	if err := plan(Shoot, protocol.RecvShootAttack, (420+120)*rangeSlack+1); !errors.Is(err, ErrRange) {
 		t.Fatalf("past range and blast admitted: %v", err)
 	}
-	if err := plan(Melee, protocol.RecvMeleeAttack, 195); !errors.Is(err, ErrRange) {
+	if err := plan(Melee, protocol.RecvMeleeAttack, 120*rangeSlack+1); !errors.Is(err, ErrRange) {
 		t.Fatalf("melee keeps its box: %v", err)
 	}
 }
