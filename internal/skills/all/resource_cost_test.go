@@ -166,7 +166,16 @@ func TestResourceNativeExtraSourcesAndUnknownPassiveDoesNotDefault(t *testing.T)
 	c.Equipment = nil
 	c.SkillBuffs = nil
 	c.Skills = []domain.SkillState{{ID: 2110001, Level: 1}}
-	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	// A book of the operator's own that lacks the passive: the built-in v148
+	// book only stands in for a missing or stock file.
+	empty := t.TempDir()
+	if err = os.MkdirAll(filepath.Join(empty, "Skill.wz"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(empty, "Skill.wz", "211.img.xml"), []byte(`<imgdir name="book"><imgdir name="skill"></imgdir></imgdir>`), 0644); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("MAPLEGO_WZ_ROOT", empty)
 	if _, err = skills.ResourceModifiers(c, now); err == nil {
 		t.Fatal("missing passive source silently treated as100%")
 	}

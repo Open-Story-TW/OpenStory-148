@@ -1,9 +1,16 @@
 package content
 
 import (
+	"bytes"
+	"crypto/sha256"
 	_ "embed"
+	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
+	"errors"
 	"fmt"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
@@ -136,26 +143,26 @@ func SkillDefinition(root string, id int) (Skill, error) {
 			return s, fmt.Errorf("unknown skill%d", id)
 		}
 	} else {
-		file := filepath.Join(root, "Skill.wz", fmt.Sprintf("%03d.img.xml", id/10000))
-		n, e := readWZ(file)
-		if e != nil {
-			return s, e
-		}
-		n = n.child("skill")
-		if n == nil {
-			return s, fmt.Errorf("missing skill node")
-		}
+		// The client is v148, so its copy of a job's book is the one that counts:
+		// target counts, line counts and formulas changed after v145. Where the
+		// data root holds the stock v145 file (or none), the built-in v148 book is
+		// read first and the stock file only for a skill v148 dropped. A book the
+		// operator changed is the only one read.
+		book := fmt.Sprintf("%03d.img.xml", id/10000)
+		file := filepath.Join(root, "Skill.wz", book)
 		var found *wzNode
-		for i := range n.Children {
-			v := &n.Children[i]
-			parsed, _ := strconv.Atoi(v.Name)
-			if parsed == id {
-				found = v
-				break
+		var e error
+		if stockSkillBook(file, book) {
+			if found, e = skillNode(readV148Skills(book))(id); found == nil {
+				if own, e2 := skillNode(readWZ(file))(id); own != nil || e == nil || errors.Is(e, fs.ErrNotExist) {
+					found, e = own, e2
+				}
 			}
+		} else {
+			found, e = skillNode(readWZ(file))(id)
 		}
 		if found == nil {
-			return s, fmt.Errorf("unknown skill%d", id)
+			return s, e
 		}
 		s = skillFromNode(id, found)
 	}
@@ -165,6 +172,73 @@ func SkillDefinition(root string, id int) (Skill, error) {
 	skillTemplates.Store(key, s)
 	return s, nil
 }
+
+// skillNode finds one skill in a parsed book; the error says why it is missing.
+func skillNode(book *wzNode, err error) func(id int) (*wzNode, error) {
+	return func(id int) (*wzNode, error) {
+		if err != nil {
+			return nil, err
+		}
+		n := book.child("skill")
+		if n == nil {
+			return nil, fmt.Errorf("missing skill node")
+		}
+		for i := range n.Children {
+			if parsed, _ := strconv.Atoi(n.Children[i].Name); parsed == id {
+				return &n.Children[i], nil
+			}
+		}
+		return nil, fmt.Errorf("unknown skill%d", id)
+	}
+}
+
+//go:embed v145_skill_books.json
+var v145SkillBookHashes []byte
+
+var stockSkillBooks struct {
+	once   sync.Once
+	hashes map[string]string
+	seen   sync.Map // data root file -> bool
+}
+
+// stockSkillBook reports whether the data root's book is missing or is the
+// unchanged v145 file, in which case the built-in v148 book takes its place.
+func stockSkillBook(file, book string) bool {
+	if v, ok := stockSkillBooks.seen.Load(file); ok {
+		return v.(bool)
+	}
+	stockSkillBooks.once.Do(func() { _ = json.Unmarshal(v145SkillBookHashes, &stockSkillBooks.hashes) })
+	stock := false
+	if b, err := os.ReadFile(file); err != nil {
+		stock = errors.Is(err, fs.ErrNotExist)
+	} else {
+		sum := sha256.Sum256(b)
+		stock = stockSkillBooks.hashes[book] == hex.EncodeToString(sum[:])
+	}
+	stockSkillBooks.seen.Store(file, stock)
+	return stock
+}
+
+// v148SkillBooks caches the parsed built-in books: one is read for every skill of a job.
+var v148SkillBooks sync.Map
+
+// readV148Skills parses a job's skill book from the built-in v148 data.
+func readV148Skills(book string) (*wzNode, error) {
+	if v, ok := v148SkillBooks.Load(book); ok {
+		return v.(*wzNode), nil
+	}
+	b, err := v148Supplement.ReadFile("v148/Skill.wz/" + book)
+	if err != nil {
+		return nil, err
+	}
+	var n wzNode
+	if err := xml.NewDecoder(bytes.NewReader(b)).Decode(&n); err != nil {
+		return nil, err
+	}
+	v148SkillBooks.Store(book, &n)
+	return &n, nil
+}
+
 func skillFromNode(id int, n *wzNode) Skill {
 	s := Skill{ID: id, MaxLevel: 0, MasterLevel: n.intValue("masterLevel", 0), ReqLevel: n.intValue("reqLev", 0), Disabled: n.intValue("disable", 0) != 0, Invisible: n.intValue("invisible", 0) != 0, Passive: n.intValue("skillType", 0) == 2, CombatOrders: n.intValue("combatOrders", 0) > 0, Requirements: map[int]int{}}
 	values := func(n *wzNode) map[string]string {

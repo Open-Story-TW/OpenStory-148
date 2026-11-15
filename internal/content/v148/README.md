@@ -14,3 +14,16 @@ when the root has no file of that path.
 Regenerate a file with, for example:
 
     go run ./cmd/wzexport -client <v148 client folder> -out internal/content/v148 -keep info,life,foothold,ladderRope,portal,reactor Map.wz/Map/Map9/915000000.img
+
+## Skill books
+
+`Skill.wz/<job>.img.xml` holds every job's skill book of the v148 client (the
+`skill` entry only). Unlike the files above these are read first: where the data
+root has the unchanged v145 book (hashes in `../v145_skill_books.json`) or no
+book, `SkillDefinition` uses the v148 one, and falls back to the v145 file only
+for a skill v148 dropped. A book the operator changed is the only one read.
+
+    go run ./cmd/wzexport -client <v148 client folder> -out internal/content/v148 -keep skill "Skill.wz/[0-9]*.img"
+
+Books 9000 and up (guild, professions) are not kept here; delete them after an
+export.
