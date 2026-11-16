@@ -107,7 +107,8 @@ type Attack struct {
 	Flag, TByte   byte
 	SkillID       int
 	Charge        int32
-	Direction     byte // Remote flags byte; facing is display bit15.
+	Follows       int32 // Melee final attacks: the skill that triggered this one.
+	Direction     byte  // Remote flags byte; facing is display bit15.
 	Display       uint16
 	Action        byte
 	Speed         byte
@@ -169,7 +170,12 @@ func ReadAttack(op uint16, r *Reader) (Attack, error) {
 		a.Tick = r.U32()
 		r.U32()
 		if op == RecvMeleeAttack {
-			r.U32()
+			// A final attack (client skill type 3) names the skill it follows
+			// and then writes one more byte; every other attack writes zero and
+			// no byte (v148 sender 0x91EFF5..0x91F054).
+			if a.Follows = r.I32(); a.Follows > 0 {
+				r.U8()
+			}
 		}
 		if q.MesoExplode {
 			return a, readMesoExplosion(r, &a, start)
