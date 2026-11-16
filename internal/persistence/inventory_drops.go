@@ -196,7 +196,8 @@ func (s *Store) PickupItem(ctx context.Context, r domain.ItemPickupRequest) (dom
 		}
 		result.Character.Mesos += drop.Mesos
 	} else if drop.InvType == 1 {
-		if err = json.Unmarshal(equipment, &drop.Equipment); err != nil || drop.Equipment == nil {
+		if err = json.Unmarshal(equipment, &drop.Equipment); err != nil || drop.Equipment == nil ||
+			drop.Equipment.ItemID != drop.TemplateID || drop.Equipment.ID < 0 || drop.Quantity != 1 {
 			return domain.InventoryResult{}, domain.ErrInvalidInput
 		}
 		slot := FreeEquipmentSlot(&c)
@@ -205,7 +206,12 @@ func (s *Store) PickupItem(ctx context.Context, r domain.ItemPickupRequest) (dom
 		}
 		e := *drop.Equipment
 		e.Slot = slot
-		if _, err = tx.ExecContext(ctx, `INSERT INTO asset_equipment(id,character_id,item_id,slot,str,dex,int_stat,luk,hp,mp,watk,matk,wdef,mdef,acc,avoid,speed,jump,upgrade_slots) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`, e.ID, c.ID, e.ItemID, e.Slot, e.STR, e.DEX, e.INT, e.LUK, e.HP, e.MP, e.WATK, e.MATK, e.WDEF, e.MDEF, e.ACC, e.AVOID, e.Speed, e.Jump, e.UpgradeSlots); err != nil {
+		if e.ID == 0 {
+			err = insertEquipment(ctx, tx, c.ID, &e)
+		} else {
+			_, err = tx.ExecContext(ctx, `INSERT INTO asset_equipment(id,character_id,item_id,slot,str,dex,int_stat,luk,hp,mp,watk,matk,wdef,mdef,acc,avoid,speed,jump,upgrade_slots) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`, e.ID, c.ID, e.ItemID, e.Slot, e.STR, e.DEX, e.INT, e.LUK, e.HP, e.MP, e.WATK, e.MATK, e.WDEF, e.MDEF, e.ACC, e.AVOID, e.Speed, e.Jump, e.UpgradeSlots)
+		}
+		if err != nil {
 			return domain.InventoryResult{}, err
 		}
 		result.Character.Equipment = append(c.Equipment, e)

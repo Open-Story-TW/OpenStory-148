@@ -28,6 +28,26 @@ func lootRoll(operationID string, rowID, part int, n uint64) uint64 {
 	return binary.LittleEndian.Uint64(hash[:8]) % n
 }
 
+// Stats for monster equipment vary by up to 10%, capped per attribute.
+// The kill and source row also seed the rolls so the sealed plan can replay.
+func rolledLootEquipment(base domain.Equipment, operationID string, rowID int) domain.Equipment {
+	for i, stat := range []struct {
+		value *int
+		limit int
+	}{
+		{&base.STR, 5}, {&base.DEX, 5}, {&base.INT, 5}, {&base.LUK, 5},
+		{&base.MATK, 5}, {&base.WATK, 5}, {&base.ACC, 5}, {&base.AVOID, 5},
+		{&base.Jump, 5}, {&base.Speed, 5},
+		{&base.WDEF, 10}, {&base.MDEF, 10}, {&base.HP, 10}, {&base.MP, 10},
+	} {
+		if *stat.value > 0 {
+			radius := min((*stat.value+9)/10, stat.limit)
+			*stat.value += int(lootRoll(operationID, rowID, i+2, uint64(radius*2+1))) - radius
+		}
+	}
+	return base
+}
+
 // enqueueCombatLootTx must follow the asset_combat_rewards insert in the SAME
 // transaction. It pins random outcomes and equipment snapshots before commit.
 func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, value domain.Character, operationID string, mobID, x, y int) error {
@@ -86,16 +106,20 @@ func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.Charact
 			continue
 		}
 		definition, err := inventoryDefinition(row.TemplateID)
-		if err != nil || definition.InvType < 1 || definition.InvType > 4 || definition.Cash || definition.Quest && row.QuestID == 0 || definition.InvType == 1 {
+		if err != nil || definition.InvType < 1 || definition.InvType > 4 || definition.Cash || definition.Quest && row.QuestID == 0 {
 			plan.Unsupported = append(plan.Unsupported, row.ID)
-			continue // equipment randomization/unique ID allocation is a later policy.
+			continue
 		}
-		chance := int(min(int64(min(row.Chance, 999999))*domain.DropRate(), 999999))
+		chance := min(row.Chance, 999999)
+		if definition.InvType == 1 && !row.Global {
+			chance = min(chance*10, 999999)
+		}
+		chance = int(min(int64(chance)*domain.DropRate(), 999999))
 		if lootRoll(operationID, row.ID, 0, 999999) >= uint64(chance) {
 			continue
 		}
 		quantity := 1
-		if row.Maximum != 1 {
+		if definition.InvType != 1 && row.Maximum != 1 {
 			quantity = row.Minimum + int(lootRoll(operationID, row.ID, 1, uint64(max(1, row.Maximum-row.Minimum))))
 		}
 		if quantity < 1 || quantity > 30000 {
@@ -103,6 +127,10 @@ func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.Charact
 			continue
 		}
 		drop := domain.ItemDrop{WorldID: value.WorldID, ChannelID: session.ChannelID, MapID: value.MapID, OwnerID: value.ID, X: x, Y: y, InvType: definition.InvType, TemplateID: row.TemplateID, Quantity: quantity}
+		if definition.InvType == 1 {
+			equipment := rolledLootEquipment(definition.Equipment, operationID, row.ID)
+			drop.Equipment = &equipment
+		}
 		if row.QuestID > 0 {
 			remaining, needErr := content.QuestDropRemaining(os.Getenv("MAPLEGO_WZ_ROOT"), value, row.QuestID, row.TemplateID)
 			if needErr != nil {
@@ -210,7 +238,16 @@ func (s *Store) MaterializeCombatLoot(ctx context.Context, lease domain.WorldLea
 		if drop.QuestID > 0 {
 			kind = drop.QuestDropType
 		}
-		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,mesos,quest_id,quest_drop_type,quest_party_id,quest_owner_until) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $11>0 AND $12<2 THEN clock_timestamp()+interval '30 seconds' ELSE NULL END) RETURNING object_id,COALESCE((extract(epoch FROM quest_owner_until)*1000)::bigint,0)`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, drop.Mesos, drop.QuestID, kind, drop.QuestPartyID).Scan(&drop.ObjectID, &drop.QuestOwnerUntil); err != nil {
+		var equipment []byte
+		if drop.InvType == 1 {
+			if drop.Equipment == nil || drop.Equipment.ItemID != drop.TemplateID || drop.Equipment.ID != 0 || drop.Quantity != 1 {
+				return nil, domain.ErrInvalidInput
+			}
+			if equipment, err = json.Marshal(drop.Equipment); err != nil {
+				return nil, err
+			}
+		}
+		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,mesos,quest_id,quest_drop_type,quest_party_id,quest_owner_until,equipment) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $11>0 AND $12<2 THEN clock_timestamp()+interval '30 seconds' ELSE NULL END,$14) RETURNING object_id,COALESCE((extract(epoch FROM quest_owner_until)*1000)::bigint,0)`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, drop.Mesos, drop.QuestID, kind, drop.QuestPartyID, nullableJSON(equipment)).Scan(&drop.ObjectID, &drop.QuestOwnerUntil); err != nil {
 			return nil, err
 		}
 	}
