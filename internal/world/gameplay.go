@@ -444,7 +444,13 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	p, ok := m.Portal(req.Name)
 	// Only a script in the current server map may be invoked. In particular,
 	// the client coordinates cannot authorize a distant or ordinary portal.
-	if !ok || p.Script == "" || chr.HP <= 0 || !within(chr.X, chr.Y, p.X, p.Y, 150) {
+	if !ok || chr.HP <= 0 || !within(chr.X, chr.Y, p.X, p.Y, 150) {
+		return sink.WritePacket(protocol.EnableActions())
+	}
+	if handled, err := s.ludibriumPortal(ctx, live, sink, p); handled {
+		return err
+	}
+	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	return s.runPortalScript(ctx, channel, live, sink, p)
@@ -471,6 +477,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 	p, ok := m.Portal(req.Name)
 	if !ok || req.TargetMap != -1 || !within(chr.X, chr.Y, p.X, p.Y, 150) {
 		return sink.WritePacket(protocol.EnableActions())
+	}
+	if handled, err := s.ludibriumPortal(ctx, live, sink, p); handled {
+		return err
 	}
 	if p.Script != "" {
 		return s.runPortalScript(ctx, channel, live, sink, p)

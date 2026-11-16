@@ -602,6 +602,7 @@ func (s *Session) installHost() {
 		bind("henesys_finish", s.simpleCommand("henesys_finish", 0), 1)
 		bind("hak_board", s.simpleCommand("hak_board", 1), 2)
 		bind("open_rps", s.simpleCommand("open_rps", 0), 1)
+		bind("ludi_stage", s.simpleCommand("ludi_stage", 0), 1)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err

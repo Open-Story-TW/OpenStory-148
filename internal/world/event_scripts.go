@@ -129,7 +129,7 @@ func (s *Server) eventAreaMask(ctx context.Context, inst *eventInstance, actor d
 			return 0, err
 		}
 		for _, drop := range drops {
-			if drop.PlayerDrop && s.eventOf(drop.OwnerID) == inst {
+			if drop.PlayerDrop && s.eventOf(drop.OwnerID) == inst && (mapID != content.LudiPQQuiz || drop.TemplateID == content.LudiPQPuppet) {
 				mark(drop.X, drop.Y)
 			}
 		}

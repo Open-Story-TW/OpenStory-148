@@ -49,6 +49,7 @@ func (e Event) Stage(mapID int) bool {
 }
 
 var events = map[string]Event{
+	LudibriumPQName: ludibriumEvent(),
 	HenesysPQName: {
 		Name: HenesysPQName, Maps: []int{HenesysPQMap},
 		ExitMap: HenesysPQLobby, Seconds: 600, PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,

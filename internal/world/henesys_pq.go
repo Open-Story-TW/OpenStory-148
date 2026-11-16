@@ -113,7 +113,7 @@ func (s *Server) prepareHenesysPQ(ctx context.Context, inst *eventInstance, grou
 	// Party quest items carried from earlier attempts cannot plant flowers or
 	// count as the new attempt's cakes. Equip rewards stay with the player.
 	for _, member := range group {
-		err := s.henesysExchange(ctx, member, "henesys-entry-"+inst.id, func(session domain.CharacterSession) (domain.ScriptExchange, error) {
+		err := s.applyEventExchange(ctx, member, "henesys-entry-"+inst.id, func(session domain.CharacterSession) (domain.ScriptExchange, error) {
 			var old []domain.ScriptItemDelta
 			for _, id := range []int{content.MoonFlowerSeed, content.MoonRiceCake} {
 				if count := henesysItemCount(session.Character, id); count > 0 {
@@ -139,7 +139,7 @@ func henesysItemCount(c domain.Character, itemID int) int {
 	return count
 }
 
-func (s *Server) henesysExchange(ctx context.Context, member eventOccupant, id string,
+func (s *Server) applyEventExchange(ctx context.Context, member eventOccupant, id string,
 	makeExchange func(domain.CharacterSession) (domain.ScriptExchange, error)) error {
 	repo, ok := s.repo.(domain.ScriptRepository)
 	if !ok {
@@ -231,7 +231,7 @@ func (s *Server) advanceMoonRabbit(ctx context.Context, inst *eventInstance, now
 	// arrives after the second interval, as in the Legacy drop scheduler.
 	operation := fmt.Sprintf("henesys-cake-%s-%d", inst.id, state.cakes+1)
 	for _, member := range s.eventOccupants(inst.channel, inst.definition.Maps) {
-		err := s.henesysExchange(ctx, member, operation, func(session domain.CharacterSession) (domain.ScriptExchange, error) {
+		err := s.applyEventExchange(ctx, member, operation, func(session domain.CharacterSession) (domain.ScriptExchange, error) {
 			if session.Character.MapID != key.mapID || session.ChannelID != key.channel ||
 				session.Character.HP <= 0 || s.eventOf(session.CharacterID) != inst {
 				return domain.ScriptExchange{}, domain.ErrStaleOwner
@@ -417,7 +417,7 @@ func (s *Server) finishMoonRabbit(ctx context.Context, inst *eventInstance, acto
 		if !ok || reward.done {
 			continue
 		}
-		err := s.henesysExchange(ctx, m, "henesys-clear-"+inst.id, func(session domain.CharacterSession) (domain.ScriptExchange, error) {
+		err := s.applyEventExchange(ctx, m, "henesys-clear-"+inst.id, func(session domain.CharacterSession) (domain.ScriptExchange, error) {
 			if s.eventOf(id) != inst || session.Character.MapID != content.HenesysPQMap {
 				return domain.ScriptExchange{}, domain.ErrStaleOwner
 			}

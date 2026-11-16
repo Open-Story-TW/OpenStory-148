@@ -41,6 +41,7 @@ type eventInstance struct {
 	cleared      bool
 	ended        bool
 	moon         *henesysState
+	ludi         *ludibriumState
 }
 
 type eventSpace struct {
@@ -162,6 +163,14 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 			return "unavailable", here, qualified, err
 		}
 	}
+	if inst.ludi != nil {
+		if repo, ok := s.repo.(domain.EventDropRepository); ok {
+			if err = repo.ExpireEventDrops(ctx, s.cfg.WorldID, channel, content.LudiPQQuiz); err != nil {
+				s.eventEnd(inst)
+				return "unavailable", here, qualified, err
+			}
+		}
+	}
 	for _, m := range present {
 		s.cancelNPCScriptState(m.live, false)
 		s.closeEconomyDialog(m.live)
@@ -248,6 +257,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		properties: map[string]string{}, starting: expeditionID != 0}
 	if e.Name == content.HenesysPQName {
 		inst.moon = &henesysState{}
+	}
+	if e.Name == content.LudibriumPQName {
+		inst.ludi = newLudibriumState()
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
