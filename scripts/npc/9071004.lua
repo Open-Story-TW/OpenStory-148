@@ -1,18 +1,26 @@
 -- 怪物公園入口。路線的等級、門票與隊伍條件由伺服器驗證。
-local routes = {
-    {952000000, 20, 30}, {952010000, 45, 55}, {952020000, 50, 60}, {952030000, 55, 65}, {952040000, 60, 70},
-    {953000000, 70, 80}, {953010000, 75, 85}, {953020000, 85, 95}, {953030000, 95, 105}, {953040000, 100, 110}, {953050000, 110, 120},
-    {954000000, 120, 130}, {954010000, 125, 135}, {954020000, 130, 140}, {954030000, 140, 150}, {954040000, 150, 165}, {954050000, 165, 200},
+local tiers = {
+    {ticket = 4001514, levels = "30～95 級", routes = {952000000, 952010000, 952040000, 952020000, 952030000, 953000000, 953010000}},
+    {ticket = 4001516, levels = "135～165 級", routes = {953020000, 953030000, 953040000, 953050000, 954000000}},
+    {ticket = 4001522, levels = "160～200 級", routes = {954010000, 954020000, 954030000, 954040000, 954050000}},
 }
 local menu = {}
-for i, route in ipairs(routes) do
-    menu[i] = {id = i, text = "#m" .. route[1] .. "#（" .. route[2] .. "～" .. route[3] .. " 級）"}
+for i, tier in ipairs(tiers) do
+    menu[i] = {id = i, text = "#t" .. tier.ticket .. "#（" .. tier.levels .. "）"}
 end
-local route = routes[npc:menu("請由隊長選擇要挑戰的路線。每位隊員都需要一張對應的入場券。", menu)]
+local tier = tiers[npc:menu("請由隊長選擇想挑戰的難度。每位隊員都需要一張對應的入場券。", menu)]
+if not tier then
+    return
+end
+local routes = {}
+for i, map in ipairs(tier.routes) do
+    routes[i] = {id = i, text = "#m" .. map .. "#"}
+end
+local route = tier.routes[npc:menu("請選擇要挑戰的路線。", routes)]
 if not route then
     return
 end
-local result = npc:event_start("MonsterPark_" .. route[1])
+local result = npc:event_start("MonsterPark_" .. route)
 if result.ok then
     return
 end

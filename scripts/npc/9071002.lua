@@ -1,4 +1,4 @@
--- 瑪麗，怪物公園入場券。
+-- 梅莉，怪物公園入場券。
 local offers = {
     {piece = 4001513, ticket = 4001514, price = 50000},
     {piece = 4001515, ticket = 4001516, price = 100000},

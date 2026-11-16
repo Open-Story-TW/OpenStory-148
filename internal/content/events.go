@@ -133,22 +133,26 @@ func eventDefinitions() map[string]Event {
 				X: 0, Y: -181, Foothold: 8, RX0: -75, RX1: 75}}},
 		},
 	}
-	for _, route := range []struct{ start, levelMin, levelMax, ticket int }{
-		{952000000, 20, 30, 4001514}, {952010000, 45, 55, 4001514},
-		{952020000, 50, 60, 4001514}, {952030000, 55, 65, 4001514}, {952040000, 60, 70, 4001514},
-		{953000000, 70, 80, 4001516}, {953010000, 75, 85, 4001516}, {953020000, 85, 95, 4001516},
-		{953030000, 95, 105, 4001516}, {953040000, 100, 110, 4001516}, {953050000, 110, 120, 4001516},
-		{954000000, 120, 130, 4001522}, {954010000, 125, 135, 4001522}, {954020000, 130, 140, 4001522},
-		{954030000, 140, 150, 4001522}, {954040000, 150, 165, 4001522}, {954050000, 165, 200, 4001522},
+	// The ticket descriptions set the level bands. The end bosses in the
+	// v148 Monster Park quests identify routes across the map ID prefixes.
+	for _, tier := range []struct {
+		levelMin, levelMax, ticket int
+		routes                     []int
+	}{
+		{30, 95, 4001514, []int{952000000, 952010000, 952040000, 952020000, 952030000, 953000000, 953010000}},
+		{135, 165, 4001516, []int{953020000, 953030000, 953040000, 953050000, 954000000}},
+		{160, 200, 4001522, []int{954010000, 954020000, 954030000, 954040000, 954050000}},
 	} {
-		name := "MonsterPark_" + strconv.Itoa(route.start)
-		stages := make([]int, 6)
-		for i := range stages {
-			stages[i] = route.start + 100*i
-		}
-		definitions[name] = Event{
-			Name: name, Maps: stages, LobbyMap: 951000000, ExitMap: 951000000, Ticket: route.ticket,
-			Seconds: 1200, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: route.levelMin, LevelMax: route.levelMax,
+		for _, start := range tier.routes {
+			name := "MonsterPark_" + strconv.Itoa(start)
+			stages := make([]int, 6)
+			for i := range stages {
+				stages[i] = start + 100*i
+			}
+			definitions[name] = Event{
+				Name: name, Maps: stages, LobbyMap: 951000000, ExitMap: 951000000, Ticket: tier.ticket,
+				Seconds: 1200, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: tier.levelMin, LevelMax: tier.levelMax,
+			}
 		}
 	}
 	return definitions
