@@ -17,7 +17,7 @@ func skillUse(id, level int, tail func(*Writer)) SkillCast {
 	return q
 }
 
-// Layouts follow the native emitter 0x89FF18 (docs/baseline/skill-effect-native.json).
+// Layouts follow the native emitter 0x89FF18 (Open-Maple docs/server/baseline/skill-effect-native.json).
 func TestSkillUseRequestNativeTails(t *testing.T) {
 	q := skillUse(1301007, 20, func(w *Writer) { w.I16(-12); w.I16(34); w.U16(500); w.U8(0) })
 	if !q.HasPosition || q.X != -12 || q.Y != 34 || q.ActionDelay != 500 || q.HasMobs {

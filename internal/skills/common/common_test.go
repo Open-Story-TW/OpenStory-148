@@ -26,7 +26,7 @@ func beginnerIDs(suffixes ...int) []int {
 }
 
 // pending are thread Z skills waiting for something outside this package;
-// docs/skills/Z.md explains each group. IDs that are not enabled in the WZ
+// Open-Maple docs/server/skills/Z.md explains each group. IDs that are not enabled in the WZ
 // are ignored.
 var pendingGroups = map[string][]int{
 	"潛能開放: Java HIDDEN_POTENTIAL 1 without a duration, use unknown":   beginnerIDs(93),

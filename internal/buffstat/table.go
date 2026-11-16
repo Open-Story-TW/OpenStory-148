@@ -2,7 +2,7 @@
 
 package buffstat
 
-// Names: Java buffstatus.properties. Layout: docs/baseline/buffstat-native.json.
+// Names: Java buffstatus.properties. Layout: Open-Maple docs/server/baseline/buffstat-native.json.
 var table = []Spec{
 	{Name: "WATK", Bit: 0, Order: 5, Verified: "ida local#5"},
 	{Name: "WDEF", Bit: 1, Order: 6, Verified: "ida local#6"},

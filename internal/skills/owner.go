@@ -1,7 +1,7 @@
 package skills
 
 // OwnerOf returns the job package that owns a skill ID (skillID/10000 is the
-// job), following the thread split of docs/SKILLS-PARALLEL-PLAN.md section 5.
+// job), following the thread split of Open-Maple docs/server/SKILLS-PARALLEL-PLAN.md section 5.
 // It returns "" for an ID no job thread owns.
 func OwnerOf(skillID int) string {
 	job := skillID / 10000

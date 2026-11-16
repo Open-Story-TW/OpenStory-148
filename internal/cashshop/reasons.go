@@ -7,7 +7,7 @@ import (
 )
 
 // Native action104 failure reasons, read from the v145 common handler 0x47BF4C
-// and its decrypted StringPool templates (see docs/baseline/native-cash-failures.json).
+// and its decrypted StringPool templates (see Open-Maple docs/server/baseline/native-cash-failures.json).
 // Legacy Java numbers (0xA2, 0xA3, 0xB1...) belong to an older client and do not apply.
 const (
 	reasonInsufficient     byte = 3  // 632 樂豆點餘額不足

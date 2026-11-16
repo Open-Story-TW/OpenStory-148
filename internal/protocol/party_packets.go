@@ -11,7 +11,7 @@ const (
 	SendParty      uint16 = 0x4d
 )
 
-// See docs/baseline/party-wire.json: the original leave sender includes its
+// See Open-Maple docs/server/baseline/party-wire.json: the original leave sender includes its
 // mode byte; original invitation acceptance uses C9, not Java's C8/action3.
 func ReadPartyRequest(r *Reader) (domain.PartyRequest, error) {
 	q := domain.PartyRequest{Action: domain.PartyAction(r.U8())}

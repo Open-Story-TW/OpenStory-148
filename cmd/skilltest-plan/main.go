@@ -1,5 +1,5 @@
-// skilltest-plan turns rows of the skill checklist (docs/skill-audit/*/skill-validation.csv)
-// into tools/skilltest cases, with expectations read from the same WZ and
+// skilltest-plan turns rows of the skill checklist (Open-Maple docs/server/skill-audit/*/skill-validation.csv)
+// into Open-Maple tools/server/skilltest cases, with expectations read from the same WZ and
 // skill registry the server uses: max level, prerequisites, duration, target
 // and line counts. It reads files only; it never opens a database or a client.
 package main
@@ -188,7 +188,7 @@ func set(v string) map[string]bool {
 }
 
 func main() {
-	path := flag.String("csv", "", "skill-validation.csv from docs/skill-audit/<date>")
+	path := flag.String("csv", "", "skill-validation.csv from Open-Maple docs/server/skill-audit/<date>")
 	root := flag.String("wz-root", os.Getenv("MAPLEGO_WZ_ROOT"), "audited WZ root; empty uses the server seed")
 	level := flag.Int("level", 200, "QA character level used for every case")
 	jobs := flag.String("jobs", "", "comma-separated 職業代碼 filter, e.g. 210,211,212")

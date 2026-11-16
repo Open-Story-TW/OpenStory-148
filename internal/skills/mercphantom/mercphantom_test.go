@@ -15,7 +15,7 @@ import (
 )
 
 // pending are the thread MP skills that wait for shared core work
-// (docs/skills/MP.md): Phantom's Impeccable Memory steal slots.
+// (Open-Maple docs/server/skills/MP.md): Phantom's Impeccable Memory steal slots.
 var pending = map[int]string{
 	24001001: "steal slot I", 24101001: "steal slot II", 24111001: "steal slot III", 24121001: "steal slot IV",
 }

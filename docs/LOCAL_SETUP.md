@@ -12,7 +12,7 @@
 
 2026-10-31 實機：使用者在 Go 測試帳號 `golocal` 建立角色 `GoQA`；隨後由 computer-use 選角，客戶端顯示楓之島地圖 10000。Go 世界日誌記錄 character 18 進圖，實際遊戲連線到 `127.0.0.1:18485` 的 `world.exe`。PostgreSQL 核對為 GM 0、四件初始裝備。帳號與角色 ID 是這次環境的紀錄，其他新環境可能不同。
 
-目前功能與實機範圍以 [P3–P5 驗收矩陣](P3-P5-ACCEPTANCE.md) 為準。以下舊測試段落是當時的歷史結果，不代表後續所有功能已通過登入器 MCP。
+以下舊測試段落是當時的歷史結果，不代表後續所有功能已通過登入器 MCP。
 
 2026-11-01 增量：接通 `USE_ITEM (0x72)` 的紅水 `2000000`，每次扣 1 瓶、回復 50 HP 並限制於 MaxHP。數值來源為 Java 基線 `wz/Item.wz/Consume/0200.img.xml` 的 `02000000/spec/hp`；封包對照 `InventoryHandler.UseItem`、`CWvsContext.InventoryPacket.modifyInventory` 與 `CWvsContext.updatePlayerStats`。更新數量／清空欄位使用 `0x27`，HP 使用 `0x29` 的 `0x400` mask。
 
@@ -44,9 +44,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/local.ps1 status
 # 真實加密 TCP／PG／Redis 整合測試，並產生本機圖形測試帳號
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/local.ps1 test
 
-# 複製並啟動獨立遊戲，原客戶端與原 DLL 不修改
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/client.ps1 start
-
 # 正常停止 Go 程序
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/local.ps1 stop
 
@@ -54,7 +51,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/local.ps1 stop
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/local.ps1 stop -StopInfrastructure
 ```
 
-`start-local.cmd`、`start-client.cmd`、`stop-local.cmd` 是以上命令的捷徑。建置正在使用中的 binary 時會要求先停止對應 Go 程序，避免替換運行中的檔案。正常停止透過每程序的 stop file，使用 PID、路徑與啟動時間核對，不操作 Java。
+`start-local.cmd`、`stop-local.cmd` 是以上命令的捷徑。建置正在使用中的 binary 時會要求先停止對應 Go 程序，避免替換運行中的檔案。正常停止透過每程序的 stop file，使用 PID、路徑與啟動時間核對，不操作 Java。
 
 ## 端口
 
@@ -83,7 +80,7 @@ Java 對照與 MariaDB 使用自己的 listener。`.local/java-baseline.json` �
 
 世界目錄由 `MAPLEGO_WORLDS_JSON` 決定；單一世界使用 `MAPLEGO_WORLD_ID` 或 `world.exe --world-id N`。所有目前的服務、DB 與 RPC 配置均強制 loopback，並限制 DB 名稱 `maple_go_*`。
 
-`MAPLEGO_WZ_ROOT` 指向唯讀 WZ XML 目錄；本機目前使用相鄰 Java 參考專案的 `wz`，不改寫來源。未設定時只提供嵌入的新手內容。`docs/baseline/wz-inventory.json` 保存 30,033 份 XML 的逐檔與整體雜湊；可用 `py -3 tools/inventory-wz.py --source-root <wz目錄> --output <manifest路徑>` 重建核對。載入資料不等於已支援該地圖的全部腳本與玩法。
+`MAPLEGO_WZ_ROOT` 指向唯讀 WZ XML 目錄；本機目前使用相鄰 Java 參考專案的 `wz`，不改寫來源。未設定時只提供嵌入的新手內容。`py -3 tools/inventory-wz.py --source-root <wz目錄> --output <manifest路徑>` 可產生逐檔與整體雜湊的清單，用來核對 WZ 內容。載入資料不等於已支援該地圖的全部腳本與玩法。
 
 ## 開發與測試
 
@@ -165,8 +162,6 @@ go test -mod=readonly -count=1 ./...
 USE 欄物品的 WZ `spec` 有 `time` 加上 `pad`、`mad`、`pdd`、`mdd`、`acc`、`eva`、`speed`、`jump` 時，使用後給對應的 Buff（可同時回 HP/MP）。Buff 來源 ID 是負的物品 ID（跟 Java 一樣），點圖示取消時客戶端會送回這個 ID。Buff 疊加（預設開啟，見下一節）關閉時，同屬性的 Buff 會互相覆蓋，跟技能相同。帶其他效果（變身、掉寶率、地圖限制等）的物品仍然拒絕使用。
 
 ## 同類型 Buff 疊加
-
-做法與實測過程見 [STACK_BUFFS.md](STACK_BUFFS.md)。
 
 預設開啟。後台設定「Buff 疊加」（`stack_buffs`，環境變數 `MAPLEGO_STACK_BUFFS`，設成 `0` 關閉）開啟時，不同技能或消耗品給的物攻、魔攻、命中、迴避、速度、跳躍會疊加，不再由後施放的覆蓋前一個。
 

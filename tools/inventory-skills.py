@@ -67,7 +67,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=Path, default=Path("internal/content/skills.json"))
     parser.add_argument("--names", type=Path)
-    parser.add_argument("--output", type=Path, default=Path("docs/baseline/skill-acceptance-inventory.json"))
+    parser.add_argument("--output", type=Path, default=Path("../open-maple/docs/server/baseline/skill-acceptance-inventory.json"))
     args = parser.parse_args()
     result = build(args.seed, args.names)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

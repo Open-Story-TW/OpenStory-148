@@ -75,7 +75,7 @@ func TestTemporaryStatSetWideValuesAndRemotePayloads(t *testing.T) {
 	}
 }
 
-// Two-state and indie layouts follow docs/baseline/buffstat-native.json.
+// Two-state and indie layouts follow Open-Maple docs/server/baseline/buffstat-native.json.
 func TestTwoStateAndIndieLayouts(t *testing.T) {
 	p, err := TemporaryStatSet(5121009, 10*time.Second, []BuffStat{{Stat: "SPEED_INFUSION", Value: 30}, {Stat: "DASH_SPEED", Value: 20}})
 	if err != nil {

@@ -8,8 +8,8 @@ version 3. Those notices are retained in the derived protocol source files.
 
 The AGPL version 3 license text is provided in `LICENSE`.
 
-The baseline source paths/checksums are recorded in `docs/baseline/` and the
-independent protocol test fixture provenance. Reference Java compiler harnesses
+The baseline source paths/checksums are recorded in the launcher
+repository (`docs/server/baseline/`) and the independent protocol test fixture provenance. Reference Java compiler harnesses
 and client WZ/binaries are local inputs, not part of the Go source deliverable.
 Third-party Go modules and generator versions are recorded in `go.mod` and
 `go.sum`; their own licenses and notices continue to apply.

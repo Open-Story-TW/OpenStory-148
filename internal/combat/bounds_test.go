@@ -9,7 +9,7 @@ import (
 	"maple-go-server/internal/protocol"
 )
 
-// Client CalcDamage (docs/combat/client-damage-formula.md §2.2): weapon
+// Client CalcDamage (Open-Maple docs/server/combat/client-damage-formula.md §2.2): weapon
 // multipliers, cannon stat pick, bare hands scored without PAD.
 func TestClientWeaponFamilies(t *testing.T) {
 	bow := PlayerStats{Job: 312, DEX: 400, STR: 50, WATK: 100, WeaponID: 1452002}

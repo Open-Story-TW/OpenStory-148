@@ -10,7 +10,7 @@ import (
 
 // 宅配 (Duey) on v148. The client's parcel window is CParcelDlg (constructor
 // 0x656D79, background UI/UIWindow2.img/Delivery); its server packet handler
-// is 0x658F2A (CField::OnPacket 0x51F0E7 case 0x25E; docs/v148/opcode-map.json maps Legacy DUEY to 0x260, which is wrong) and every request goes out as RecvParcel:
+// is 0x658F2A (CField::OnPacket 0x51F0E7 case 0x25E; Open-Maple docs/server/v148/opcode-map.json maps Legacy DUEY to 0x260, which is wrong) and every request goes out as RecvParcel:
 //
 //	1  answer to the second password check (op 9), not used here
 //	3  send: invType u8, slot u16, count u16, mesos i32, recipient str,

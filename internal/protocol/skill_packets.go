@@ -509,7 +509,7 @@ func GroupSkillBuffs(rows []domain.SkillBuff) [][]domain.SkillBuff {
 }
 
 // effectExtraReads are the skills whose CUser::OnEffect0x85243A branch reads
-// more than the base layout (docs/baseline/skill-effect-native.json).
+// more than the base layout (Open-Maple docs/server/baseline/skill-effect-native.json).
 // It also refuses an unknown skill or a level above the skill's maximum.
 func effectExtraReads(kind byte, skillID int) bool {
 	if def, e := content.SkillDefinition("", skillID); e != nil || def.MaxLevel < 1 {

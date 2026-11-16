@@ -1,5 +1,5 @@
 // Package skills is the skill registry (freeze point F1 of
-// docs/SKILLS-PARALLEL-PLAN.md). Every castable, attacking or passive skill
+// Open-Maple docs/server/SKILLS-PARALLEL-PLAN.md). Every castable, attacking or passive skill
 // is a Handler registered from the init function of its job package
 // (internal/skills/<job>); internal/skills/all imports every job package.
 // An unregistered skill is always rejected.

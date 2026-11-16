@@ -36,7 +36,7 @@ const (
 	ClientFeatureSnipeBossFormula
 	ClientFeatureLongMoney
 	// ClientFeatureLongMerchant: every meso field of the hired merchant and
-	// store bank packets is 8 bytes (docs/v148/HIRED_MERCHANT.md). The server
+	// store bank packets is 8 bytes (Open-Maple docs/server/v148/HIRED_MERCHANT.md). The server
 	// sets it together with ClientFeatureLongMoney.
 	ClientFeatureLongMerchant
 	// ClientFeatureLongVitals: max HP and MP may reach domain.VitalCeiling
@@ -66,7 +66,7 @@ const (
 	// ClientUITradeCashItems lets cash items be dragged into a player trade.
 	ClientUITradeCashItems
 	// Bits 5-10 lift client-side combat and movement limits. They change no
-	// packet layout; docs/v148/COMBAT_SWITCHES.md lists the native checks.
+	// packet layout; Open-Maple docs/COMBAT_SWITCHES.md lists the native checks.
 	// ClientUIRangedNoMelee: a bow, crossbow, claw or gun always shoots; the
 	// close-range swing at a nearby monster is skipped.
 	ClientUIRangedNoMelee

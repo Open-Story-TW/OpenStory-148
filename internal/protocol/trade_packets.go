@@ -1,4 +1,4 @@
-// v145 native PLAYER_INTERACTION layouts; see docs/baseline/native-trade.json.
+// v145 native PLAYER_INTERACTION layouts; see Open-Maple docs/server/baseline/native-trade.json.
 package protocol
 
 import (

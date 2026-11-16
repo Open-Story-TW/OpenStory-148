@@ -21,7 +21,7 @@ func MaxLineDamage() int {
 }
 
 // Weapon is the v145 client weapon type (CalcDamage sub_6A51AA, read by IDA
-// from MapleStory145.exe; docs/combat/client-damage-formula.md §2.2):
+// from MapleStory145.exe; Open-Maple docs/server/combat/client-damage-formula.md §2.2):
 // multiplier in hundredths and stat family.
 type Weapon struct {
 	Multiplier int // ×100
@@ -156,8 +156,8 @@ func LineCeiling(c DamageContext) int {
 }
 
 // LineBounds is the server's [floor, ceiling] for one non-critical damage
-// line, following the v145 client's CalcDamage (docs/combat/client-damage-
-// formula.md): base maximum × skill% × element × (100 − PDR×(1 − ignore%)) ×
+// line, following the v145 client's CalcDamage (Open-Maple
+// docs/server/combat/client-damage-formula.md): base maximum × skill% × element × (100 − PDR×(1 − ignore%)) ×
 // (100 + damage%). The floor is the client's mastery minimum, max × min(0.95,
 // constant + mastery%), with the level penalty (−1% per level the monster is
 // above the attacker) and without optional bonuses, so a legitimate roll is
