@@ -973,12 +973,6 @@
       "lua_sha256": "6dbec31b6c35e7ff12266eea298af921f8dfb7f632fe4f845cdcefb8afb8e388"
     },
     {
-      "legacy": "npc/2012024.js",
-      "source_sha256": "f9abba0cf5ce8d5a8b8742e6cae6dcef24dec693a6b7c2d217bf47f5371a35dc",
-      "lua": "npc/2012024.lua",
-      "lua_sha256": "0002709f524687460b91c92acd0fb3b71980ef8b179e6f06d519a780b15446da"
-    },
-    {
       "legacy": "npc/2012027.js",
       "source_sha256": "08335462882095708d70230ce776162964b778d8019fabfb89eddd7f068da62b",
       "lua": "npc/2012027.lua",
@@ -3097,10 +3091,6 @@
       "reason": "cm.getMap is not supported (line 15)"
     },
     {
-      "legacy": "npc/2012025.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
-    },
-    {
       "legacy": "npc/2013000.js",
       "reason": "cm.warpParty is not supported (line 20)"
     },
@@ -3303,14 +3293,6 @@
     {
       "legacy": "npc/2101018.js",
       "reason": "cm.getPlayer().saveLocation is not supported (line 36)"
-    },
-    {
-      "legacy": "npc/2102000.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
-    },
-    {
-      "legacy": "npc/2102001.js",
-      "reason": "cm.getEventManager is not supported (line 9)"
     },
     {
       "legacy": "npc/2103013.js",

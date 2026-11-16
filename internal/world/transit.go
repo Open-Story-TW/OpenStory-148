@@ -40,6 +40,10 @@ var transitLines = []transitLine{
 		{dock: 103000000, boarding: 540010100, ride: 540010101, arrival: 540010000, usher: 9270041, attendant: 9270017, ticket: 4031731},
 		{dock: 540010000, boarding: 540010001, ride: 540010002, arrival: 103000000, usher: 9270038, attendant: 9270018, ticket: 4031732},
 	}},
+	{5 * time.Minute, 7 * time.Minute, [2]transitLeg{
+		{dock: 200000151, boarding: 200000152, ride: 200090400, arrival: 260000100, usher: 2012025, attendant: 2012024},
+		{dock: 260000100, boarding: 260000110, ride: 200090410, arrival: 200000100, usher: 2102000, attendant: 2102001},
+	}},
 }
 
 type transitPhase string
