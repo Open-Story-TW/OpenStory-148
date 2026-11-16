@@ -2737,18 +2737,6 @@
       "lua_sha256": "cd90538c9ee41b1f26d6a267b14fff72685cb45d0e897de3b318acf517e20d04"
     },
     {
-      "legacy": "npc/9270017.js",
-      "source_sha256": "d453282b64987b2974c328887ef219190f8d917d64f236de5d1306f50aeeeba5",
-      "lua": "npc/9270017.lua",
-      "lua_sha256": "f572c398821bb7d16822d4934adbc234a5ad409c6f8cb7775f0df7aeee3c09c2"
-    },
-    {
-      "legacy": "npc/9270018.js",
-      "source_sha256": "86decb4fe687415c3d75da4d259c40ff5cbdfcbc72e390f50b7f14cf0e794e15",
-      "lua": "npc/9270018.lua",
-      "lua_sha256": "f815385d769a4ab01c5618408765b056dc983fdb029bde966753d0c853a3950d"
-    },
-    {
       "legacy": "npc/9270023.js",
       "source_sha256": "7b0225508844b894d1c541e1e04ac4e3c71588d3ce63658f6a4778d73b819ca1",
       "lua": "npc/9270023.lua",
@@ -3959,14 +3947,6 @@
     {
       "legacy": "npc/9250143.js",
       "reason": "cm.getEventManager is not supported (line 16)"
-    },
-    {
-      "legacy": "npc/9270038.js",
-      "reason": "cm.getEventManager is not supported (line 9)"
-    },
-    {
-      "legacy": "npc/9270041.js",
-      "reason": "cm.getEventManager is not supported (line 5)"
     },
     {
       "legacy": "npc/9270047.js",

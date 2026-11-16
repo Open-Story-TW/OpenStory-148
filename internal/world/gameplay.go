@@ -116,7 +116,7 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 		return nil, err
 	}
 	r := &gameplayRoom{definition: m, members: make(map[int64]*gameplayMember), npcs: make(map[int32]content.Life), mobs: make(map[int32]*gameplayMob)}
-	for _, life := range m.Life {
+	for _, life := range activityLife(m) {
 		if life.Hidden {
 			continue
 		}
