@@ -8,9 +8,8 @@ import (
 	"time"
 )
 
-// Only1110000/11110000 use this runtime-vitals source. This avoids adding a
-// heal through the older trigger repository's unresolved-commit path. Existing
-// checkpoints persist the dirty live result; there is no separate SQL writer.
+// Periodic passive recovery updates live vitals. The normal character
+// checkpoints persist the result.
 func (s *Server) tickReviewedRecoveryAt(m *skillMember, now time.Time) {
 	visit := s.sceneFor(m.live, m.sink)
 	if visit == nil {

@@ -163,6 +163,7 @@ func venom(ctx *combat.AttackContext) error {
 		ctx.Effect.MonsterStatus = append(ctx.Effect.MonsterStatus, combat.MobStatusApply{
 			Stat: combat.MobPoison, Poison: true, Value: int(min(tick, 0x7fffffff)),
 			Prop: max(1, v["prop"]), Duration: time.Duration(v["dotTime"]) * time.Second,
+			SourceSkill: id, StackLimit: v["dotSuperpos"],
 		})
 		return nil
 	}
@@ -181,6 +182,12 @@ var damageIncrease = map[int]struct {
 }
 
 func boosted(ctx *combat.AttackContext) error {
+	switch ctx.Effect.SkillID {
+	case 4001344, 4101008, 4101010, 4111010:
+		if weaponType(ctx.Character) == weaponClaw {
+			ctx.Stats.DamageRate += values(ctx.Character, ctx.Now, 4110012)["damR"]
+		}
+	}
 	if d, ok := damageIncrease[ctx.Effect.SkillID]; ok {
 		if v := values(ctx.Character, ctx.Now, d.source); v != nil {
 			ctx.Effect.Damage += v[d.key]

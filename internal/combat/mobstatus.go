@@ -61,6 +61,9 @@ type MobStatusApply struct {
 	// Explode deals the tick damage once at expiry instead of periodically
 	// (Monster Bomb). Like every DoT it never kills.
 	Explode bool
+	// SourceSkill identifies a passive that can proc from several attack skills.
+	SourceSkill int
+	StackLimit  int
 }
 
 // ActiveStatus is one monster status held in world room memory.
@@ -78,6 +81,8 @@ type ActiveStatus struct {
 	Interval   time.Duration
 	NextTick   time.Time
 	Explode    bool
+	StackLimit int
+	Stacks     int
 }
 
 // MobStatuses is the per-mob active status set.
@@ -163,6 +168,9 @@ func ResolveOn(a MobStatusApply, eff Effect, ownerID int64, maxBase int64, mob c
 		v = 1
 	}
 	st := ActiveStatus{Stat: a.Stat, Value: int32(v), SkillID: int32(eff.SkillID), OwnerID: ownerID, ExpiresAt: now.Add(d)}
+	if a.SourceSkill != 0 {
+		st.SkillID = int32(a.SourceSkill)
+	}
 	if a.Poison || a.Explode {
 		switch dot := int64(eff.DOT); {
 		case a.TickFrom == "damage":
@@ -183,17 +191,25 @@ func ResolveOn(a MobStatusApply, eff Effect, ownerID int64, maxBase int64, mob c
 			st.NextTick, st.Interval, st.Explode = st.ExpiresAt, 0, true
 		}
 		if a.Poison {
+			st.StackLimit = min(16, a.StackLimit)
+			st.Stacks = 1
 			st.Value = int32(min(st.TickDamage, 0x7fffffff))
 		}
 	}
 	return st, true
 }
 
-// Apply stores a status; an existing DoT from the same skill is kept (Java
-// refuses to stack the same poison source).
-func (m MobStatuses) Apply(s ActiveStatus) bool {
-	if old := m[s.Stat]; old != nil && old.TickDamage > 0 && old.SkillID == s.SkillID {
-		return false
+// Apply keeps an unexpired DoT from the same skill, unless the skill supports
+// stacking and the new proc came from the same character and session.
+func (m MobStatuses) Apply(s ActiveStatus, now time.Time) bool {
+	if old := m[s.Stat]; old != nil && old.TickDamage > 0 && old.SkillID == s.SkillID && old.ExpiresAt.After(now) {
+		if s.StackLimit < 2 || old.OwnerID != s.OwnerID || old.OwnerSession != s.OwnerSession || old.OwnerGeneration != s.OwnerGeneration {
+			return false
+		}
+		s.Stacks = min(old.Stacks+1, s.StackLimit)
+		s.TickDamage = min(s.TickDamage*int64(s.Stacks), 0x7fffffff)
+		s.Value = int32(s.TickDamage)
+		s.NextTick = old.NextTick
 	}
 	c := s
 	m[s.Stat] = &c

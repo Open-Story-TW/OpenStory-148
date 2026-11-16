@@ -40,7 +40,8 @@ func applyMobStatusesLocked(m *gameplayMob, add []combat.ActiveStatus, owner dom
 	var applied []protocol.MobStatValue
 	for _, st := range add {
 		st.OwnerID, st.OwnerSession, st.OwnerGeneration = owner.CharacterID, owner.SessionID, owner.Generation
-		if m.statuses.Apply(st) {
+		if m.statuses.Apply(st, now) {
+			st = *m.statuses[st.Stat]
 			applied = append(applied, protocol.MobStatValue{Stat: st.Stat, Value: st.Value, Reason: st.SkillID, ExpiresAt: st.ExpiresAt})
 		}
 	}

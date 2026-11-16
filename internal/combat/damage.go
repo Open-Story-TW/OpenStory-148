@@ -216,15 +216,18 @@ func LineBounds(c DamageContext) (floor, ceiling int) {
 	ignore := min(100, max(0, c.Stats.IgnoreDefense+c.Effect.IgnoreMobDefense))
 	rate = max(0, min(100, rate))
 	rate -= rate * ignore / 100
-	v = mulDiv(v, int64(100-rate), 100)
+	defended := mulDiv(v, int64(100-rate), 100)
 	mastery := min(95, w.MasteryMin+max(0, c.Stats.Mastery))
-	low := mulDiv(v, int64(mastery), 100)
+	low := mulDiv(defended, int64(mastery), 100)
 	if under := m.Level - c.Stats.Level; under > 0 {
 		low = mulDiv(low, int64(max(0, 100-under)), 100)
 	}
 	bonus := c.Stats.DamageRate
 	if m.Boss {
 		bonus += c.Stats.BossDamageRate
+	}
+	if c.Magic || !c.Stats.FullDefenseIgnore {
+		v = defended
 	}
 	v = mulDiv(v, int64(100+max(bonus, 0)), 100)
 	// Round the fractional upper bound upward and the floor downward once.

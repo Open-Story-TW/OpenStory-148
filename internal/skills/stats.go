@@ -81,6 +81,7 @@ func (b Bonus) Add(o Bonus) Bonus {
 	b.DamagePercent += o.DamagePercent
 	b.BossDamagePercent += o.BossDamagePercent
 	b.IgnoreDefense += o.IgnoreDefense
+	b.FullDefenseIgnore = b.FullDefenseIgnore || o.FullDefenseIgnore
 	for _, d := range o.SkillDamage {
 		if d.Skill == 0 {
 			continue
@@ -211,6 +212,7 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	p.DamageRate += b.DamagePercent
 	p.BossDamageRate += b.BossDamagePercent
 	p.IgnoreDefense += b.IgnoreDefense
+	p.FullDefenseIgnore = b.FullDefenseIgnore
 	p.ElementAmp += b.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
 	return p

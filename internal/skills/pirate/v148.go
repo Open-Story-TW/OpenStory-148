@@ -2,7 +2,9 @@ package pirate
 
 import (
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/skills"
+	"os"
 )
 
 // The Buccaneer and Corsair skills the v148 client has and v145 did not.
@@ -30,21 +32,20 @@ var v148Attacks = []attack{
 	{id: 5221017, kind: combat.Shoot},                              // 霸王章魚砲台: bulletConsume 4
 }
 
-var v148Summons = []summon{
-	{id: 5211011, stat: "SUMMON", move: follow},                  // 召喚船員
-	{id: 5211015, stat: "SUMMON", move: follow},                  // 召喚船員
-	{id: 5211016, stat: "SUMMON", move: follow},                  // 召喚船員
-	{id: 5211014, stat: "PUPPET", move: stationary, multi: true}, // 砲台章魚王
-}
+const summonCrew = 5211011
+
+var crewVariants = []int{summonCrew, 5211015, 5211016}
 
 func init() {
 	for _, a := range v148Attacks {
 		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a)})
 	}
-	for _, s := range v148Summons {
-		spec := &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: s.move, AssistType: 1, Multi: s.multi}}
-		skills.Register(skills.Handler{ID: s.id, Kind: skills.KindSummon, Cast: valueOne(s.stat), Attack: spec})
+	skills.Register(skills.Handler{ID: summonCrew, Kind: skills.KindSummon, Cast: valueOne("SUMMON"), Attack: crewSpec(crewVariants)})
+	for _, id := range crewVariants[1:] {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindSummon, LevelFrom: summonCrew, Attack: crewSpec(nil)})
 	}
+	octopus := &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Multi: true}}
+	skills.Register(skills.Handler{ID: 5211014, Kind: skills.KindSummon, Cast: valueOne("PUPPET"), Attack: octopus})
 	passive := func(id int, f func(*skills.PassiveContext) skills.Bonus) {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: f})
 	}
@@ -57,8 +58,10 @@ func init() {
 	passive(5110011, func(c *skills.PassiveContext) skills.Bonus { // 爆擊鬥氣: cr and both critical damage bounds
 		return skills.Bonus{Critical: c.Values["cr"], CriticalDamageMin: c.Values["criticaldamageMin"], CriticalDamage: c.Values["criticaldamageMax"]}
 	})
-	passive(5120014, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{IgnoreDefense: c.Values["x"]} }) // 防禦撞擊: x
-	passive(5210012, func(c *skills.PassiveContext) skills.Bonus {                                                      // 神槍手耐性
+	passive(5120014, func(c *skills.PassiveContext) skills.Bonus {
+		return skills.Bonus{FullDefenseIgnore: c.Values["x"] > 0}
+	})
+	passive(5210012, func(c *skills.PassiveContext) skills.Bonus { // 神槍手耐性
 		return skills.Bonus{WDEFPercent: c.Values["pddR"], MDEFPercent: c.Values["mddR"], MaxHP: c.Values["mhpX"], MaxMP: c.Values["mmpX"]}
 	})
 	passive(5210013, func(c *skills.PassiveContext) skills.Bonus { // 金屬外殼
@@ -70,18 +73,63 @@ func init() {
 		}
 		return skills.Bonus{Mastery: c.Values["mastery"]}
 	})
-	skills.Register(skills.Handler{ID: 5100013, Kind: skills.KindPassive}) // 耐久: recovery over time, not applied
-	skills.Register(skills.Handler{ID: 5220019, Kind: skills.KindPassive}) // 船員指令: bonuses per summoned crew, not applied
+	skills.Register(skills.Handler{ID: 5100013, Kind: skills.KindPassive}) // 耐久: see the server's periodic recovery
+	passive(5220019, func(c *skills.PassiveContext) skills.Bonus {         // 船員指令
+		if c.Active(summonCrew) {
+			return skills.Bonus{WATK: c.Values["pad"]}
+		}
+		return skills.Bonus{}
+	})
 
-	for _, id := range []int{5120012, 5220014} { // 雙倍幸運骰子
-		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: doubleDice})
-	}
 	skills.Register(skills.Handler{ID: 5101011, Kind: skills.KindBuff, Cast: attackBuff("indiePad", "acc")}) // 全神貫注
 	skills.Register(skills.Handler{ID: 5201008, Kind: skills.KindBuff, Cast: infiniteBullets})               // 無形彈藥
 	skills.Register(skills.Handler{ID: 5201011, Kind: skills.KindSpecial, Cast: skills.CostOnly})            // 飛翼
-	// Cost only: what these buffs give has no buff stat here yet.
-	for _, id := range []int{5111010, 5121015, 5211009, 5221018} { // 雲體風身, 拳霸大師, 魔法彈丸, 海盜風采
+	skills.Register(skills.Handler{ID: 5121015, Kind: skills.KindSpecial | skills.KindPassive, Cast: skills.CostOnly,
+		Passive: func(c *skills.PassiveContext) skills.Bonus {
+			b := skills.Bonus{ASR: c.Values["asrR"], TER: c.Values["terR"]}
+			if weaponType(c.Character) == knuckle {
+				b.Mastery = c.Values["mastery"]
+			}
+			return b
+		}})
+	// Cost-only casts whose temporary stat has not been verified.
+	for _, id := range []int{5111010, 5211009, 5221018} { // 雲體風身, 魔法彈丸, 海盜風采
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	}
+}
+
+// Crew variants share the cast, buff and level. Their own WZ books set their
+// attack strength, as with the three separate assets the client loads.
+func crewSpec(variants []int) *combat.AttackSpec {
+	return &combat.AttackSpec{
+		Kind: combat.Summoned, LevelFrom: summonCrew,
+		Summon: &combat.SummonSpec{MoveAbility: follow, AssistType: 1, Variants: variants},
+		Prepare: func(c *combat.AttackContext) error {
+			root := os.Getenv("MAPLEGO_WZ_ROOT")
+			if id := c.SummonSkillID; id != 0 && id != c.Effect.SkillID {
+				skill, err := content.SkillDefinition(root, id)
+				if err != nil {
+					return err
+				}
+				v, err := skill.Values(c.Effect.Level)
+				if err != nil {
+					return err
+				}
+				c.Effect.Damage = v["damage"]
+			}
+			if level := skills.EffectiveLevel(c.Character, 5220019, c.Now); level > 0 {
+				command, err := content.SkillDefinition(root, 5220019)
+				if err != nil {
+					return err
+				}
+				v, err := command.Values(level)
+				if err != nil {
+					return err
+				}
+				c.Stats.DamageRate += v["v"]
+			}
+			return nil
+		},
 	}
 }
 

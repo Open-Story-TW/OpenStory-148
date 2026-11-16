@@ -32,6 +32,12 @@ func cast(t *testing.T, id, level int) skills.CastPlan {
 	}
 	def, v := values(t, id, level)
 	caster := domain.Character{HP: 5000, MaxHP: 5000, MP: 5000, MaxMP: 5000}
+	switch id {
+	case 5120012:
+		caster.Skills = []domain.SkillState{{ID: 5111007, Level: 20}}
+	case 5220014:
+		caster.Skills = []domain.SkillState{{ID: 5211007, Level: 20}}
+	}
 	p, err := h.Cast(&skills.CastContext{Skill: def, Level: level, Values: v, Caster: caster, Now: time.Unix(0, 0)})
 	if err != nil {
 		t.Fatalf("skill %d: %v", id, err)

@@ -222,6 +222,7 @@ type PlayerStats struct {
 	CritRate, CritDamage                                     int     // Percent chance / extra percent on a critical.
 	DamageRate, BossDamageRate                               int     // Percent bonus (0 = none).
 	IgnoreDefense                                            int     // Percent of monster PDRate/MDRate ignored.
+	FullDefenseIgnore                                        bool    // A physical hit can proc full defense ignore.
 	ElementAmp                                               int     // Percent bonus for magic element amplification.
 	ShadowPartner                                            int     // Percent of an extra mirrored line set (0 = none).
 	WDEF, MDEF, Avoid, Speed, Jump                           int     // Effective view; contact damage/movement do not yet consume these server-side.

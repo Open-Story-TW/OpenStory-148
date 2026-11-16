@@ -6,6 +6,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -24,6 +26,29 @@ func TestReviewedPowerStrikeActualR4HPMPReplayAndUnknownReceipt(t *testing.T) {
 		}
 		t.Run(name, func(t *testing.T) {
 			s, live, sink, mob, _ := inheritedMeleeFixture(t)
+			root := t.TempDir()
+			caps := filepath.Join(root, "Character.wz", "Cap")
+			if err := os.MkdirAll(caps, 0700); err != nil {
+				t.Fatal(err)
+			}
+			hat := `<imgdir name="01002019.img"><imgdir name="info"><int name="reqLevel" value="10"/><int name="incPDD" value="8"/><int name="tuc" value="7"/></imgdir></imgdir>`
+			if err := os.WriteFile(filepath.Join(caps, "01002019.img.xml"), []byte(hat), 0600); err != nil {
+				t.Fatal(err)
+			}
+			items := filepath.Join(root, "Item.wz")
+			if err := os.MkdirAll(items, 0700); err != nil {
+				t.Fatal(err)
+			}
+			options := `<imgdir name="ItemOption.img">
+				<imgdir name="020353"><imgdir name="info"><int name="optionType" value="20"/><int name="weight" value="5"/></imgdir>
+					<imgdir name="level"><imgdir name="1"><int name="prop" value="30"/><int name="ignoreDAM" value="7"/></imgdir></imgdir></imgdir>
+				<imgdir name="010014"><imgdir name="info"><int name="optionType" value="11"/><int name="weight" value="30"/></imgdir>
+					<imgdir name="level"><imgdir name="1"><int name="incMDD" value="10"/></imgdir></imgdir></imgdir>
+				</imgdir>`
+			if err := os.WriteFile(filepath.Join(items, "ItemOption.img.xml"), []byte(options), 0600); err != nil {
+				t.Fatal(err)
+			}
+			t.Setenv("MAPLEGO_WZ_ROOT", root)
 			wire, err := hex.DecodeString(powerStrikeCriticalR4Wire)
 			if err != nil {
 				t.Fatal(err)

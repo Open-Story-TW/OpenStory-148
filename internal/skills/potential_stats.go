@@ -176,6 +176,7 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.DamageRate += passive.DamagePercent + buff.DamagePercent
 	p.BossDamageRate += passive.BossDamagePercent + buff.BossDamagePercent
 	p.IgnoreDefense += pot.IgnoreDefense + passive.IgnoreDefense + buff.IgnoreDefense
+	p.FullDefenseIgnore = passive.FullDefenseIgnore
 	p.ElementAmp += passive.ElementAmp + buff.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
 	factor := func(values []int) (float64, error) {

@@ -153,7 +153,7 @@ func TestMobStatusPoisonTickNeverKillsAndExpires(t *testing.T) {
 		t.Fatalf("poison %+v", st)
 	}
 	m := MobStatuses{}
-	if !m.Apply(st) || m.Apply(st) {
+	if !m.Apply(st, now) || m.Apply(st, now) {
 		t.Fatal("same-source poison stacked")
 	}
 	hp, hits := m.Tick(now.Add(2500*time.Millisecond), 250)
@@ -236,7 +236,7 @@ func TestTickSourcesAndMonsterBombExplosion(t *testing.T) {
 		t.Fatalf("tick sources web%d amb%d bomb%+v", web.TickDamage, amb.TickDamage, bomb)
 	}
 	m := MobStatuses{}
-	m.Apply(bomb)
+	m.Apply(bomb, now)
 	if hp, hits := m.Tick(now.Add(3*time.Second), 1000); hp != 1000 || len(hits) != 0 {
 		t.Fatal("bomb ticked before expiry")
 	}
@@ -250,6 +250,23 @@ func TestTickSourcesAndMonsterBombExplosion(t *testing.T) {
 	defer SetNormalAttack(nil)
 	if NormalAttack() == nil || !NormalAttack().Allows(Shoot) {
 		t.Fatal("normal attack spec")
+	}
+}
+
+func TestStackedVenomKeepsTickCadenceAndHonorsCap(t *testing.T) {
+	now := time.Unix(0, 0)
+	m := MobStatuses{}
+	a := MobStatusApply{Stat: MobPoison, Poison: true, Value: 80, Duration: 8 * time.Second, SourceSkill: 4120011, StackLimit: 3}
+	for i := range 5 {
+		at := now.Add(time.Duration(i) * 100 * time.Millisecond)
+		st, ok := Resolve(a, Effect{SkillID: 4101008 + i}, 1, 10, at, nil)
+		if !ok || !m.Apply(st, at) {
+			t.Fatalf("proc %d was rejected", i+1)
+		}
+	}
+	hp, hits := m.Tick(now.Add(time.Second), 1000)
+	if hp != 760 || len(hits) != 1 || hits[0].SkillID != 4120011 {
+		t.Fatalf("unexpected first stacked tick: HP %d, hits %+v", hp, hits)
 	}
 }
 

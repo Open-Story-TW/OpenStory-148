@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -10,6 +12,16 @@ import (
 )
 
 func TestReviewedPowerStrikeStoreCriticalityCostAndLegacyReceipt(t *testing.T) {
+	root := t.TempDir()
+	mobs := filepath.Join(root, "Mob.wz")
+	if err := os.MkdirAll(mobs, 0700); err != nil {
+		t.Fatal(err)
+	}
+	mob := `<imgdir name="9300306.img"><imgdir name="info"><int name="level" value="129"/><int name="maxHP" value="550000000"/><int name="boss" value="1"/><int name="PDRate" value="50"/></imgdir></imgdir>`
+	if err := os.WriteFile(filepath.Join(mobs, "9300306.img.xml"), []byte(mob), 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("MAPLEGO_WZ_ROOT", root)
 	now := time.Now()
 	c := domain.Character{ID: 1, Job: 132, Level: 150, HP: 3220, MP: 1454, MaxHP: 3220, MaxMP: 1454, STR: 57, DEX: 500, INT: 4, LUK: 4,
 		Equipment: []domain.Equipment{{Slot: -11, ItemID: 1432000, WATK: 32}}, Skills: []domain.SkillState{{ID: 1001004, Level: 20}}}

@@ -3,8 +3,10 @@ package pirate
 import (
 	"fmt"
 	"maple-go-server/internal/buffstat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/skills"
 	"math/rand/v2"
+	"os"
 	"time"
 )
 
@@ -18,9 +20,12 @@ func init() {
 	for _, id := range []int{5120011, 5220012} { // 反擊 Pirate's Revenge
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, OnDamaged: piratesRevenge})
 	}
-	for _, id := range []int{5111007, 5211007, 5311005} { // 幸運骰子 Lucky Dice
-		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: dice(6)})
+	for _, pair := range [][2]int{{5111007, 5120012}, {5211007, 5220014}} {
+		skills.Register(skills.Handler{ID: pair[0], Kind: skills.KindBuff, Cast: luckyDice(pair[1])})
+		// The client substitutes the learned passive's ID when casting Lucky Dice.
+		skills.Register(skills.Handler{ID: pair[1], Kind: skills.KindPassive, Cast: upgradedLuckyDice(pair[0])})
 	}
+	skills.Register(skills.Handler{ID: 5311005, Kind: skills.KindBuff, Cast: dice(6)})
 	skills.Register(skills.Handler{ID: 5311004, Kind: skills.KindBuff, Cast: dice(4)})                                      // 幸運木桶 Barrel Roulette
 	skills.Register(skills.Handler{ID: 5320007, Kind: skills.KindBuff, Cast: doubleDice})                                   // 雙倍幸運骰子 Double Lucky Dice
 	skills.Register(skills.Handler{ID: 5001005, Kind: skills.KindBuff, Cast: dash})                                         // 衝鋒 Dash
@@ -184,6 +189,47 @@ func dice(faces int) func(*skills.CastContext) (skills.CastPlan, error) {
 		}
 		return p, nil
 	}
+}
+
+func luckyDice(upgradeID int) func(*skills.CastContext) (skills.CastPlan, error) {
+	return func(c *skills.CastContext) (skills.CastPlan, error) {
+		if diceCoolingDown(c, upgradeID) {
+			return skills.CastPlan{}, fmt.Errorf("skill%d: Lucky Dice is cooling down", c.Skill.ID)
+		}
+		level := skills.EffectiveLevel(c.Caster, upgradeID, c.Now)
+		if level == 0 || c.Level < 20 {
+			return dice(6)(c)
+		}
+		upgrade, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), upgradeID)
+		if err != nil {
+			return skills.CastPlan{}, err
+		}
+		values, err := upgrade.Values(level)
+		if err != nil {
+			return skills.CastPlan{}, err
+		}
+		plan, err := doubleDice(&skills.CastContext{Skill: upgrade, Level: level, Values: values, Caster: c.Caster, Now: c.Now})
+		plan.ApplyAs, plan.ApplyLevel = upgradeID, level
+		return plan, err
+	}
+}
+
+func upgradedLuckyDice(baseID int) func(*skills.CastContext) (skills.CastPlan, error) {
+	return func(c *skills.CastContext) (skills.CastPlan, error) {
+		if skills.EffectiveLevel(c.Caster, baseID, c.Now) < 20 || diceCoolingDown(c, baseID) {
+			return skills.CastPlan{}, fmt.Errorf("skill%d: Lucky Dice is unavailable", baseID)
+		}
+		return doubleDice(c)
+	}
+}
+
+func diceCoolingDown(c *skills.CastContext, id int) bool {
+	for _, row := range c.Caster.SkillCooldowns {
+		if row.ID == id && row.ExpiresAt.After(c.Now) {
+			return true
+		}
+	}
+	return false
 }
 
 // doubleDice (5320007) rolls one die and, with prop percent, a second; the

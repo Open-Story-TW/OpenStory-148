@@ -332,7 +332,8 @@ type Bonus struct {
 	Mastery                  int
 	DamagePercent            int // damR on every attack.
 	BossDamagePercent        int
-	IgnoreDefense            int // ignoreMobpdpR.
+	IgnoreDefense            int  // ignoreMobpdpR.
+	FullDefenseIgnore        bool // A proc can ignore the target's entire physical defense rate.
 	// SkillDamage adds damage percent to specific skills (passive damR
 	// boosts). A fixed array keeps Bonus comparable.
 	SkillDamage    [4]SkillDamage
