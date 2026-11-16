@@ -597,6 +597,7 @@ func (s *Session) installHost() {
 		bind("transit_status", s.simpleCommand("transit_status", 0), 1)
 		bind("transit_board", s.simpleCommand("transit_board", 0), 1)
 		bind("transit_leave", s.simpleCommand("transit_leave", 0), 1)
+		bind("subway_challenge", s.simpleCommand("subway_challenge", 1), 2)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err

@@ -2,6 +2,7 @@ package world
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"maple-go-server/internal/domain"
@@ -11,6 +12,7 @@ import (
 type transitLeg struct {
 	dock, boarding, ride, arrival int
 	usher, attendant              int
+	alternateUsher, ticket        int
 }
 
 type transitLine struct {
@@ -29,6 +31,10 @@ var transitLines = []transitLine{
 	{3 * time.Minute, 5 * time.Minute, [2]transitLeg{
 		{dock: 200000131, boarding: 200000132, ride: 200090200, arrival: 240000100, usher: 2012021, attendant: 2012022},
 		{dock: 240000110, boarding: 240000111, ride: 200090210, arrival: 200000100, usher: 2082001, attendant: 2082002},
+	}},
+	{5 * time.Minute, time.Minute, [2]transitLeg{
+		{dock: 103020000, boarding: 600010004, ride: 600010005, arrival: 600010001, usher: 9201068, attendant: 9201057, alternateUsher: 1052007, ticket: 4031711},
+		{dock: 600010001, boarding: 600010002, ride: 600010003, arrival: 103020000, usher: 9201068, attendant: 9201057, ticket: 4031713},
 	}},
 }
 
@@ -118,7 +124,7 @@ func (a *worldScript) transitCommand(ctx context.Context, snapshot domain.Charac
 	from := snapshot.Character.MapID
 	for _, line := range transitLines {
 		for _, leg := range line.legs {
-			dock := a.npcID == leg.usher && from == leg.dock
+			dock := from == leg.dock && (a.npcID == leg.usher || a.npcID == leg.alternateUsher)
 			waitingRoom := a.npcID == leg.attendant && from == leg.boarding
 			switch command.Kind {
 			case "transit_status":
@@ -146,6 +152,9 @@ func (a *worldScript) transitCommand(ctx context.Context, snapshot domain.Charac
 				phase := line.phase(a.server.transitStart, time.Now())
 				return (dock && phase == transitBoarding) || (waitingRoom && phase != transitAway)
 			}
+			if dock && leg.ticket != 0 {
+				return a.takeTicketedTransit(ctx, command.ID, to, leg.ticket, guard)
+			}
 			moved, err := a.server.moveTransit(ctx, snapshot.ChannelID, eventOccupant{a.live, a.sink}, to, guard)
 			return scripting.CommandResult{Value: moved}, err
 		}
@@ -154,4 +163,50 @@ func (a *worldScript) transitCommand(ctx context.Context, snapshot domain.Charac
 		return result("unavailable")
 	}
 	return result(false)
+}
+
+func (a *worldScript) takeTicketedTransit(ctx context.Context, op string, to, ticket int, guard func(domain.CharacterSession) bool) (scripting.CommandResult, error) {
+	refused := scripting.CommandResult{Value: false}
+	s := a.server
+	repo, ok := s.repo.(domain.ScriptRepository)
+	if !ok {
+		return refused, domain.ErrForbidden
+	}
+	a.live.persistMu.Lock()
+	defer a.live.persistMu.Unlock()
+	session := s.skillSession(a.live)
+	if !guard(session) || !a.hasNPCContext(session) || s.tradeActive(a.live) {
+		return refused, nil
+	}
+	visit := s.sceneFor(a.live, a.sink)
+	if visit == nil {
+		return refused, domain.ErrStaleOwner
+	}
+	field, err := s.gameplay.catalog.Map(to)
+	if err != nil {
+		return refused, err
+	}
+	entry, ok := field.Portal("sp")
+	if !ok {
+		return refused, domain.ErrNotFound
+	}
+	request := domain.ScriptExchange{
+		Session: session, OperationID: op,
+		Items:  []domain.ScriptItemDelta{{TemplateID: ticket, Quantity: -1}},
+		Travel: &domain.ScriptTravel{FromMap: session.Character.MapID, MapID: to, SpawnPoint: entry.ID, X: entry.X, Y: entry.Y},
+	}
+	commitCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	value, err := repo.ExecuteScriptExchange(commitCtx, request)
+	if errors.Is(err, domain.ErrInsufficient) || errors.Is(err, domain.ErrForbidden) {
+		return refused, nil
+	}
+	if err != nil {
+		return refused, err
+	}
+	if value.Character.MapID != to {
+		return refused, domain.ErrStaleOwner
+	}
+	_, err = a.publishScriptTravel(ctx, session, value, visit)
+	return scripting.CommandResult{Value: err == nil}, err
 }

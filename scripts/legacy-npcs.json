@@ -3021,10 +3021,6 @@
       "reason": "cm.getEventMap is not supported (line 15)"
     },
     {
-      "legacy": "npc/1052007.js",
-      "reason": "cm.getEventManager is not supported (line 9)"
-    },
-    {
       "legacy": "npc/1052015.js",
       "reason": "cm.getPlayer().getBattler is not supported (line 9)"
     },
@@ -3871,14 +3867,6 @@
     {
       "legacy": "npc/9201050.js",
       "reason": "cm.getQuestStarted is not supported (line 50)"
-    },
-    {
-      "legacy": "npc/9201057.js",
-      "reason": "cm.getEventManager is not supported (line 13)"
-    },
-    {
-      "legacy": "npc/9201068.js",
-      "reason": "cm.getEventManager is not supported (line 5)"
     },
     {
       "legacy": "npc/9201073.js",
