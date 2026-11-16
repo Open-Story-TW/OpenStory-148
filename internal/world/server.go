@@ -52,6 +52,7 @@ type Server struct {
 	transitStart     time.Time
 	elevators        *elevatorSpace
 	quizzes          *oxQuizSpace
+	hak              *hakSpace
 	guilds           *guildSpace
 	guildOnce        sync.Once
 	ready            atomic.Bool
@@ -133,6 +134,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	s.transitStart = time.Now()
 	s.elevators = &elevatorSpace{starts: make(map[mapKey]time.Time)}
 	s.quizzes = newOXQuizSpace()
+	s.hak = &hakSpace{seats: make(map[int]*hakSeat)}
 	if cfg.ScriptsDir != "" {
 		// A bad file on disk must not stop the world: it is reported and the
 		// built-in source keeps running.

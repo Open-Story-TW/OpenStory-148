@@ -3255,10 +3255,6 @@
       "reason": "call .iterator is not supported (line 114)"
     },
     {
-      "legacy": "npc/2090005.js",
-      "reason": "cm.getEventManager is not supported (line 13)"
-    },
-    {
       "legacy": "npc/2091005.js",
       "reason": "cm.getDojoRankLastMonth is not supported (line 16)"
     },

@@ -76,6 +76,7 @@ func (s *Server) runTransit(ctx context.Context) {
 		case now := <-ticker.C:
 			s.tickTransit(ctx, now)
 			s.tickElevators(ctx, now)
+			s.tickHak(ctx, now)
 		}
 	}
 }
@@ -161,7 +162,7 @@ func (a *worldScript) transitCommand(ctx context.Context, snapshot domain.Charac
 				return (dock && phase == transitBoarding) || (waitingRoom && phase != transitAway)
 			}
 			if dock && leg.ticket != 0 {
-				return a.takeTicketedTransit(ctx, command.ID, to, leg.ticket, guard)
+				return a.takeTransitFare(ctx, command.ID, to, leg.ticket, 0, guard)
 			}
 			moved, err := a.server.moveTransit(ctx, snapshot.ChannelID, eventOccupant{a.live, a.sink}, to, guard)
 			return scripting.CommandResult{Value: moved}, err
@@ -173,7 +174,7 @@ func (a *worldScript) transitCommand(ctx context.Context, snapshot domain.Charac
 	return result(false)
 }
 
-func (a *worldScript) takeTicketedTransit(ctx context.Context, op string, to, ticket int, guard func(domain.CharacterSession) bool) (scripting.CommandResult, error) {
+func (a *worldScript) takeTransitFare(ctx context.Context, op string, to, ticket int, mesos int64, guard func(domain.CharacterSession) bool) (scripting.CommandResult, error) {
 	refused := scripting.CommandResult{Value: false}
 	s := a.server
 	repo, ok := s.repo.(domain.ScriptRepository)
@@ -199,9 +200,11 @@ func (a *worldScript) takeTicketedTransit(ctx context.Context, op string, to, ti
 		return refused, domain.ErrNotFound
 	}
 	request := domain.ScriptExchange{
-		Session: session, OperationID: op,
-		Items:  []domain.ScriptItemDelta{{TemplateID: ticket, Quantity: -1}},
+		Session: session, OperationID: op, MesosDelta: -mesos,
 		Travel: &domain.ScriptTravel{FromMap: session.Character.MapID, MapID: to, SpawnPoint: entry.ID, X: entry.X, Y: entry.Y},
+	}
+	if ticket != 0 {
+		request.Items = []domain.ScriptItemDelta{{TemplateID: ticket, Quantity: -1}}
 	}
 	commitCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()

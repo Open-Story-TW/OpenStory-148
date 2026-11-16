@@ -17,5 +17,5 @@ func (a *worldScript) subwayChallenge(ctx context.Context, snapshot domain.Chara
 	guard := func(session domain.CharacterSession) bool {
 		return session.ChannelID == snapshot.ChannelID && session.Character.MapID == station && session.Character.HP > 0
 	}
-	return a.takeTicketedTransit(ctx, command.ID, 910360000+100*index, 4031036+index, guard)
+	return a.takeTransitFare(ctx, command.ID, 910360000+100*index, 4031036+index, 0, guard)
 }
