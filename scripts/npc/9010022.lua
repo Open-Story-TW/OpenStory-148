@@ -15,7 +15,7 @@ end
 -- id = Legacy selection number, map/portal = Legacy cm.warp arguments.
 local entries = {
     { id = 801, text = "海外旅遊", map = 950000000, portal = 0, min = 10 },
-    { id = 9, text = "月妙的年糕", map = 910010500, portal = 0, min = 25, max = 30 },
+    { id = 9, text = "月妙的年糕", map = 910010500, portal = 0, min = 50 },
     { id = 10, text = "組隊訓練場", map = 910340700, portal = 0, min = 25, max = 30 },
     { id = 2, text = "怪物嘉年華1", map = 980000000, portal = 4, min = 30, max = 50 },
     { id = 3, text = "怪物嘉年華2", map = 980030000, portal = 4, min = 51, max = 70 },

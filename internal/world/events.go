@@ -39,6 +39,7 @@ type eventInstance struct {
 	starting     bool
 	cleared      bool
 	ended        bool
+	moon         *henesysState
 }
 
 type eventSpace struct {
@@ -153,6 +154,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.events.mu.Unlock()
 		return "unavailable", here, qualified, nil
 	}
+	if inst.moon != nil {
+		ready := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
+		if err = s.prepareHenesysPQ(ctx, inst, ready); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
 	for _, m := range present {
 		s.cancelNPCScriptState(m.live, false)
 		s.closeEconomyDialog(m.live)
@@ -224,6 +232,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	inst = &eventInstance{id: platform.NewID(), definition: e, channel: leader.ChannelID, partyID: partyID, expeditionID: expeditionID,
 		members: map[int64]struct{}{leader.CharacterID: {}}, deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second),
 		properties: map[string]string{}, starting: expeditionID != 0}
+	if e.Name == content.HenesysPQName {
+		inst.moon = &henesysState{}
+	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
 	}
@@ -318,6 +329,10 @@ func (s *Server) eventSettle(inst *eventInstance) {
 // map. It never runs on the goroutine of a packet handler that still holds a
 // character's scene, so the warps happen on their own goroutine.
 func (s *Server) eventEnd(inst *eventInstance) {
+	s.eventEndAt(inst, inst.definition.ExitMap)
+}
+
+func (s *Server) eventEndAt(inst *eventInstance, exitMap int) {
 	s.events.mu.Lock()
 	if inst.ended {
 		s.events.mu.Unlock()
@@ -326,9 +341,11 @@ func (s *Server) eventEnd(inst *eventInstance) {
 	s.closeEventMembersLocked(inst)
 	s.events.mu.Unlock()
 	occupants := s.eventOccupants(inst.channel, inst.definition.Maps)
+	destination := inst.definition
+	destination.ExitMap = exitMap
 	go func() {
 		for _, o := range occupants {
-			s.eventExit(inst.channel, inst.definition, o.live, o.sink)
+			s.eventExit(inst.channel, destination, o.live, o.sink)
 		}
 		s.events.mu.Lock()
 		key := eventKey{inst.channel, inst.definition.Name}
@@ -567,6 +584,11 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 			if !maps.Equal(actual, required) {
 				return fmt.Errorf("event %s map %d has unexpected WZ population: %v", event.Name, id, actual)
 			}
+		}
+	}
+	if event.Name == content.HenesysPQName {
+		if err := g.prepareMoonRabbitLocked(g.rooms[mapKey{channel, content.HenesysPQMap}]); err != nil {
+			return err
 		}
 	}
 	for _, spawn := range event.Spawns {

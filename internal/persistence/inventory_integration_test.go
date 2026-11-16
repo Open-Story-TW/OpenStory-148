@@ -194,7 +194,7 @@ func TestInventoryDropConcurrentPickupConservesAssets(t *testing.T) {
 	}
 	a.Character = result.Character
 	result, err = s.MoveInventory(ctx, domain.InventoryMoveRequest{Session: a, ClientTick: 2, InvType: 2, Source: 2, Destination: 0, Quantity: 2})
-	if err != nil || result.Drop == nil || result.Drop.Quantity != 2 || result.Drop.ObjectID < 1000000000 {
+	if err != nil || result.Drop == nil || result.Drop.Quantity != 2 || result.Drop.ObjectID < 1000000000 || !result.Drop.PlayerDrop {
 		t.Fatalf("drop=%+v err=%v", result, err)
 	}
 	a.Character = result.Character

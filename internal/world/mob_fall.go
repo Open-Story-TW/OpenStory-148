@@ -73,6 +73,7 @@ func (g *gameplaySpace) respawnMobLocked(r *gameplayRoom, mob *gameplayMob) ([]m
 	mob.life = mob.origin
 	mob.hp = mob.stats.HP
 	mob.respawnAt = time.Time{}
+	mob.escortHitAt = time.Time{}
 	mob.controller = 0
 	mob.contributions = nil
 	mob.reservation = nil

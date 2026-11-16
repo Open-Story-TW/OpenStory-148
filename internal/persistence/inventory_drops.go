@@ -17,7 +17,7 @@ func (s *Store) dropInventory(ctx context.Context, tx *sql.Tx, r domain.Inventor
 	if r.Session.ChannelID < 1 || c.MapID != r.Session.Character.MapID || r.Session.Character.X < -32768 || r.Session.Character.X > 32767 || r.Session.Character.Y < -32768 || r.Session.Character.Y > 32767 {
 		return domain.ErrInvalidInput
 	}
-	drop := domain.ItemDrop{WorldID: c.WorldID, ChannelID: r.Session.ChannelID, MapID: c.MapID, OwnerID: c.ID, X: r.Session.Character.X, Y: r.Session.Character.Y, InvType: r.InvType, Quantity: r.Quantity}
+	drop := domain.ItemDrop{WorldID: c.WorldID, ChannelID: r.Session.ChannelID, MapID: c.MapID, OwnerID: c.ID, X: r.Session.Character.X, Y: r.Session.Character.Y, InvType: r.InvType, Quantity: r.Quantity, PlayerDrop: true}
 	var equipment []byte
 	if r.InvType == 1 {
 		index := -1
@@ -88,7 +88,7 @@ func (s *Store) dropInventory(ctx context.Context, tx *sql.Tx, r domain.Inventor
 	if count >= 512 {
 		return domain.ErrInvalidInput
 	}
-	err := tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment)).Scan(&drop.ObjectID)
+	err := tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment,player_drop) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment)).Scan(&drop.ObjectID)
 	if err != nil {
 		return err
 	}

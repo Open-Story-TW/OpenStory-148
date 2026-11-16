@@ -22,6 +22,7 @@ type gameplayMob struct {
 	stats         content.Mob
 	hp            int64
 	controller    int64
+	escortHitAt   time.Time // last collision this mob reported against the escort
 	respawnAt     time.Time
 	claiming      bool
 	contributions []domain.CombatContribution
@@ -73,7 +74,8 @@ type gameplayRoom struct {
 	mobs       map[int32]*gameplayMob
 	summons    map[int32]*roomSummon
 	areas      map[int32]*roomArea
-	reactors   map[int32]*roomReactor // nil on most maps
+	reactors   map[int32]*roomReactor // gathering nodes and event reactors
+	moon       *henesysRoom
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -268,6 +270,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.gameplay.tickDoors(now, s.partySnapshot())
 			s.gameplay.tickReactors(now)
 			s.tickEvents(now)
+			s.tickHenesysPQ(ctx, now)
 		}
 	}
 }
@@ -389,6 +392,12 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, err
 		}
 		return true, s.monsterMovement(channel, live, sink, m)
+	case protocol.RecvMobHitEscort:
+		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(r.Bytes(r.Remaining())))
+		if err == nil {
+			s.moonBunnyHit(channel, live, sink, hit, time.Now())
+		}
+		return true, nil
 	}
 	return false, nil
 }

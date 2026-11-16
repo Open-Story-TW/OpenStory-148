@@ -342,7 +342,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	switch command.Kind {
 	case "quest_start", "quest_complete", "quest_forfeit", "exchange", "change_look", "warp", "open_storage", "open_merchant_bank", "open_shop", "advance_warrior", "advance_first_job", "advance_second_job", "depart_island", "take_taxi",
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
-		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_set", "event_effect",
+		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_set", "event_effect", "henesys_finish",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
@@ -422,6 +422,15 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return a.transitCommand(ctx, snapshot, command)
 	case "subway_challenge":
 		return a.subwayChallenge(ctx, snapshot, command)
+	case "henesys_finish":
+		inst := a.server.eventOf(snapshot.CharacterID)
+		if a.npcID != 1012114 || snapshot.Character.MapID != content.HenesysPQMap || inst == nil || inst.moon == nil {
+			return result("unavailable")
+		}
+		if a.server.partySnapshotOf(snapshot.CharacterID).LeaderID != snapshot.CharacterID {
+			return result("not_leader")
+		}
+		return result(a.server.finishMoonRabbit(ctx, inst, snapshot))
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
 			return scripting.CommandResult{}, domain.ErrInvalidInput

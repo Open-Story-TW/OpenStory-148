@@ -60,10 +60,11 @@ func TestDimensionalMirrorOffersLevelBracketsAndWarps(t *testing.T) {
 		want  string
 	}{
 		{10, "[801]"},
-		{25, "[801 9 10 11]"},
+		{25, "[801 10 11]"},
 		{45, "[801 2 11]"},
-		{65, "[801 3 5 11]"},
-		{120, "[801 11 12 13 14 15 16 17 21 22]"},
+		{50, "[801 9 2 11]"},
+		{65, "[801 9 3 5 11]"},
+		{120, "[801 9 11 12 13 14 15 16 17 21 22]"},
 	} {
 		host := &travelHost{level: tc.level}
 		_, event := startNPC(t, 9010022, host)

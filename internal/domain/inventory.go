@@ -61,3 +61,11 @@ type InventoryRepository interface {
 	PickupItem(context.Context, ItemPickupRequest) (InventoryResult, error)
 	ListItemDrops(context.Context, int, int, int) ([]ItemDrop, error)
 }
+
+// EventDropRepository handles map-local drops consumed by server event mechanics.
+// Seeds compete with pickups atomically. A new group discards the previous
+// group's ground items before a stage is visible to its members.
+type EventDropRepository interface {
+	ConsumeEventDrop(context.Context, ItemDrop) (bool, error)
+	ExpireEventDrops(context.Context, int, int, int) error
+}

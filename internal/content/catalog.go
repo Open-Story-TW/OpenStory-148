@@ -102,11 +102,12 @@ type Mob struct {
 	FixedDamage      int   `json:"fixed_damage,omitempty"`
 	HasFixedDamage   bool  `json:"has_fixed_damage,omitempty"`
 	// S0b combat fields; zero means "normal" when absent from the seed.
-	MDD      int    `json:"mdd,omitempty"`
-	MDRate   int    `json:"md_rate,omitempty"`
-	EVA      int    `json:"eva,omitempty"`
-	ElemAttr string `json:"elem_attr,omitempty"` // WZ "F2I3": element letter + 1 immune/2 strong/3 weak.
-	Undead   bool   `json:"undead,omitempty"`
+	MDD            int    `json:"mdd,omitempty"`
+	MDRate         int    `json:"md_rate,omitempty"`
+	EVA            int    `json:"eva,omitempty"`
+	ElemAttr       string `json:"elem_attr,omitempty"` // WZ "F2I3": element letter + 1 immune/2 strong/3 weak.
+	Undead         bool   `json:"undead,omitempty"`
+	DropItemPeriod int    `json:"drop_item_period,omitempty"` // WZ seconds between escort item drops.
 }
 
 //go:embed starter.json
@@ -298,7 +299,7 @@ func readWZ(path string) (*wzNode, error) {
 }
 
 func parseMob(id int, info *wzNode) Mob {
-	return Mob{ID: id, Level: info.intValue("level", 1), HP: int64(info.intValue("maxHP", 0)), MP: info.intValue("maxMP", 0), EXP: int64(info.intValue("exp", 0)), PAD: info.intValue("PADamage", 0), PDD: info.intValue("PDDamage", 0), Boss: info.intValue("boss", 0) != 0, PDRate: info.intValue("PDRate", 0), OnlyNormalAttack: info.intValue("onlyNormalAttack", 0) != 0, Invincible: info.intValue("invincible", 0) != 0, FixedDamage: info.intValue("fixedDamage", 0), HasFixedDamage: info.child("fixedDamage") != nil, MDD: info.intValue("MDDamage", 0), MDRate: info.intValue("MDRate", 0), EVA: info.intValue("eva", 0), ElemAttr: info.stringValue("elemAttr", ""), Undead: info.intValue("undead", 0) != 0}
+	return Mob{ID: id, Level: info.intValue("level", 1), HP: int64(info.intValue("maxHP", 0)), MP: info.intValue("maxMP", 0), EXP: int64(info.intValue("exp", 0)), PAD: info.intValue("PADamage", 0), PDD: info.intValue("PDDamage", 0), Boss: info.intValue("boss", 0) != 0, PDRate: info.intValue("PDRate", 0), OnlyNormalAttack: info.intValue("onlyNormalAttack", 0) != 0, Invincible: info.intValue("invincible", 0) != 0, FixedDamage: info.intValue("fixedDamage", 0), HasFixedDamage: info.child("fixedDamage") != nil, MDD: info.intValue("MDDamage", 0), MDRate: info.intValue("MDRate", 0), EVA: info.intValue("eva", 0), ElemAttr: info.stringValue("elemAttr", ""), Undead: info.intValue("undead", 0) != 0, DropItemPeriod: info.intValue("dropItemPeriod", 0)}
 }
 
 func parseMap(id int, n *wzNode) (Map, error) {
