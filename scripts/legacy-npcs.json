@@ -967,12 +967,6 @@
       "lua_sha256": "f283aefd04cac6af4a762ad8ff92402eaea9c275357163c4901d0a94cc3c8320"
     },
     {
-      "legacy": "npc/2012022.js",
-      "source_sha256": "6bc1dfc3305338157f7cb8fee616438839700ffb619b5a3e14d4158fe5bd8e90",
-      "lua": "npc/2012022.lua",
-      "lua_sha256": "1a092cdd5c6a9b207c893ac8f3222c5319fb31516132ee3c9b7a82ba762458a1"
-    },
-    {
       "legacy": "npc/2012023.js",
       "source_sha256": "d596d891b818626e6c5809d0ac9d675d00d1f409c8a910b307bf58374df5c38d",
       "lua": "npc/2012023.lua",
@@ -1243,12 +1237,6 @@
       "lua_sha256": "b04134830d26df269c72ded691bb325e482cc16819328362ab8b6ebc83362bc7"
     },
     {
-      "legacy": "npc/2041001.js",
-      "source_sha256": "20862580476586de25ebdc399872328e751e9dbab23ca3d717ac53446cdf5f4e",
-      "lua": "npc/2041001.lua",
-      "lua_sha256": "ddfccd2b9eb2e526da9298fc2039f74800231412e59a19d348be61ac9bc15d16"
-    },
-    {
       "legacy": "npc/2041007.js",
       "source_sha256": "180d17ae89d9eac4ca409cd1cc918818c96cc08cbb3227d7308da3645ccfef92",
       "lua": "npc/2041007.lua",
@@ -1427,12 +1415,6 @@
       "source_sha256": "1301316812ef5eaeb3b8a73407670bb5e3eb427d65ab2be1bf9414759832e89e",
       "lua": "npc/2082000.lua",
       "lua_sha256": "afc81e4d90940509b5e43ecae99871d81ae9902a5824117bf4769776de2141c0"
-    },
-    {
-      "legacy": "npc/2082002.js",
-      "source_sha256": "ed919234fbd33757a47eb845c2f0193bdd0d24261bd8ddc44e483a2dbbf9c2df",
-      "lua": "npc/2082002.lua",
-      "lua_sha256": "5431834b14b7ec37941d2f0fa414300d2958569f558da5d694e34db16f7befbc"
     },
     {
       "legacy": "npc/2083000.js",
@@ -3127,16 +3109,8 @@
       "reason": "cm.getEventManager is not supported (line 10)"
     },
     {
-      "legacy": "npc/2012013.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
-    },
-    {
       "legacy": "npc/2012018.js",
       "reason": "cm.getMap is not supported (line 15)"
-    },
-    {
-      "legacy": "npc/2012021.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
     },
     {
       "legacy": "npc/2012025.js",
@@ -3247,10 +3221,6 @@
       "reason": "cm.getBuddyCapacity is not supported (line 31)"
     },
     {
-      "legacy": "npc/2041000.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
-    },
-    {
       "legacy": "npc/2041023.js",
       "reason": "cm.getEventManager is not supported (line 17)"
     },
@@ -3293,10 +3263,6 @@
     {
       "legacy": "npc/2081005.js",
       "reason": "cm.getCharByName is not supported (line 33)"
-    },
-    {
-      "legacy": "npc/2082001.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
     },
     {
       "legacy": "npc/2082003.js",

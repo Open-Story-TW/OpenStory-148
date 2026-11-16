@@ -49,6 +49,7 @@ type Server struct {
 	buddies          *buddySpace
 	parties          *partySpace
 	events           *eventSpace
+	transitStart     time.Time
 	guilds           *guildSpace
 	guildOnce        sync.Once
 	ready            atomic.Bool
@@ -127,6 +128,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	}
 	s.parties = newPartySpace()
 	s.events = newEventSpace()
+	s.transitStart = time.Now()
 	if cfg.ScriptsDir != "" {
 		// A bad file on disk must not stop the world: it is reported and the
 		// built-in source keeps running.
@@ -189,6 +191,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	// Optional in-process dummies (build tag loaddummy + MAPLEGO_LOAD_DUMMY=1).
 	s.startLoadDummies(ctx)
 	go s.runGameplay(ctx)
+	go s.runTransit(ctx)
 	go s.runSkills(ctx)
 	go s.runCombatLoot(ctx)
 	go s.runCombatSettlements(ctx)

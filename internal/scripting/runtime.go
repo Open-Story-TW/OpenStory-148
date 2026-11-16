@@ -594,6 +594,9 @@ func (s *Session) installHost() {
 		bind("event_leave", s.simpleCommand("event_leave", 0), 1)
 		bind("event_areas", s.simpleCommand("event_areas", 0), 1)
 		bind("event_party_exp", s.simpleCommand("event_party_exp", 1), 2)
+		bind("transit_status", s.simpleCommand("transit_status", 0), 1)
+		bind("transit_board", s.simpleCommand("transit_board", 0), 1)
+		bind("transit_leave", s.simpleCommand("transit_leave", 0), 1)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err
