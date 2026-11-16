@@ -3145,10 +3145,6 @@
       "reason": "no enter function (line ?)"
     },
     {
-      "legacy": "portal/LudiElevator_in.js",
-      "reason": "pi.getEventManager is not supported (line 9)"
-    },
-    {
       "legacy": "portal/MCrevive1.js",
       "reason": "call .getTeam is not supported (line 9)"
     },

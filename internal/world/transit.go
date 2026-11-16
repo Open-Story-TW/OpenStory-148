@@ -61,6 +61,7 @@ func (s *Server) runTransit(ctx context.Context) {
 			return
 		case now := <-ticker.C:
 			s.tickTransit(ctx, now)
+			s.tickElevators(ctx, now)
 		}
 	}
 }

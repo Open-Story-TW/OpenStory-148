@@ -164,7 +164,7 @@ func (c *Catalog) Map(id int) (Map, error) {
 	if c.root == "" {
 		return Map{}, fmt.Errorf("map %d is absent from embedded content", id)
 	}
-	node, err := readWZ(filepath.Join(c.root, "Map.wz", "Map", fmt.Sprintf("Map%d", id/100000000), fmt.Sprintf("%09d.img.xml", id)))
+	node, err := c.readMapXML(id)
 	if err != nil {
 		return Map{}, err
 	}
@@ -176,6 +176,34 @@ func (c *Catalog) Map(id int) (Map, error) {
 	c.maps[id] = m
 	c.mu.Unlock()
 	return m, nil
+}
+
+func (c *Catalog) readMapXML(id int) (*wzNode, error) {
+	visited := map[int]bool{}
+	var info *wzNode
+	for field := id; ; {
+		if field < 0 || field > 999999998 || visited[field] || len(visited) >= 32 {
+			return nil, fmt.Errorf("invalid map link %d for field %d", field, id)
+		}
+		visited[field] = true
+		node, err := readWZ(filepath.Join(c.root, "Map.wz", "Map", fmt.Sprintf("Map%d", field/100000000), fmt.Sprintf("%09d.img.xml", field)))
+		if err != nil {
+			return nil, err
+		}
+		current := node.child("info")
+		if current == nil {
+			return nil, fmt.Errorf("map %d has no info", field)
+		}
+		if info == nil {
+			info = current
+		}
+		if current.child("link") == nil {
+			// A linked field has the linked geometry and its own entry rules.
+			*current = *info
+			return node, nil
+		}
+		field = current.intValue("link", -1)
+	}
 }
 
 func (c *Catalog) Mob(id int) (Mob, error) {

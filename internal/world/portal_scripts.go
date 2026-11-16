@@ -164,6 +164,9 @@ func (h *portalScriptHost) execute(ctx context.Context, id scripting.Identity, c
 	if h.portal.Script == "entertraining" {
 		return h.executeTraining(ctx, snapshot, command)
 	}
+	if h.portal.Script == "LudiElevator_in" && command.Script == "portal/LudiElevator_in.lua" {
+		return scripting.CommandResult{}, h.boardElevator(ctx, command)
+	}
 	// Ardentmill's ticket portal and its Free Market door are written by hand
 	// and use the same reads, notice and atomic exchange as a generated
 	// Legacy source.

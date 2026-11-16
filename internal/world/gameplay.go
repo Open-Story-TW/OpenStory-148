@@ -72,7 +72,7 @@ type gameplayRoom struct {
 	mobs       map[int32]*gameplayMob
 	summons    map[int32]*roomSummon
 	areas      map[int32]*roomArea
-	reactors   map[int32]*roomReactor // gathering nodes; nil on most maps
+	reactors   map[int32]*roomReactor // nil on most maps
 }
 type gameplaySpace struct {
 	mu            sync.Mutex

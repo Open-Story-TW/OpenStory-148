@@ -41,9 +41,12 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 	}
 	r.reactors = make(map[int32]*roomReactor, len(reactors))
 	for _, def := range reactors {
-		node, err := content.GatherNodeDefinition(wzRoot(), def.TemplateID)
-		if err != nil {
-			continue
+		var node content.GatherNode
+		if def.TemplateID != content.HeliosElevatorDoor {
+			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
+			if err != nil {
+				continue
+			}
 		}
 		oid := g.alloc()
 		if oid == 0 {
@@ -155,7 +158,7 @@ func (s *Server) startHarvest(channel int, live *liveCharacter, sink packetSink,
 	g := s.gameplay
 	g.mu.Lock()
 	if r := g.rooms[mapKey{channel: channel, mapID: c.MapID}]; r != nil {
-		if x := r.reactors[objectID]; x != nil && !x.gone && c.HP > 0 {
+		if x := r.reactors[objectID]; x != nil && x.node.Profession != 0 && !x.gone && c.HP > 0 {
 			level := c.Profession(x.node.Profession).Level
 			tool = gatherTool(c, x.node.Profession)
 			switch {

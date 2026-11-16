@@ -50,6 +50,7 @@ type Server struct {
 	parties          *partySpace
 	events           *eventSpace
 	transitStart     time.Time
+	elevators        *elevatorSpace
 	guilds           *guildSpace
 	guildOnce        sync.Once
 	ready            atomic.Bool
@@ -129,6 +130,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	s.parties = newPartySpace()
 	s.events = newEventSpace()
 	s.transitStart = time.Now()
+	s.elevators = &elevatorSpace{starts: make(map[mapKey]time.Time)}
 	if cfg.ScriptsDir != "" {
 		// A bad file on disk must not stop the world: it is reported and the
 		// built-in source keeps running.

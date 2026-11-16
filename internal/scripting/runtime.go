@@ -647,6 +647,7 @@ func (s *Session) installHost() {
 		bind("message", s.messageCommand("portal_message"), 3)
 		bind("portal_name", s.simpleCommand("portal_name", 0), 1)
 		bind("portal_id", s.simpleCommand("portal_id", 0), 1)
+		bind("elevator_board", s.simpleCommand("elevator_board", 0), 1)
 		bind("player_count", s.simpleCommand("player_count", 1), 2)
 		bind("monster_count", s.simpleCommand("monster_count", 0), 1)
 		bind("open_npc", s.simpleCommand("open_npc", 1), 2)

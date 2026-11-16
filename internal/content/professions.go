@@ -222,8 +222,10 @@ func GatherNodeDefinition(root string, id int) (GatherNode, error) {
 
 var mapReactors sync.Map // "root|map" -> []Reactor
 
-// MapReactors lists the gathering nodes placed on a map. Other reactors are
-// left out: nothing else in the server drives them yet.
+// HeliosElevatorDoor is the WZ reactor placed at each elevator entrance.
+const HeliosElevatorDoor = 2208004
+
+// MapReactors lists the supported reactors placed on a map.
 func MapReactors(root string, mapID int) ([]Reactor, error) {
 	if root == "" || mapID < 0 || mapID > 999999998 {
 		return nil, nil
@@ -248,8 +250,10 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 			if err != nil {
 				continue
 			}
-			if _, err = GatherNodeDefinition(root, id); err != nil {
-				continue
+			if id != HeliosElevatorDoor || mapID != 222020100 && mapID != 222020200 {
+				if _, err = GatherNodeDefinition(root, id); err != nil {
+					continue
+				}
 			}
 			out = append(out, Reactor{Index: index, TemplateID: id, X: n.intValue("x", 0), Y: n.intValue("y", 0), Facing: n.intValue("f", 0), Respawn: n.intValue("reactorTime", 0)})
 		}
