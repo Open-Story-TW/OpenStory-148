@@ -216,7 +216,8 @@ func (s *Server) executeCombatTicket(ctx context.Context, repo domain.CombatSett
 			return s.rejectCombatTicket(t)
 		}
 		s.gameplay.mu.Lock()
-		areasCurrent := s.eruptionClaimsCurrentLocked(t, time.Now())
+		areasCurrent := s.eruptionClaimsCurrentLocked(t, time.Now()) &&
+			s.expeditionCombatAllowedLocked(t.key, t.actorSession.CharacterID)
 		s.gameplay.mu.Unlock()
 		if !areasCurrent {
 			unlock()
@@ -525,6 +526,7 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 	for _, q := range t.request.Targets {
 		if q.Defeated {
 			_ = s.spawnCombatLoot(ctx, t.actor, t.sink, q.SpawnOperationID, q.MobID, q.X, q.Y)
+			s.expeditionBossDefeated(t.key, t.actorSession.CharacterID, q.MobID)
 		}
 	}
 	if t.generic != nil {

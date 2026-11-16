@@ -37,6 +37,9 @@ func (s *Server) runPortalScript(ctx context.Context, channel int, live *liveCha
 	snapshot := live.session
 	live.mu.Unlock()
 	mapID := snapshot.Character.MapID
+	if handled, err := s.expeditionStagePortal(ctx, snapshot, live, sink, p); handled {
+		return err
+	}
 	if handled, err := s.kerningStagePortal(ctx, snapshot, live, sink, p); handled {
 		return err
 	}

@@ -508,7 +508,11 @@ func (s *Server) warpGameplayConditional(ctx context.Context, channel int, live 
 	value := before
 	if revival != nil {
 		// Match the reference's ordinary return policy, bounded by real MaxHP.
-		value.HP = min(value.MaxHP, 1500)
+		hp := revival.hp
+		if hp == 0 {
+			hp = 1500
+		}
+		value.HP = min(value.MaxHP, hp)
 	}
 	value.MapID = mapID
 	value.SpawnPoint = entry.ID

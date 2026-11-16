@@ -9,7 +9,10 @@ import (
 	"maple-go-server/internal/protocol"
 )
 
-type revivalTransition struct{ fromMap int }
+type revivalTransition struct {
+	fromMap int
+	hp      int // Nonzero for an event-specific revival.
+}
 
 // clearDeathBuffs requires live.persistMu. It commits death cancellation before
 // a subsequent return can restore HP, so a rapid confirmation cannot preserve
@@ -81,6 +84,15 @@ func (s *Server) reviveGameplay(ctx context.Context, channel int, live *liveChar
 	current, err := s.gameplay.catalog.Map(c.MapID)
 	if err != nil || current.ReturnMap == 999999999 {
 		return reject("no_return_map")
+	}
+	if inst := s.eventOf(c.ID); inst != nil && inst.definition.Name == "Hilla" && inst.definition.Stage(c.MapID) {
+		entry, ok := current.Spawn()
+		if !ok {
+			return reject("no_spawn")
+		}
+		s.cancelNPCScript(live)
+		s.closeEconomyDialog(live)
+		return s.warpGameplayTransition(ctx, channel, live, sink, c.MapID, entry, &revivalTransition{fromMap: c.MapID, hp: 50})
 	}
 	to, err := s.gameplay.catalog.Map(current.ReturnMap)
 	if err != nil {

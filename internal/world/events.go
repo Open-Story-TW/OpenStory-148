@@ -3,6 +3,9 @@ package world
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log/slog"
+	"maps"
 	"sync"
 	"time"
 
@@ -24,14 +27,17 @@ type eventKey struct {
 }
 
 type eventInstance struct {
-	id         string
-	definition content.Event
-	channel    int
-	partyID    int64
-	members    map[int64]struct{}
-	deadline   time.Time
-	properties map[string]string
-	ended      bool
+	id           string
+	definition   content.Event
+	channel      int
+	partyID      int64
+	expeditionID int64
+	members      map[int64]struct{}
+	deadline     time.Time
+	properties   map[string]string
+	starting     bool
+	cleared      bool
+	ended        bool
 }
 
 type eventSpace struct {
@@ -120,68 +126,24 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	if leader.ChannelID != channel || leader.Character.HP <= 0 || s.tradeActive(live) {
 		return "unavailable", 0, 0, nil
 	}
-	party := s.partySnapshotOf(leader.CharacterID)
-	if party.ID == 0 {
-		return "no_party", 0, 0, nil
+	if e.ExpeditionType != 0 && leader.Character.MapID != e.LobbyMap {
+		return "unavailable", 0, 0, nil
 	}
-	if party.LeaderID != leader.CharacterID {
-		return "not_leader", 0, 0, nil
+	// Reserve the expedition while its roster cannot change. The map warps
+	// below must run after the command lock is released.
+	if e.ExpeditionType != 0 {
+		s.parties.commands.Lock()
 	}
-	group := []eventOccupant{}
-	s.parties.mu.Lock()
-	for _, m := range party.Members {
-		if peer := s.parties.peers[m.CharacterID]; peer != nil && peer.party.ID == party.ID && m.CharacterID != leader.CharacterID {
-			group = append(group, eventOccupant{peer.live, peer.sink})
-		}
+	inst, present, reason, here, qualified := s.eventReserve(e, leader, live)
+	if e.ExpeditionType != 0 {
+		s.parties.commands.Unlock()
 	}
-	s.parties.mu.Unlock()
-	fits := func(c domain.Character) bool { return c.GM > 0 || c.Level >= e.LevelMin && c.Level <= e.LevelMax }
-	here, qualified = 1, 0
-	if fits(leader.Character) {
-		qualified = 1
-	}
-	present := group[:0]
-	for _, m := range group {
-		m.live.mu.Lock()
-		there := m.live.session
-		m.live.mu.Unlock()
-		if there.ChannelID != channel || there.Character.MapID != leader.Character.MapID || there.Character.HP <= 0 || s.tradeActive(m.live) {
-			continue
-		}
-		here++
-		if fits(there.Character) {
-			qualified++
-		}
-		present = append(present, m)
-	}
-	if here < e.PartyMin || len(party.Members) > e.PartyMax {
-		return "party_size", here, qualified, nil
-	}
-	if qualified != here {
-		return "level", here, qualified, nil
-	}
-	occupied := len(s.eventOccupants(channel, e.Maps)) > 0
-	inst := &eventInstance{id: platform.NewID(), definition: e, channel: channel, partyID: party.ID, members: map[int64]struct{}{leader.CharacterID: {}},
-		deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second), properties: map[string]string{}}
-	for _, m := range present {
-		inst.members[partySession(m.live).CharacterID] = struct{}{}
+	if reason != "" {
+		return reason, here, qualified, nil
 	}
 	key := eventKey{channel, name}
-	s.events.mu.Lock()
-	busy := occupied || s.events.running[key] != nil
-	for id := range inst.members {
-		busy = busy || s.events.byMember[id] != nil
-	}
-	if busy {
-		s.events.mu.Unlock()
-		return "busy", here, qualified, nil
-	}
-	s.events.running[key] = inst
-	for id := range inst.members {
-		s.events.byMember[id] = inst
-	}
-	s.events.mu.Unlock()
 	if err = s.gameplay.resetEventRooms(channel, e); err != nil {
+		slog.Warn("event_reset_failed", "event", name, "channel", channel, "error", err)
 		s.events.mu.Lock()
 		s.closeEventMembersLocked(inst)
 		if s.events.running[key] == inst {
@@ -202,8 +164,98 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
 	}
+	s.events.mu.Lock()
+	inst.starting = false
+	partial := e.ExpeditionType != 0 && (inst.ended || len(inst.members) != here)
+	s.events.mu.Unlock()
+	if partial {
+		s.eventEnd(inst)
+		return "unavailable", here, qualified, nil
+	}
 	s.eventSettle(inst)
 	return "", here, qualified, err
+}
+
+func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, live *liveCharacter) (inst *eventInstance, present []eventOccupant, reason string, here, qualified int) {
+	var partyID, expeditionID int64
+	var size int
+	var group []eventOccupant
+	if e.ExpeditionType != 0 {
+		expeditionID, size, group, reason = s.eventExpeditionRoster(e, leader.CharacterID, live)
+	} else {
+		partyID, size, group, reason = s.eventPartyRoster(leader.CharacterID)
+	}
+	if reason != "" {
+		return nil, nil, reason, 0, 0
+	}
+	fits := func(c domain.Character) bool {
+		return e.ExpeditionType == 0 && c.GM > 0 || c.Level >= e.LevelMin && c.Level <= e.LevelMax
+	}
+	here, qualified = 1, 0
+	if fits(leader.Character) {
+		qualified = 1
+	}
+	present = group[:0]
+	for _, m := range group {
+		there := partySession(m.live)
+		if there.ChannelID != leader.ChannelID || there.Character.MapID != leader.Character.MapID || there.Character.HP <= 0 || s.tradeActive(m.live) {
+			continue
+		}
+		here++
+		if fits(there.Character) {
+			qualified++
+		}
+		present = append(present, m)
+	}
+	if here < e.PartyMin || size > e.PartyMax {
+		return nil, nil, "party_size", here, qualified
+	}
+	if qualified != here {
+		return nil, nil, "level", here, qualified
+	}
+	if e.ExpeditionType != 0 && here != size {
+		return nil, nil, "roster_absent", here, qualified
+	}
+	occupied := len(s.eventOccupants(leader.ChannelID, e.Maps)) > 0
+	inst = &eventInstance{id: platform.NewID(), definition: e, channel: leader.ChannelID, partyID: partyID, expeditionID: expeditionID,
+		members: map[int64]struct{}{leader.CharacterID: {}}, deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second),
+		properties: map[string]string{}, starting: expeditionID != 0}
+	for _, m := range present {
+		inst.members[partySession(m.live).CharacterID] = struct{}{}
+	}
+	key := eventKey{leader.ChannelID, e.Name}
+	s.events.mu.Lock()
+	defer s.events.mu.Unlock()
+	busy := occupied || s.events.running[key] != nil
+	for id := range inst.members {
+		busy = busy || s.events.byMember[id] != nil
+	}
+	if busy {
+		return nil, nil, "busy", here, qualified
+	}
+	s.events.running[key] = inst
+	for id := range inst.members {
+		s.events.byMember[id] = inst
+	}
+	return inst, present, "", here, qualified
+}
+
+func (s *Server) eventPartyRoster(leader int64) (partyID int64, size int, group []eventOccupant, reason string) {
+	party := s.partySnapshotOf(leader)
+	if party.ID == 0 {
+		return 0, 0, nil, "no_party"
+	}
+	if party.LeaderID != leader {
+		return 0, 0, nil, "not_leader"
+	}
+	s.parties.mu.Lock()
+	for _, m := range party.Members {
+		if peer := s.parties.peers[m.CharacterID]; peer != nil && peer.party.ID == party.ID && m.CharacterID != leader {
+			group = append(group, eventOccupant{peer.live, peer.sink})
+		}
+	}
+	s.parties.mu.Unlock()
+	return party.ID, len(party.Members), group, ""
 }
 
 func (s *Server) warpEventMember(ctx context.Context, inst *eventInstance, from int, member eventOccupant, mapID int, entry content.Portal) error {
@@ -229,7 +281,7 @@ func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bo
 	defer s.events.mu.Unlock()
 	inst := s.events.running[eventKey{session.ChannelID, e.Name}]
 	if inst == nil {
-		return session.Character.GM > 0
+		return e.ExpeditionType == 0 && session.Character.GM > 0
 	}
 	return !inst.ended && s.events.byMember[session.CharacterID] == inst
 }
@@ -247,7 +299,11 @@ func (s *Server) eventUnregister(inst *eventInstance, id int64) {
 // eventSettle ends an instance that has fallen below its Keep count.
 func (s *Server) eventSettle(inst *eventInstance) {
 	s.events.mu.Lock()
-	short := !inst.ended && len(inst.members) < inst.definition.Keep
+	keep := inst.definition.Keep
+	if inst.cleared {
+		keep = 1 // Victorious expedition members may finish picking up their drops.
+	}
+	short := !inst.starting && !inst.ended && len(inst.members) < keep
 	s.events.mu.Unlock()
 	if short {
 		s.eventEnd(inst)
@@ -344,7 +400,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 		s.eventSettle(inst)
 		return
 	}
-	if e, ok := content.EventByMap(c.MapID); ok && c.GM == 0 {
+	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || c.GM == 0) {
 		go s.eventExit(channel, e, live, sink)
 	}
 }
@@ -483,8 +539,21 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 	for _, id := range event.Maps {
 		key := mapKey{channel, id}
 		delete(g.rooms, key)
-		if _, err := g.room(key); err != nil {
+		room, err := g.room(key)
+		if err != nil {
 			return err
+		}
+		if required, checked := event.RequiredMobs[id]; checked {
+			actual := make(map[int]int)
+			for _, m := range room.mobs {
+				if m.life.RespawnSeconds != -1 {
+					return fmt.Errorf("event %s map %d contains a respawning monster", event.Name, id)
+				}
+				actual[m.life.TemplateID]++
+			}
+			if !maps.Equal(actual, required) {
+				return fmt.Errorf("event %s map %d has unexpected WZ population: %v", event.Name, id, actual)
+			}
 		}
 	}
 	for _, spawn := range event.Spawns {

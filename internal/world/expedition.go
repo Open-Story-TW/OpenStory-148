@@ -300,6 +300,10 @@ func (s *Server) handleExpedition(ctx context.Context, live *liveCharacter, sink
 		}
 	}
 	b.mu.Lock()
+	switch q.Mode {
+	case protocol.ExpeditionLeave, protocol.ExpeditionKick, protocol.ExpeditionMove:
+		s.eventExpeditionChangedLocked()
+	}
 	queueParty(out)
 	b.mu.Unlock()
 	if err != nil && !errors.Is(err, domain.ErrStaleOwner) {

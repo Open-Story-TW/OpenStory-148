@@ -20,6 +20,12 @@ type Event struct {
 	Keep               int
 	LevelMin, LevelMax int
 	Spawns             []EventSpawn
+	// ExpeditionType binds admission to a native expedition instead of a
+	// single party. Expedition entries are restricted to their lobby map.
+	ExpeditionType int
+	LobbyMap       int
+	// Exact static encounter populations needed from the mounted v148 maps.
+	RequiredMobs map[int]map[int]int
 }
 
 // EventSpawn is a scripted spawn added each time the event's map is reset.
@@ -46,6 +52,12 @@ var events = map[string]Event{
 		// the lower platform between the two NPCs.
 		Spawns: []EventSpawn{{MapID: 910340500, Life: Life{Kind: "m", TemplateID: 9300003,
 			X: 35, Y: -435, Foothold: 53, RX0: 0, RX1: 90, RespawnSeconds: -1}}},
+	},
+	"Hilla": {
+		Name: "Hilla", Maps: []int{262030100, 262030200, 262030300},
+		ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
+		LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000,
+		RequiredMobs: map[int]map[int]int{262030100: {8870001: 8}, 262030200: {8870002: 8}, 262030300: {8870000: 1}},
 	},
 }
 
