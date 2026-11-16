@@ -48,6 +48,7 @@ type Server struct {
 	skills           *skillSpace
 	buddies          *buddySpace
 	parties          *partySpace
+	events           *eventSpace
 	guilds           *guildSpace
 	guildOnce        sync.Once
 	ready            atomic.Bool
@@ -125,6 +126,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 		}
 	}
 	s.parties = newPartySpace()
+	s.events = newEventSpace()
 	if cfg.ScriptsDir != "" {
 		// A bad file on disk must not stop the world: it is reported and the
 		// built-in source keeps running.

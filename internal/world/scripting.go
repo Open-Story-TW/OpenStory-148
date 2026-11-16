@@ -342,7 +342,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	switch command.Kind {
 	case "quest_start", "quest_complete", "quest_forfeit", "exchange", "change_look", "warp", "open_storage", "open_merchant_bank", "open_shop", "advance_warrior", "advance_first_job", "advance_second_job", "depart_island", "take_taxi",
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
-		"profession_learn", "profession_forget", "open_crafting":
+		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_set", "event_effect":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
@@ -413,6 +413,10 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 			a.server.parties.mu.Unlock()
 		}
 		return result(value)
+	case "character_id":
+		return result(snapshot.CharacterID)
+	case "event_status", "event_start", "event_get", "event_set", "event_finish", "event_leave", "event_effect", "event_areas", "event_party_exp":
+		return a.eventCommand(ctx, snapshot, command)
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
 			return scripting.CommandResult{}, domain.ErrInvalidInput

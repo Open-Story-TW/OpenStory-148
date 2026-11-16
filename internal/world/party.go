@@ -457,6 +457,7 @@ func (s *Server) applyParty(ctx context.Context, live *liveCharacter, sink packe
 	}
 	out = append(out, s.partyHPDeltas(after)...)
 	out = append(out, b.expeditionAfterParty(q, result)...)
+	s.eventPartyChanged(result.Before, after)
 	queueParty(out)
 	b.mu.Unlock()
 	unlock()

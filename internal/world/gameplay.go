@@ -32,6 +32,15 @@ type gameplayMob struct {
 	qaOwner       *qaMobOwner
 }
 
+// Event maps reset their one-time spawns between groups.
+func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
+	_, eventMap := content.EventByMap(mapID)
+	if eventMap && m.life.RespawnSeconds == -1 {
+		return time.Time{}
+	}
+	return now.Add(time.Duration(max(5, m.life.RespawnSeconds)) * time.Second)
+}
+
 // lethalHP is the most damage one settlement may apply: a held mob keeps 1 HP.
 func (m *gameplayMob) lethalHP() int64 {
 	if m.qaHeld {
@@ -257,6 +266,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.gameplay.tickAreas(now)
 			s.gameplay.tickDoors(now, s.partySnapshot())
 			s.gameplay.tickReactors(now)
+			s.tickEvents(now)
 		}
 	}
 }
@@ -470,6 +480,11 @@ func (s *Server) warpGameplayConditional(ctx context.Context, channel int, live 
 		live.persistMu.Unlock()
 		return s.writeScenePackets(expectedVisit, protocol.EnableActions())
 	}
+	if !s.eventAllowsEntry(session, mapID) {
+		live.mu.Unlock()
+		live.persistMu.Unlock()
+		return s.writeScenePackets(expectedVisit, protocol.EnableActions())
+	}
 	if revival != nil && (before.HP != 0 || before.MaxHP < 1 || before.MapID != revival.fromMap) {
 		live.mu.Unlock()
 		live.persistMu.Unlock()
@@ -594,6 +609,7 @@ func (s *Server) publishGameplayWarp(ctx context.Context, channel int, live *liv
 	}
 	s.publishStatDetail(live, sink, time.Now(), true)
 	s.enqueueMapEntry(channel, live, sink)
+	s.eventEntered(channel, live, sink)
 	return nil
 }
 

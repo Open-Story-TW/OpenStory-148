@@ -224,6 +224,7 @@ func (s *Server) commitParty(ctx context.Context, repo domain.PartyRepository, q
 				out = append(out, partyDelivery{peer: p, packets: [][]byte{packet}})
 			}
 		}
+		s.eventPartyChanged(result.Before, after)
 		if q.Action == domain.PartyRemove && after.ID != 0 && after.LeaderID != result.Before.LeaderID {
 			out = append(out, b.snapshots(after)...)
 		}

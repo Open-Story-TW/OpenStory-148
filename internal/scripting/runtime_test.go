@@ -7,6 +7,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"maple-go-server/scripts"
 )
 
 var testIdentity = Identity{SessionID: "test-auth-session", CharacterID: 1, Generation: 3}
@@ -295,6 +297,68 @@ end`, Options{Host: host})
 	cmd := host.commands[1]
 	if cmd.Kind != "exchange" || cmd.Exchange.MesosDelta != 10 || cmd.Exchange.Items[0].Quantity != 1 || *cmd.Exchange.Logs[0].Expected != 0 || cmd.ID == "" {
 		t.Fatalf("bad command=%+v", cmd)
+	}
+}
+
+type kerningFirstStageHost struct {
+	cleared, paid bool
+}
+
+func (h *kerningFirstStageHost) Execute(_ context.Context, _ Identity, c Command) (CommandResult, error) {
+	var value any
+	switch c.Kind {
+	case "event_status":
+		value = map[string]any{"inside": true, "attempt": "stage-test", "members": int64(2)}
+	case "map_id":
+		value = int64(910340100)
+	case "party":
+		value = map[string]any{"leader": true}
+	case "event_get":
+		value = ""
+	case "read_log":
+		value = int64(0)
+	case "item_count":
+		value = int64(1)
+	case "exchange":
+		h.paid = len(c.Exchange.Items) == 1 && c.Exchange.Items[0].TemplateID == 4001008 && c.Exchange.Items[0].Quantity == -1
+		value = map[string]any{"ok": h.paid}
+	case "event_party_exp":
+		if !h.paid || len(c.Ints) != 1 || c.Ints[0] != 100 {
+			return CommandResult{}, errors.New("incorrect party experience reward")
+		}
+	case "event_set":
+		h.cleared = c.Text == "1stageclear=true"
+	case "event_effect":
+		if !h.cleared || c.Text != "clear" {
+			return CommandResult{}, errors.New("incorrect clear effect")
+		}
+	default:
+		return CommandResult{}, errors.New("unexpected stage command " + c.Kind)
+	}
+	return CommandResult{Value: value}, nil
+}
+
+func TestKerningFirstStageUsesNativeScriptBindings(t *testing.T) {
+	const name = "npc/9020001.lua"
+	source, err := scripts.Source(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	host := &kerningFirstStageHost{}
+	e, err := New(Options{Host: host})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = e.Register(name, source); err != nil {
+		t.Fatal(err)
+	}
+	s, event, err := e.Start(context.Background(), testIdentity, name, StartOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Cancel()
+	if !host.paid || !host.cleared || event.Prompt == nil || !strings.Contains(event.Prompt.Text, "下一關") {
+		t.Fatalf("failed to clear stage: paid=%v cleared=%v event=%+v", host.paid, host.cleared, event)
 	}
 }
 

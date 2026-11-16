@@ -138,7 +138,7 @@ func (s *Server) gmKillAll(key mapKey) int {
 				continue
 			}
 			mob.hp = 0
-			mob.respawnAt = now.Add(time.Duration(max(5, mob.life.RespawnSeconds)) * time.Second)
+			mob.respawnAt = mob.respawnTime(key.mapID, now)
 			mob.statuses, mob.contributions = nil, nil
 			deliveries = append(deliveries, roomBroadcast(room, protocol.KillMonster(mob.objectID), -1)...)
 			killed++

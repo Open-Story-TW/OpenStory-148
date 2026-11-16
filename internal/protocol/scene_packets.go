@@ -73,6 +73,7 @@ func fieldEffect(kind byte, name string) []byte {
 func FieldScreenEffect(name string) []byte { return fieldEffect(3, name) }
 func FieldSoundEffect(name string) []byte  { return fieldEffect(4, name) }
 func FieldMusic(name string) []byte        { return fieldEffect(6, name) }
+func FieldObjectEffect(name string) []byte { return fieldEffect(2, name) }
 
 func sceneResource(name string) bool {
 	return name != "" && len(name) <= 160 && !strings.Contains(name, "..") && !strings.ContainsAny(name, "\\\x00")

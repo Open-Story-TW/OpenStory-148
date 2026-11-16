@@ -136,7 +136,7 @@ func gmResponse(kind string, r protocol.NPCResponse, p *scripting.Prompt) string
 }
 
 // Queries are frequent and side-effect free; only their failures are shown.
-var gmQuietCommands = map[string]bool{"map_id": true, "level": true, "job": true, "hp": true, "mesos": true, "item_count": true, "can_hold": true, "quest_state": true, "quest_data": true, "read_log": true, "gender": true, "hair": true, "face": true, "guild_rank": true, "guild_capacity_limit": true, "alliance_rank": true, "style_filter": true,
+var gmQuietCommands = map[string]bool{"event_status": true, "event_get": true, "map_id": true, "level": true, "job": true, "hp": true, "mesos": true, "item_count": true, "can_hold": true, "quest_state": true, "quest_data": true, "read_log": true, "gender": true, "hair": true, "face": true, "guild_rank": true, "guild_capacity_limit": true, "alliance_rank": true, "style_filter": true,
 	"portal_name": true, "portal_id": true, "player_count": true, "monster_count": true, "profession_level": true, "fame": true, "gm": true, "party_size": true, "party_leader": true}
 
 func (a *worldScript) gmCommand(command scripting.Command, result scripting.CommandResult, err error) {

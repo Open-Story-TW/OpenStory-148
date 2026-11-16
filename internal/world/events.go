@@ -1,0 +1,504 @@
+package world
+
+import (
+	"context"
+	"errors"
+	"sync"
+	"time"
+
+	"maple-go-server/internal/content"
+	"maple-go-server/internal/domain"
+	"maple-go-server/internal/platform"
+	"maple-go-server/internal/protocol"
+)
+
+// An event instance is one group inside the stage maps of a content.Event.
+// The stage maps are the channel's ordinary maps, kept for that group until
+// the instance ends: by its time limit, by too few members remaining, or by a
+// script finishing it. Instances live in memory only. After a restart nobody
+// belongs to one, and a character who logs in on a stage map is sent to the
+// event's exit map (eventEntered).
+type eventKey struct {
+	channel int
+	name    string
+}
+
+type eventInstance struct {
+	id         string
+	definition content.Event
+	channel    int
+	partyID    int64
+	members    map[int64]struct{}
+	deadline   time.Time
+	properties map[string]string
+	ended      bool
+}
+
+type eventSpace struct {
+	mu       sync.Mutex
+	running  map[eventKey]*eventInstance
+	byMember map[int64]*eventInstance
+}
+
+func newEventSpace() *eventSpace {
+	return &eventSpace{running: map[eventKey]*eventInstance{}, byMember: map[int64]*eventInstance{}}
+}
+
+const (
+	eventPropertyLimit = 64
+	eventValueLimit    = 256
+)
+
+// eventOccupant is anyone standing on a stage map, member or not.
+type eventOccupant struct {
+	live *liveCharacter
+	sink packetSink
+}
+
+func (s *Server) eventOccupants(channel int, maps []int) []eventOccupant {
+	if s.gameplay == nil {
+		return nil
+	}
+	var out []eventOccupant
+	s.gameplay.mu.Lock()
+	for _, id := range maps {
+		if room := s.gameplay.rooms[mapKey{channel: channel, mapID: id}]; room != nil {
+			for _, m := range room.members {
+				out = append(out, eventOccupant{m.live, m.sink})
+			}
+		}
+	}
+	s.gameplay.mu.Unlock()
+	return out
+}
+
+// eventStatus reports whether name exists and whether a group holds it on
+// this channel.
+func (s *Server) eventStatus(channel int, name string) map[string]any {
+	e, known := content.EventByName(name)
+	value := map[string]any{"known": known, "busy": false, "members": int64(0)}
+	if !known || s.events == nil {
+		return value
+	}
+	s.events.mu.Lock()
+	if inst := s.events.running[eventKey{channel, name}]; inst != nil {
+		value["busy"], value["members"] = true, int64(len(inst.members))
+	}
+	s.events.mu.Unlock()
+	if value["busy"] == false && len(s.eventOccupants(channel, e.Maps)) > 0 {
+		value["busy"] = true
+	}
+	return value
+}
+
+// eventStart moves the leader's party into the event. The reason is "" on
+// success, otherwise one of unknown, no_party, not_leader, party_size, level
+// or busy; here and qualified count the members on the leader's map and the
+// ones among them inside the level range, for the NPC's refusal text.
+func (s *Server) eventStart(ctx context.Context, name string, channel int, live *liveCharacter, sink packetSink) (reason string, here, qualified int, err error) {
+	e, ok := content.EventByName(name)
+	if !ok || s.events == nil || s.gameplay == nil || s.parties == nil {
+		return "unknown", 0, 0, nil
+	}
+	destination, err := s.gameplay.catalog.Map(e.Maps[0])
+	if err != nil {
+		return "unknown", 0, 0, nil
+	}
+	var entry content.Portal
+	found := false
+	for _, p := range destination.Portals {
+		if p.ID == e.EntryPortal {
+			entry, found = p, true
+		}
+	}
+	if !found {
+		return "unknown", 0, 0, nil
+	}
+	live.mu.Lock()
+	leader := live.session
+	live.mu.Unlock()
+	if leader.ChannelID != channel || leader.Character.HP <= 0 || s.tradeActive(live) {
+		return "unavailable", 0, 0, nil
+	}
+	party := s.partySnapshotOf(leader.CharacterID)
+	if party.ID == 0 {
+		return "no_party", 0, 0, nil
+	}
+	if party.LeaderID != leader.CharacterID {
+		return "not_leader", 0, 0, nil
+	}
+	group := []eventOccupant{}
+	s.parties.mu.Lock()
+	for _, m := range party.Members {
+		if peer := s.parties.peers[m.CharacterID]; peer != nil && peer.party.ID == party.ID && m.CharacterID != leader.CharacterID {
+			group = append(group, eventOccupant{peer.live, peer.sink})
+		}
+	}
+	s.parties.mu.Unlock()
+	fits := func(c domain.Character) bool { return c.GM > 0 || c.Level >= e.LevelMin && c.Level <= e.LevelMax }
+	here, qualified = 1, 0
+	if fits(leader.Character) {
+		qualified = 1
+	}
+	present := group[:0]
+	for _, m := range group {
+		m.live.mu.Lock()
+		there := m.live.session
+		m.live.mu.Unlock()
+		if there.ChannelID != channel || there.Character.MapID != leader.Character.MapID || there.Character.HP <= 0 || s.tradeActive(m.live) {
+			continue
+		}
+		here++
+		if fits(there.Character) {
+			qualified++
+		}
+		present = append(present, m)
+	}
+	if here < e.PartyMin || len(party.Members) > e.PartyMax {
+		return "party_size", here, qualified, nil
+	}
+	if qualified != here {
+		return "level", here, qualified, nil
+	}
+	occupied := len(s.eventOccupants(channel, e.Maps)) > 0
+	inst := &eventInstance{id: platform.NewID(), definition: e, channel: channel, partyID: party.ID, members: map[int64]struct{}{leader.CharacterID: {}},
+		deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second), properties: map[string]string{}}
+	for _, m := range present {
+		inst.members[partySession(m.live).CharacterID] = struct{}{}
+	}
+	key := eventKey{channel, name}
+	s.events.mu.Lock()
+	busy := occupied || s.events.running[key] != nil
+	for id := range inst.members {
+		busy = busy || s.events.byMember[id] != nil
+	}
+	if busy {
+		s.events.mu.Unlock()
+		return "busy", here, qualified, nil
+	}
+	s.events.running[key] = inst
+	for id := range inst.members {
+		s.events.byMember[id] = inst
+	}
+	s.events.mu.Unlock()
+	if err = s.gameplay.resetEventRooms(channel, e); err != nil {
+		s.events.mu.Lock()
+		s.closeEventMembersLocked(inst)
+		if s.events.running[key] == inst {
+			delete(s.events.running, key)
+		}
+		s.events.mu.Unlock()
+		return "unavailable", here, qualified, nil
+	}
+	for _, m := range present {
+		s.cancelNPCScriptState(m.live, false)
+		s.closeEconomyDialog(m.live)
+		// A member who cannot be moved stays outside and is no member.
+		if s.warpEventMember(ctx, inst, leader.Character.MapID, m, destination.ID, entry) != nil {
+			s.eventUnregister(inst, partySession(m.live).CharacterID)
+		}
+	}
+	if err = s.warpEventMember(ctx, inst, leader.Character.MapID, eventOccupant{live, sink}, destination.ID, entry); err != nil {
+		s.eventEnd(inst)
+		return "unavailable", here, qualified, err
+	}
+	s.eventSettle(inst)
+	return "", here, qualified, err
+}
+
+func (s *Server) warpEventMember(ctx context.Context, inst *eventInstance, from int, member eventOccupant, mapID int, entry content.Portal) error {
+	guard := func(session domain.CharacterSession) bool {
+		return session.ChannelID == inst.channel && session.Character.MapID == from && session.Character.HP > 0 &&
+			s.eventOf(session.CharacterID) == inst
+	}
+	if err := s.warpGameplayConditional(ctx, inst.channel, member.live, member.sink, mapID, entry, nil, guard, nil); err != nil {
+		return err
+	}
+	if partySession(member.live).Character.MapID != mapID {
+		return domain.ErrStaleOwner
+	}
+	return nil
+}
+
+func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bool {
+	e, stage := content.EventByMap(mapID)
+	if !stage || s.events == nil {
+		return true
+	}
+	s.events.mu.Lock()
+	defer s.events.mu.Unlock()
+	inst := s.events.running[eventKey{session.ChannelID, e.Name}]
+	if inst == nil {
+		return session.Character.GM > 0
+	}
+	return !inst.ended && s.events.byMember[session.CharacterID] == inst
+}
+
+// eventUnregister drops one member without moving them.
+func (s *Server) eventUnregister(inst *eventInstance, id int64) {
+	s.events.mu.Lock()
+	if s.events.byMember[id] == inst {
+		delete(s.events.byMember, id)
+		delete(inst.members, id)
+	}
+	s.events.mu.Unlock()
+}
+
+// eventSettle ends an instance that has fallen below its Keep count.
+func (s *Server) eventSettle(inst *eventInstance) {
+	s.events.mu.Lock()
+	short := !inst.ended && len(inst.members) < inst.definition.Keep
+	s.events.mu.Unlock()
+	if short {
+		s.eventEnd(inst)
+	}
+}
+
+// eventEnd releases the stage maps and sends everyone on them to the exit
+// map. It never runs on the goroutine of a packet handler that still holds a
+// character's scene, so the warps happen on their own goroutine.
+func (s *Server) eventEnd(inst *eventInstance) {
+	s.events.mu.Lock()
+	if inst.ended {
+		s.events.mu.Unlock()
+		return
+	}
+	s.closeEventMembersLocked(inst)
+	s.events.mu.Unlock()
+	occupants := s.eventOccupants(inst.channel, inst.definition.Maps)
+	go func() {
+		for _, o := range occupants {
+			s.eventExit(inst.channel, inst.definition, o.live, o.sink)
+		}
+		s.events.mu.Lock()
+		key := eventKey{inst.channel, inst.definition.Name}
+		if s.events.running[key] == inst {
+			delete(s.events.running, key)
+		}
+		s.events.mu.Unlock()
+	}()
+}
+
+// closeEventMembersLocked revokes entry while the event slot is still held.
+func (s *Server) closeEventMembersLocked(inst *eventInstance) {
+	inst.ended = true
+	for id := range inst.members {
+		if s.events.byMember[id] == inst {
+			delete(s.events.byMember, id)
+		}
+	}
+	clear(inst.members)
+}
+
+// eventExit sends one character from a stage map to the exit map.
+func (s *Server) eventExit(channel int, e content.Event, live *liveCharacter, sink packetSink) {
+	if live == nil || s.gameplay == nil {
+		return
+	}
+	live.mu.Lock()
+	mapID := live.session.Character.MapID
+	live.mu.Unlock()
+	if !e.Stage(mapID) {
+		return
+	}
+	exit, err := s.gameplay.catalog.Map(e.ExitMap)
+	if err != nil {
+		return
+	}
+	portal, ok := exit.Spawn()
+	if !ok {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	s.cancelNPCScriptState(live, false)
+	s.closeEconomyDialog(live)
+	guard := func(session domain.CharacterSession) bool {
+		return session.ChannelID == channel && e.Stage(session.Character.MapID)
+	}
+	_ = s.warpGameplayConditional(ctx, channel, live, sink, exit.ID, portal, nil, guard, nil)
+}
+
+// eventEntered runs after a character has arrived on a map, at login as well
+// as after a warp. A member on a stage map gets the clock; a member who left
+// the stage maps is out of the group; anyone else found on a stage map is sent
+// to the exit map unless they are a GM.
+func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink) {
+	if s.events == nil || live == nil {
+		return
+	}
+	live.mu.Lock()
+	c := live.session.Character
+	live.mu.Unlock()
+	s.events.mu.Lock()
+	inst := s.events.byMember[c.ID]
+	s.events.mu.Unlock()
+	if inst != nil {
+		if inst.channel == channel && inst.definition.Stage(c.MapID) {
+			if left := int(time.Until(inst.deadline) / time.Second); left > 0 {
+				_ = sink.WritePacket(protocol.Clock(left))
+			}
+			return
+		}
+		s.eventUnregister(inst, c.ID)
+		s.eventSettle(inst)
+		return
+	}
+	if e, ok := content.EventByMap(c.MapID); ok && c.GM == 0 {
+		go s.eventExit(channel, e, live, sink)
+	}
+}
+
+// eventDeparted handles a member whose connection ended.
+func (s *Server) eventDeparted(id int64) {
+	if s.events == nil {
+		return
+	}
+	s.events.mu.Lock()
+	inst := s.events.byMember[id]
+	s.events.mu.Unlock()
+	if inst != nil {
+		s.eventUnregister(inst, id)
+		s.eventSettle(inst)
+	}
+}
+
+// eventPartyChanged is called by every party mutation, under the party lock;
+// the members who are gone leave their event on another goroutine.
+func (s *Server) eventPartyChanged(before, after domain.PartySnapshot) {
+	if s.events == nil {
+		return
+	}
+	var gone []int64
+	for _, m := range before.Members {
+		if _, remains := after.Member(m.CharacterID); !remains {
+			gone = append(gone, m.CharacterID)
+		}
+	}
+	if len(gone) > 0 {
+		go s.eventPartyLeft(before.ID, gone)
+	}
+}
+
+// eventPartyLeft sends members who are no longer in the party to the exit
+// map; arriving there takes them out of the group.
+func (s *Server) eventPartyLeft(partyID int64, ids []int64) {
+	if s.events == nil {
+		return
+	}
+	for _, id := range ids {
+		s.events.mu.Lock()
+		inst := s.events.byMember[id]
+		s.events.mu.Unlock()
+		if inst == nil || inst.partyID != partyID {
+			continue
+		}
+		moved := false
+		for _, o := range s.eventOccupants(inst.channel, inst.definition.Maps) {
+			if partySession(o.live).CharacterID == id {
+				s.eventExit(inst.channel, inst.definition, o.live, o.sink)
+				moved = true
+			}
+		}
+		if !moved {
+			s.eventUnregister(inst, id)
+			s.eventSettle(inst)
+		}
+	}
+}
+
+// tickEvents ends instances whose time is up.
+func (s *Server) tickEvents(now time.Time) {
+	if s.events == nil {
+		return
+	}
+	var due []*eventInstance
+	s.events.mu.Lock()
+	for _, inst := range s.events.running {
+		if !now.Before(inst.deadline) {
+			due = append(due, inst)
+		}
+	}
+	s.events.mu.Unlock()
+	for _, inst := range due {
+		s.eventEnd(inst)
+	}
+}
+
+func (s *Server) eventOf(id int64) *eventInstance {
+	if s.events == nil {
+		return nil
+	}
+	s.events.mu.Lock()
+	defer s.events.mu.Unlock()
+	return s.events.byMember[id]
+}
+
+// eventProperty reads a value the scripts of the running group stored; a
+// character outside any group reads "".
+func (s *Server) eventProperty(id int64, key string) string {
+	inst := s.eventOf(id)
+	if inst == nil {
+		return ""
+	}
+	s.events.mu.Lock()
+	defer s.events.mu.Unlock()
+	return inst.properties[key]
+}
+
+func (s *Server) setEventProperty(id int64, key, value string) error {
+	if s.events == nil {
+		return domain.ErrForbidden
+	}
+	s.events.mu.Lock()
+	defer s.events.mu.Unlock()
+	inst := s.events.byMember[id]
+	if inst == nil {
+		return domain.ErrForbidden
+	}
+	if _, exists := inst.properties[key]; !exists && len(inst.properties) >= eventPropertyLimit || len(value) > eventValueLimit {
+		return domain.ErrInvalidInput
+	}
+	inst.properties[key] = value
+	return nil
+}
+
+// resetEventRooms installs the stage maps for a new attempt. An in-flight kill
+// must settle before a different group can reuse its map.
+func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	for _, id := range event.Maps {
+		if room := g.rooms[mapKey{channel, id}]; room != nil {
+			if len(room.members) != 0 {
+				return domain.ErrAlreadyExists
+			}
+			for _, mob := range room.mobs {
+				if mob.claiming || mob.reservation != nil {
+					return domain.ErrAlreadyExists
+				}
+			}
+		}
+	}
+	for _, id := range event.Maps {
+		key := mapKey{channel, id}
+		delete(g.rooms, key)
+		if _, err := g.room(key); err != nil {
+			return err
+		}
+	}
+	for _, spawn := range event.Spawns {
+		key := mapKey{channel, spawn.MapID}
+		room := g.rooms[key]
+		stats, err := g.catalog.Mob(spawn.Life.TemplateID)
+		if err != nil {
+			return err
+		}
+		oid := g.alloc()
+		if oid == 0 || room == nil {
+			return errors.New("unable to spawn event monster")
+		}
+		room.mobs[oid] = &gameplayMob{objectID: oid, origin: spawn.Life, life: spawn.Life, stats: stats, hp: stats.HP}
+	}
+	return nil
+}

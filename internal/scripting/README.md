@@ -65,7 +65,25 @@ A GM character sees a `[GM NPC]` chat line for each step of an NPC conversation:
 
 The runtime does not serialize Lua stacks and does not impose one universal disconnect recovery policy. Scripts decide their restart/resume behavior through authoritative quest/log state. A reconnect creates a new invocation, and durable host commands still need business-level conditions to avoid granting a reward twice across different invocations.
 
-Event/party scripts need a separate bounded per-instance event queue with ordered event IDs, subscription/cancellation, timeouts, and persisted state/deadlines. Instance progress must be persisted as explicit domain state and command receipts; a running coroutine is not the durable record. This dialogue prototype does not claim the legacy event subsystem is converted.
+### Event instances
+
+Party quests and boss fights run as event instances (`internal/world/events.go`), not as Lua event scripts. `internal/content/events.go` declares each event: its stage maps, entry portal, exit map, time limit, party size, level range and `Keep`, the member count below which it ends. This replaces the per-event Legacy `event/<name>.js`, whose `setup`/`changedMap`/`playerDisconnected`/`leftParty`/`scheduledTimeout` bodies differ only in those values.
+
+The stage maps are the channel's ordinary maps, so one group holds an event per channel, as Legacy's `state` property did. Starting it puts every monster of the stage maps back (including WZ `mobTime -1` monsters, which otherwise stay dead once defeated), moves the leader's party members who stand on the leader's map into the first stage and shows the countdown clock. A member leaves the group by arriving on any other map, disconnecting or leaving the party. The instance ends at its time limit, when fewer than `Keep` members remain, or when a script finishes it; everyone still on a stage map then goes to the exit map. Someone who is on a stage map without belonging to the running group (a login after a restart, for example) is sent to the exit map too, unless they are a GM.
+
+Instances are memory only: a world restart ends them, and nothing a script stored in one is kept. Rewards a stage NPC gives must therefore be ordinary `exchange` commits.
+
+NPC sources reach an instance through:
+
+- `npc:event_status(name)` returns `{known, busy, members, inside}` for this channel and an `attempt` identifier for members to key their one-time rewards.
+- `npc:event_start(name)` checks eligibility and moves the group. It returns `{ok, reason, here, qualified}`. A refusal has reason `unknown`, `no_party`, `not_leader`, `party_size`, `level`, `busy` or `unavailable`.
+- `npc:event_get(key)` / `npc:event_set(key, value)`: text properties of the caller's group (stage progress); `event_get` reads `""` outside a group, `event_set` is refused there.
+- `npc:event_effect("clear" | "wrong")`: the party quest result animation and sound for everyone on the map.
+- `npc:event_areas()` returns a bitmask of the map's WZ areas occupied by living event members or their dropped items, with bit 0 for the first listed area.
+- `npc:event_party_exp(amount)` grants stage experience once per attempt, map and active member. The party leader can retry the call after a failure.
+- `npc:event_finish()`: the party leader ends the event; `npc:event_leave()`: the caller alone goes to the exit map.
+
+`npc/9020000.lua` starts the Kerning party quest. `npc/9020001.lua` handles the five stages and bonus entry. The four `party_portal` entrances check the preceding stage's clear flag on the server. The event definition spawns King Slime when the maps reset.
 
 The first-job path for NPC 1022000 is a further partial migration: the top-level Lua checks job/level, retains Back navigation and explicit confirmation, then executes one bounded advancement command. Reopening it after that commit sees job 100 and does not repeat the weapon, slots or health grant. Its second/third-job custom-quest branches are still pending; this partial source is not counted as a completed whole-file migration below.
 

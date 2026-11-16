@@ -377,7 +377,7 @@ func (s *Server) commitCombatTicket(t *combatTicket, result domain.CombatAttackR
 		mob.claiming = false
 		mob.reservation = nil
 		if q.Defeated {
-			mob.respawnAt = time.Now().Add(time.Duration(max(5, mob.life.RespawnSeconds)) * time.Second)
+			mob.respawnAt = mob.respawnTime(t.key.mapID, time.Now())
 			mob.statuses = nil
 		}
 	}

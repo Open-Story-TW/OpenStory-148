@@ -48,6 +48,14 @@ type Foothold struct {
 	Y2 int `json:"y2"`
 }
 
+type MapArea struct {
+	Left, Top, Right, Bottom int
+}
+
+func (a MapArea) Contains(x, y int) bool {
+	return a.Left <= x && x <= a.Right && a.Top <= y && y <= a.Bottom
+}
+
 type Map struct {
 	ID          int        `json:"id"`
 	ReturnMap   int        `json:"return_map"`
@@ -58,6 +66,7 @@ type Map struct {
 	Portals     []Portal   `json:"portals"`
 	Life        []Life     `json:"life"`
 	Footholds   []Foothold `json:"footholds"`
+	Areas       []MapArea  `json:"areas,omitempty"`
 }
 
 func (m Map) Portal(name string) (Portal, bool) {
@@ -286,6 +295,14 @@ func parseMap(id int, n *wzNode) (Map, error) {
 				continue
 			}
 			m.Life = append(m.Life, Life{Index: idx, Kind: x.stringValue("type", ""), TemplateID: x.intValue("id", 0), X: x.intValue("x", 0), Y: x.intValue("cy", x.intValue("y", 0)), Foothold: x.intValue("fh", 0), Facing: x.intValue("f", 0), RX0: x.intValue("rx0", 0), RX1: x.intValue("rx1", 0), Hidden: x.intValue("hide", 0) != 0, RespawnSeconds: x.intValue("mobTime", 0)})
+		}
+	}
+	if areas := n.child("area"); areas != nil {
+		for _, x := range areas.Children {
+			m.Areas = append(m.Areas, MapArea{
+				Left: x.intValue("x1", 0), Top: x.intValue("y1", 0),
+				Right: x.intValue("x2", 0), Bottom: x.intValue("y2", 0),
+			})
 		}
 	}
 	if f := n.child("foothold"); f != nil {

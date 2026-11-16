@@ -583,8 +583,31 @@ func (s *Session) installHost() {
 		bind("player_count", s.simpleCommand("player_count", 1), 2)
 		bind("monster_count", s.simpleCommand("monster_count", 0), 1)
 		bind("party", s.simpleCommand("party", 0), 1)
+		bind("character_id", s.simpleCommand("character_id", 0), 1)
 		bind("open_npc", s.simpleCommand("open_npc", 1), 2)
 		bind("map_message", s.messageCommand("map_message"), 3)
+		// Event instances (party quests, boss fights): see the README.
+		for _, kind := range []string{"event_status", "event_start", "event_get", "event_effect"} {
+			bind(kind, s.textCommand(kind), 2)
+		}
+		bind("event_finish", s.simpleCommand("event_finish", 0), 1)
+		bind("event_leave", s.simpleCommand("event_leave", 0), 1)
+		bind("event_areas", s.simpleCommand("event_areas", 0), 1)
+		bind("event_party_exp", s.simpleCommand("event_party_exp", 1), 2)
+		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+			if err := c.CheckNArgs(3); err != nil {
+				return nil, err
+			}
+			key, err := c.StringArg(1)
+			if err != nil {
+				return nil, err
+			}
+			value, err := c.StringArg(2)
+			if err != nil || len(key) == 0 || len(key) > 32 || strings.Contains(key, "=") || len(value) > 256 {
+				return nil, domain.ErrInvalidInput
+			}
+			return s.execute(t, c, Command{Kind: "event_set", Text: key + "=" + value})
+		}, 3)
 		// time() is the server clock a Legacy source read with new Date().
 		bind("time", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			now := time.Now()

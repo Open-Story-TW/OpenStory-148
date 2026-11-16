@@ -83,6 +83,7 @@ func (s *Server) detachScene(v *sceneVisit) {
 	s.tradeLeave(v.live)
 	s.leaveBuddies(v.live)
 	s.leaveParty(v.live)
+	s.eventDeparted(owner.CharacterID)
 	s.closeEconomyDialog(v.live)
 	v.live.mu.Lock()
 	if v.live.visit == v {
@@ -231,6 +232,7 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 		return err
 	}
 	s.enqueueMapEntry(channel, live, sink)
+	s.eventEntered(channel, live, sink)
 	return nil
 }
 
