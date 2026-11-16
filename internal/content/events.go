@@ -1,5 +1,7 @@
 package content
 
+import "strconv"
+
 // Event describes one instanced activity (party quest, boss fight) that a
 // single group holds on a channel at a time. Its stage maps are the channel's
 // ordinary maps: while a group is inside nobody else may enter, as with the
@@ -24,6 +26,7 @@ type Event struct {
 	// single party. Expedition entries are restricted to their lobby map.
 	ExpeditionType int
 	LobbyMap       int
+	Ticket         int
 	// RevivalHP is used when the raid revives the player on the same map.
 	RevivalHP int
 	// Exact static encounter populations needed from the mounted v148 maps.
@@ -48,84 +51,107 @@ func (e Event) Stage(mapID int) bool {
 	return false
 }
 
-var events = map[string]Event{
-	DragonRiderName: dragonRiderEvent(),
-	LudibriumPQName: ludibriumEvent(),
-	HenesysPQName: {
-		Name: HenesysPQName, Maps: []int{HenesysPQMap},
-		ExitMap: HenesysPQLobby, Seconds: 600, PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,
-	},
-	// 第一次同行 (Legacy event/KerningPQ.js): five stages and the bonus map.
-	"KerningPQ": {
-		Name: "KerningPQ", Maps: []int{910340100, 910340200, 910340300, 910340400, 910340500, 910340600},
-		ExitMap: 910340000, Seconds: 1200, PartyMin: 3, PartyMax: 6, Keep: 2, LevelMin: 20, LevelMax: 255,
-		// The final map has no WZ life entry for King Slime. Spawn it on
-		// the lower platform between the two NPCs.
-		Spawns: []EventSpawn{{MapID: 910340500, Life: Life{Kind: "m", TemplateID: 9300003,
-			X: 35, Y: -435, Foothold: 53, RX0: 0, RX1: 90, RespawnSeconds: -1}}},
-	},
-	"Hilla": {
-		Name: "Hilla", Maps: []int{262030100, 262030200, 262030300},
-		ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
-		LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
-		RequiredMobs: map[int]map[int]int{262030100: {8870001: 8}, 262030200: {8870002: 8}, 262030300: {8870000: 1}},
-	},
-	"HillaHard": {
-		Name: "HillaHard", Maps: []int{262031100, 262031200, 262031300},
-		ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
-		LevelMin: 170, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
-		RequiredMobs: map[int]map[int]int{262031100: {8870101: 8}, 262031200: {8870102: 8}, 262031300: {8870100: 1}},
-	},
-	"BalrogEasy": {
-		Name: "BalrogEasy", Maps: []int{105100400, 105100401}, ExitMap: 105100100,
-		Seconds: 1200, PartyMin: 1, PartyMax: 6, Keep: 1,
-		LevelMin: 45, LevelMax: 200, ExpeditionType: 2000, LobbyMap: 105100100,
-		RequiredMobs: map[int]map[int]int{105100400: {}, 105100401: {}},
-		Spawns: []EventSpawn{
-			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830007, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
-			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830008, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
-			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830009, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+var events = eventDefinitions()
+
+func eventDefinitions() map[string]Event {
+	definitions := map[string]Event{
+		DragonRiderName: dragonRiderEvent(),
+		LudibriumPQName: ludibriumEvent(),
+		HenesysPQName: {
+			Name: HenesysPQName, Maps: []int{HenesysPQMap},
+			ExitMap: HenesysPQLobby, Seconds: 600, PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,
 		},
-	},
-	"Zakum": {
-		Name: "Zakum", Maps: []int{280030000}, ExitMap: 211042300,
-		Seconds: 3000, PartyMin: 5, PartyMax: 30, Keep: 5,
-		LevelMin: 50, LevelMax: 200, ExpeditionType: 2002, LobbyMap: 211042400,
-		RequiredMobs: map[int]map[int]int{280030000: {}},
-	},
-	"Papulatus": {
-		Name: "Papulatus", Maps: []int{PapulatusArena}, ExitMap: PapulatusLobby,
-		Seconds: 2700, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: 15, LevelMax: 255,
-		LobbyMap: PapulatusLobby, RequiredMobs: map[int]map[int]int{PapulatusArena: {}},
-	},
-	"ChaosZakum": {
-		Name: "ChaosZakum", Maps: []int{280030001}, ExitMap: 211042301,
-		Seconds: 4500, PartyMin: 5, PartyMax: 30, Keep: 5,
-		LevelMin: 100, LevelMax: 200, ExpeditionType: 2005, LobbyMap: 211042401,
-		RequiredMobs: map[int]map[int]int{280030001: {}},
-	},
-	"Cygnus": {
-		Name: "Cygnus", Maps: []int{271040100}, ExitMap: 271040210,
-		Seconds: 3600, PartyMin: 3, PartyMax: 18, Keep: 3,
-		LevelMin: 170, LevelMax: 200, ExpeditionType: 2008, LobbyMap: 271040000,
-		RequiredMobs: map[int]map[int]int{271040100: {}},
-	},
-	"VonLeon": {
-		Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
-		Seconds: 3600, PartyMin: 6, PartyMax: 18, Keep: 6,
-		LevelMin: 120, LevelMax: 200, ExpeditionType: 2007, LobbyMap: 211070000, RevivalHP: 50,
-		RequiredMobs: map[int]map[int]int{211070100: {}},
-		Spawns: []EventSpawn{{MapID: 211070100, Life: Life{Kind: "n", TemplateID: 2161000,
-			X: 0, Y: -181, Foothold: 1, RX0: -75, RX1: 75}}},
-	},
-	"Arkarium": {
-		Name: "Arkarium", Maps: []int{272030400}, ExitMap: 272020110,
-		Seconds: 3000, PartyMin: 6, PartyMax: 18, Keep: 6,
-		LevelMin: 120, LevelMax: 200, ExpeditionType: 2009, LobbyMap: 272020110, RevivalHP: 50,
-		RequiredMobs: map[int]map[int]int{272030400: {9300304: 1}},
-		Spawns: []EventSpawn{{MapID: 272030400, Life: Life{Kind: "n", TemplateID: 2144010,
-			X: 0, Y: -181, Foothold: 8, RX0: -75, RX1: 75}}},
-	},
+		// 第一次同行 (Legacy event/KerningPQ.js): five stages and the bonus map.
+		"KerningPQ": {
+			Name: "KerningPQ", Maps: []int{910340100, 910340200, 910340300, 910340400, 910340500, 910340600},
+			ExitMap: 910340000, Seconds: 1200, PartyMin: 3, PartyMax: 6, Keep: 2, LevelMin: 20, LevelMax: 255,
+			// The final map has no WZ life entry for King Slime. Spawn it on
+			// the lower platform between the two NPCs.
+			Spawns: []EventSpawn{{MapID: 910340500, Life: Life{Kind: "m", TemplateID: 9300003,
+				X: 35, Y: -435, Foothold: 53, RX0: 0, RX1: 90, RespawnSeconds: -1}}},
+		},
+		"Hilla": {
+			Name: "Hilla", Maps: []int{262030100, 262030200, 262030300},
+			ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
+			LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
+			RequiredMobs: map[int]map[int]int{262030100: {8870001: 8}, 262030200: {8870002: 8}, 262030300: {8870000: 1}},
+		},
+		"HillaHard": {
+			Name: "HillaHard", Maps: []int{262031100, 262031200, 262031300},
+			ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
+			LevelMin: 170, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
+			RequiredMobs: map[int]map[int]int{262031100: {8870101: 8}, 262031200: {8870102: 8}, 262031300: {8870100: 1}},
+		},
+		"BalrogEasy": {
+			Name: "BalrogEasy", Maps: []int{105100400, 105100401}, ExitMap: 105100100,
+			Seconds: 1200, PartyMin: 1, PartyMax: 6, Keep: 1,
+			LevelMin: 45, LevelMax: 200, ExpeditionType: 2000, LobbyMap: 105100100,
+			RequiredMobs: map[int]map[int]int{105100400: {}, 105100401: {}},
+			Spawns: []EventSpawn{
+				{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830007, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+				{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830008, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+				{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830009, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+			},
+		},
+		"Zakum": {
+			Name: "Zakum", Maps: []int{280030000}, ExitMap: 211042300,
+			Seconds: 3000, PartyMin: 5, PartyMax: 30, Keep: 5,
+			LevelMin: 50, LevelMax: 200, ExpeditionType: 2002, LobbyMap: 211042400,
+			RequiredMobs: map[int]map[int]int{280030000: {}},
+		},
+		"Papulatus": {
+			Name: "Papulatus", Maps: []int{PapulatusArena}, ExitMap: PapulatusLobby,
+			Seconds: 2700, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: 15, LevelMax: 255,
+			LobbyMap: PapulatusLobby, RequiredMobs: map[int]map[int]int{PapulatusArena: {}},
+		},
+		"ChaosZakum": {
+			Name: "ChaosZakum", Maps: []int{280030001}, ExitMap: 211042301,
+			Seconds: 4500, PartyMin: 5, PartyMax: 30, Keep: 5,
+			LevelMin: 100, LevelMax: 200, ExpeditionType: 2005, LobbyMap: 211042401,
+			RequiredMobs: map[int]map[int]int{280030001: {}},
+		},
+		"Cygnus": {
+			Name: "Cygnus", Maps: []int{271040100}, ExitMap: 271040210,
+			Seconds: 3600, PartyMin: 3, PartyMax: 18, Keep: 3,
+			LevelMin: 170, LevelMax: 200, ExpeditionType: 2008, LobbyMap: 271040000,
+			RequiredMobs: map[int]map[int]int{271040100: {}},
+		},
+		"VonLeon": {
+			Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
+			Seconds: 3600, PartyMin: 6, PartyMax: 18, Keep: 6,
+			LevelMin: 120, LevelMax: 200, ExpeditionType: 2007, LobbyMap: 211070000, RevivalHP: 50,
+			RequiredMobs: map[int]map[int]int{211070100: {}},
+			Spawns: []EventSpawn{{MapID: 211070100, Life: Life{Kind: "n", TemplateID: 2161000,
+				X: 0, Y: -181, Foothold: 1, RX0: -75, RX1: 75}}},
+		},
+		"Arkarium": {
+			Name: "Arkarium", Maps: []int{272030400}, ExitMap: 272020110,
+			Seconds: 3000, PartyMin: 6, PartyMax: 18, Keep: 6,
+			LevelMin: 120, LevelMax: 200, ExpeditionType: 2009, LobbyMap: 272020110, RevivalHP: 50,
+			RequiredMobs: map[int]map[int]int{272030400: {9300304: 1}},
+			Spawns: []EventSpawn{{MapID: 272030400, Life: Life{Kind: "n", TemplateID: 2144010,
+				X: 0, Y: -181, Foothold: 8, RX0: -75, RX1: 75}}},
+		},
+	}
+	for _, route := range []struct{ start, levelMin, levelMax, ticket int }{
+		{952000000, 20, 30, 4001514}, {952010000, 45, 55, 4001514},
+		{952020000, 50, 60, 4001514}, {952030000, 55, 65, 4001514}, {952040000, 60, 70, 4001514},
+		{953000000, 70, 80, 4001516}, {953010000, 75, 85, 4001516}, {953020000, 85, 95, 4001516},
+		{953030000, 95, 105, 4001516}, {953040000, 100, 110, 4001516}, {953050000, 110, 120, 4001516},
+		{954000000, 120, 130, 4001522}, {954010000, 125, 135, 4001522}, {954020000, 130, 140, 4001522},
+		{954030000, 140, 150, 4001522}, {954040000, 150, 165, 4001522}, {954050000, 165, 200, 4001522},
+	} {
+		name := "MonsterPark_" + strconv.Itoa(route.start)
+		stages := make([]int, 6)
+		for i := range stages {
+			stages[i] = route.start + 100*i
+		}
+		definitions[name] = Event{
+			Name: name, Maps: stages, LobbyMap: 951000000, ExitMap: 951000000, Ticket: route.ticket,
+			Seconds: 1200, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: route.levelMin, LevelMax: route.levelMax,
+		}
+	}
+	return definitions
 }
 
 var eventByMap = func() map[int]string {

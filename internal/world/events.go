@@ -128,7 +128,7 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	live.mu.Lock()
 	leader := live.session
 	live.mu.Unlock()
-	if leader.ChannelID != channel || leader.Character.HP <= 0 || s.tradeActive(live) {
+	if leader.ChannelID != channel || leader.Character.HP <= 0 || s.tradeActive(live) || e.LobbyMap != 0 && leader.Character.MapID != e.LobbyMap {
 		return "unavailable", 0, 0, nil
 	}
 	if e.LobbyMap != 0 && leader.Character.MapID != e.LobbyMap {
@@ -172,15 +172,45 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 			}
 		}
 	}
+	leaderOccupant := eventOccupant{live, sink}
+	var groupToCharge []eventOccupant
+	if e.Ticket != 0 {
+		groupToCharge = append(append([]eventOccupant{}, present...), leaderOccupant)
+		err = s.exchangeEventItems(ctx, inst, groupToCharge, leader.Character.MapID, "ticket", e.Ticket, -1)
+		if err != nil {
+			s.eventEnd(inst)
+			if errors.Is(err, domain.ErrInsufficient) {
+				return "ticket", here, qualified, nil
+			}
+			return "unavailable", here, qualified, nil
+		}
+	}
+	var failed []eventOccupant
 	for _, m := range present {
 		s.cancelNPCScriptState(m.live, false)
 		s.closeEconomyDialog(m.live)
 		// A member who cannot be moved stays outside and is no member.
 		if s.warpEventMember(ctx, inst, leader.Character.MapID, m, destination.ID, entry) != nil {
 			s.eventUnregister(inst, partySession(m.live).CharacterID)
+			failed = append(failed, m)
 		}
 	}
-	if err = s.warpEventMember(ctx, inst, leader.Character.MapID, eventOccupant{live, sink}, destination.ID, entry); err != nil {
+	err = s.warpEventMember(ctx, inst, leader.Character.MapID, leaderOccupant, destination.ID, entry)
+	if e.Ticket != 0 {
+		if err != nil || here-len(failed) < e.PartyMin {
+			failed = groupToCharge
+		}
+		for _, member := range failed {
+			if refundErr := s.exchangeEventItems(ctx, inst, []eventOccupant{member}, 0, "refund", e.Ticket, 1); refundErr != nil {
+				slog.Warn("event_ticket_refund_failed", "event", e.Name, "character", partySession(member.live).CharacterID, "error", refundErr)
+			}
+		}
+		if here-len(failed) < e.PartyMin {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
+	if err != nil {
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
 	}
@@ -233,7 +263,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		}
 		present = append(present, m)
 	}
-	if here < e.PartyMin || size > e.PartyMax {
+	if here < e.PartyMin || size > e.PartyMax || e.Ticket != 0 && here != size {
 		return nil, nil, "party_size", here, qualified
 	}
 	if qualified != here {

@@ -158,6 +158,20 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 		return domain.ScriptExchangeResult{}, err
 	}
 	defer tx.Rollback()
+	result, err := executeScriptExchangeTx(ctx, tx, r)
+	if err != nil {
+		return result, err
+	}
+	if err = tx.Commit(); err != nil {
+		return result, err
+	}
+	if !result.Replayed {
+		s.roster.Invalidate(ctx, result.Character.AccountID, result.Character.WorldID)
+	}
+	return result, nil
+}
+
+func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExchange) (domain.ScriptExchangeResult, error) {
 	value, err := lockInventoryCharacter(ctx, tx, r.Session)
 	if err != nil {
 		return domain.ScriptExchangeResult{}, err
@@ -320,11 +334,43 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	if _, err = tx.ExecContext(ctx, `INSERT INTO asset_script_commands(character_id,operation_id,request_hash,result) VALUES($1,$2,$3,$4)`, value.ID, r.OperationID, scriptExchangeHash(r), raw); err != nil {
 		return result, err
 	}
-	if err = tx.Commit(); err != nil {
-		return result, err
-	}
-	s.roster.Invalidate(ctx, value.AccountID, value.WorldID)
 	return result, nil
+}
+
+func (s *Store) ExecuteEventItems(ctx context.Context, exchanges []domain.ScriptExchange) ([]domain.ScriptExchangeResult, error) {
+	if len(exchanges) < 1 || len(exchanges) > 6 {
+		return nil, domain.ErrInvalidInput
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	results := make([]domain.ScriptExchangeResult, 0, len(exchanges))
+	var lastID int64
+	for _, exchange := range exchanges {
+		id := exchange.Session.CharacterID
+		if id <= lastID || len(exchange.OperationID) < 16 || len(exchange.OperationID) > 128 || len(exchange.Items) != 1 {
+			return nil, domain.ErrInvalidInput
+		}
+		lastID = id
+		result, err := executeScriptExchangeTx(ctx, tx, domain.ScriptExchange{
+			Session: exchange.Session, OperationID: exchange.OperationID, Items: exchange.Items,
+		})
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, result)
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	for _, result := range results {
+		if !result.Replayed {
+			s.roster.Invalidate(ctx, result.Character.AccountID, result.Character.WorldID)
+		}
+	}
+	return results, nil
 }
 
 // applyScriptGrowth is the character part of a generated Legacy NPC call.

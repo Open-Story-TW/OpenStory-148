@@ -201,3 +201,9 @@ type ScriptRepository interface {
 	ReadScriptLogs(context.Context, CharacterSession, []ScriptLogKey) ([]ScriptLogValue, error)
 	ExecuteScriptExchange(context.Context, ScriptExchange) (ScriptExchangeResult, error)
 }
+
+// EventItemRepository applies all tracked characters' event items in the same
+// transaction. Each exchange has its own durable receipt.
+type EventItemRepository interface {
+	ExecuteEventItems(context.Context, []ScriptExchange) ([]ScriptExchangeResult, error)
+}

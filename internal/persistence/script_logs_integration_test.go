@@ -12,6 +12,42 @@ import (
 
 func int64ptr(n int64) *int64 { return &n }
 
+func TestEventItemsRollbackAndReplayForWholeParty(t *testing.T) {
+	ctx, s, sessions := inventoryFixture(t)
+	if sessions[0].CharacterID > sessions[1].CharacterID {
+		sessions[0], sessions[1] = sessions[1], sessions[0]
+	}
+	const item = 2000000
+	operation := fmt.Sprintf("event-items-test-%d", sessions[0].CharacterID)
+	exchanges := []domain.ScriptExchange{
+		{Session: sessions[0], OperationID: operation, Items: []domain.ScriptItemDelta{{TemplateID: item, Quantity: -1}}},
+		{Session: sessions[1], OperationID: operation, Items: []domain.ScriptItemDelta{{TemplateID: item, Quantity: -6}}},
+	}
+	if _, err := s.ExecuteEventItems(ctx, exchanges); !errors.Is(err, domain.ErrInsufficient) {
+		t.Fatalf("expected insufficient items for member 2, got %v", err)
+	}
+	for _, session := range sessions {
+		c, err := s.GetCharacter(ctx, session.CharacterID)
+		if err != nil || itemQuantity(c, item) != 5 {
+			t.Fatalf("failed group exchange changed member %d's items: %v %v", session.CharacterID, c.Items, err)
+		}
+	}
+	exchanges[1].Items[0].Quantity = -1
+	result, err := s.ExecuteEventItems(ctx, exchanges)
+	if err != nil || len(result) != 2 {
+		t.Fatalf("group exchange: results=%d err=%v", len(result), err)
+	}
+	result, err = s.ExecuteEventItems(ctx, exchanges)
+	if err != nil || len(result) != 2 {
+		t.Fatalf("group exchange replay: results=%d err=%v", len(result), err)
+	}
+	for _, member := range result {
+		if !member.Replayed || itemQuantity(member.Character, item) != 4 {
+			t.Fatalf("group exchange repeated for member %d: replay=%t items=%v", member.Character.ID, member.Replayed, member.Character.Items)
+		}
+	}
+}
+
 func TestScriptLogsAtomicRewardsAndScope(t *testing.T) {
 	ctx, s, sessions := inventoryFixture(t)
 	name := fmt.Sprintf("script-test-%d", sessions[0].CharacterID)
