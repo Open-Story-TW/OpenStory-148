@@ -151,9 +151,10 @@ var venomAttacks = map[int]bool{
 
 // venom adds the first learned Venom (4120005, 4220005, 4340001) as a poison
 // rolled with its prop: tick dot% of max base damage for dotTime (Java
-// MapleMonster.applyStatus).
+// MapleMonster.applyStatus). The v148 books split it into a third job skill
+// and a fourth job one that replaces it; the strongest learned one counts.
 func venom(ctx *combat.AttackContext) error {
-	for _, id := range []int{4120005, 4220005, 4340001} {
+	for _, id := range []int{4120011, 4220011, 4110011, 4210010, 4120005, 4220005, 4340001} {
 		v := values(ctx.Character, ctx.Now, id)
 		if v == nil {
 			continue
@@ -192,10 +193,12 @@ func boosted(ctx *combat.AttackContext) error {
 // none while active; a Night Lord's Expert Throwing Star Handling (4120010)
 // keeps the stars with its prop (Java PlayerHandler.rangedAttack).
 func stars(ctx *combat.AttackContext) error {
-	if buffActive(ctx.Character, ctx.Now, 4121006) {
+	if buffActive(ctx.Character, ctx.Now, 4121006) || buffActive(ctx.Character, ctx.Now, 4111009) {
 		ctx.NoAmmo = true
 	} else if v := values(ctx.Character, ctx.Now, 4120010); ctx.Character.Job == 412 && v != nil && roll(v["prop"]) {
 		ctx.NoAmmo = true
+	} else if v := values(ctx.Character, ctx.Now, 4110012); ctx.Character.Job/10 == 41 && v != nil && roll(v["prop"]) {
+		ctx.NoAmmo = true // v148 鏢術精通
 	}
 	return nil
 }

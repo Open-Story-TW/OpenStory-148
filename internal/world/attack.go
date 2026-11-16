@@ -384,8 +384,9 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 
 // rapidAttacks fire a frame every ~100ms of client time while the key is
 // held (Java GameConstants.getAttackDelay 99): Hurricane, Ishtar's Ring,
-// Rapid Fire, Wild Hunter and Mechanic machine guns, Mille Aiguilles.
-var rapidAttacks = map[int]bool{3121004: true, 13111002: true, 23121000: true, 33121009: true, 5221004: true, 5721001: true, 5201006: true, 5311002: true, 5711002: true, 35001001: true, 35101009: true, 35111004: true, 35121005: true, 35121013: true, 24121000: true, 14111005: true, 4121007: true, 5221007: true}
+// Rapid Fire, Wild Hunter and Mechanic machine guns, Mille Aiguilles; the v148
+// rush 5101012 lands its hits as separate frames the same way.
+var rapidAttacks = map[int]bool{5101012: true, 3121004: true, 13111002: true, 23121000: true, 33121009: true, 5221004: true, 5721001: true, 5201006: true, 5311002: true, 5711002: true, 35001001: true, 35101009: true, 35111004: true, 35121005: true, 35121013: true, 24121000: true, 14111005: true, 4121007: true, 5221007: true}
 
 // attackInterval is the least server-side gap between two attacks of the
 // same skill by one character.

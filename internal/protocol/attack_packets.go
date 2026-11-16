@@ -33,6 +33,9 @@ type AttackQuirk struct {
 	MesoExplode  bool // melee: 4211006 Meso Explosion target list
 }
 
+// maxAttackAction is the highest action number an attack may name.
+const maxAttackAction = 0x1ff
+
 var attackQuirks sync.Map // int skillID -> AttackQuirk
 
 // RegisterAttackQuirk records a skill wire exception. Job skill packages call
@@ -59,7 +62,8 @@ func init() {
 	for _, id := range []int{5300007, 5101012, 5081001, 15101010, 24121005} {
 		RegisterAttackQuirk(id, AttackQuirk{PreSpeed: 1})
 	}
-	RegisterAttackQuirk(5101004, AttackQuirk{PreTargets: 4})
+	// 5101004 had four bytes before its targets in v145; the v148 melee sender
+	// (0x91A08F) writes none for it, and it is not in the charge list 0x4E5740.
 	RegisterAttackQuirk(4211006, AttackQuirk{MesoExplode: true})
 	for _, id := range []int{3121004, 3221001, 5221004, 5721001, 13111002, 33121009, 35001001, 5711002, 35101009, 23121000, 5311002} {
 		RegisterAttackQuirk(id, AttackQuirk{KeyDown: true})
@@ -258,7 +262,9 @@ func ReadAttack(op uint16, r *Reader) (Attack, error) {
 			}
 		}
 	}
-	if r.Err() != nil || r.Remaining() != 0 || a.Display&0x7fff > 0x19d {
+	// The action is a sanity bound only: v145 stopped at 0x19d, the v148 client
+	// sends higher ones for its newer skills (0x1ab for 5111012).
+	if r.Err() != nil || r.Remaining() != 0 || a.Display&0x7fff > maxAttackAction {
 		return a, ErrMalformed
 	}
 	a.Wire = r.BytesBetween(start, r.Pos())
@@ -375,7 +381,7 @@ func RemoteAttackPacket(c domain.Character, q RemoteAttack) []byte {
 	}
 	w.U8(a.Direction)
 	w.U16(a.Display)
-	if a.Display&0x7fff > 0x19d {
+	if a.Display&0x7fff > maxAttackAction {
 		return w.Packet()
 	}
 	w.U8(a.Speed)

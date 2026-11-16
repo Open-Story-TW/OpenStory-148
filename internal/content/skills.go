@@ -140,7 +140,12 @@ func SkillDefinition(root string, id int) (Skill, error) {
 		var ok bool
 		s, ok = skillSeeds[id]
 		if !ok {
-			return s, fmt.Errorf("unknown skill%d", id)
+			// The seed is v145 data; a skill only v148 has comes from its book.
+			found, _ := skillNode(readV148Skills(fmt.Sprintf("%03d.img.xml", id/10000)))(id)
+			if found == nil {
+				return s, fmt.Errorf("unknown skill%d", id)
+			}
+			s = skillFromNode(id, found)
 		}
 	} else {
 		// The client is v148, so its copy of a job's book is the one that counts:

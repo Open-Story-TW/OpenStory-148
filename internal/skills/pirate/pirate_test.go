@@ -97,7 +97,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 93 {
+	if count != 130 { // 93 from v145 and 37 the v148 books added
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }

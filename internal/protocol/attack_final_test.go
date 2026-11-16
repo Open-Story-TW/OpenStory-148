@@ -38,3 +38,22 @@ func TestReadAttackMeleeFinalAttackFollowsSkill(t *testing.T) {
 		}
 	}
 }
+
+// Corkscrew Blow as the v148 client sent it (2026-11-15): the plain melee
+// header, no bytes between it and the targets.
+func TestReadAttackCorkscrewBlowHasNoExtraHeader(t *testing.T) {
+	body, _ := hex.DecodeString("0121ccd54d00144980353c007080e94e699b0805ff3f3301000000000000000046420f00078100706f980001e5fed700e5fed7003102bd3c00005d2b923e0db3ec3e45420f00070100706f980001c5fed700c5fed7007702fe3100005d2b923e9afdc4e0c1fed700")
+	a, err := ReadAttack(RecvMeleeAttack, NewReader(body))
+	if err != nil || a.SkillID != 5101004 || len(a.Targets) != 2 || a.LineCount() != 1 || a.Targets[0].Lines[0].Damage != 15549 || a.Follows != 0 {
+		t.Fatalf("%+v %v", a, err)
+	}
+}
+
+// 5111012 names action 0x1ab, above the last v145 action.
+func TestReadAttackAcceptsV148Actions(t *testing.T) {
+	body, _ := hex.DecodeString("0111e4fc4d00144c2a972000ab01e8c0782908050005910600000000000000004a420f00070100706f98000125ffd70025ffd7006603930c01005d2b923ec74950843dffd700")
+	a, err := ReadAttack(RecvMeleeAttack, NewReader(body))
+	if err != nil || a.SkillID != 5111012 || a.Display&0x7fff != 0x1ab || len(a.Targets) != 1 || a.Targets[0].Lines[0].Damage != 68755 {
+		t.Fatalf("%+v %v", a, err)
+	}
+}
