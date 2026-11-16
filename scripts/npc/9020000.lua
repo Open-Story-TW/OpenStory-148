@@ -51,7 +51,7 @@ local answers = {
     no_party = "必須先組成隊伍，再由#b隊長#k來跟我說話。",
     not_leader = "想挑戰的話，請讓#b隊長#k來跟我說話。",
     busy = "已經有其他隊伍正在挑戰了，請稍後再來。",
-    party_size = "隊伍必須有 2 到 6 人，而且都要在這張地圖上。目前這裡有 #b" .. result.here .. "#k 位隊員。",
+    party_size = "隊伍必須有 3 到 6 人，而且都要在這張地圖上。目前這裡有 #b" .. result.here .. "#k 位隊員。",
     level = "有隊員的等級不符（需要 20 級以上）。這裡的 #b" .. result.here .. "#k 位隊員中有 #b" .. result.qualified .. "#k 位符合。",
 }
 npc:say(answers[result.reason] or answers.unknown, false, false)

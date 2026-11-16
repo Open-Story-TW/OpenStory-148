@@ -41,7 +41,7 @@ var events = map[string]Event{
 	// 第一次同行 (Legacy event/KerningPQ.js): five stages and the bonus map.
 	"KerningPQ": {
 		Name: "KerningPQ", Maps: []int{910340100, 910340200, 910340300, 910340400, 910340500, 910340600},
-		ExitMap: 910340000, Seconds: 1200, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: 20, LevelMax: 255,
+		ExitMap: 910340000, Seconds: 1200, PartyMin: 3, PartyMax: 6, Keep: 2, LevelMin: 20, LevelMax: 255,
 		// The final map has no WZ life entry for King Slime. Spawn it on
 		// the lower platform between the two NPCs.
 		Spawns: []EventSpawn{{MapID: 910340500, Life: Life{Kind: "m", TemplateID: 9300003,

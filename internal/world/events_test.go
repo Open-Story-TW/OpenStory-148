@@ -125,9 +125,10 @@ func TestEventStartMovesThePartyAndHoldsTheMaps(t *testing.T) {
 		t.Fatalf("status %v", status)
 	}
 	// A second party cannot enter while the first is inside.
-	other := domain.PartySnapshot{ID: 51, LeaderID: 8, Members: []domain.PartyMember{{CharacterID: 8}, {CharacterID: 9}}}
+	other := domain.PartySnapshot{ID: 51, LeaderID: 8, Members: []domain.PartyMember{{CharacterID: 8}, {CharacterID: 9}, {CharacterID: 10}}}
 	f.join(t, 8, 30, 910340700, other)
 	f.join(t, 9, 30, 910340700, other)
+	f.join(t, 10, 30, 910340700, other)
 	if reason, _, _, _ = s.eventStart(context.Background(), "KerningPQ", 1, f.lives[8], f.sinks[8]); reason != "busy" || f.mapOf(8) != 910340700 {
 		t.Fatalf("second party: reason=%q map=%d", reason, f.mapOf(8))
 	}
@@ -151,10 +152,11 @@ func TestEventStartRefusals(t *testing.T) {
 		want   string
 	}{
 		{"alone", []int{30}, nil, 1, "party_size"},
-		{"level", []int{30, 10}, nil, 1, "level"},
-		{"not-leader", []int{30, 30}, nil, 2, "not_leader"},
-		{"no-party", []int{30, 30}, func(f *eventFixture) { f.server.parties.peers[1].party = domain.PartySnapshot{} }, 1, "no_party"},
-		{"member-elsewhere", []int{30, 30}, func(f *eventFixture) { f.lives[2].session.Character.MapID = 100000000 }, 1, "party_size"},
+		{"two-members", []int{30, 30}, nil, 1, "party_size"},
+		{"level", []int{30, 10, 30}, nil, 1, "level"},
+		{"not-leader", []int{30, 30, 30}, nil, 2, "not_leader"},
+		{"no-party", []int{30, 30, 30}, func(f *eventFixture) { f.server.parties.peers[1].party = domain.PartySnapshot{} }, 1, "no_party"},
+		{"member-elsewhere", []int{30, 30, 30}, func(f *eventFixture) { f.lives[2].session.Character.MapID = 100000000 }, 1, "party_size"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -182,7 +184,7 @@ func (f *eventFixture) started(t *testing.T) *eventInstance {
 }
 
 func TestKerningStagePortalRequiresClear(t *testing.T) {
-	f := eventTestFixture(t, 30, 30)
+	f := eventTestFixture(t, 30, 30, 30)
 	s := f.server
 	inst := f.started(t)
 	p := content.Portal{Name: "next000", Script: "party_portal"}
@@ -221,14 +223,14 @@ func (f *eventFixture) allOut(ids ...int64) func() bool {
 }
 
 func TestEventEndsAtItsTimeLimit(t *testing.T) {
-	f := eventTestFixture(t, 30, 30)
+	f := eventTestFixture(t, 30, 30, 30)
 	inst := f.started(t)
 	f.server.tickEvents(time.Now())
 	if f.mapOf(1) != 910340100 {
 		t.Fatal("ended before the deadline")
 	}
 	f.server.tickEvents(inst.deadline)
-	f.settle(t, f.allOut(1, 2))
+	f.settle(t, f.allOut(1, 2, 3))
 }
 
 func TestEventEndsWhenTooFewRemain(t *testing.T) {
@@ -260,7 +262,7 @@ func TestEventEndsWhenTooFewRemain(t *testing.T) {
 }
 
 func TestEventFinishAndStrangers(t *testing.T) {
-	f := eventTestFixture(t, 30, 30)
+	f := eventTestFixture(t, 30, 30, 30)
 	inst := f.started(t)
 	s := f.server
 	// A character who is no member and lands on a stage map is sent out; a
@@ -276,7 +278,7 @@ func TestEventFinishAndStrangers(t *testing.T) {
 	}
 	s.eventEnd(inst)
 	s.eventEnd(inst) // ending twice is harmless
-	f.settle(t, f.allOut(1, 2))
+	f.settle(t, f.allOut(1, 2, 3))
 	f.settle(t, func() bool { return f.mapOf(9) == 910340000 })
 	// The maps are free again.
 	if reason, _, _, err := s.eventStart(context.Background(), "KerningPQ", 1, f.lives[1], f.sinks[1]); reason != "" || err != nil || f.mapOf(2) != 910340100 {
