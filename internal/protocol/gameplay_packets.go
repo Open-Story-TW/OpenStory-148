@@ -137,6 +137,16 @@ func SpawnMonster(objectID int32, life content.Life, controller bool) []byte {
 // SpawnMonsterWithStats carries current temporary stats so late joiners and
 // new controllers see them (CMobPool::OnMobEnterField -> CMob::TempStatSet).
 func SpawnMonsterWithStats(objectID int32, life content.Life, controller bool, stats []MobStatValue, now time.Time) []byte {
+	return spawnMonsterWithType(objectID, life, controller, stats, now, -2)
+}
+
+// SpawnMonsterProjection shows a stationary event body without exposing it
+// as a valid target. Zakum uses it while the arms are still protecting it.
+func SpawnMonsterProjection(objectID int32, life content.Life) []byte {
+	return spawnMonsterWithType(objectID, life, false, nil, time.Time{}, -4)
+}
+
+func spawnMonsterWithType(objectID int32, life content.Life, controller bool, stats []MobStatValue, now time.Time, summonType int8) []byte {
 	op := SendSpawnMonster
 	if controller {
 		op = SendControlMonster
@@ -155,7 +165,7 @@ func SpawnMonsterWithStats(objectID int32, life content.Life, controller bool, s
 	w.U8(byte(4 + life.Facing))
 	w.I16(0)
 	w.I16(int16(life.Foothold))
-	w.U8(0xfe)
+	w.U8(byte(summonType))
 	w.U8(0xff)
 	w.I32(63000)
 	// v148 CMob::Init (0x6089FD) reads one more i32 here. Templates with the

@@ -77,6 +77,18 @@ var events = map[string]Event{
 			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830009, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
 		},
 	},
+	"Zakum": {
+		Name: "Zakum", Maps: []int{280030000}, ExitMap: 211042300,
+		Seconds: 3000, PartyMin: 2, PartyMax: 30, Keep: 2,
+		LevelMin: 50, LevelMax: 200, ExpeditionType: 2002, LobbyMap: 211042400,
+		RequiredMobs: map[int]map[int]int{280030000: {}},
+	},
+	"ChaosZakum": {
+		Name: "ChaosZakum", Maps: []int{280030001}, ExitMap: 211042301,
+		Seconds: 4500, PartyMin: 3, PartyMax: 30, Keep: 3,
+		LevelMin: 100, LevelMax: 200, ExpeditionType: 2005, LobbyMap: 211042401,
+		RequiredMobs: map[int]map[int]int{280030001: {}},
+	},
 }
 
 var eventByMap = func() map[int]string {

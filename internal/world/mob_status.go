@@ -25,6 +25,12 @@ func (m *gameplayMob) statusValues() []protocol.MobStatValue {
 
 // spawnPacket is SpawnMonster with current temporary stats for late joiners.
 func (m *gameplayMob) spawnPacket(controller bool, now time.Time) []byte {
+	if m.fake {
+		if controller {
+			return nil
+		}
+		return protocol.SpawnMonsterProjection(m.objectID, m.life)
+	}
 	return protocol.SpawnMonsterWithStats(m.objectID, m.life, controller, m.statusValues(), now)
 }
 

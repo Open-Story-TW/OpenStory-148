@@ -228,6 +228,16 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.ExpeditionType != 0 && here != size {
 		return nil, nil, "roster_absent", here, qualified
 	}
+	if e.Name == "Zakum" || e.Name == "ChaosZakum" {
+		if !qualifiedForZakum(leader.Character) {
+			return nil, nil, "zakum_prerequisite", here, qualified
+		}
+		for _, o := range present {
+			if !qualifiedForZakum(partySession(o.live).Character) {
+				return nil, nil, "zakum_prerequisite", here, qualified
+			}
+		}
+	}
 	occupied := len(s.eventOccupants(leader.ChannelID, e.Maps)) > 0
 	inst = &eventInstance{id: platform.NewID(), definition: e, channel: leader.ChannelID, partyID: partyID, expeditionID: expeditionID,
 		members: map[int64]struct{}{leader.CharacterID: {}}, deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second),

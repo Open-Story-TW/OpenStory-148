@@ -29,6 +29,7 @@ type gameplayMob struct {
 	reservation   *combatTicket
 	statuses      combat.MobStatuses
 	prelude       bool      // An event opening may take damage without a defeat.
+	fake          bool      // An encounter projection renders without taking damage.
 	qaHeld        bool      // QA !mobhold: never defeated, refilled every tick.
 	qaHeldUntil   time.Time // the hold lapses here (mobHoldTerm)
 	qaOwner       *qaMobOwner
@@ -45,6 +46,9 @@ func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
 
 // lethalHP is the most damage one settlement may apply: a held mob keeps 1 HP.
 func (m *gameplayMob) lethalHP() int64 {
+	if m.fake {
+		return 0
+	}
 	if m.qaHeld || m.prelude {
 		return m.hp - 1
 	}
@@ -76,6 +80,7 @@ type gameplayRoom struct {
 	areas      map[int32]*roomArea
 	reactors   map[int32]*roomReactor // gathering nodes and event reactors
 	moon       *henesysRoom
+	zakum      *zakumField
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -142,6 +147,13 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 		r.mobs[oid] = &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP}
 	}
 	g.addReactorsLocked(r, key.mapID)
+	if altar, ok := content.ZakumAltarByMap(key.mapID); ok {
+		oid := g.alloc()
+		if oid == 0 {
+			return nil, errors.New("gameplay object ID space exhausted")
+		}
+		r.zakum = &zakumField{altar: altar, objectID: oid}
+	}
 	g.rooms[key] = r
 	return r, nil
 }
@@ -166,6 +178,9 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 	r.members[c.ID] = &gameplayMember{sink: sink, live: live, sessionID: entrySession.SessionID, generation: entrySession.Generation, worldID: entrySession.Lease.WorldID, visit: visit}
 	now := time.Now()
 	packets := s.npcScriptability(r.npcs)
+	if r.zakum != nil {
+		packets = append(packets, r.zakum.enterPacket())
+	}
 	for oid, npc := range r.npcs {
 		packets = append(packets, protocol.SpawnNPC(oid, npc, false), protocol.SpawnNPC(oid, npc, true))
 	}
@@ -174,6 +189,9 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 			continue
 		}
 		packets = append(packets, mob.spawnPacket(false, now))
+		if mob.fake {
+			continue
+		}
 		if mob.controller == 0 {
 			mob.controller = c.ID
 		}

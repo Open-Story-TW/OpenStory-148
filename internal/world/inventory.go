@@ -44,6 +44,7 @@ func (s *Server) handleInventoryMove(ctx context.Context, live *liveCharacter, c
 	}
 	if result.Drop != nil {
 		s.broadcastInventoryPacket(result.Drop.ChannelID, result.Drop.MapID, protocol.DropInventoryItem(*result.Drop))
+		s.offerZakumEye(ctx, req.Session, *result.Drop)
 	}
 	if req.InvType == 1 && (req.Source == -18 || req.Source == -19) && req.Destination >= 0 {
 		s.dismount(result.Character)
