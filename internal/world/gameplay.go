@@ -27,6 +27,7 @@ type gameplayMob struct {
 	contributions []domain.CombatContribution
 	reservation   *combatTicket
 	statuses      combat.MobStatuses
+	prelude       bool      // An event opening may take damage without a defeat.
 	qaHeld        bool      // QA !mobhold: never defeated, refilled every tick.
 	qaHeldUntil   time.Time // the hold lapses here (mobHoldTerm)
 	qaOwner       *qaMobOwner
@@ -43,7 +44,7 @@ func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
 
 // lethalHP is the most damage one settlement may apply: a held mob keeps 1 HP.
 func (m *gameplayMob) lethalHP() int64 {
-	if m.qaHeld {
+	if m.qaHeld || m.prelude {
 		return m.hp - 1
 	}
 	return m.hp

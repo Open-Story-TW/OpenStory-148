@@ -507,6 +507,9 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 			var maximum int64
 			if i < len(t.targets) {
 				maximum = t.targets[i].stats.HP // Immutable template, not mutable respawn object ID.
+				if t.targets[i].prelude {
+					hp = maximum
+				}
 			}
 			_ = sink.WritePacket(protocol.MonsterHP(q.ObjectID, hp, maximum))
 			if q.Defeated {

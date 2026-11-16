@@ -34,6 +34,7 @@ type eventInstance struct {
 	expeditionID int64
 	members      map[int64]struct{}
 	deadline     time.Time
+	preludeUntil time.Time
 	properties   map[string]string
 	starting     bool
 	cleared      bool
@@ -167,6 +168,9 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	s.events.mu.Lock()
 	inst.starting = false
 	partial := e.ExpeditionType != 0 && (inst.ended || len(inst.members) != here)
+	if !partial && e.Name == "BalrogEasy" {
+		inst.preludeUntil = time.Now().Add(balrogWarmupDuration)
+	}
 	s.events.mu.Unlock()
 	if partial {
 		s.eventEnd(inst)
@@ -388,10 +392,14 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	live.mu.Unlock()
 	s.events.mu.Lock()
 	inst := s.events.byMember[c.ID]
+	var deadline time.Time
+	if inst != nil {
+		deadline = inst.deadline
+	}
 	s.events.mu.Unlock()
 	if inst != nil {
 		if inst.channel == channel && inst.definition.Stage(c.MapID) {
-			if left := int(time.Until(inst.deadline) / time.Second); left > 0 {
+			if left := int(time.Until(deadline) / time.Second); left > 0 {
 				_ = sink.WritePacket(protocol.Clock(left))
 			}
 			return
@@ -468,16 +476,21 @@ func (s *Server) tickEvents(now time.Time) {
 	if s.events == nil {
 		return
 	}
-	var due []*eventInstance
+	var due, preludes []*eventInstance
 	s.events.mu.Lock()
 	for _, inst := range s.events.running {
 		if !now.Before(inst.deadline) {
 			due = append(due, inst)
+		} else if !inst.preludeUntil.IsZero() && !now.Before(inst.preludeUntil) {
+			preludes = append(preludes, inst)
 		}
 	}
 	s.events.mu.Unlock()
 	for _, inst := range due {
 		s.eventEnd(inst)
+	}
+	for _, inst := range preludes {
+		s.startBalrogFight(inst, now)
 	}
 }
 
@@ -567,7 +580,8 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		if oid == 0 || room == nil {
 			return errors.New("unable to spawn event monster")
 		}
-		room.mobs[oid] = &gameplayMob{objectID: oid, origin: spawn.Life, life: spawn.Life, stats: stats, hp: stats.HP}
+		room.mobs[oid] = &gameplayMob{objectID: oid, origin: spawn.Life, life: spawn.Life, stats: stats, hp: stats.HP,
+			prelude: spawn.Prelude}
 	}
 	return nil
 }

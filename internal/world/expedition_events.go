@@ -81,6 +81,8 @@ func (s *Server) eventExpeditionChangedLocked() {
 
 func (s *Server) expeditionStagePortal(ctx context.Context, snapshot domain.CharacterSession, live *liveCharacter, sink packetSink, portal content.Portal) (bool, error) {
 	switch {
+	case portal.Script == "balog_end" && snapshot.Character.MapID == balrogRewardMap:
+		return true, s.balrogRewardPortal(ctx, snapshot, live, sink)
 	case portal.Script == "in_hillah" && snapshot.Character.MapID == 262030000:
 		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2184000)
 	case portal.Script == "out_hillah":
@@ -176,6 +178,10 @@ func (s *Server) expeditionCombatAllowedLocked(key mapKey, actor int64) bool {
 }
 
 func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
+	if key.mapID == balrogArena {
+		s.balrogPartDefeated(key, actor, mob)
+		return
+	}
 	if s.events == nil || key.mapID != 262030300 || mob != 8870000 {
 		return
 	}

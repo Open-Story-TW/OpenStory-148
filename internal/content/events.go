@@ -32,6 +32,9 @@ type Event struct {
 type EventSpawn struct {
 	MapID int
 	Life  Life
+	// Prelude is a nonlethal opening phase. Killing the real monster is
+	// possible only after the prelude ends and the WZ HP is restored.
+	Prelude bool
 }
 
 func (e Event) Stage(mapID int) bool {
@@ -58,6 +61,17 @@ var events = map[string]Event{
 		ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
 		LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000,
 		RequiredMobs: map[int]map[int]int{262030100: {8870001: 8}, 262030200: {8870002: 8}, 262030300: {8870000: 1}},
+	},
+	"BalrogEasy": {
+		Name: "BalrogEasy", Maps: []int{105100400, 105100401}, ExitMap: 105100100,
+		Seconds: 1200, PartyMin: 3, PartyMax: 6, Keep: 3,
+		LevelMin: 45, LevelMax: 200, ExpeditionType: 2000, LobbyMap: 105100100,
+		RequiredMobs: map[int]map[int]int{105100400: {}, 105100401: {}},
+		Spawns: []EventSpawn{
+			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830007, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830008, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+			{MapID: 105100400, Life: Life{Kind: "m", TemplateID: 8830009, X: 416, Y: 258, Foothold: 3, RespawnSeconds: -1}, Prelude: true},
+		},
 	},
 }
 
