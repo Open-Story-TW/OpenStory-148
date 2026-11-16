@@ -404,6 +404,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	if s.events == nil || live == nil {
 		return
 	}
+	s.oxQuizEntered(channel, live, sink)
 	live.mu.Lock()
 	c := live.session.Character
 	live.mu.Unlock()

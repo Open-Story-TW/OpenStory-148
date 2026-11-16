@@ -12,3 +12,17 @@ func Clock(seconds int) []byte {
 	w.I32(int32(seconds))
 	return w.Packet()
 }
+
+// OXQuiz displays or reveals a question from the client's Etc.wz. The v148
+// dispatcher routes 0xE3 to a byte, byte, uint16 decoder.
+func OXQuiz(ask bool, set byte, question uint16) []byte {
+	w := NewWriter(0xE3)
+	if ask {
+		w.U8(1)
+	} else {
+		w.U8(0)
+	}
+	w.U8(set)
+	w.I16(int16(question))
+	return w.Packet()
+}

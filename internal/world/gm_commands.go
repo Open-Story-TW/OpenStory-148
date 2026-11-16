@@ -92,6 +92,19 @@ func parseGMCommand(text string) (name string, args []int64, arg string, handled
 	fields := strings.Fields(text)
 	if len(fields) > 0 {
 		switch fields[0] {
+		case "!oxquiz":
+			if len(fields) != 2 {
+				return "", nil, "", true
+			}
+			switch fields[1] {
+			case "open":
+				return "oxquiz", []int64{1}, "", true
+			case "start":
+				return "oxquiz", []int64{2}, "", true
+			case "cancel":
+				return "oxquiz", []int64{3}, "", true
+			}
+			return "", nil, "", true
 		case "!notice":
 			arg = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(text), "!notice"))
 			if arg == "" || len(arg) > domain.GMNoticeMax {
@@ -197,6 +210,7 @@ var gmHelpPages = []gmHelpPage{
 	{"伺服器", []gmHelpEntry{
 		{"!rates", "顯示經驗、楓幣、掉寶倍率"},
 		{"!rate <exp或meso或drop> <倍數>", "修改倍率，立即生效"},
+		{"!oxquiz <open|start|cancel>", "開放報名、開始或取消本頻道的 OX 問答"},
 		{"!effstats", "顯示伺服器計算的攻擊數值"},
 		{"!help [編號]", "顯示這份說明"},
 	}},

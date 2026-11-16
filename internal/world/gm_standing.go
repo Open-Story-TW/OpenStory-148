@@ -289,6 +289,8 @@ func (s *Server) gmStanding(session domain.CharacterSession, live *liveCharacter
 		return m, found, m != nil
 	}
 	switch req.Name {
+	case "oxquiz":
+		say("%s", s.manageOXQuiz(session.ChannelID, req.Args[0]))
 	case "notice":
 		say("公告已送給 %d 位玩家。", s.broadcastNotice(0, 0, req.Text))
 	case "map":

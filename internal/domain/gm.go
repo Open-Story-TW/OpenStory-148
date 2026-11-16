@@ -76,7 +76,7 @@ const GMBanDaysMax = 3650
 func GMStandingCommand(name string) bool {
 	switch name {
 	case "map", "goto", "warphere", "notice", "dc", "npc", "cash", "points",
-		"ban", "unban", "banip", "unbanip", "rate", "killall", "cleardrops", "hide", "god":
+		"ban", "unban", "banip", "unbanip", "rate", "killall", "cleardrops", "hide", "god", "oxquiz":
 		return true
 	}
 	return false
@@ -99,6 +99,8 @@ func ValidGMStandingCommand(name string, args []int64, text string) bool {
 		return one(1, GMWalletMax)
 	case "hide", "god":
 		return one(0, 1)
+	case "oxquiz":
+		return one(1, 3)
 	case "killall", "cleardrops":
 		return text == "" && len(args) == 0
 	case "rate": // kind (1 EXP, 2 mesos, 3 drops), multiplier

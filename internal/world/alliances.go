@@ -175,6 +175,9 @@ func (s *Server) handleMultiChat(ctx context.Context, live *liveCharacter, sink 
 	if !allowed {
 		return nil
 	}
+	if session.Character.MapID == oxQuizMap && s.oxQuizInProgress(session.ChannelID) {
+		return nil
+	}
 	if kind, known := map[int]string{0: "chat_buddy", 1: "chat_party", 2: "chat_guild", 3: "chat_alliance"}[req.Type]; known {
 		recordChat(kind, session, req.Text)
 	}

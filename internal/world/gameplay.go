@@ -271,6 +271,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.gameplay.tickReactors(now)
 			s.tickEvents(now)
 			s.tickHenesysPQ(ctx, now)
+			s.tickOXQuizzes(now)
 		}
 	}
 }
