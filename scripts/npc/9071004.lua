@@ -8,7 +8,7 @@ local menu = {}
 for i, tier in ipairs(tiers) do
     menu[i] = {id = i, text = "#t" .. tier.ticket .. "#（" .. tier.levels .. "）"}
 end
-local tier = tiers[npc:menu("請由隊長選擇想挑戰的難度。每位隊員都需要一張對應的入場券。", menu)]
+local tier = tiers[npc:menu("請選擇挑戰難度。組隊時由隊長選擇，每位參加者都需要一張對應的入場券。", menu)]
 if not tier then
     return
 end
@@ -25,9 +25,8 @@ if result.ok then
     return
 end
 local messages = {
-    no_party = "請先組成隊伍。",
     not_leader = "請讓隊長選擇挑戰路線。",
-    party_size = "請讓 2 到 6 名隊員都到同一張地圖。",
+    party_size = "最多可有 6 名隊員，請全隊先到怪物公園。",
     level = "有隊員的等級不符合這條路線的要求。",
     ticket = "有隊員缺少這條路線的入場券。",
     busy = "有其他隊伍正在挑戰這條路線，請稍後再試。",

@@ -151,7 +151,7 @@ func eventDefinitions() map[string]Event {
 			}
 			definitions[name] = Event{
 				Name: name, Maps: stages, LobbyMap: 951000000, ExitMap: 951000000, Ticket: tier.ticket,
-				Seconds: 1200, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: tier.levelMin, LevelMax: tier.levelMax,
+				Seconds: 1200, PartyMin: 1, PartyMax: 6, Keep: 1, LevelMin: tier.levelMin, LevelMax: tier.levelMax,
 			}
 		}
 	}

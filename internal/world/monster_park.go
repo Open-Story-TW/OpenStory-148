@@ -24,7 +24,7 @@ func (s *Server) monsterParkPortal(ctx context.Context, actor domain.CharacterSe
 	if inst == nil || inst.definition.Ticket == 0 {
 		return notice("請先組隊進入怪物公園。")
 	}
-	if s.partySnapshotOf(actor.CharacterID).LeaderID != actor.CharacterID {
+	if inst.partyID != 0 && s.partySnapshotOf(actor.CharacterID).LeaderID != actor.CharacterID {
 		return notice("請由隊長使用這個傳點。")
 	}
 	if s.mapMonsterCount(inst.channel, mapID) > 0 {

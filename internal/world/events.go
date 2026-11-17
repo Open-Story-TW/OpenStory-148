@@ -102,7 +102,7 @@ func (s *Server) eventStatus(channel int, name string) map[string]any {
 	return value
 }
 
-// eventStart moves the leader's party into the event. The reason is "" on
+// eventStart moves the leader's party or an eligible solo participant into the event. The reason is "" on
 // success, otherwise one of unknown, no_party, not_leader, party_size, level
 // or busy; here and qualified count the members on the leader's map and the
 // ones among them inside the level range, for the NPC's refusal text.
@@ -129,9 +129,6 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	leader := live.session
 	live.mu.Unlock()
 	if leader.ChannelID != channel || leader.Character.HP <= 0 || s.tradeActive(live) || e.LobbyMap != 0 && leader.Character.MapID != e.LobbyMap {
-		return "unavailable", 0, 0, nil
-	}
-	if e.LobbyMap != 0 && leader.Character.MapID != e.LobbyMap {
 		return "unavailable", 0, 0, nil
 	}
 	// Reserve the expedition while its roster cannot change. The map warps
@@ -240,6 +237,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		expeditionID, size, group, reason = s.eventExpeditionRoster(e, leader.CharacterID, live)
 	} else {
 		partyID, size, group, reason = s.eventPartyRoster(leader.CharacterID)
+		if reason == "no_party" && e.Ticket != 0 && e.PartyMin == 1 {
+			size, reason = 1, ""
+		}
 	}
 	if reason != "" {
 		return nil, nil, reason, 0, 0
