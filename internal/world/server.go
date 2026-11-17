@@ -807,6 +807,27 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 			if handled {
 				break
 			}
+			handled, err = s.romeoSearchNPC(ctx, channel, live, c, oid)
+			if err != nil {
+				return
+			}
+			if handled {
+				break
+			}
+			handled, err = s.romeoFinalNPC(ctx, channel, live, c, oid)
+			if err != nil {
+				return
+			}
+			if handled {
+				break
+			}
+			handled, err = s.romeoArchiveNPC(ctx, channel, live, c, oid)
+			if err != nil {
+				return
+			}
+			if handled {
+				break
+			}
 			handled, err = s.startNPCScript(ctx, channel, live, c, oid)
 			if err != nil {
 				return

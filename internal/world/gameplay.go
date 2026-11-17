@@ -99,6 +99,9 @@ type gameplayRoom struct {
 	rex             *hoblinArena
 	judgement       *judgementState
 	nett            *nettDefenseRoom
+	romeoWave       bool
+	romeoSwitch     int
+	romeoBoss       *romeoBossRoom
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -146,7 +149,10 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 	r := &gameplayRoom{definition: m, members: make(map[int64]*gameplayMember), npcs: make(map[int32]content.Life), mobs: make(map[int32]*gameplayMob)}
 	for _, life := range activityLife(m, g.judgement != nil) {
 		if life.Hidden {
-			continue
+			if !content.RomeoSearchNPC(key.mapID, life.TemplateID) {
+				continue
+			}
+			life.Hidden = false // The stock artwork is invisible, but this NPC receives clicks.
 		}
 		if life.Kind == "n" {
 			oid := g.alloc()
@@ -341,6 +347,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickEllinPQ(now)
 			s.tickPiratePQ(ctx, now)
 			s.tickNettDefense(ctx, now)
+			s.tickRomeoBossResults()
 		}
 	}
 }
@@ -479,6 +486,11 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		switch partySession(live).Character.MapID {
 		case content.EllinBoulder, content.EllinBaskets, content.EllinAltar:
 			return true, s.ellinReactorClick(ctx, channel, live, sink, oid)
+		case 926100100, 926110100:
+			return true, s.clickRomeoBeaker(ctx, live, sink, oid)
+		case 926100200, 926100201, 926100202, 926110200, 926110201, 926110202:
+			_, err := s.clickRomeoArchive(ctx, live, sink, oid)
+			return true, err
 		default:
 			return true, s.escapeClick(ctx, channel, live, sink, oid)
 		}
@@ -492,12 +504,20 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		// Mob ownership is chosen by the world. This periodic report does not
 		// complete an exclusive action, so let the client's cooldown elapse.
 		return true, nil
+	case protocol.RecvNPCAction:
+		// The client periodically reports controller animation for NPCs.
+		// The server keeps their WZ spawn positions authoritative.
+		r.Skip(r.Remaining())
+		return true, nil
 	case protocol.RecvMobHitEscort:
 		payload := r.Bytes(r.Remaining())
 		if _, christmas := content.ChristmasByMap(partySession(live).Character.MapID); christmas {
 			return true, s.christmasFriendlyDamage(live, sink, payload)
 		}
 		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(payload))
+		if err == nil && s.romeoEscortHit(channel, live, hit, time.Now()) {
+			return true, nil
+		}
 		if err == nil {
 			s.escortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())
@@ -552,6 +572,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 		return err
 	}
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.romeoLabPortal(ctx, live, sink, p); handled {
 		return err
 	}
 	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
@@ -619,6 +642,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.piratePQPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.romeoLabPortal(ctx, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

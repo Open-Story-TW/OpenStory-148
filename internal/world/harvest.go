@@ -23,6 +23,7 @@ type roomReactor struct {
 	harvester int64
 	finishing bool
 	lastHit   time.Time
+	drainsAt  time.Time
 	growth    int
 	mineHits  int
 }
@@ -53,7 +54,8 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 				continue
 			}
 		} else if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor &&
-			!content.TreasureHuntReactor(mapID, def.TemplateID) && !content.EscapeReactor(mapID, def.TemplateID) {
+			!content.TreasureHuntReactor(mapID, def.TemplateID) && !content.EscapeReactor(mapID, def.TemplateID) &&
+			!content.RomeoLabReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue
@@ -122,10 +124,14 @@ func (g *gameplaySpace) tickReactors(now time.Time) {
 			continue
 		}
 		for _, x := range r.reactors {
-			if !x.regrowLocked(now) {
+			var p []byte
+			if x.drainRomeoBeaker(now) {
+				p = protocol.ReactorState(x.objectID, x.state, x.def.X, x.def.Y)
+			} else if x.regrowLocked(now) {
+				p = x.enterPacket()
+			} else {
 				continue
 			}
-			p := x.enterPacket()
 			for _, m := range r.members {
 				packets = append(packets, delivery{m.sink, p})
 			}
