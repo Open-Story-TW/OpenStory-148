@@ -429,7 +429,7 @@ func eventPortalNotice(sink packetSink, text string) error {
 }
 
 func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bool {
-	if !s.treasureAllowsEntry(session, mapID) {
+	if content.JudgementRoom(mapID) || !s.treasureAllowsEntry(session, mapID) {
 		return false
 	}
 	e, stage := content.EventByMap(mapID)

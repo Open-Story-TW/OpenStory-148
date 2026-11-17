@@ -51,6 +51,9 @@ func rolledLootEquipment(base domain.Equipment, operationID string, rowID int) d
 // enqueueCombatLootTx must follow the asset_combat_rewards insert in the SAME
 // transaction. It pins random outcomes and equipment snapshots before commit.
 func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, value domain.Character, operationID string, mobID, x, y int) error {
+	if content.JudgementRoom(value.MapID) {
+		return nil
+	}
 	if session.ChannelID < 1 || session.ChannelID > 40 || x < -32768 || x > 32767 || y < -32768 || y > 32767 {
 		return domain.ErrInvalidInput
 	}

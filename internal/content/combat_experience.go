@@ -26,6 +26,15 @@ func CombatExperienceMetadata(root string, mapID, mobID int) (CombatExperienceRu
 	if err != nil {
 		return CombatExperienceRules{}, err
 	}
+	if JudgementRoom(mapID) {
+		for _, wave := range judgementWaves[mapID-JudgementRoomFirst] {
+			if wave.TemplateID == mobID {
+				mob = wave.Stats(mob)
+				return CombatExperienceRules{MobID: mobID, MobLevel: mob.Level, MaximumHP: mob.HP, Experience: mob.EXP, PartyBonusRate: 5}, nil
+			}
+		}
+		return CombatExperienceRules{}, domain.ErrInvalidInput
+	}
 	r := CombatExperienceRules{MobID: mobID, MobLevel: mob.Level, MaximumHP: mob.HP, Experience: mob.EXP, PartyBonusRate: 5}
 	if root == "" {
 		return r, nil

@@ -165,6 +165,9 @@ func (c *Catalog) Map(id int) (Map, error) {
 	if ok {
 		return m, nil
 	}
+	if JudgementRoom(id) {
+		return c.judgementMap(id)
+	}
 	if c.root == "" {
 		return Map{}, fmt.Errorf("map %d is absent from embedded content", id)
 	}

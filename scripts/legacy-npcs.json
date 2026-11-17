@@ -3489,10 +3489,6 @@
       "reason": "cm.getMMesos is not supported (line 28)"
     },
     {
-      "legacy": "npc/9010003.js",
-      "reason": "cm.getEventManager is not supported (line 28)"
-    },
-    {
       "legacy": "npc/9010014.js",
       "reason": "cm.getKegs is not supported (line 25)"
     },

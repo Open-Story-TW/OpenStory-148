@@ -296,7 +296,7 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 			return result, err
 		}
 	}
-	if result.Drops, err = applyScriptDrops(ctx, tx, r.Session, result.Character, r.Drops); err != nil {
+	if result.Drops, err = applyScriptDrops(ctx, tx, r.Session, result.Character, r.OperationID, r.Drops); err != nil {
 		return result, err
 	}
 	if r.Growth != nil {

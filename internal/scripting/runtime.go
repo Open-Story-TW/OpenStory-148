@@ -598,6 +598,7 @@ func (s *Session) installHost() {
 		bind("event_party_exp", s.simpleCommand("event_party_exp", 1), 2)
 		bind("transit_status", s.simpleCommand("transit_status", 0), 1)
 		bind("transit_board", s.simpleCommand("transit_board", 0), 1)
+		bind("judgement_enter", s.simpleCommand("judgement_enter", 0), 1)
 		bind("transit_leave", s.simpleCommand("transit_leave", 0), 1)
 		bind("subway_challenge", s.simpleCommand("subway_challenge", 1), 2)
 		bind("henesys_finish", s.simpleCommand("henesys_finish", 0), 1)

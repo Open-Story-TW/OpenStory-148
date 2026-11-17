@@ -164,6 +164,9 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 		}
 		s.detachScene(old)
 	}
+	if err = s.restoreJudgementLobby(ctx, &snapshot); err != nil {
+		return err
+	}
 	// Fetch fallible content before publishing any new local owner/field packet.
 	keymap, err := s.keymapPacket(ctx, snapshot)
 	if err != nil {

@@ -94,6 +94,7 @@ type gameplayRoom struct {
 	escort          *escortRoom
 	bossForms       *eventBossForms
 	rex             *hoblinArena
+	judgement       *judgementState
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -104,6 +105,7 @@ type gameplaySpace struct {
 	pendingCombat map[string]*combatTicket
 	doors         map[doorKey]*townPortal
 	qaMobOutcomes map[string]qaMobOutcome
+	judgement     *judgementSchedule
 }
 
 func newGameplaySpace() (*gameplaySpace, error) {
@@ -115,7 +117,11 @@ func newGameplaySpace() (*gameplaySpace, error) {
 	if _, err = rand.Read(nonce[:]); err != nil {
 		return nil, err
 	}
-	return &gameplaySpace{catalog: c, rooms: make(map[mapKey]*gameplayRoom), nextID: 1000000, bootID: hex.EncodeToString(nonce[:])}, nil
+	judgement, err := configuredJudgement(c)
+	if err != nil {
+		return nil, err
+	}
+	return &gameplaySpace{catalog: c, rooms: make(map[mapKey]*gameplayRoom), nextID: 1000000, bootID: hex.EncodeToString(nonce[:]), judgement: judgement}, nil
 }
 
 func (g *gameplaySpace) alloc() int32 {
@@ -134,7 +140,7 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 		return nil, err
 	}
 	r := &gameplayRoom{definition: m, members: make(map[int64]*gameplayMember), npcs: make(map[int32]content.Life), mobs: make(map[int32]*gameplayMob)}
-	for _, life := range activityLife(m) {
+	for _, life := range activityLife(m, g.judgement != nil) {
 		if life.Hidden {
 			continue
 		}
@@ -195,6 +201,9 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 		return err
 	}
 	r.members[c.ID] = &gameplayMember{sink: sink, live: live, sessionID: entrySession.SessionID, generation: entrySession.Generation, worldID: entrySession.Lease.WorldID, visit: visit}
+	if r.judgement != nil {
+		r.judgement.entrants = append(r.judgement.entrants, c.ID)
+	}
 	now := time.Now()
 	packets := s.npcScriptability(r.npcs)
 	if r.zakum != nil {
@@ -321,6 +330,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickOXQuizzes(now)
 			s.tickTreasureHunts(now)
 			s.tickEscortEvents(now)
+			s.tickJudgement(ctx, now)
 		}
 	}
 }
@@ -699,11 +709,15 @@ func (s *Server) publishGameplayWarp(ctx context.Context, channel int, live *liv
 			return err
 		}
 	}
-	warp := protocol.WarpMap(value, channel)
+	wireValue := value
+	if content.JudgementRoom(wireValue.MapID) {
+		wireValue.MapID = content.JudgementArena
+	}
+	warp := protocol.WarpMap(wireValue, channel)
 	if chase {
 		// Mystic Door: the client cannot spawn on a town-portal (tp) index, so
 		// SetField carries the exact door position (chase flag, 0x69EDC2).
-		warp = protocol.WarpMapAt(value, channel, value.X, value.Y)
+		warp = protocol.WarpMapAt(wireValue, channel, value.X, value.Y)
 	}
 	if err = sink.WritePacket(warp); err != nil {
 		return err

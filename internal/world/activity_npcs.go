@@ -15,8 +15,11 @@ var activityNPCs = map[int]content.Life{
 	100000000: {Kind: "n", TemplateID: rpsNPC, X: 390, Y: 274, Foothold: 113, RX0: 390, RX1: 390},
 }
 
-func activityLife(m content.Map) []content.Life {
+func activityLife(m content.Map, judgement bool) []content.Life {
 	npc, needed := activityNPCs[m.ID]
+	if judgement && m.ID == content.JudgementLobby {
+		npc, needed = content.Life{Kind: "n", TemplateID: content.JudgementNPC, X: -235, Y: -473, Foothold: 2, RX0: -235, RX1: -235}, true
+	}
 	if !needed {
 		return m.Life
 	}

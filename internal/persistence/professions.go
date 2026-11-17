@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -206,7 +207,7 @@ func applyProfessionChange(ctx context.Context, tx *sql.Tx, c *domain.Character,
 // applyScriptDrops leaves the exchange's drops on the character's map. They
 // are ordinary item drops: the owner picks them up, and they expire, like
 // monster loot. A full map refuses the whole exchange.
-func applyScriptDrops(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, c domain.Character, drops []domain.ScriptDrop) ([]domain.ItemDrop, error) {
+func applyScriptDrops(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, c domain.Character, operation string, drops []domain.ScriptDrop) ([]domain.ItemDrop, error) {
 	if len(drops) == 0 {
 		return nil, nil
 	}
@@ -228,11 +229,25 @@ func applyScriptDrops(ctx context.Context, tx *sql.Tx, session domain.CharacterS
 	out := make([]domain.ItemDrop, 0, len(drops))
 	for _, d := range drops {
 		def, err := inventoryDefinition(d.TemplateID)
-		if err != nil || def.InvType < 1 || def.InvType > 4 || def.Cash || d.Quantity < 1 || d.Quantity > def.SlotMax || d.X < -32768 || d.X > 32767 || d.Y < -32768 || d.Y > 32767 {
+		castlePrize := content.JudgementRoom(c.MapID) && session.Character.MapID == c.MapID
+		if err != nil || def.InvType < 1 || def.InvType > 4 || (def.Cash && !(castlePrize && def.InvType == 1 && d.TemplateID/10000 == 170)) ||
+			(d.RollEquipment && !(castlePrize && def.InvType == 1)) || d.Quantity < 1 || d.Quantity > def.SlotMax || d.X < -32768 || d.X > 32767 || d.Y < -32768 || d.Y > 32767 {
 			return nil, domain.ErrInvalidInput
 		}
 		drop := domain.ItemDrop{WorldID: world, ChannelID: channel, MapID: c.MapID, OwnerID: c.ID, X: d.X, Y: d.Y, InvType: def.InvType, TemplateID: d.TemplateID, Quantity: d.Quantity}
-		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity).Scan(&drop.ObjectID); err != nil {
+		var equipment []byte
+		if castlePrize && def.InvType == 1 {
+			gear := def.Equipment
+			if d.RollEquipment {
+				gear = rolledLootEquipment(gear, operation, d.TemplateID)
+			}
+			drop.Equipment = &gear
+			equipment, err = json.Marshal(gear)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment)).Scan(&drop.ObjectID); err != nil {
 			return nil, err
 		}
 		out = append(out, drop)

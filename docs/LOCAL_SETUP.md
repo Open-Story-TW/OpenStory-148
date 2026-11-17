@@ -82,6 +82,12 @@ Java 對照與 MariaDB 使用自己的 listener。`.local/java-baseline.json` �
 
 `MAPLEGO_WZ_ROOT` 指向唯讀 WZ XML 目錄；本機目前使用相鄰 Java 參考專案的 `wz`，不改寫來源。未設定時只提供嵌入的新手內容。`py -3 tools/inventory-wz.py --source-root <wz目錄> --output <manifest路徑>` 可產生逐檔與整體雜湊的清單，用來核對 WZ 內容。載入資料不等於已支援該地圖的全部腳本與玩法。
 
+### 審判之地
+
+在 World 服務設定 `MAPLEGO_LOLCASTLE=1` 即可啟用 Piggy2 的審判之地活動。使用原版 v148 WZ 匯入魔法森林、神祇的黃昏、莉亞與活動怪物、獎品資料。活動使用五間獨立場地，角色重登會回到魔法森林。
+
+預設每四小時以當地時間 03:50 為週期基準，第 5 至第 10 分鐘開放報名，第 11 分鐘開始 20 分鐘的比賽。可用 `MAPLEGO_LOLCASTLE_ANCHOR` 指定 RFC3339 週期基準。每人入場費為 1,000,000 楓幣。每間場地從截止時仍在場的玩家中抽出一人，每位在場玩家計入 500,000 楓幣獎池。清完場內怪物後，最高分玩家有 2 分鐘拾取獎品。
+
 ## 開發與測試
 
 ```powershell

@@ -430,6 +430,8 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return a.eventCommand(ctx, snapshot, command)
 	case "transit_status", "transit_board", "transit_leave":
 		return a.transitCommand(ctx, snapshot, command)
+	case "judgement_enter":
+		return a.judgementEnter(ctx, snapshot, command)
 	case "subway_challenge":
 		return a.subwayChallenge(ctx, snapshot, command)
 	case "henesys_finish":

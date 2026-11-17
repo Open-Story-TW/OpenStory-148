@@ -188,10 +188,11 @@ type ScriptExchangeResult struct {
 // ScriptDrop is one stack an exchange leaves on the ground at (X, Y) of the
 // character's own map and channel, owned by that character.
 type ScriptDrop struct {
-	TemplateID int `json:"template_id"`
-	Quantity   int `json:"quantity"`
-	X          int `json:"x"`
-	Y          int `json:"y"`
+	TemplateID    int  `json:"template_id"`
+	Quantity      int  `json:"quantity"`
+	X             int  `json:"x"`
+	Y             int  `json:"y"`
+	RollEquipment bool `json:"roll_equipment,omitempty"`
 }
 
 type ScriptQuestRepository interface {

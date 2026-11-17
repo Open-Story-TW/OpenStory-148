@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 )
@@ -382,6 +383,9 @@ func (s *Server) commitCombatTicket(t *combatTicket, result domain.CombatAttackR
 		if q.Defeated {
 			mob.respawnAt = mob.respawnTime(t.key.mapID, time.Now())
 			mob.statuses = nil
+			if room := g.rooms[t.key]; room != nil && room.judgement != nil {
+				room.judgement.scores[t.actorSession.CharacterID] += judgementMobPoints(q.MobID)
+			}
 		}
 	}
 	s.applyGenericStatusesLocked(t, time.Now())
@@ -530,7 +534,9 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 	}
 	for _, q := range t.request.Targets {
 		if q.Defeated {
-			_ = s.spawnCombatLoot(ctx, t.actor, t.sink, q.SpawnOperationID, q.MobID, q.X, q.Y)
+			if !content.JudgementRoom(t.key.mapID) {
+				_ = s.spawnCombatLoot(ctx, t.actor, t.sink, q.SpawnOperationID, q.MobID, q.X, q.Y)
+			}
 			if _, known := horntailByMap(t.key.mapID); known {
 				s.horntailDefeated(ctx, t, q)
 			} else if t.key.mapID == pinkBeanArena {
