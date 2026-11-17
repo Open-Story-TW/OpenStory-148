@@ -99,16 +99,17 @@ func (s *Server) tickTransit(ctx context.Context, now time.Time) {
 				from, to = leg.boarding, leg.ride
 			}
 			for channel := 1; channel <= s.wcfg.ChannelCount; channel++ {
-				s.moveTransitPassengers(ctx, channel, from, to)
 				if leg.cabin != 0 {
+					s.updateBoatDock(channel, leg.dock, phase)
 					switch {
 					case phase != transitAway:
-						s.moveTransitPassengers(ctx, channel, leg.cabin, leg.arrival)
 						s.clearBoatInvasion(channel, leg.ride)
+						s.moveTransitPassengers(ctx, channel, leg.cabin, leg.arrival)
 					case line.elapsed(s.transitStart, now) >= line.departure+time.Minute:
 						s.spawnBoatInvasion(channel, leg.ride)
 					}
 				}
+				s.moveTransitPassengers(ctx, channel, from, to)
 			}
 		}
 	}
