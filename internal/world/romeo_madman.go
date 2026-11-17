@@ -27,7 +27,7 @@ func (s *Server) romeoMadmanPortal(ctx context.Context, inst *eventInstance, act
 		room := g.rooms[key]
 		if room == nil || room.members[session.CharacterID] == nil || room.romeoWave {
 			g.mu.Unlock()
-			return true, nil
+			return true, actor.sink.WritePacket(protocol.EnableActions())
 		}
 		life, ok := romeoSpawnGround(room.definition, 115, 230)
 		if !ok {
