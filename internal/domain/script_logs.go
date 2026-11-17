@@ -83,9 +83,10 @@ type ScriptExchange struct {
 	EXP         int64               `json:"exp,omitempty"`
 	EventCredit int64               `json:"event_credit,omitempty"` // Server-resolved event reward only.
 	Quests      []ScriptQuestForce  `json:"quests,omitempty"`
-	Travel      *ScriptTravel       `json:"travel,omitempty"` // Server-resolved destination; never a raw Lua table field.
-	Look        *ScriptLook         `json:"look,omitempty"`   // Beauty host only; never a raw Lua table field.
-	Growth      *ScriptGrowth       `json:"growth,omitempty"` // Generated Legacy NPC sources only.
+	Travel      *ScriptTravel       `json:"travel,omitempty"`       // Server-resolved destination; never a raw Lua table field.
+	PetTraining bool                `json:"pet_training,omitempty"` // Dedicated pet-course NPC only.
+	Look        *ScriptLook         `json:"look,omitempty"`         // Beauty host only; never a raw Lua table field.
+	Growth      *ScriptGrowth       `json:"growth,omitempty"`       // Generated Legacy NPC sources only.
 	// Profession host only; never a raw Lua table field.
 	Profession *ProfessionChange `json:"profession,omitempty"`
 	// Drops are items left on the character's map for it to pick up (what a
@@ -180,6 +181,7 @@ type ScriptExchangeResult struct {
 	Logs      []ScriptLogValue  `json:"logs"`
 	QuestData []ScriptQuestData `json:"quest_data,omitempty"`
 	Quests    []QuestState      `json:"quests,omitempty"`
+	Pets      []PetChange       `json:"pet_changes,omitempty"`
 	Drops     []ItemDrop        `json:"drops,omitempty"`
 	// Skills are the skill records a ScriptGrowth taught, as they now stand.
 	Skills []SkillState `json:"skills,omitempty"`

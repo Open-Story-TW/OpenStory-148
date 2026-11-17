@@ -214,6 +214,33 @@ func (s *Store) SummonPet(ctx context.Context, r domain.PetSummonRequest) (domai
 	return result, tx.Commit()
 }
 
+// trainSummonedPets shares the letter turn-in transaction so the letter is
+// returned if the owner no longer has a summoned pet that has not expired.
+func trainSummonedPets(ctx context.Context, tx *sql.Tx, owner *domain.Character, now time.Time) ([]domain.PetChange, error) {
+	if err := readPets(ctx, tx, owner); err != nil {
+		return nil, err
+	}
+	changes := []domain.PetChange{}
+	var active bool
+	for _, pet := range owner.SummonedPets() {
+		if pet.Expired(now) {
+			continue
+		}
+		active = true
+		next, levelUp := gainCloseness(pet, 2)
+		if next.Closeness != pet.Closeness {
+			changes = append(changes, domain.PetChange{Before: pet, After: next, LevelUp: levelUp})
+		}
+	}
+	if !active {
+		return nil, domain.ErrForbidden
+	}
+	if err := applyPetChanges(ctx, tx, owner.ID, changes); err != nil {
+		return nil, err
+	}
+	return finishPetChanges(owner, changes).Changes, nil
+}
+
 // gainCloseness applies a closeness delta and reports a level-up.
 func gainCloseness(p domain.Pet, delta int) (domain.Pet, bool) {
 	p.Closeness = max(0, min(domain.PetMaxCloseness, p.Closeness+delta))

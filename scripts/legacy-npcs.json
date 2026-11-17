@@ -2931,10 +2931,6 @@
       "reason": "cm.getBuddyCapacity is not supported (line 28)"
     },
     {
-      "legacy": "npc/1012007.js",
-      "reason": "cm.getEventMap is not supported (line 15)"
-    },
-    {
       "legacy": "npc/1012008.js",
       "reason": "cm.getPlayer().getVPoints is not supported (line 37)"
     },

@@ -156,6 +156,9 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	if r.Growth != nil && !domain.ValidScriptGrowth(*r.Growth) {
 		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
 	}
+	if r.PetTraining && (r.Session.Character.MapID != 100000202 || len(r.Items) != 1 || r.Items[0] != (domain.ScriptItemDelta{TemplateID: 4031035, Quantity: -1})) {
+		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
+	}
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return domain.ScriptExchangeResult{}, err
@@ -193,6 +196,7 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 		prior.Character = value
 		prior.Replayed = true
 		prior.Changes = nil
+		prior.Pets = nil
 		return prior, nil
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
@@ -282,6 +286,15 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 		} else {
 			err = applyScriptItem(ctx, tx, &result.InventoryResult, delta)
 		}
+		if err != nil {
+			return result, err
+		}
+	}
+	if r.PetTraining {
+		if value.MapID != 100000202 {
+			return result, domain.ErrStaleOwner
+		}
+		result.Pets, err = trainSummonedPets(ctx, tx, &result.Character, now)
 		if err != nil {
 			return result, err
 		}
