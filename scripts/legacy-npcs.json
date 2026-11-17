@@ -517,12 +517,6 @@
       "lua_sha256": "48cef35bcf46485e300d5c33c5b1ff1bf6e78036c4b29f97734aca8bce36f766"
     },
     {
-      "legacy": "npc/1063002.js",
-      "source_sha256": "700da9a66e3ff5fb2a1630e43129ed1c0d7771fcd8bb50e2af38429d3fb842dd",
-      "lua": "npc/1063002.lua",
-      "lua_sha256": "a384e82c011bbf8145feda0128a37537fa69d11af4b10e585431fabbc3e472a8"
-    },
-    {
       "legacy": "npc/1063012.js",
       "source_sha256": "b4aededff780729faabf5e1631436e0b2f62b5ad19b9ab9281d72da6327038f2",
       "lua": "npc/1063012.lua",
@@ -2991,10 +2985,6 @@
     {
       "legacy": "npc/1061014.js",
       "reason": "cm.getEventManager is not supported (line 25)"
-    },
-    {
-      "legacy": "npc/1063000.js",
-      "reason": "cm.getEventMap is not supported (line 15)"
     },
     {
       "legacy": "npc/1072003.js",
