@@ -110,6 +110,9 @@ func (s *Server) hitTreasureChest(ctx context.Context, channel int, live *liveCh
 }
 
 func (s *Server) dropTreasureChest(ctx context.Context, live *liveCharacter, sink packetSink, visit *sceneVisit, run *treasureHuntRun, op string, def content.Reactor) error {
+	if def.TemplateID != 9002002 {
+		return nil
+	}
 	repo, ok := s.repo.(domain.ScriptRepository)
 	if !ok {
 		return domain.ErrForbidden
@@ -120,17 +123,8 @@ func (s *Server) dropTreasureChest(ctx context.Context, live *liveCharacter, sin
 	if !s.sceneCurrent(visit) || s.treasureRun(session) != run || s.tradeActive(live) {
 		return domain.ErrStaleOwner
 	}
-	put := func(template, side int) domain.ScriptDrop {
-		x, y := s.gatherDropPoint(session.Character.MapID, def.X, def.Y, side)
-		return domain.ScriptDrop{TemplateID: template, Quantity: 1, X: x, Y: y}
-	}
-	drops := []domain.ScriptDrop{put(2000000, -25)}
-	switch def.TemplateID {
-	case 9002001:
-		drops = append(drops, put(1032000, 25))
-	case 9002002:
-		drops = append(drops, put(treasureMapItem, 25))
-	}
+	x, y := s.gatherDropPoint(session.Character.MapID, def.X, def.Y, 25)
+	drops := []domain.ScriptDrop{{TemplateID: treasureMapItem, Quantity: 1, X: x, Y: y}}
 	result, err := repo.ExecuteScriptExchange(ctx, domain.ScriptExchange{Session: session, OperationID: op, Drops: drops})
 	if err != nil {
 		return err
