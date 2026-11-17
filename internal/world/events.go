@@ -153,6 +153,14 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	if reason != "" {
 		return reason, here, qualified, nil
 	}
+	nett := content.NettEvent(e.Name)
+	if nett {
+		group := append(append([]eventOccupant{}, present...), eventOccupant{live, sink})
+		if !s.nettCanEnter(ctx, group) {
+			s.eventEnd(inst)
+			return "daily", here, qualified, nil
+		}
+	}
 	key := eventKey{channel, name}
 	if err = s.gameplay.resetEventRooms(channel, e); err != nil {
 		slog.Warn("event_reset_failed", "event", name, "channel", channel, "error", err)
@@ -272,9 +280,15 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
 	}
-	if (inst.escape != nil || inst.ellin != nil || inst.pirate != nil) && here-len(failed) < e.PartyMin {
+	if (inst.escape != nil || inst.ellin != nil || inst.pirate != nil || nett) && here-len(failed) < e.PartyMin {
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, nil
+	}
+	if nett {
+		if err := s.startNettDefense(ctx, inst); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, nil
+		}
 	}
 	s.events.mu.Lock()
 	inst.starting = false
@@ -310,7 +324,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		return nil, nil, reason, 0, 0
 	}
 	fits := func(c domain.Character) bool {
-		return e.ExpeditionType == 0 && c.GM > 0 || c.Level >= e.LevelMin && c.Level <= e.LevelMax
+		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && c.GM > 0 || c.Level >= e.LevelMin && c.Level <= e.LevelMax
 	}
 	here, qualified = 1, 0
 	if fits(leader.Character) {
@@ -378,7 +392,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	occupied := len(s.eventOccupants(leader.ChannelID, e.Maps)) > 0
 	inst = &eventInstance{id: platform.NewID(), definition: e, channel: leader.ChannelID, partyID: partyID, expeditionID: expeditionID,
 		members: map[int64]struct{}{leader.CharacterID: {}}, deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second),
-		properties: map[string]string{}, starting: expeditionID != 0}
+		properties: map[string]string{}, starting: expeditionID != 0 || content.NettEvent(e.Name)}
 	if e.Name == content.HenesysPQName {
 		inst.moon = &henesysState{}
 	}
@@ -505,7 +519,7 @@ func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bo
 	defer s.events.mu.Unlock()
 	inst := s.events.running[eventKey{session.ChannelID, e.Name}]
 	if inst == nil {
-		return e.ExpeditionType == 0 && session.Character.GM > 0
+		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && session.Character.GM > 0
 	}
 	return !inst.ended && s.events.byMember[session.CharacterID] == inst
 }
@@ -643,7 +657,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 		s.eventSettle(inst)
 		return
 	}
-	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || c.GM == 0) {
+	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || content.NettEvent(e.Name) || c.GM == 0) {
 		go s.eventExit(channel, e, live, sink)
 	}
 }
@@ -808,6 +822,11 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		room, err := g.room(key)
 		if err != nil {
 			return err
+		}
+		if content.NettEvent(event.Name) {
+			if err := g.prepareNettDefenseLocked(room); err != nil {
+				return err
+			}
 		}
 		if id == content.KentaDefense {
 			room.kentaWaves = room.mobs

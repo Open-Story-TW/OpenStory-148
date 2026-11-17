@@ -370,6 +370,17 @@ func (s *Store) ExecuteEventItems(ctx context.Context, exchanges []domain.Script
 	return s.executeEventExchanges(ctx, requests)
 }
 
+func (s *Store) ExecuteEventLogs(ctx context.Context, exchanges []domain.ScriptExchange) ([]domain.ScriptExchangeResult, error) {
+	requests := make([]domain.ScriptExchange, len(exchanges))
+	for i, exchange := range exchanges {
+		if len(exchange.Logs) != 1 {
+			return nil, domain.ErrInvalidInput
+		}
+		requests[i] = domain.ScriptExchange{Session: exchange.Session, OperationID: exchange.OperationID, Logs: exchange.Logs}
+	}
+	return s.executeEventExchanges(ctx, requests)
+}
+
 func (s *Store) executeEventExchanges(ctx context.Context, exchanges []domain.ScriptExchange) ([]domain.ScriptExchangeResult, error) {
 	if len(exchanges) < 1 || len(exchanges) > 6 {
 		return nil, domain.ErrInvalidInput

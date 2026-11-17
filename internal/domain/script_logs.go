@@ -211,3 +211,8 @@ type ScriptRepository interface {
 type EventItemRepository interface {
 	ExecuteEventItems(context.Context, []ScriptExchange) ([]ScriptExchangeResult, error)
 }
+
+// EventLogRepository applies server-created roster logs atomically.
+type EventLogRepository interface {
+	ExecuteEventLogs(context.Context, []ScriptExchange) ([]ScriptExchangeResult, error)
+}

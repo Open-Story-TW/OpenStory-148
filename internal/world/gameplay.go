@@ -37,6 +37,7 @@ type gameplayMob struct {
 	qaHeldUntil      time.Time // the hold lapses here (mobHoldTerm)
 	qaOwner          *qaMobOwner
 	oneTime          bool
+	nettLane         *content.NettLane
 }
 
 // Event maps reset their one-time spawns between groups.
@@ -97,6 +98,7 @@ type gameplayRoom struct {
 	bossForms       *eventBossForms
 	rex             *hoblinArena
 	judgement       *judgementState
+	nett            *nettDefenseRoom
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -211,6 +213,9 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 	if r.zakum != nil {
 		packets = append(packets, r.zakum.enterPacket())
 	}
+	if r.nett != nil && r.nett.wave > 0 {
+		packets = append(packets, protocol.NettDefenseLife(r.nett.life), protocol.NettDefenseWave(r.nett.wave), protocol.NettDefensePoints(0))
+	}
 	for oid, npc := range r.npcs {
 		packets = append(packets, protocol.SpawnNPC(oid, npc, false), protocol.SpawnNPC(oid, npc, true))
 	}
@@ -219,7 +224,7 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 			continue
 		}
 		packets = append(packets, mob.spawnPacket(false, now))
-		if mob.fake {
+		if mob.fake || mob.nettLane != nil {
 			continue
 		}
 		if mob.controller == 0 {
@@ -335,6 +340,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickJudgement(ctx, now)
 			s.tickEllinPQ(now)
 			s.tickPiratePQ(ctx, now)
+			s.tickNettDefense(ctx, now)
 		}
 	}
 }
@@ -381,6 +387,10 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		return false, nil
 	}
 	switch op {
+	case protocol.RecvNettDefense:
+		// CField_Defense sends this periodic request while its HUD is active.
+		// The server's own clock controls movement and wave scheduling.
+		return true, nil
 	case protocol.RecvCaptureItem:
 		request, err := protocol.ReadCaptureItem(r)
 		if err != nil {
@@ -583,6 +593,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 	p, ok := m.Portal(req.Name)
 	if !ok || req.TargetMap != -1 || !within(chr.X, chr.Y, p.X, p.Y, 150) {
 		return sink.WritePacket(protocol.EnableActions())
+	}
+	if handled, err := s.nettLanePortal(ctx, channel, live, sink, p); handled {
+		return err
 	}
 	if handled, err := s.ludibriumPortal(ctx, live, sink, p); handled {
 		return err

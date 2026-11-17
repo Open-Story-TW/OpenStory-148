@@ -48,6 +48,44 @@ func TestEventItemsRollbackAndReplayForWholeParty(t *testing.T) {
 	}
 }
 
+func TestEventLogsReturnWholePartyRevisions(t *testing.T) {
+	ctx, s, sessions := inventoryFixture(t)
+	if sessions[0].CharacterID > sessions[1].CharacterID {
+		sessions[0], sessions[1] = sessions[1], sessions[0]
+	}
+	name := fmt.Sprintf("nett-admission-test-%d", sessions[0].CharacterID)
+	t.Cleanup(func() {
+		_, _ = s.db.ExecContext(context.Background(), "DELETE FROM game_script_logs WHERE name=$1", name)
+	})
+	key := domain.ScriptLogKey{Scope: domain.LogCharacter, Period: domain.LogDaily, Name: name}
+	exchanges := []domain.ScriptExchange{
+		{Session: sessions[0], OperationID: name, Logs: []domain.ScriptLogChange{{Key: key, Delta: 1, Maximum: int64ptr(5)}}},
+		{Session: sessions[1], OperationID: name, Logs: []domain.ScriptLogChange{{Key: key, Delta: 6, Maximum: int64ptr(5)}}},
+	}
+	if _, err := s.ExecuteEventLogs(ctx, exchanges); !errors.Is(err, domain.ErrAlreadyExists) {
+		t.Fatalf("expected capped second member, got %v", err)
+	}
+	logs, err := s.ReadScriptLogs(ctx, sessions[0], []domain.ScriptLogKey{key})
+	if err != nil || len(logs) != 1 || logs[0].Value != 0 {
+		t.Fatalf("failed admission changed the first player's entry count: %+v, %v", logs, err)
+	}
+	exchanges[1].Logs[0].Delta = 1
+	result, err := s.ExecuteEventLogs(ctx, exchanges)
+	if err != nil || len(result) != 2 {
+		t.Fatalf("admitting eligible party: %+v, %v", result, err)
+	}
+	for i, reply := range result {
+		before := sessions[i]
+		if reply.Character.ID != before.CharacterID || reply.Character.Revision != before.Character.Revision+1 {
+			t.Fatalf("member %d missed the new character revision", before.CharacterID)
+		}
+	}
+	result, err = s.ExecuteEventLogs(ctx, exchanges)
+	if err != nil || len(result) != 2 || !result[0].Replayed || !result[1].Replayed {
+		t.Fatalf("retry recharged the party: %+v, %v", result, err)
+	}
+}
+
 func TestScriptLogsAtomicRewardsAndScope(t *testing.T) {
 	ctx, s, sessions := inventoryFixture(t)
 	name := fmt.Sprintf("script-test-%d", sessions[0].CharacterID)

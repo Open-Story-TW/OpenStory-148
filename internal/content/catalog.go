@@ -68,6 +68,7 @@ type Map struct {
 	Footholds   []Foothold   `json:"footholds"`
 	Areas       []MapArea    `json:"areas,omitempty"`
 	EscortRoute []EscortNode `json:"escort_route,omitempty"`
+	NettDefense *NettDefense `json:"-"`
 	obstacles   []fieldObstacle
 }
 
@@ -113,6 +114,9 @@ type Mob struct {
 	DropItemPeriod int    `json:"drop_item_period,omitempty"` // WZ seconds between escort item drops.
 	Revive         []int  `json:"revive,omitempty"`
 	RemoveAfter    int    `json:"remove_after,omitempty"` // WZ seconds before the form disappears.
+
+	DefenseLifePoint int `json:"-"` // Barrier HP lost when this defense monster escapes.
+	DefenseSpeed     int `json:"-"` // Original signed WZ walk-speed modifier.
 }
 
 //go:embed starter.json
@@ -196,6 +200,7 @@ func (c *Catalog) Map(id int) (Map, error) {
 func (c *Catalog) readMapXML(id int) (*wzNode, error) {
 	visited := map[int]bool{}
 	var info *wzNode
+	var defense *wzNode
 	for field := id; ; {
 		if field < 0 || field > 999999998 || visited[field] || len(visited) >= 32 {
 			return nil, fmt.Errorf("invalid map link %d for field %d", field, id)
@@ -211,10 +216,23 @@ func (c *Catalog) readMapXML(id int) (*wzNode, error) {
 		}
 		if info == nil {
 			info = current
+			if NettDefenseMap(id) && info.intValue("fieldType", 0) == 38 {
+				defense = node.child("monsterDefense")
+				if defense == nil {
+					return nil, fmt.Errorf("map %d has no Nett defense schedule", id)
+				}
+			}
 		}
 		if current.child("link") == nil {
 			// A linked field has the linked geometry and its own entry rules.
 			*current = *info
+			if defense != nil && field != id {
+				if inherited := node.child("monsterDefense"); inherited != nil {
+					*inherited = *defense
+				} else {
+					node.Children = append(node.Children, *defense)
+				}
+			}
 			return node, nil
 		}
 		field = current.intValue("link", -1)
@@ -247,6 +265,10 @@ func (c *Catalog) Mob(id int) (Mob, error) {
 	// consulting the linked file's movement/attack animation properties.
 	m = parseMob(id, info)
 	m.Flying = node.child("fly") != nil
+	if info.intValue("defenseMob", 0) != 0 {
+		m.DefenseLifePoint = info.intValue("lifePoint", 0)
+		m.DefenseSpeed = info.intValue("speed", 0)
+	}
 	if m.HP < 1 {
 		return Mob{}, fmt.Errorf("mob %d has no positive maxHP", id)
 	}
@@ -334,6 +356,13 @@ func parseMap(id int, n *wzNode) (Map, error) {
 	if usesEscortRoute(id) {
 		m.EscortRoute = escortRoute(n.child("nodeInfo"))
 	}
+	if NettDefenseMap(id) && i.intValue("fieldType", 0) == 38 {
+		var err error
+		m.NettDefense, err = parseNettDefense(n.child("monsterDefense"), i)
+		if err != nil {
+			return Map{}, fmt.Errorf("map %d: %w", id, err)
+		}
+	}
 	if p := n.child("portal"); p != nil {
 		for _, x := range p.Children {
 			pid, err := strconv.Atoi(x.Name)
@@ -341,6 +370,25 @@ func parseMap(id int, n *wzNode) (Map, error) {
 				return Map{}, fmt.Errorf("invalid portal index")
 			}
 			m.Portals = append(m.Portals, Portal{ID: pid, Name: x.stringValue("pn", ""), Type: x.intValue("pt", 0), X: x.intValue("x", 0), Y: x.intValue("y", 0), TargetMap: x.intValue("tm", 999999999), TargetName: x.stringValue("tn", ""), Script: x.stringValue("script", "")})
+		}
+	}
+	if m.NettDefense != nil {
+		for i := range m.Portals {
+			p := &m.Portals[i]
+			if NettDefenseMap(p.TargetMap) && p.Type == 1 && p.TargetName != "" {
+				p.TargetMap = m.ID
+			}
+		}
+		if reactors := n.child("reactor"); reactors != nil {
+			for _, r := range reactors.Children {
+				if r.stringValue("name", "") == "obelisk" {
+					m.NettDefense.ObeliskX = r.intValue("x", 0)
+					break
+				}
+			}
+		}
+		if m.NettDefense.ObeliskX == 0 {
+			return Map{}, fmt.Errorf("map %d has no Nett obelisk", id)
 		}
 	}
 	if l := n.child("life"); l != nil {

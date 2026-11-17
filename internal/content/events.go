@@ -64,6 +64,8 @@ func eventDefinitions() map[string]Event {
 		DragonRiderName: dragonRiderEvent(),
 		LudibriumPQName: ludibriumEvent(),
 		ZakumMineName:   zakumMineEvent(),
+		NettNormal:      nettEvent(NettNormal, NettNormalBase, 60, 89),
+		NettHard:        nettEvent(NettHard, NettHardBase, 90, 109),
 		HenesysPQName: {
 			Name: HenesysPQName, Maps: []int{HenesysPQMap},
 			ExitMap: HenesysPQLobby, Seconds: 600, PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,
