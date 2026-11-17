@@ -81,6 +81,8 @@ func (s *Server) eventExpeditionChangedLocked() {
 
 func (s *Server) expeditionStagePortal(ctx context.Context, snapshot domain.CharacterSession, live *liveCharacter, sink packetSink, portal content.Portal) (bool, error) {
 	switch {
+	case portal.Script == "treeboss00" && portal.Name == "boss00" && snapshot.Character.MapID == content.KrexelLobby:
+		return true, s.enterKrexel(ctx, snapshot, live, sink)
 	case portal.Script == "in_cygnus" && (snapshot.Character.MapID == 271040000 || snapshot.Character.MapID == cygnusArena):
 		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2143004)
 	case portal.Script == "portalNPC" &&
@@ -195,6 +197,10 @@ func (s *Server) expeditionCombatAllowedLocked(key mapKey, actor int64) bool {
 func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
 	if key.mapID == content.MalaysiaBossArena {
 		s.malaysiaBossFormDefeated(key, actor, mob)
+		return
+	}
+	if key.mapID == content.KrexelArena {
+		s.krexelDefeated(key, mob)
 		return
 	}
 	if key.mapID == content.PapulatusArena {

@@ -33,6 +33,9 @@ func (s *Server) handleProfession(ctx context.Context, channel int, live *liveCh
 		if err != nil {
 			return nil
 		}
+		if s.hitKrexelReactor(channel, live, id) {
+			return nil
+		}
 		return s.hitReactor(ctx, channel, live, sink, id, false)
 	case protocol.RecvProfessionInfo:
 		q, err := protocol.ReadProfessionInfo(r)

@@ -45,7 +45,7 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 	r.reactors = make(map[int32]*roomReactor, len(reactors))
 	for _, def := range reactors {
 		var node content.GatherNode
-		if def.TemplateID != content.HeliosElevatorDoor && !content.TreasureHuntReactor(mapID, def.TemplateID) {
+		if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor && !content.TreasureHuntReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue

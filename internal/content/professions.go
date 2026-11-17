@@ -225,6 +225,12 @@ var mapReactors sync.Map // "root|map" -> []Reactor
 // HeliosElevatorDoor is the WZ reactor placed at each elevator entrance.
 const HeliosElevatorDoor = 2208004
 
+const (
+	KrexelLobby   = 541020700
+	KrexelArena   = 541020800
+	KrexelReactor = 5411001
+)
+
 // MapReactors lists the supported reactors placed on a map.
 func MapReactors(root string, mapID int) ([]Reactor, error) {
 	if root == "" || mapID < 0 || mapID > 999999998 {
@@ -250,7 +256,9 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 			if err != nil {
 				continue
 			}
-			if !TreasureHuntReactor(mapID, id) && (id != HeliosElevatorDoor || mapID != 222020100 && mapID != 222020200) {
+			isElevatorDoor := id == HeliosElevatorDoor && (mapID == 222020100 || mapID == 222020200)
+			isKrexelReactor := id == KrexelReactor && mapID == KrexelArena
+			if !isElevatorDoor && !isKrexelReactor && !TreasureHuntReactor(mapID, id) {
 				if _, err = GatherNodeDefinition(root, id); err != nil {
 					continue
 				}

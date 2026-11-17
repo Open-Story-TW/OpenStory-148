@@ -88,6 +88,7 @@ type gameplayRoom struct {
 	cygnus          *cygnusBattle
 	malaysiaStatues map[int]*malaysiaStatue
 	pinkBean        *pinkBeanBattle
+	krexel          *krexelBattle
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -246,6 +247,9 @@ func (s *Server) leaveGameplay(channel, mapID int, characterID int64, expected .
 	departed := r.members[characterID]
 	delete(r.members, characterID)
 	retireQAMobOwnerLocked(r, departed)
+	if r.krexel != nil && len(r.members) == 0 {
+		r.resetKrexel()
+	}
 	type delivery struct {
 		sink   packetSink
 		packet []byte
