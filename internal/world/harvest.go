@@ -52,7 +52,8 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 			if err != nil {
 				continue
 			}
-		} else if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor && !content.TreasureHuntReactor(mapID, def.TemplateID) {
+		} else if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor &&
+			!content.TreasureHuntReactor(mapID, def.TemplateID) && !content.EscapeReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue

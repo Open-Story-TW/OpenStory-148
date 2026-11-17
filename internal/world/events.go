@@ -46,6 +46,7 @@ type eventInstance struct {
 	ice          *iceKnightState
 	christmas    christmasProgress
 	hoblin       *hoblinPQState
+	escape       *escapeState
 
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
@@ -207,6 +208,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		}
 	}
 	leaderOccupant := eventOccupant{live, sink}
+	if inst.escape != nil {
+		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
+		if err = s.startEscape(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
 	var groupToCharge []eventOccupant
 	if e.Ticket != 0 {
 		groupToCharge = append(append([]eventOccupant{}, present...), leaderOccupant)
@@ -247,6 +255,10 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	if err != nil {
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
+	}
+	if inst.escape != nil && here-len(failed) < e.PartyMin {
+		s.eventEnd(inst)
+		return "unavailable", here, qualified, nil
 	}
 	s.events.mu.Lock()
 	inst.starting = false
@@ -312,6 +324,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.Name == content.IceKnightName && (leader.Character.MapID != content.IceKnightLobby || here != size) {
 		return nil, nil, "party_size", here, qualified
 	}
+	if e.Name == content.EscapeName && here != size {
+		return nil, nil, "party_size", here, qualified
+	}
 	if e.Name == content.HoblinPQName && ((leader.Character.MapID != content.HoblinTown && leader.Character.MapID != content.HoblinLobby) || here != size) {
 		return nil, nil, "party_size", here, qualified
 	}
@@ -356,6 +371,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.HoblinPQName {
 		inst.hoblin = &hoblinPQState{rewards: make(map[int64]int64)}
+	}
+	if e.Name == content.EscapeName {
+		inst.escape = newEscapeState()
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
@@ -801,6 +819,18 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		if stage, known := horntailByMap(id); known {
 			if err := g.prepareHorntail(room, stage); err != nil {
 				return err
+			}
+		}
+		if event.Name == content.EscapeName {
+			if id == content.EscapePrison {
+				if err := g.validateEscapePrison(room); err != nil {
+					return err
+				}
+			} else {
+				for _, mob := range room.mobs {
+					mob.life.RespawnSeconds = -1
+					mob.origin.RespawnSeconds = -1
+				}
 			}
 		}
 		if required, checked := event.RequiredMobs[id]; checked {

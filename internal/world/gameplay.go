@@ -452,6 +452,12 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 	case protocol.RecvStartHarvest, protocol.RecvStopHarvest, protocol.RecvReactorHit, protocol.RecvProfessionInfo,
 		protocol.RecvCraftEffect, protocol.RecvCraftMake, protocol.RecvCraftDone, protocol.RecvUseRecipe:
 		return true, s.handleProfession(ctx, channel, live, sink, op, r.Bytes(r.Remaining()))
+	case protocol.RecvReactorClick:
+		body := r.Bytes(r.Remaining())
+		if len(body) != 4 {
+			return true, nil
+		}
+		return true, s.escapeClick(ctx, channel, live, sink, protocol.NewReader(body).I32())
 	case protocol.RecvMoveMonster:
 		m, err := protocol.ReadMonsterMove(r)
 		if err != nil {

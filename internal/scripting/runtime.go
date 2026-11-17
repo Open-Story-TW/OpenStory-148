@@ -609,6 +609,7 @@ func (s *Session) installHost() {
 		bind("ice_knight_clear", s.simpleCommand("ice_knight_clear", 0), 1)
 		bind("christmas_finish", s.simpleCommand("christmas_finish", 0), 1)
 		bind("hoblin_ambush", s.simpleCommand("hoblin_ambush", 0), 1)
+		bind("escape_finish", s.simpleCommand("escape_finish", 0), 1)
 		bind("monster_rush_status", s.simpleCommand("monster_rush_status", 0), 1)
 		bind("monster_rush_donate", s.simpleCommand("monster_rush_donate", 1), 2)
 		bind("kenta_finish", s.simpleCommand("kenta_finish", 0), 1)

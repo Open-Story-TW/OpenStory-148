@@ -89,6 +89,11 @@ func MonsterDrops(mobID, mapID int) ([]DropDefinition, error) {
 	if mapID == KentaBoss && (mobID == 9300461 || mobID == 9300468) {
 		out = append(out, DropDefinition{ID: mobID, MobID: mobID, TemplateID: KentaScales, Minimum: 1, Maximum: 1, Chance: 1000000})
 	}
+	if EscapeKeyMob(mapID, mobID) {
+		// The prison's four key guards provide the items for its four
+		// physical doors. The same mob template outside this room has no key.
+		out = append(out, DropDefinition{ID: -EscapeKey, MobID: mobID, TemplateID: EscapeKey, Minimum: 1, Maximum: 1, Chance: 999999})
+	}
 	for _, d := range globalDrops {
 		if d.Continent < 0 || d.Continent < 10 && mapID/100000000 == d.Continent || d.Continent < 100 && mapID/10000000 == d.Continent || d.Continent < 1000 && mapID/1000000 == d.Continent {
 			out = append(out, d)
