@@ -163,7 +163,7 @@ func (s *Server) runMonsterRush(ctx context.Context) {
 					continue
 				}
 				started[channel] = stamp
-				s.broadcastNotice(channel, 0, "怪物開始來襲！請到阿里安特、亞邁斯、冰原雪域、新葉城或鯨魚號迎戰。")
+				s.broadcastNotice(channel, 0, "怪物開始來襲！請到納希綠洲城、結婚小鎮、冰原雪域、新葉城或鯨魚號碼頭迎戰。")
 			}
 		}
 	}
