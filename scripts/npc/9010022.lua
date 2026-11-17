@@ -21,7 +21,7 @@ local entries = {
     { id = 3, text = "怪物嘉年華2", map = 980030000, portal = 4, min = 51, max = 70 },
     { id = 5, text = "奈特的金字塔", map = 926010000, portal = 4, min = 60, max = 109 },
     { id = 11, text = "時空的裂縫", map = 221023300, portal = 0, min = 20 },
-    { id = 12, text = "龍騎士的詛咒", map = 300030100, portal = 0, min = 70 },
+    { id = 12, text = "毒霧森林", map = 300030100, portal = 0, min = 70 },
     { id = 13, text = "女神的痕跡", map = 200080101, portal = 0, min = 70 },
     { id = 14, text = "老海盜", map = 251010404, portal = 0, min = 70 },
     { id = 15, text = "羅密歐與茱麗葉", map = 261000021, portal = 0, min = 70 },

@@ -58,6 +58,7 @@ func eventDefinitions() map[string]Event {
 		IceKnightName:   iceKnightEvent(),
 		EscapeName:      escapeEvent(),
 		HoblinPQName:    hoblinPQEvent(),
+		EllinPQName:     ellinPQEvent(),
 		KentaPQName:     kentaEvent(),
 		DragonRiderName: dragonRiderEvent(),
 		LudibriumPQName: ludibriumEvent(),

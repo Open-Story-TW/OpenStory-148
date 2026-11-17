@@ -3701,14 +3701,6 @@
       "reason": "pi.getEventManager is not supported (line 3)"
     },
     {
-      "legacy": "portal/party6_out.js",
-      "reason": "object.getMonsterById is not supported (line 2)"
-    },
-    {
-      "legacy": "portal/party6_stage.js",
-      "reason": "object.getReactorByName is not supported (line 14)"
-    },
-    {
       "legacy": "portal/party_portal.js",
       "reason": "pi.getPlayer().getEventInstance is not supported (line 2)"
     },

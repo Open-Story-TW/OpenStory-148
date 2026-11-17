@@ -333,6 +333,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickTreasureHunts(now)
 			s.tickEscortEvents(now)
 			s.tickJudgement(ctx, now)
+			s.tickEllinPQ(now)
 		}
 	}
 }
@@ -379,6 +380,12 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		return false, nil
 	}
 	switch op {
+	case protocol.RecvCaptureItem:
+		request, err := protocol.ReadCaptureItem(r)
+		if err != nil {
+			return true, sink.WritePacket(protocol.EnableActions())
+		}
+		return true, s.ellinCapture(ctx, channel, live, sink, request)
 	case protocol.RecvScriptPortal:
 		req, err := protocol.ReadScriptPortalRequest(r)
 		if err != nil {
@@ -457,7 +464,13 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		if len(body) != 4 {
 			return true, nil
 		}
-		return true, s.escapeClick(ctx, channel, live, sink, protocol.NewReader(body).I32())
+		oid := protocol.NewReader(body).I32()
+		switch partySession(live).Character.MapID {
+		case content.EllinBoulder, content.EllinBaskets, content.EllinAltar:
+			return true, s.ellinReactorClick(ctx, channel, live, sink, oid)
+		default:
+			return true, s.escapeClick(ctx, channel, live, sink, oid)
+		}
 	case protocol.RecvMoveMonster:
 		m, err := protocol.ReadMonsterMove(r)
 		if err != nil {
@@ -533,6 +546,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.ellinPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
 	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
@@ -580,6 +596,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.ellinPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

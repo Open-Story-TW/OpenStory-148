@@ -47,6 +47,7 @@ type eventInstance struct {
 	christmas    christmasProgress
 	hoblin       *hoblinPQState
 	escape       *escapeState
+	ellin        *ellinPQState
 
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
@@ -208,6 +209,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		}
 	}
 	leaderOccupant := eventOccupant{live, sink}
+	if inst.ellin != nil {
+		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
+		if err = s.prepareEllinPQ(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
 	if inst.escape != nil {
 		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
 		if err = s.startEscape(ctx, inst, group); err != nil {
@@ -256,7 +264,7 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
 	}
-	if inst.escape != nil && here-len(failed) < e.PartyMin {
+	if (inst.escape != nil || inst.ellin != nil) && here-len(failed) < e.PartyMin {
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, nil
 	}
@@ -324,6 +332,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.Name == content.IceKnightName && (leader.Character.MapID != content.IceKnightLobby || here != size) {
 		return nil, nil, "party_size", here, qualified
 	}
+	if e.Name == content.EllinPQName && (leader.Character.MapID != content.EllinLobby || here != size) {
+		return nil, nil, "party_size", here, qualified
+	}
 	if e.Name == content.EscapeName && here != size {
 		return nil, nil, "party_size", here, qualified
 	}
@@ -371,6 +382,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.HoblinPQName {
 		inst.hoblin = &hoblinPQState{rewards: make(map[int64]int64)}
+	}
+	if e.Name == content.EllinPQName {
+		inst.ellin = &ellinPQState{rewards: make(map[int64]ellinReward)}
 	}
 	if e.Name == content.EscapeName {
 		inst.escape = newEscapeState()
