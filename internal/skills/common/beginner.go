@@ -66,8 +66,8 @@ func init() {
 	each(103, skills.Handler{Kind: skills.KindAttack | skills.KindMobStatus, Attack: ice(nil, combat.MobStatusApply{Stat: combat.MobStun, Value: 1})})                 // 冰砍
 
 	// Movement the client performs alone: pay the cost, show the cast.
-	each(1026, skills.Handler{Kind: skills.KindSpecial, Cast: soar}) // 飛翔 Soaring
-	for _, suffix := range []int{1006, 1068, 1098} {                 // 向下跳躍、機甲戰神衝鋒、冰雙跳躍
+	each(1026, skills.Handler{Kind: skills.KindSpecial | skills.KindBuff, Cast: soar, DropOnEnter: cancelSoaringOnEnter}) // 飛翔 Soaring
+	for _, suffix := range []int{1006, 1068, 1098} {                                                                      // 向下跳躍、機甲戰神衝鋒、冰雙跳躍
 		each(suffix, skills.Handler{Kind: skills.KindSpecial, Cast: skills.CostOnly})
 	}
 	for _, id := range []int{30010110, 30010183, 30010184, 30010186} { // 惡魔跳躍 and its linked jumps
@@ -185,9 +185,8 @@ func partyHeal(c *skills.CastContext) (skills.CastPlan, error) {
 
 var mapCatalog = sync.OnceValues(content.DefaultCatalog)
 
-// soar (x026 飛翔) pays the cost only on a field whose WZ info/fly is set:
-// Java rejects isSoaring_Normal when the map cannot soar. Legacy commented
-// its SOARING statup out, so the cast gives no buff.
+// soar activates the v148 SOARING temporary stat. The client sends a normal
+// cast, but its vertical controls only work after this stat arrives.
 func soar(c *skills.CastContext) (skills.CastPlan, error) {
 	catalog, err := mapCatalog()
 	if err != nil {
@@ -200,5 +199,20 @@ func soar(c *skills.CastContext) (skills.CastPlan, error) {
 	if !m.Fly {
 		return skills.CastPlan{}, fmt.Errorf("skill%d: map %d cannot soar", c.Skill.ID, c.Caster.MapID)
 	}
-	return skills.StandardCost(c), nil
+	p := skills.StandardCost(c)
+	p.Toggle = true
+	p.Self = &skills.Buff{Duration: skills.Permanent, Stats: []skills.StatValue{{Stat: "SOARING", Value: 1}}}
+	return p, nil
+}
+
+func cancelSoaringOnEnter(c domain.Character) bool {
+	if c.MapID == content.DragonRiderTrap {
+		return true
+	}
+	catalog, err := mapCatalog()
+	if err != nil {
+		return true
+	}
+	m, err := catalog.Map(c.MapID)
+	return err != nil || !m.Fly
 }

@@ -157,7 +157,7 @@ func TestBuffStatsAreSendable(t *testing.T) {
 			continue
 		}
 		h, _ := skills.Lookup(id)
-		if h.Cast == nil || id%10000 == 1026 { // Soaring needs a flyable map and gives no buff
+		if h.Cast == nil || id%10000 == 1026 { // Soaring needs a flyable map.
 			continue
 		}
 		def, err := content.SkillDefinition("", id)
@@ -397,7 +397,8 @@ func TestSoaringNeedsAFlyableMap(t *testing.T) {
 	if os.Getenv("MAPLEGO_WZ_ROOT") == "" {
 		t.Skip("flyable fields load from MAPLEGO_WZ_ROOT")
 	}
-	if p := mustCast(t, 10001026, 1, domain.Character{MapID: 200110000}); p.MPCost != 90 || p.Self != nil {
+	if p := mustCast(t, 10001026, 1, domain.Character{MapID: 200110000}); p.MPCost != 90 || !p.Toggle ||
+		p.Self == nil || p.Self.Duration != skills.Permanent || stats(p.Self)["SOARING"] != 1 {
 		t.Fatalf("soaring %+v", p)
 	}
 }
