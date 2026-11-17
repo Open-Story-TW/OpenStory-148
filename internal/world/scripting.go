@@ -179,6 +179,16 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 	}
 	if name == "" {
 		name = fmt.Sprintf("npc/%d.lua", npcID)
+		switch npcID {
+		case 2083000:
+			if snapshot.Character.MapID == 240050000 {
+				name = "npc/2083000_horntail.lua"
+			}
+		case 2083002:
+			if _, known := horntailByMap(snapshot.Character.MapID); known {
+				name = "npc/2083002_horntail.lua"
+			}
+		}
 	}
 	if _, err := scripts.Source(name); err != nil {
 		if reason, ok := scripts.LegacyNPCPendingReason(npcID); ok {
@@ -342,7 +352,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	switch command.Kind {
 	case "quest_start", "quest_complete", "quest_forfeit", "exchange", "change_look", "warp", "open_storage", "open_merchant_bank", "open_shop", "advance_warrior", "advance_first_job", "advance_second_job", "depart_island", "take_taxi",
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
-		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
+		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
@@ -444,6 +454,9 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		}
 		complete, err := a.server.finishIceKnight(ctx, snapshot)
 		return scripting.CommandResult{Value: complete}, err
+	case "horntail_disguise":
+		ok, err := a.openHorntailCavern(ctx, snapshot)
+		return scripting.CommandResult{Value: ok}, err
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
 			return scripting.CommandResult{}, domain.ErrInvalidInput

@@ -531,7 +531,9 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 	for _, q := range t.request.Targets {
 		if q.Defeated {
 			_ = s.spawnCombatLoot(ctx, t.actor, t.sink, q.SpawnOperationID, q.MobID, q.X, q.Y)
-			if t.key.mapID == pinkBeanArena {
+			if _, known := horntailByMap(t.key.mapID); known {
+				s.horntailDefeated(ctx, t, q)
+			} else if t.key.mapID == pinkBeanArena {
 				s.pinkBeanDefeat(t.key, t.actorSession.CharacterID, q.ObjectID)
 			} else {
 				s.expeditionBossDefeated(t.key, t.actorSession.CharacterID, q.MobID)

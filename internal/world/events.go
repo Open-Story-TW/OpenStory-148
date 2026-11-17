@@ -730,6 +730,11 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 				return err
 			}
 		}
+		if stage, known := horntailByMap(id); known {
+			if err := g.prepareHorntail(room, stage); err != nil {
+				return err
+			}
+		}
 		if required, checked := event.RequiredMobs[id]; checked {
 			actual := make(map[int]int)
 			for _, m := range room.mobs {

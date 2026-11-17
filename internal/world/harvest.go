@@ -218,6 +218,9 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 	live.mu.Lock()
 	c := live.session.Character
 	live.mu.Unlock()
+	if !stop && s.hitHorntailCrystal(channel, c, objectID) {
+		return sink.WritePacket(protocol.EnableActions())
+	}
 	var all, others []packetSink
 	var packets [][]byte
 	var node content.GatherNode

@@ -318,6 +318,9 @@ func ItemBuffSource(templateID int) int { return -templateID }
 // ItemBuffSource, replacing any row with the same stat like a skill cast.
 func applyItemBuff(ctx context.Context, tx *sql.Tx, c *domain.Character, templateID int, buff *content.ItemBuff, now time.Time) ([]domain.SkillBuff, []domain.SkillBuff, error) {
 	stats := skills.StandardStats(buff.Values)
+	if templateID == content.HorntailDisguiseItem && buff.Values["morph"] == 4 {
+		stats = append(stats, skills.StatValue{Stat: "MORPH", Value: 4})
+	}
 	if len(stats) == 0 {
 		return nil, nil, domain.ErrInvalidInput
 	}

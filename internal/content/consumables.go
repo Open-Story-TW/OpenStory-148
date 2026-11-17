@@ -73,6 +73,11 @@ func ConsumableDefinition(root string, id int) (Recovery, *ItemBuff, error) {
 	for _, entry := range spec.Children {
 		switch {
 		case entry.Name == "hp", entry.Name == "mp", entry.Name == "hpR", entry.Name == "mpR", entry.Name == "time":
+		case entry.Name == "morph" && id == HorntailDisguiseItem:
+			if entry.Value != "4" {
+				return Recovery{}, nil, fmt.Errorf("invalid Horntail disguise")
+			}
+			values["morph"] = 4
 		case itemBuffKeys[entry.Name]:
 			if v := spec.intValue(entry.Name, 0); v != 0 {
 				values[entry.Name] = v

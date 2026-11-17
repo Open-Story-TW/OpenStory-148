@@ -91,6 +91,7 @@ type gameplayRoom struct {
 	krexel          *krexelBattle
 	ice             *iceEscortRoom
 	iceBoss         *iceKnightArena
+	horntail        *horntailField
 }
 type gameplaySpace struct {
 	mu            sync.Mutex

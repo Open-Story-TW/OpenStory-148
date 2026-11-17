@@ -130,6 +130,18 @@ func eventDefinitions() map[string]Event {
 			Spawns: []EventSpawn{{MapID: 270050100, Life: Life{Kind: "n", TemplateID: 2141000,
 				X: -190, Y: -42, Foothold: 35, RX0: -240, RX1: -140}}},
 		},
+		"Horntail": {
+			Name: "Horntail", Maps: []int{240060000, 240060100, 240060200}, ExitMap: 240000000,
+			Seconds: 9000, PartyMin: 6, PartyMax: 30, Keep: 6, LevelMin: 80, LevelMax: 200,
+			ExpeditionType: 2003, LobbyMap: 240050400,
+			RequiredMobs: map[int]map[int]int{240060000: {}, 240060100: {}, 240060200: {}},
+		},
+		"ChaosHorntail": {
+			Name: "ChaosHorntail", Maps: []int{240060001, 240060101, 240060201}, ExitMap: 240000000,
+			Seconds: 9000, PartyMin: 6, PartyMax: 30, Keep: 6, LevelMin: 110, LevelMax: 200,
+			ExpeditionType: 2006, LobbyMap: 240050400,
+			RequiredMobs: map[int]map[int]int{240060001: {}, 240060101: {}, 240060201: {}},
+		},
 		"VonLeon": {
 			Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
 			Seconds: 3600, PartyMin: 6, PartyMax: 18, Keep: 6,
