@@ -136,7 +136,19 @@ func (s *Server) hoblinAmbush(ctx context.Context, actor domain.CharacterSession
 		s.mapMonsterCount(inst.channel, content.HoblinAmbush) != 0 {
 		return false, nil
 	}
-	return true, s.moveHoblinParty(ctx, inst, mover, content.HoblinAmbush, content.HoblinEscortFirst)
+	next, err := s.gameplay.catalog.Map(content.HoblinEscortFirst)
+	if err != nil {
+		return false, err
+	}
+	entry, ok := next.Spawn()
+	if !ok {
+		return false, domain.ErrInvalidInput
+	}
+	// This command is running inside the leader's Lua dialogue. That dialogue
+	// sends its own final response after the warp.
+	s.warpEventPeers(ctx, inst, content.HoblinAmbush, mover.live, next.ID, entry)
+	s.closeEconomyDialog(mover.live)
+	return true, s.warpEventMember(ctx, inst, content.HoblinAmbush, mover, next.ID, entry)
 }
 
 func (s *Server) moveHoblinParty(ctx context.Context, inst *eventInstance, mover eventOccupant, room, next int) error {

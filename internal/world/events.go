@@ -392,17 +392,21 @@ func (s *Server) warpEventMember(ctx context.Context, inst *eventInstance, from 
 }
 
 func (s *Server) moveEventRoom(ctx context.Context, inst *eventInstance, from int, actor eventOccupant, to int, entry content.Portal) error {
+	s.warpEventPeers(ctx, inst, from, actor.live, to, entry)
+	s.cancelNPCScriptState(actor.live, false)
+	s.closeEconomyDialog(actor.live)
+	return s.warpEventMember(ctx, inst, from, actor, to, entry)
+}
+
+func (s *Server) warpEventPeers(ctx context.Context, inst *eventInstance, from int, actor *liveCharacter, to int, entry content.Portal) {
 	for _, member := range s.eventOccupants(inst.channel, []int{from}) {
-		if member.live == actor.live || s.eventOf(partySession(member.live).CharacterID) != inst {
+		if member.live == actor || s.eventOf(partySession(member.live).CharacterID) != inst {
 			continue
 		}
 		s.cancelNPCScriptState(member.live, false)
 		s.closeEconomyDialog(member.live)
 		_ = s.warpEventMember(ctx, inst, from, member, to, entry)
 	}
-	s.cancelNPCScriptState(actor.live, false)
-	s.closeEconomyDialog(actor.live)
-	return s.warpEventMember(ctx, inst, from, actor, to, entry)
 }
 
 func (s *Server) activeEventMembers(inst *eventInstance, mapID int) []eventOccupant {
