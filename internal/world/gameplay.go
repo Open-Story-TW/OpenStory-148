@@ -453,6 +453,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.ludibriumPortal(ctx, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.dragonRiderPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
 	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
@@ -482,6 +485,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	if handled, err := s.ludibriumPortal(ctx, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.dragonRiderPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

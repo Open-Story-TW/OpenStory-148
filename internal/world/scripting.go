@@ -535,7 +535,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
 		growth := command.Exchange.Growth
-		if growth != nil && !scripts.LegacyNPC(command.Script) {
+		if growth != nil && !scripts.LegacyNPC(command.Script) && command.Script != dragonSoaringScript {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
 		if growth != nil && !domain.ValidScriptGrowth(*growth) {
@@ -565,6 +565,9 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		snapshot.Lease = a.server.currentLease()
 		a.live.mu.Unlock()
 		request := *command.Exchange
+		if growth != nil && command.Script == dragonSoaringScript && !setDragonSoaringSkill(a.npcID, snapshot.Character, request) {
+			return result(map[string]any{"ok": false, "reason": "conditions_not_met"})
+		}
 		request.Session = snapshot
 		request.OperationID = command.ID
 		value, err := repo.ExecuteScriptExchange(ctx, request)

@@ -49,6 +49,7 @@ func (e Event) Stage(mapID int) bool {
 }
 
 var events = map[string]Event{
+	DragonRiderName: dragonRiderEvent(),
 	LudibriumPQName: ludibriumEvent(),
 	HenesysPQName: {
 		Name: HenesysPQName, Maps: []int{HenesysPQMap},

@@ -199,7 +199,7 @@ func (s *Server) ludibriumPortal(ctx context.Context, live *liveCharacter, sink 
 		s.closeEconomyDialog(live)
 		return true, s.warpEventMember(ctx, inst, c.MapID, mover, next, entry)
 	}
-	err = s.moveLudibriumRoom(ctx, inst, room, mover, next, entry)
+	err = s.moveEventRoom(ctx, inst, room, mover, next, entry)
 	return true, err
 }
 
@@ -236,23 +236,9 @@ func (s *Server) ludibriumBox(ctx context.Context, actor domain.CharacterSession
 			return err
 		}
 		s.ludibriumClearEffect(inst.channel, m.ID)
-		return s.moveLudibriumRoom(ctx, inst, m.ID, mover, m.ID, entry)
+		return s.moveEventRoom(ctx, inst, m.ID, mover, m.ID, entry)
 	}
 	s.cancelNPCScriptState(live, false)
 	s.closeEconomyDialog(live)
 	return s.warpEventMember(ctx, inst, m.ID, mover, m.ID, entry)
-}
-
-func (s *Server) moveLudibriumRoom(ctx context.Context, inst *eventInstance, from int, actor eventOccupant, to int, entry content.Portal) error {
-	for _, member := range s.eventOccupants(inst.channel, []int{from}) {
-		if member.live == actor.live || s.eventOf(partySession(member.live).CharacterID) != inst {
-			continue
-		}
-		s.cancelNPCScriptState(member.live, false)
-		s.closeEconomyDialog(member.live)
-		_ = s.warpEventMember(ctx, inst, from, member, to, entry)
-	}
-	s.cancelNPCScriptState(actor.live, false)
-	s.closeEconomyDialog(actor.live)
-	return s.warpEventMember(ctx, inst, from, actor, to, entry)
 }

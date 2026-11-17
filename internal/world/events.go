@@ -42,6 +42,7 @@ type eventInstance struct {
 	ended        bool
 	moon         *henesysState
 	ludi         *ludibriumState
+	dragon       *dragonRiderState
 }
 
 type eventSpace struct {
@@ -241,6 +242,19 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.ExpeditionType != 0 && here != size {
 		return nil, nil, "roster_absent", here, qualified
 	}
+	if e.Name == content.DragonRiderName {
+		if leader.Character.MapID != content.DragonRiderGate || here != size {
+			return nil, nil, "party_size", here, qualified
+		}
+		if !knowsSoaring(leader.Character) {
+			return nil, nil, "soaring", here, qualified
+		}
+		for _, member := range present {
+			if !knowsSoaring(partySession(member.live).Character) {
+				return nil, nil, "soaring", here, qualified
+			}
+		}
+	}
 	if e.Name == "Zakum" || e.Name == "ChaosZakum" {
 		if !qualifiedForZakum(leader.Character) {
 			return nil, nil, "zakum_prerequisite", here, qualified
@@ -260,6 +274,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.LudibriumPQName {
 		inst.ludi = newLudibriumState()
+	}
+	if e.Name == content.DragonRiderName {
+		inst.dragon = &dragonRiderState{rewards: map[int64]dragonRiderReward{}}
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
@@ -311,6 +328,20 @@ func (s *Server) warpEventMember(ctx context.Context, inst *eventInstance, from 
 		return domain.ErrStaleOwner
 	}
 	return nil
+}
+
+func (s *Server) moveEventRoom(ctx context.Context, inst *eventInstance, from int, actor eventOccupant, to int, entry content.Portal) error {
+	for _, member := range s.eventOccupants(inst.channel, []int{from}) {
+		if member.live == actor.live || s.eventOf(partySession(member.live).CharacterID) != inst {
+			continue
+		}
+		s.cancelNPCScriptState(member.live, false)
+		s.closeEconomyDialog(member.live)
+		_ = s.warpEventMember(ctx, inst, from, member, to, entry)
+	}
+	s.cancelNPCScriptState(actor.live, false)
+	s.closeEconomyDialog(actor.live)
+	return s.warpEventMember(ctx, inst, from, actor, to, entry)
 }
 
 func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bool {
