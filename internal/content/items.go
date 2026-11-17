@@ -214,6 +214,10 @@ func equipmentCategory(category int) (string, []int) {
 }
 
 func starterItem(id int) (Item, bool) {
+	if id >= 4031332 && id <= 4031341 {
+		price := int64(100 * (id - 4031331))
+		return Item{ID: id, InvType: 4, SlotMax: 100, Gender: -1, Price: price, UnitPrice: float64(price), TradeBlock: true}, true
+	}
 	if id == 4031802 {
 		return Item{ID: id, InvType: 4, SlotMax: 100, Gender: -1, Price: 1, UnitPrice: 1, Quest: true}, true
 	}

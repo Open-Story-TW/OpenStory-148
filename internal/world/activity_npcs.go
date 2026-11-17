@@ -6,11 +6,13 @@ import (
 	"maple-go-server/internal/content"
 )
 
-// v148 has these ticketing attendants without map life entries. Place
-// each attendant on a ground platform at its departure terminal.
+// v148 has these NPC templates without map life entries. Place the two
+// ticketing attendants and the rock-paper-scissors host on ground platforms
+// in their respective towns.
 var activityNPCs = map[int]content.Life{
 	103000000: {Kind: "n", TemplateID: 9270041, X: 840, Y: 66, Foothold: 94, RX0: 840, RX1: 840},
 	540010000: {Kind: "n", TemplateID: 9270038, X: 84, Y: 275, Foothold: 1, RX0: 84, RX1: 84},
+	100000000: {Kind: "n", TemplateID: rpsNPC, X: 390, Y: 274, Foothold: 113, RX0: 390, RX1: 390},
 }
 
 func activityLife(m content.Map) []content.Life {

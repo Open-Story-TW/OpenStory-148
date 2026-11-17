@@ -3499,10 +3499,6 @@
       "reason": "cm.getPlayer().AutoJQOnline is not supported (line 18)"
     },
     {
-      "legacy": "npc/9000019.js",
-      "reason": "cm.sendRPS is not supported (line 2)"
-    },
-    {
       "legacy": "npc/9000020.js",
       "reason": "cm.getJobId is not supported (line 83)"
     },

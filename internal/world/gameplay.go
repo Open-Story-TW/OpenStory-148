@@ -373,6 +373,8 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, err
 		}
 		return true, sink.WritePacket(protocol.EnableActions())
+	case protocol.RecvRPS:
+		return true, s.handleRPS(ctx, live, sink, r.Bytes(r.Remaining()))
 	case protocol.RecvSkillPrepare:
 		s.skillPrepare(channel, live, r.Bytes(r.Remaining()))
 		return true, nil

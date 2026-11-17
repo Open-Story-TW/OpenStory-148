@@ -343,7 +343,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	case "quest_start", "quest_complete", "quest_forfeit", "exchange", "change_look", "warp", "open_storage", "open_merchant_bank", "open_shop", "advance_warrior", "advance_first_job", "advance_second_job", "depart_island", "take_taxi",
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
 		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "event_set", "event_effect", "henesys_finish",
-		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board":
+		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
@@ -433,6 +433,8 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return result(a.server.finishMoonRabbit(ctx, inst, snapshot))
 	case "hak_board":
 		return a.boardHak(ctx, snapshot, command)
+	case "open_rps":
+		return scripting.CommandResult{}, a.openRPS(command)
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
 			return scripting.CommandResult{}, domain.ErrInvalidInput

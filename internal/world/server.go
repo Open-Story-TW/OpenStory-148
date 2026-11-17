@@ -63,6 +63,7 @@ type Server struct {
 type liveCharacter struct {
 	mu               sync.Mutex
 	persistMu        sync.Mutex // serialize checkpoints and durable asset commands
+	rps              *rpsGame   // guarded by persistMu
 	nativeHandle     int64
 	god              bool // GM !god; guarded by mu, lost on relog or channel change.
 	session          domain.CharacterSession
