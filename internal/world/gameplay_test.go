@@ -35,6 +35,19 @@ func (s *gameplayTestSink) count(op uint16) int {
 	return n
 }
 
+func TestMonsterControlPriorityLeavesExclusiveRequestCooldownAlone(t *testing.T) {
+	s := &Server{gameplay: &gameplaySpace{}}
+	sink := &gameplayTestSink{}
+	packet := protocol.NewWriter(protocol.RecvMonsterControlPriority)
+	packet.I32(1000152)
+	packet.U32(660)
+	handled, err := s.handleGameplay(context.Background(), 0, &liveCharacter{}, sink,
+		protocol.RecvMonsterControlPriority, protocol.NewReader(packet.Packet()[2:]))
+	if err != nil || !handled || len(sink.packets) != 0 {
+		t.Fatalf("periodic mob report must be handled without a reply: handled=%t, err=%v, packets=%d", handled, err, len(sink.packets))
+	}
+}
+
 type gameplayTestRepo struct {
 	domain.Repository
 	reward func(domain.CharacterSession, string, int64) (domain.Character, error)

@@ -457,6 +457,10 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, err
 		}
 		return true, s.monsterMovement(channel, live, sink, m)
+	case protocol.RecvMonsterControlPriority:
+		// Mob ownership is chosen by the world. This periodic report does not
+		// complete an exclusive action, so let the client's cooldown elapse.
+		return true, nil
 	case protocol.RecvMobHitEscort:
 		payload := r.Bytes(r.Remaining())
 		if _, christmas := content.ChristmasByMap(partySession(live).Character.MapID); christmas {

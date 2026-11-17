@@ -28,6 +28,9 @@ const (
 	SendNPCTalk             uint16 = 0x241
 )
 
+// The v148 client reports a mob OID and its distance-based control priority.
+const RecvMonsterControlPriority uint16 = 0x164
+
 type PortalRequest struct {
 	TargetMap int
 	Name      string
