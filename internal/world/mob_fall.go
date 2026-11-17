@@ -47,14 +47,29 @@ func applyMobMoveLocked(r *gameplayRoom, mob *gameplayMob, m protocol.MonsterMov
 		if next >= len(route) || r.escort.done {
 			return mobMoveRejected
 		}
-		from, to := route[max(0, next-1)], route[next]
 		const slack = 150
-		if m.X < min(from.X, to.X)-slack || m.X > max(from.X, to.X)+slack ||
-			m.Y < min(from.Y, to.Y)-slack || m.Y > max(from.Y, to.Y)+slack {
-			return mobMoveRejected
+		from := route[max(0, next-1)]
+		if !r.escort.stopUntil.IsZero() {
+			if within(m.X, m.Y, from.X, from.Y, slack) {
+				mob.life.X, mob.life.Y = m.X, m.Y-1
+				return mobMoveAccepted
+			}
+		} else {
+			// A move can reach the following segment before its native node
+			// acknowledgement is applied. Stops still cap that window.
+			for _, to := range route[next:min(next+3, len(route))] {
+				if m.X >= min(from.X, to.X)-slack && m.X <= max(from.X, to.X)+slack &&
+					m.Y >= min(from.Y, to.Y)-slack && m.Y <= max(from.Y, to.Y)+slack {
+					mob.life.X, mob.life.Y = m.X, m.Y-1
+					return mobMoveAccepted
+				}
+				if to.Attribute == 2 && to.StopMillis > 0 {
+					break
+				}
+				from = to
+			}
 		}
-		mob.life.X, mob.life.Y = m.X, m.Y-1
-		return mobMoveAccepted
+		return mobMoveRejected
 	}
 	if floor, ok := fieldFloor(r.definition); ok && m.Y > floor+mobFallSlack {
 		return mobMoveFellOut

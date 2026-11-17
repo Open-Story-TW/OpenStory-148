@@ -33,6 +33,46 @@ func TestIceEscortResumesAtWZDeadline(t *testing.T) {
 	}
 }
 
+func TestEscortNodeCanPrecedeMovementButCannotSkipStop(t *testing.T) {
+	now := time.Now()
+	mob := &gameplayMob{objectID: 1, hp: 80}
+	escort := &escortRoom{mob: mob, next: 1}
+	route := []content.EscortNode{{X: 0}, {X: 200, Attribute: 2, StopMillis: 2000}, {X: 400}, {X: 600}}
+	room := &gameplayRoom{
+		escort:     escort,
+		definition: content.Map{EscortRoute: route},
+		mobs:       map[int32]*gameplayMob{1: mob},
+	}
+	if escort.reportNode(3, route) {
+		t.Fatal("node acknowledgement skipped a mandatory pause")
+	}
+	if !escort.reportNode(2, route) {
+		t.Fatal("an early native acknowledgement should be retained")
+	}
+	advanceEscortLocked(room, now)
+	if escort.next != 1 || escort.reported != 2 {
+		t.Fatal("waypoint advanced before reaching its coordinates")
+	}
+	if applyMobMoveLocked(room, mob, protocol.MonsterMove{X: 200}) != mobMoveAccepted {
+		t.Fatal("valid movement to the stop was rejected")
+	}
+	advanceEscortLocked(room, now)
+	if escort.next != 2 || escort.stopUntil != now.Add(2*time.Second) || escort.reportNode(4, route) {
+		t.Fatal("movement did not apply the pending stop")
+	}
+	if applyMobMoveLocked(room, mob, protocol.MonsterMove{X: 600}) != mobMoveRejected {
+		t.Fatal("movement around an active stop was accepted")
+	}
+	escort.stopUntil = time.Time{}
+	if !escort.reportNode(4, route) || applyMobMoveLocked(room, mob, protocol.MonsterMove{X: 600}) != mobMoveAccepted {
+		t.Fatal("native movement could not catch up across an ordinary node")
+	}
+	advanceEscortLocked(room, now.Add(2*time.Second))
+	if !escort.done || room.mobs[1] != nil {
+		t.Fatal("escort did not clear at its final node")
+	}
+}
+
 func TestIceKnightArenaWaitsForBothBossFormsAndEnding(t *testing.T) {
 	now := time.Now()
 	sink := &gameplayTestSink{}

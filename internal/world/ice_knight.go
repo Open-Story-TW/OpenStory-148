@@ -18,6 +18,7 @@ type iceKnightState struct {
 type escortRoom struct {
 	mob       *gameplayMob
 	next      int
+	reported  int
 	done      bool
 	lastAt    time.Time
 	stopUntil time.Time
@@ -120,19 +121,45 @@ func (s *Server) escortNode(channel int, live *liveCharacter, sink packetSink, o
 	}
 	stage, route := room.escort, room.definition.EscortRoute
 	member := room.members[actor.CharacterID]
-	now := time.Now()
 	if member == nil || member.live != live || !sameDropSink(member.sink, sink) || stage.done || stage.mob.hp <= 0 ||
-		stage.mob.objectID != oid || stage.mob.controller != actor.CharacterID || next != stage.next+1 || next > len(route) ||
-		!stage.stopUntil.IsZero() || now.Sub(stage.lastAt) < 100*time.Millisecond {
+		stage.mob.objectID != oid || stage.mob.controller != actor.CharacterID ||
+		!stage.reportNode(next, route) {
 		g.mu.Unlock()
 		return
+	}
+	packets := advanceEscortLocked(room, time.Now())
+	g.mu.Unlock()
+	deliver(packets)
+}
+
+func (stage *escortRoom) reportNode(next int, route []content.EscortNode) bool {
+	if next <= max(stage.next, stage.reported) || next > len(route) || !stage.stopUntil.IsZero() {
+		return false
+	}
+	// The native client can send a node before the move that reaches it. An
+	// acknowledgement may overtake ordinary nodes but cannot skip a WZ stop.
+	for _, node := range route[stage.next : next-1] {
+		if node.Attribute == 2 && node.StopMillis > 0 {
+			return false
+		}
+	}
+	stage.reported = next
+	return true
+}
+
+// Caller holds gameplay.mu. Apply a native acknowledgement after the
+// accompanying authoritative movement sample reaches its waypoint.
+func advanceEscortLocked(room *gameplayRoom, now time.Time) []roomDelivery {
+	stage, route := room.escort, room.definition.EscortRoute
+	next := stage.reported
+	if next <= stage.next || stage.done || stage.mob.hp <= 0 || now.Sub(stage.lastAt) < 100*time.Millisecond {
+		return nil
 	}
 	node := route[next-1]
 	if !within(stage.mob.life.X, stage.mob.life.Y, node.X, node.Y, 150) {
-		g.mu.Unlock()
-		return
+		return nil
 	}
-	stage.next, stage.lastAt = next, now
+	stage.next, stage.reported, stage.lastAt = next, 0, now
 	if next != len(route) {
 		if node.Attribute == 2 && node.StopMillis > 0 {
 			stage.stopUntil = now.Add(time.Duration(node.StopMillis) * time.Millisecond)
@@ -140,19 +167,17 @@ func (s *Server) escortNode(channel int, live *liveCharacter, sink packetSink, o
 				room.rex.summonAt = now.Add(1500 * time.Millisecond)
 			}
 		}
-		g.mu.Unlock()
-		return
+		return nil
 	}
 	stage.done = true
-	delete(room.mobs, oid)
-	packets := roomBroadcast(room, protocol.KillMonster(oid), -1)
+	delete(room.mobs, stage.mob.objectID)
+	packets := roomBroadcast(room, protocol.KillMonster(stage.mob.objectID), -1)
 	notice := "冰人已安全抵達，請前往下一關。"
-	if inst.hoblin != nil {
+	if stage.mob.life.TemplateID == content.HoblinEscort || stage.mob.life.TemplateID == content.HoblinArenaEscort {
 		notice = "邪摩斯已安全抵達，請前往下一關。"
 	}
 	packets = append(packets, roomBroadcast(room, protocol.PortalTrainingMessage(notice), -1)...)
-	g.mu.Unlock()
-	deliver(packets)
+	return packets
 }
 
 func (s *Server) tickEscortEvents(now time.Time) {
@@ -167,7 +192,13 @@ func (s *Server) tickEscortEvents(now time.Time) {
 			packets = append(packets, g.advanceEventBossForms(room, now)...)
 		}
 		stage := room.escort
-		if stage == nil || stage.stopUntil.IsZero() || now.Before(stage.stopUntil) {
+		if stage == nil {
+			continue
+		}
+		if stage.reported > stage.next {
+			packets = append(packets, advanceEscortLocked(room, now)...)
+		}
+		if stage.stopUntil.IsZero() || now.Before(stage.stopUntil) {
 			continue
 		}
 		stage.stopUntil = time.Time{}

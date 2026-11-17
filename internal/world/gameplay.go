@@ -284,6 +284,7 @@ func (s *Server) leaveGameplay(channel, mapID int, characterID int64, expected .
 			if mob.hp > 0 {
 				packets = append(packets, delivery{m.sink, mob.spawnPacket(true, time.Now())})
 				if r.escort != nil && r.escort.mob == mob {
+					r.escort.reported = 0
 					packets = append(packets, delivery{m.sink, r.escort.pathPacket(r.definition.EscortRoute)})
 				}
 			}
@@ -804,6 +805,10 @@ func (s *Server) monsterMovement(channel int, live *liveCharacter, sink packetSi
 		}
 		return sink.WritePacket(protocol.MonsterMoveResponse(m, mp))
 	}
+	var escortPackets []roomDelivery
+	if r.escort != nil && r.escort.mob == mob && r.escort.reported > r.escort.next {
+		escortPackets = advanceEscortLocked(r, time.Now())
+	}
 	// Mob skills need their own authoritative resolver; a controller cannot ask
 	// peers to execute an arbitrary skill through its movement report.
 	m.UseSkill = false
@@ -816,12 +821,14 @@ func (s *Server) monsterMovement(channel int, live *liveCharacter, sink packetSi
 	}
 	g.mu.Unlock()
 	if err := sink.WritePacket(protocol.MonsterMoveResponse(m, mp)); err != nil {
+		deliver(escortPackets)
 		return err
 	}
 	packet := protocol.MonsterMovePacket(m)
 	for _, p := range peers {
 		_ = p.WritePacket(packet)
 	}
+	deliver(escortPackets)
 	return nil
 }
 
