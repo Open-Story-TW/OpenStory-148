@@ -3897,10 +3897,6 @@
       "reason": "cm.getEventManager is not supported (line 16)"
     },
     {
-      "legacy": "npc/9270047.js",
-      "reason": "cm.getEventManager is not supported (line 18)"
-    },
-    {
       "legacy": "npc/9270073.js",
       "reason": "cm.getDecorations is not supported (line 26)"
     },

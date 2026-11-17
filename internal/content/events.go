@@ -99,6 +99,11 @@ func eventDefinitions() map[string]Event {
 			LevelMin: 50, LevelMax: 200, ExpeditionType: 2002, LobbyMap: 211042400,
 			RequiredMobs: map[int]map[int]int{280030000: {}},
 		},
+		MalaysiaBossName: {
+			Name: MalaysiaBossName, Maps: []int{MalaysiaBossArena}, ExitMap: MalaysiaBossLobby, LobbyMap: MalaysiaBossLobby,
+			Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: 90, LevelMax: 200,
+			RequiredMobs: map[int]map[int]int{MalaysiaBossArena: {}},
+		},
 		"Papulatus": {
 			Name: "Papulatus", Maps: []int{PapulatusArena}, ExitMap: PapulatusLobby,
 			Seconds: 2700, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: 15, LevelMax: 255,

@@ -25,6 +25,19 @@ func (s *Store) ConsumePapulatusFragment(ctx context.Context, session domain.Cha
 	return s.consumeBossOffering(ctx, session, objectID, content.PapulatusFragment, content.PapulatusOfferLeft, content.PapulatusOfferRight, content.PapulatusOfferTop, content.PapulatusOfferBottom)
 }
 
+func (s *Store) ConsumeMalaysiaBossOffering(ctx context.Context, session domain.CharacterSession, objectID int32, reactor int) error {
+	if session.Character.MapID != content.MalaysiaBossArena {
+		return domain.ErrInvalidInput
+	}
+	for _, def := range content.MalaysiaBossStatues() {
+		if def.Reactor == reactor {
+			area := def.OfferingArea
+			return s.consumeBossOffering(ctx, session, objectID, content.MalaysiaBossOffering, area.Left, area.Right, area.Top, area.Bottom)
+		}
+	}
+	return domain.ErrInvalidInput
+}
+
 func (s *Store) consumeBossOffering(ctx context.Context, session domain.CharacterSession, objectID int32, templateID, left, right, top, bottom int) error {
 	if objectID <= 0 || session.ChannelID < 1 {
 		return domain.ErrInvalidInput

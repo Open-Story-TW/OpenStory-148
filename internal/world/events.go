@@ -671,6 +671,15 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 				}
 			}
 		}
+		if id == content.MalaysiaBossArena {
+			for _, statue := range content.MalaysiaBossStatues() {
+				for mobID := statue.FirstForm; mobID <= statue.LastForm; mobID++ {
+					if _, err := g.catalog.Mob(mobID); err != nil {
+						return err
+					}
+				}
+			}
+		}
 		if id == cygnusArena {
 			if err := g.prepareCygnusBattle(room); err != nil {
 				return err

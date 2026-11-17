@@ -75,17 +75,18 @@ type gameplayMember struct {
 	barrelRelease *barrelReleaseTicket // Exact visit's last native CGrenade release.
 }
 type gameplayRoom struct {
-	definition content.Map
-	members    map[int64]*gameplayMember
-	npcs       map[int32]content.Life
-	mobs       map[int32]*gameplayMob
-	summons    map[int32]*roomSummon
-	areas      map[int32]*roomArea
-	reactors   map[int32]*roomReactor // gathering nodes and event reactors
-	moon       *henesysRoom
-	zakum      *zakumField
-	papulatus  *papulatusField
-	cygnus     *cygnusBattle
+	definition      content.Map
+	members         map[int64]*gameplayMember
+	npcs            map[int32]content.Life
+	mobs            map[int32]*gameplayMob
+	summons         map[int32]*roomSummon
+	areas           map[int32]*roomArea
+	reactors        map[int32]*roomReactor // gathering nodes and event reactors
+	moon            *henesysRoom
+	zakum           *zakumField
+	papulatus       *papulatusField
+	cygnus          *cygnusBattle
+	malaysiaStatues map[int]*malaysiaStatue
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -160,6 +161,9 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 		r.zakum = &zakumField{altar: altar, objectID: oid}
 	}
 	if err := g.addPapulatusReactors(r, key.mapID); err != nil {
+		return nil, err
+	}
+	if err := g.addMalaysiaStatues(r, key.mapID); err != nil {
 		return nil, err
 	}
 	g.rooms[key] = r
