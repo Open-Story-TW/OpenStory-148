@@ -49,6 +49,10 @@ type eventInstance struct {
 	escape       *escapeState
 	ellin        *ellinPQState
 	pirate       *piratePQState
+	romeoSearch  *romeoLabSearch
+	romeoLanes   *romeoLabLanes
+	romeoArchive romeoLabArchive
+	romeoAngered bool
 
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
@@ -229,6 +233,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		if err = s.startEscape(ctx, inst, group); err != nil {
 			s.eventEnd(inst)
 			return "unavailable", here, qualified, err
+		}
+	}
+	if content.RomeoJulietEvent(name) {
+		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
+		if err := s.clearRomeoSupplies(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, nil
 		}
 	}
 	var groupToCharge []eventOccupant

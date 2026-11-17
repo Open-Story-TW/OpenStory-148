@@ -55,6 +55,8 @@ var events = eventDefinitions()
 
 func eventDefinitions() map[string]Event {
 	definitions := map[string]Event{
+		RomeoPQName:     romeoJulietEvent(RomeoPQName, 261000011, 926100000),
+		JulietPQName:    romeoJulietEvent(JulietPQName, 261000021, 926110000),
 		IceKnightName:   iceKnightEvent(),
 		EscapeName:      escapeEvent(),
 		HoblinPQName:    hoblinPQEvent(),
