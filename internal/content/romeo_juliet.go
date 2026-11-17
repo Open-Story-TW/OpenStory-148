@@ -5,6 +5,20 @@ const (
 	JulietPQName = "JulietPQ"
 )
 
+func RomeoJulietEvent(name string) bool {
+	return name == RomeoPQName || name == JulietPQName
+}
+
+func RomeoSearchNPC(mapID, npc int) bool {
+	switch mapID {
+	case 926100000, 926100203:
+		return npc == 2112007
+	case 926110000, 926110203:
+		return npc == 2112013
+	}
+	return false
+}
+
 func RomeoLabReactor(mapID, templateID int) bool {
 	switch mapID {
 	case 926100000, 926110000:

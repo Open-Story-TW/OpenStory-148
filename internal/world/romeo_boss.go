@@ -18,7 +18,7 @@ type romeoBossRoom struct {
 // These NPCs have event-specific native dialogue even if no Lua source exists.
 func romeoDialogueNPC(id int) bool {
 	switch id {
-	case 2112000, 2112001, 2112002, 2112006, 2112008, 2112009, 2112010, 2112011, 2112012, 2112018:
+	case 2112000, 2112001, 2112002, 2112006, 2112007, 2112008, 2112009, 2112010, 2112011, 2112012, 2112013, 2112018:
 		return true
 	}
 	return false
@@ -186,7 +186,7 @@ func (s *Server) romeoFinalNPC(ctx context.Context, channel int, live *liveChara
 	bossReady := arena != nil && arena.romeoBoss != nil && arena.romeoBoss.boss.hp == 0 &&
 		!arena.romeoBoss.boss.claiming && arena.romeoBoss.boss.reservation == nil
 	g.mu.Unlock()
-	if !bossReady || npc.TemplateID == 0 || !npcReach(session.Character.X, session.Character.Y, npc.X, npc.Y) {
+	if !bossReady || npc.TemplateID == 0 || !within(session.Character.X, session.Character.Y, npc.X, npc.Y, 150) {
 		return false, nil
 	}
 	s.cancelNPCScript(live)
@@ -222,9 +222,9 @@ func (s *Server) romeoFinalNPC(ctx context.Context, channel int, live *liveChara
 }
 
 func (s *Server) romeoClaimReward(ctx context.Context, inst *eventInstance, actor eventOccupant, mapID int) error {
-	marble := 4001160
+	marble := 4001159
 	if inst.definition.Name == content.JulietPQName {
-		marble = 4001159
+		marble = 4001160
 	}
 	s.events.mu.Lock()
 	exp := int64(105000)
@@ -236,12 +236,7 @@ func (s *Server) romeoClaimReward(ctx context.Context, inst *eventInstance, acto
 		if current.Character.MapID != mapID || s.eventOf(current.CharacterID) != inst {
 			return domain.ScriptExchange{}, domain.ErrStaleOwner
 		}
-		items := []domain.ScriptItemDelta{{TemplateID: marble, Quantity: 1}}
-		for _, item := range current.Character.Items {
-			if item.TemplateID >= 4001130 && item.TemplateID <= 4001135 {
-				items = append(items, domain.ScriptItemDelta{TemplateID: item.TemplateID, Quantity: -item.Quantity})
-			}
-		}
+		items := append(romeoSuppliesToRemove(current.Character), domain.ScriptItemDelta{TemplateID: marble, Quantity: 1})
 		return domain.ScriptExchange{
 			Items: items,
 			EXP:   exp,

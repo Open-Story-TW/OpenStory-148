@@ -157,7 +157,7 @@ func (s *Server) romeoArchiveNPC(ctx context.Context, channel int, live *liveCha
 		npc = room.npcs[oid]
 	}
 	g.mu.Unlock()
-	if npc.TemplateID != npcID || !npcReach(session.Character.X, session.Character.Y, npc.X, npc.Y) {
+	if npc.TemplateID != npcID || !within(session.Character.X, session.Character.Y, npc.X, npc.Y, 150) {
 		return false, nil
 	}
 	s.cancelNPCScript(live)

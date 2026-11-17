@@ -13,6 +13,7 @@ const (
 	RecvMeleeAttack         uint16 = 0x55
 	RecvNPCTalk             uint16 = 0x69
 	RecvNPCTalkMore         uint16 = 0x6b
+	RecvNPCAction           uint16 = 0x173
 	RecvMoveMonster         uint16 = 0x163
 	SendMeleeAttack         uint16 = 0x134
 	SendSpawnMonster        uint16 = 0x1ab

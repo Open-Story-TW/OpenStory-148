@@ -139,7 +139,10 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 	r := &gameplayRoom{definition: m, members: make(map[int64]*gameplayMember), npcs: make(map[int32]content.Life), mobs: make(map[int32]*gameplayMob)}
 	for _, life := range activityLife(m) {
 		if life.Hidden {
-			continue
+			if !content.RomeoSearchNPC(key.mapID, life.TemplateID) {
+				continue
+			}
+			life.Hidden = false // The stock artwork is invisible, but this NPC receives clicks.
 		}
 		if life.Kind == "n" {
 			oid := g.alloc()
@@ -450,6 +453,11 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, err
 		}
 		return true, s.monsterMovement(channel, live, sink, m)
+	case protocol.RecvNPCAction:
+		// The client periodically reports controller animation for NPCs.
+		// The server keeps their WZ spawn positions authoritative.
+		r.Skip(r.Remaining())
+		return true, nil
 	case protocol.RecvReactorClick:
 		objectID := r.I32()
 		if r.Err() == nil && r.Remaining() == 0 && objectID > 0 {

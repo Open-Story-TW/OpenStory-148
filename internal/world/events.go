@@ -193,6 +193,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		}
 	}
 	leaderOccupant := eventOccupant{live, sink}
+	if content.RomeoJulietEvent(name) {
+		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
+		if err := s.clearRomeoSupplies(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, nil
+		}
+	}
 	var groupToCharge []eventOccupant
 	if e.Ticket != 0 {
 		groupToCharge = append(append([]eventOccupant{}, present...), leaderOccupant)
