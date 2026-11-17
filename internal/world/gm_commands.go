@@ -92,6 +92,15 @@ func parseGMCommand(text string) (name string, args []int64, arg string, handled
 	fields := strings.Fields(text)
 	if len(fields) > 0 {
 		switch fields[0] {
+		case "!treasure":
+			if len(fields) == 2 {
+				for index, action := range [...]string{"open", "start", "cancel"} {
+					if fields[1] == action {
+						return fields[0][1:], []int64{int64(index + 1)}, "", true
+					}
+				}
+			}
+			return "", nil, "", true
 		case "!oxquiz":
 			if len(fields) != 2 {
 				return "", nil, "", true
@@ -211,6 +220,7 @@ var gmHelpPages = []gmHelpPage{
 		{"!rates", "顯示經驗、楓幣、掉寶倍率"},
 		{"!rate <exp或meso或drop> <倍數>", "修改倍率，立即生效"},
 		{"!oxquiz <open|start|cancel>", "開放報名、開始或取消本頻道的 OX 問答"},
+		{"!treasure <open|start|cancel>", "開放報名、開始或取消本頻道的黃金傳說尋寶"},
 		{"!effstats", "顯示伺服器計算的攻擊數值"},
 		{"!help [編號]", "顯示這份說明"},
 	}},

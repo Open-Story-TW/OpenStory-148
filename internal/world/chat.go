@@ -86,7 +86,7 @@ func (s *Server) handleGeneralChat(ctx context.Context, live *liveCharacter, sin
 		return err
 	}
 	if strings.EqualFold(strings.TrimSpace(req.Text), "@event") {
-		return s.joinOXQuiz(ctx, session.ChannelID, live, sink)
+		return s.joinGMEvent(ctx, session.ChannelID, live, sink)
 	}
 	if session.Character.MapID == oxQuizMap && s.oxQuizInProgress(session.ChannelID) {
 		return nil

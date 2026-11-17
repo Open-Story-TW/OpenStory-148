@@ -375,6 +375,9 @@ func (s *Server) moveEventRoom(ctx context.Context, inst *eventInstance, from in
 }
 
 func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bool {
+	if !s.treasureAllowsEntry(session, mapID) {
+		return false
+	}
 	e, stage := content.EventByMap(mapID)
 	if !stage || s.events == nil {
 		return true
@@ -495,6 +498,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 		return
 	}
 	s.oxQuizEntered(channel, live, sink)
+	s.treasureEntered(channel, live, sink)
 	live.mu.Lock()
 	c := live.session.Character
 	live.mu.Unlock()

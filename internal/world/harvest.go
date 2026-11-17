@@ -21,6 +21,9 @@ type roomReactor struct {
 	gone      bool
 	respawnAt time.Time
 	harvester int64
+	finishing bool
+	lastHit   time.Time
+	growth    int
 }
 
 // gatherLastState is the state a node reaches on the last hit: the WZ
@@ -42,7 +45,7 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 	r.reactors = make(map[int32]*roomReactor, len(reactors))
 	for _, def := range reactors {
 		var node content.GatherNode
-		if def.TemplateID != content.HeliosElevatorDoor {
+		if def.TemplateID != content.HeliosElevatorDoor && !content.TreasureHuntReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue
@@ -62,10 +65,11 @@ func (x *roomReactor) enterPacket() []byte {
 
 // regrowLocked brings back a node whose time has come.
 func (x *roomReactor) regrowLocked(now time.Time) bool {
-	if !x.gone || now.Before(x.respawnAt) {
+	if !x.gone || x.respawnAt.IsZero() || now.Before(x.respawnAt) {
 		return false
 	}
 	x.gone, x.state, x.harvester = false, 0, 0
+	x.growth++
 	return true
 }
 
@@ -206,6 +210,11 @@ func (s *Server) startHarvest(channel int, live *liveCharacter, sink packetSink,
 // hitReactor advances the node the character is gathering. Hits on anything
 // else are ignored: gathering nodes are the only reactors the server runs.
 func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacter, sink packetSink, objectID int32, stop bool) error {
+	if !stop {
+		if handled, err := s.hitTreasureChest(ctx, channel, live, sink, objectID); handled {
+			return err
+		}
+	}
 	live.mu.Lock()
 	c := live.session.Character
 	live.mu.Unlock()

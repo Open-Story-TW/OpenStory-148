@@ -250,7 +250,7 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 			if err != nil {
 				continue
 			}
-			if id != HeliosElevatorDoor || mapID != 222020100 && mapID != 222020200 {
+			if !TreasureHuntReactor(mapID, id) && (id != HeliosElevatorDoor || mapID != 222020100 && mapID != 222020200) {
 				if _, err = GatherNodeDefinition(root, id); err != nil {
 					continue
 				}

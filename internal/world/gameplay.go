@@ -40,7 +40,7 @@ type gameplayMob struct {
 // Event maps reset their one-time spawns between groups.
 func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
 	_, eventMap := content.EventByMap(mapID)
-	if m.oneTime || eventMap && m.life.RespawnSeconds == -1 {
+	if m.oneTime || (eventMap || content.TreasureHuntMap(mapID)) && m.life.RespawnSeconds == -1 {
 		return time.Time{}
 	}
 	return now.Add(time.Duration(max(5, m.life.RespawnSeconds)) * time.Second)
@@ -302,6 +302,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickEvents(now)
 			s.tickHenesysPQ(ctx, now)
 			s.tickOXQuizzes(now)
+			s.tickTreasureHunts(now)
 		}
 	}
 }
@@ -463,6 +464,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
+	if handled, err := s.treasurePortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
 	return s.runPortalScript(ctx, channel, live, sink, p)
 }
 
@@ -492,6 +496,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.dragonRiderPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.treasurePortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

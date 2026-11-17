@@ -283,7 +283,7 @@ func TestGMChatHelpListsEveryCommand(t *testing.T) {
 		"!ap 1", "!sp 1", "!map 1", "!npc 1", "!cash 1", "!points 1", "!petfood 1", "!mesos 1", "!alliance 1", "!mobhold 1", "!item 1", "!debuff 1", "!skill 1 1",
 		"!cashexpire 1 1", "!petexpire 1 1", "!vitals 1 1", "!spawn 1 1", "!stats 4 4 4 4", "!goto Someone", "!warphere Someone", "!dc Someone", "!notice two words",
 		"!fame 1", "!hair 30000", "!face 20000", "!skin 1", "!hide 1", "!god 1", "!maxskills", "!killall", "!cleardrops",
-		"!ban Someone", "!ban Someone 7", "!unban Someone", "!banip Someone", "!unbanip 1.2.3.4", "!rate exp 2", "!oxquiz open"}
+		"!ban Someone", "!ban Someone 7", "!unban Someone", "!banip Someone", "!unbanip 1.2.3.4", "!rate exp 2", "!oxquiz open", "!treasure open"}
 	known := map[string]bool{}
 	for _, text := range samples {
 		name, _, _, _ := parseGMCommand(text)

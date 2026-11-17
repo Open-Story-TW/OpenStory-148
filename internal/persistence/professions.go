@@ -228,7 +228,7 @@ func applyScriptDrops(ctx context.Context, tx *sql.Tx, session domain.CharacterS
 	out := make([]domain.ItemDrop, 0, len(drops))
 	for _, d := range drops {
 		def, err := inventoryDefinition(d.TemplateID)
-		if err != nil || def.InvType < 2 || def.InvType > 4 || def.Cash || d.Quantity < 1 || d.Quantity > def.SlotMax || d.X < -32768 || d.X > 32767 || d.Y < -32768 || d.Y > 32767 {
+		if err != nil || def.InvType < 1 || def.InvType > 4 || def.Cash || d.Quantity < 1 || d.Quantity > def.SlotMax || d.X < -32768 || d.X > 32767 || d.Y < -32768 || d.Y > 32767 {
 			return nil, domain.ErrInvalidInput
 		}
 		drop := domain.ItemDrop{WorldID: world, ChannelID: channel, MapID: c.MapID, OwnerID: c.ID, X: d.X, Y: d.Y, InvType: def.InvType, TemplateID: d.TemplateID, Quantity: d.Quantity}

@@ -40,9 +40,12 @@ type oxQuiz struct {
 type oxQuizSpace struct {
 	mu       sync.Mutex
 	channels map[int]*oxQuiz
+	hunts    map[int]*treasureHuntRun
 }
 
-func newOXQuizSpace() *oxQuizSpace { return &oxQuizSpace{channels: make(map[int]*oxQuiz)} }
+func newOXQuizSpace() *oxQuizSpace {
+	return &oxQuizSpace{channels: make(map[int]*oxQuiz), hunts: make(map[int]*treasureHuntRun)}
+}
 
 func (s *Server) oxQuizInProgress(channel int) bool {
 	if s.quizzes == nil {
@@ -63,7 +66,7 @@ func (s *Server) manageOXQuiz(channel int, action int64) string {
 	q := space.channels[channel]
 	switch action {
 	case 1:
-		if q != nil {
+		if q != nil || space.hunts[channel] != nil {
 			space.mu.Unlock()
 			return "本頻道已有 OX 問答。"
 		}
