@@ -47,7 +47,7 @@ func TestQuestUnknownAndMalformedConditionsFailClosed(t *testing.T) {
 	}
 	var n wzNode
 	_ = xml.Unmarshal([]byte(`<imgdir><imgdir name="0"><int name="money" value="999"/></imgdir></imgdir>`), &n)
-	if a := parseQuestAction(&n); len(a.Unsupported) == 0 {
+	if a := parseQuestAction(&n, 0); len(a.Unsupported) == 0 {
 		t.Fatal("numeric reward directory silently ignored")
 	}
 }
@@ -70,7 +70,7 @@ func TestQuestRewardsRetainConditionsAndRejectUnsupportedFields(t *testing.T) {
 		if err := xml.Unmarshal([]byte(`<imgdir><imgdir name="item"><imgdir name="0"><int name="id" value="1002053"/><int name="count" value="1"/>`+extra+`</imgdir></imgdir></imgdir>`), &n); err != nil {
 			t.Fatal(err)
 		}
-		if a := parseQuestAction(&n); len(a.Unsupported) == 0 {
+		if a := parseQuestAction(&n, 0); len(a.Unsupported) == 0 {
 			t.Fatalf("unsupported reward accepted: %s", extra)
 		}
 	}
@@ -78,8 +78,22 @@ func TestQuestRewardsRetainConditionsAndRejectUnsupportedFields(t *testing.T) {
 	if err = xml.Unmarshal([]byte(`<imgdir><imgdir name="item"><imgdir name="0"><int name="id" value="1002053"/><int name="count" value="1"/><int name="prop" value="-1"/></imgdir></imgdir></imgdir>`), &choice); err != nil {
 		t.Fatal(err)
 	}
-	a := parseQuestAction(&choice)
+	a := parseQuestAction(&choice, 0)
 	if len(a.Unsupported) != 0 || len(a.Items) != 1 || a.Items[0].Weight == nil || *a.Items[0].Weight != -1 {
 		t.Fatalf("player choice was not retained: %+v", a)
+	}
+}
+
+func TestPapulatusQuestReward(t *testing.T) {
+	var n wzNode
+	if err := xml.Unmarshal([]byte(`<imgdir><int name="pop" value="30"/><imgdir name="item"><imgdir name="0"><int name="id" value="1102256"/><int name="count" value="1"/><int name="var" value="2"/></imgdir></imgdir></imgdir>`), &n); err != nil {
+		t.Fatal(err)
+	}
+	reward := parseQuestAction(&n, 7103)
+	if len(reward.Unsupported) != 0 || reward.Fame != 30 || len(reward.Items) != 1 || reward.Items[0].ID != 1102256 || reward.Items[0].Count != 1 {
+		t.Fatalf("unexpected Papulatus quest reward: %+v", reward)
+	}
+	if reward = parseQuestAction(&n, 0); len(reward.Unsupported) == 0 {
+		t.Fatalf("accepted this cape variance outside the original completion: %+v", reward)
 	}
 }

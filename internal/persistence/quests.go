@@ -258,7 +258,10 @@ func (s *Store) TransitionQuest(ctx context.Context, request domain.QuestRequest
 	if err = applyQuestExperience(&result.Character, action.EXP, request.OperationID); err != nil {
 		return domain.QuestResult{}, err
 	}
-	if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET level=$1,exp=$2,str=$3,ap=$4,sp=$5 WHERE id=$6`, result.Character.Level, result.Character.EXP, result.Character.STR, result.Character.AP, result.Character.SP, value.ID); err != nil {
+	if action.Fame != 0 {
+		result.Character.Fame = max(-30000, min(30000, result.Character.Fame+action.Fame))
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET level=$1,exp=$2,str=$3,ap=$4,sp=$5,fame=$6 WHERE id=$7`, result.Character.Level, result.Character.EXP, result.Character.STR, result.Character.AP, result.Character.SP, result.Character.Fame, value.ID); err != nil {
 		return domain.QuestResult{}, err
 	}
 	state.Revision++

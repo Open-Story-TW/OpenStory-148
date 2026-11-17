@@ -69,6 +69,11 @@ func (s *Server) changeQuest(ctx context.Context, live *liveCharacter, sink pack
 			return value, err
 		}
 	}
+	if value.Character.Fame != request.Session.Character.Fame {
+		if err = sink.WritePacket(protocol.UpdateFame(value.Character.Fame)); err != nil {
+			return value, err
+		}
+	}
 	for _, packet := range questResultPackets(value, request.NPCID) {
 		if err = sink.WritePacket(packet); err != nil {
 			return value, err
@@ -108,6 +113,7 @@ func (s *Server) applyProgressResult(live *liveCharacter, value domain.Character
 		c.LUK = value.LUK
 		c.AP = value.AP
 		c.SP = value.SP
+		c.Fame = value.Fame
 		c.Quests = value.Quests
 		c.QuestRecords = value.QuestRecords
 	}

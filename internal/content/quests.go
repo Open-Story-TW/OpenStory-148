@@ -67,6 +67,7 @@ type QuestInfoCondition struct {
 }
 type QuestAction struct {
 	EXP, Mesos  int64
+	Fame        int
 	Items       []QuestItem
 	NextQuest   int
 	HPDelta     int
@@ -191,8 +192,8 @@ func QuestDefinition(root string, id int) (Quest, error) {
 	q.Start = parseQuestRequirement(sources.check.child("0"))
 	q.Complete = parseQuestRequirement(sources.check.child("1"))
 	startAction := sources.act.child("0")
-	q.OnStart = parseQuestAction(startAction)
-	q.OnComplete = parseQuestAction(sources.act.child("1"))
+	q.OnStart = parseQuestAction(startAction, 0)
+	q.OnComplete = parseQuestAction(sources.act.child("1"), id)
 	if id == 7300 && q.Start.NPCID == 2081000 && startAction.intValue("ask", 0) == 1 {
 		// The three stop rows only select the next dialogue response.
 		stop := startAction.child("stop")
@@ -407,7 +408,7 @@ func questFields(n wzNode, allowed []string, unsupported *[]string) {
 		seen[field.Name] = true
 	}
 }
-func parseQuestAction(n *wzNode) QuestAction {
+func parseQuestAction(n *wzNode, completingQuest int) QuestAction {
 	a := QuestAction{}
 	if n == nil {
 		return a
@@ -418,6 +419,11 @@ func parseQuestAction(n *wzNode) QuestAction {
 			a.EXP = int64(questInt(x, &a.Unsupported))
 		case "money":
 			a.Mesos = int64(questInt(x, &a.Unsupported))
+		case "pop":
+			a.Fame = questInt(x, &a.Unsupported)
+			if a.Fame < -30000 || a.Fame > 30000 {
+				a.Unsupported = append(a.Unsupported, "invalid fame reward")
+			}
 		case "nextQuest":
 			a.NextQuest = questInt(x, &a.Unsupported)
 		case "buffItemID":
@@ -429,7 +435,9 @@ func parseQuestAction(n *wzNode) QuestAction {
 			}
 		case "item":
 			for _, entry := range x.Children {
-				questFields(entry, []string{"id", "count", "potentialGrade", "prop", "gender", "job", "jobEx"}, &a.Unsupported)
+				questFields(entry, []string{"id", "count", "potentialGrade", "prop", "gender", "job", "jobEx", "var"}, &a.Unsupported)
+				count := questChildInt(entry, "count", 0, &a.Unsupported)
+				id := questChildInt(entry, "id", 0, &a.Unsupported)
 				item := QuestItem{}
 				for _, field := range entry.Children {
 					switch field.Name {
@@ -456,12 +464,17 @@ func parseQuestAction(n *wzNode) QuestAction {
 						item.Job = questInt(field, &a.Unsupported)
 					case "jobEx":
 						item.JobEx = questInt(field, &a.Unsupported)
+					case "var":
+						value := questInt(field, &a.Unsupported)
+						// The nearby Taiwanese Legacy server grants this quest cape with
+						// its WZ base stats. Restrict that behavior to the original row.
+						if completingQuest != 7103 || id != 1102256 || count != 1 || value != 2 {
+							a.Unsupported = append(a.Unsupported, "item.var")
+						}
 					default:
 						a.Unsupported = append(a.Unsupported, "item."+field.Name)
 					}
 				}
-				count := questChildInt(entry, "count", 0, &a.Unsupported)
-				id := questChildInt(entry, "id", 0, &a.Unsupported)
 				if id < 1 || count < -30000 || count > 30000 {
 					a.Unsupported = append(a.Unsupported, "invalid item action")
 				}
