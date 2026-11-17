@@ -161,6 +161,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.events.mu.Unlock()
 		return "unavailable", here, qualified, nil
 	}
+	if e.Name == content.ZakumMineName {
+		group := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
+		if err := s.prepareZakumMine(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
 	if inst.moon != nil {
 		ready := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
 		if err = s.prepareHenesysPQ(ctx, inst, ready); err != nil {
@@ -738,6 +745,7 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 			}
 		}
 	}
+	keys, papers, chests := 0, 0, 0
 	for _, id := range event.Maps {
 		key := mapKey{channel, id}
 		delete(g.rooms, key)
@@ -748,6 +756,21 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		if id == content.KentaDefense {
 			room.kentaWaves = room.mobs
 			room.mobs = make(map[int32]*gameplayMob)
+		}
+		if event.Name == content.ZakumMineName {
+			for _, r := range room.reactors {
+				if id == 280011005 && r.def.TemplateID == content.ZakumOreChest {
+					chests++
+				}
+				if r.mineHits > 0 {
+					switch zakumMineDrop(r.def.TemplateID) {
+					case content.ZakumMineKey:
+						keys++
+					case content.ZakumMineDocument:
+						papers++
+					}
+				}
+			}
 		}
 		if id == content.PapulatusArena {
 			for mobID := papulatusCrystal; mobID <= papulatusBody; mobID++ {
@@ -825,6 +848,9 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		}
 		room.mobs[oid] = &gameplayMob{objectID: oid, origin: spawn.Life, life: spawn.Life, stats: stats, hp: stats.HP,
 			prelude: spawn.Prelude}
+	}
+	if event.Name == content.ZakumMineName && (keys != 7 || papers < 30 || chests != 1) {
+		return fmt.Errorf("Zakum mine WZ expected seven key sources, thirty or more document sources and one ore chest")
 	}
 	return nil
 }

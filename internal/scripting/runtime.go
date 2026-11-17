@@ -596,6 +596,7 @@ func (s *Session) installHost() {
 		bind("horntail_disguise", s.simpleCommand("horntail_disguise", 0), 1)
 		bind("event_areas", s.simpleCommand("event_areas", 0), 1)
 		bind("event_party_exp", s.simpleCommand("event_party_exp", 1), 2)
+		bind("zakum_mine_finish", s.simpleCommand("zakum_mine_finish", 0), 1)
 		bind("transit_status", s.simpleCommand("transit_status", 0), 1)
 		bind("transit_board", s.simpleCommand("transit_board", 0), 1)
 		bind("judgement_enter", s.simpleCommand("judgement_enter", 0), 1)

@@ -354,7 +354,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
 		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps", "christmas_finish", "hoblin_ambush",
-		"monster_rush_status", "monster_rush_donate", "kenta_finish":
+		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
@@ -427,6 +427,8 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return result(value)
 	case "character_id":
 		return result(snapshot.CharacterID)
+	case "zakum_mine_finish":
+		return a.finishZakumMine(ctx, snapshot, command)
 	case "event_status", "event_start", "event_get", "event_set", "event_finish", "event_leave", "event_summon", "event_effect", "event_areas", "event_party_exp":
 		return a.eventCommand(ctx, snapshot, command)
 	case "transit_status", "transit_board", "transit_leave":

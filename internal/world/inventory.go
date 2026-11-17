@@ -44,6 +44,7 @@ func (s *Server) handleInventoryMove(ctx context.Context, live *liveCharacter, c
 	}
 	if result.Drop != nil {
 		s.broadcastInventoryPacket(result.Drop.ChannelID, result.Drop.MapID, protocol.DropInventoryItem(*result.Drop))
+		s.offerZakumMineKeys(ctx, live, req.Session, *result.Drop)
 		s.offerZakumEye(ctx, req.Session, *result.Drop)
 		s.offerPapulatusFragment(ctx, req.Session, *result.Drop)
 		s.offerMalaysiaBossItem(ctx, req.Session, *result.Drop)

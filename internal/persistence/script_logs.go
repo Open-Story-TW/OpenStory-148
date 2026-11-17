@@ -347,6 +347,17 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 }
 
 func (s *Store) ExecuteEventItems(ctx context.Context, exchanges []domain.ScriptExchange) ([]domain.ScriptExchangeResult, error) {
+	requests := make([]domain.ScriptExchange, len(exchanges))
+	for i, exchange := range exchanges {
+		if len(exchange.Items) != 1 {
+			return nil, domain.ErrInvalidInput
+		}
+		requests[i] = domain.ScriptExchange{Session: exchange.Session, OperationID: exchange.OperationID, Items: exchange.Items}
+	}
+	return s.executeEventExchanges(ctx, requests)
+}
+
+func (s *Store) executeEventExchanges(ctx context.Context, exchanges []domain.ScriptExchange) ([]domain.ScriptExchangeResult, error) {
 	if len(exchanges) < 1 || len(exchanges) > 6 {
 		return nil, domain.ErrInvalidInput
 	}
@@ -359,13 +370,11 @@ func (s *Store) ExecuteEventItems(ctx context.Context, exchanges []domain.Script
 	var lastID int64
 	for _, exchange := range exchanges {
 		id := exchange.Session.CharacterID
-		if id <= lastID || len(exchange.OperationID) < 16 || len(exchange.OperationID) > 128 || len(exchange.Items) != 1 {
+		if id <= lastID || len(exchange.OperationID) < 16 || len(exchange.OperationID) > 128 {
 			return nil, domain.ErrInvalidInput
 		}
 		lastID = id
-		result, err := executeScriptExchangeTx(ctx, tx, domain.ScriptExchange{
-			Session: exchange.Session, OperationID: exchange.OperationID, Items: exchange.Items,
-		})
+		result, err := executeScriptExchangeTx(ctx, tx, exchange)
 		if err != nil {
 			return nil, err
 		}

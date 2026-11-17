@@ -84,7 +84,7 @@ func (s *Server) hitTreasureChest(ctx context.Context, channel int, live *liveCh
 
 	var err error
 	if def.TemplateID == 9001000 {
-		err = s.spawnTreasureSnake(key, def)
+		err = s.spawnReactorMonster(key, def, 9100001, 1)
 	} else {
 		err = s.dropTreasureChest(ctx, live, sink, visit, run, op, def)
 	}
@@ -136,10 +136,9 @@ func (s *Server) dropTreasureChest(ctx context.Context, live *liveCharacter, sin
 	return nil
 }
 
-func (s *Server) spawnTreasureSnake(key mapKey, def content.Reactor) error {
+func (s *Server) spawnReactorMonster(key mapKey, def content.Reactor, templateID, count int) error {
 	g := s.gameplay
-	const snake = 9100001
-	stats, err := g.catalog.Mob(snake)
+	stats, err := g.catalog.Mob(templateID)
 	if err != nil {
 		return err
 	}
@@ -160,29 +159,42 @@ func (s *Server) spawnTreasureSnake(key mapKey, def content.Reactor) error {
 	}
 	g.mu.Lock()
 	room := g.rooms[key]
-	oid := g.alloc()
-	if oid == 0 || room == nil {
+	if room == nil {
 		g.mu.Unlock()
 		return domain.ErrNotFound
 	}
-	life := content.Life{Kind: "m", TemplateID: snake, X: x, Y: y, Foothold: foothold, RX0: x - 100, RX1: x + 100, RespawnSeconds: -1}
-	mob := &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP}
-	room.mobs[oid] = mob
+	life := content.Life{Kind: "m", TemplateID: templateID, X: x, Y: y, Foothold: foothold,
+		RX0: x - 100, RX1: x + 100, RespawnSeconds: -1}
+	spawned := make([]*gameplayMob, 0, count)
+	for range count {
+		oid := g.alloc()
+		if oid == 0 {
+			g.mu.Unlock()
+			return domain.ErrNotFound
+		}
+		spawned = append(spawned, &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP})
+	}
 	var ordinary []*sceneVisit
 	var controller *sceneVisit
+	var controllerID int64
 	for id, member := range room.members {
 		ordinary = append(ordinary, member.visit)
 		if controller == nil {
-			controller = member.visit
-			mob.controller = id
+			controller, controllerID = member.visit, id
 		}
 	}
-	g.mu.Unlock()
-	for _, observer := range ordinary {
-		_ = s.writeScenePackets(observer, protocol.SpawnMonster(oid, life, false))
+	for _, mob := range spawned {
+		mob.controller = controllerID
+		room.mobs[mob.objectID] = mob
 	}
-	if controller != nil {
-		_ = s.writeScenePackets(controller, protocol.SpawnMonster(oid, life, true))
+	g.mu.Unlock()
+	for _, mob := range spawned {
+		for _, observer := range ordinary {
+			_ = s.writeScenePackets(observer, protocol.SpawnMonster(mob.objectID, life, false))
+		}
+		if controller != nil {
+			_ = s.writeScenePackets(controller, protocol.SpawnMonster(mob.objectID, life, true))
+		}
 	}
 	return nil
 }

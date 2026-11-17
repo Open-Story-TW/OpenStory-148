@@ -60,6 +60,7 @@ func eventDefinitions() map[string]Event {
 		KentaPQName:     kentaEvent(),
 		DragonRiderName: dragonRiderEvent(),
 		LudibriumPQName: ludibriumEvent(),
+		ZakumMineName:   zakumMineEvent(),
 		HenesysPQName: {
 			Name: HenesysPQName, Maps: []int{HenesysPQMap},
 			ExitMap: HenesysPQLobby, Seconds: 600, PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,

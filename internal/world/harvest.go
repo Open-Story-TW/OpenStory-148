@@ -24,6 +24,7 @@ type roomReactor struct {
 	finishing bool
 	lastHit   time.Time
 	growth    int
+	mineHits  int
 }
 
 // gatherLastState is the state a node reaches on the last hit: the WZ
@@ -45,7 +46,13 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 	r.reactors = make(map[int32]*roomReactor, len(reactors))
 	for _, def := range reactors {
 		var node content.GatherNode
-		if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor && !content.TreasureHuntReactor(mapID, def.TemplateID) {
+		var mineHits int
+		if content.ZakumMineMap(mapID) && content.ZakumMineReactor(def.TemplateID) {
+			mineHits, err = content.ZakumMineHitCount(wzRoot(), def.TemplateID)
+			if err != nil {
+				continue
+			}
+		} else if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor && !content.TreasureHuntReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue
@@ -55,7 +62,7 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 		if oid == 0 {
 			return
 		}
-		r.reactors[oid] = &roomReactor{objectID: oid, def: def, node: node}
+		r.reactors[oid] = &roomReactor{objectID: oid, def: def, node: node, mineHits: mineHits}
 	}
 }
 
@@ -211,6 +218,9 @@ func (s *Server) startHarvest(channel int, live *liveCharacter, sink packetSink,
 // else are ignored: gathering nodes are the only reactors the server runs.
 func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacter, sink packetSink, objectID int32, stop bool) error {
 	if !stop {
+		if handled, err := s.hitZakumMineReactor(ctx, channel, live, sink, objectID); handled {
+			return err
+		}
 		if handled, err := s.hitTreasureChest(ctx, channel, live, sink, objectID); handled {
 			return err
 		}

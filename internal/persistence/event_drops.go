@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"database/sql"
 
 	"maple-go-server/internal/domain"
 )
@@ -9,7 +10,13 @@ import (
 var _ domain.EventDropRepository = (*Store)(nil)
 
 func (s *Store) ConsumeEventDrop(ctx context.Context, drop domain.ItemDrop) (bool, error) {
-	result, err := s.db.ExecContext(ctx, `UPDATE asset_item_drops SET expired_at=clock_timestamp()
+	return consumeEventDrop(ctx, s.db, drop)
+}
+
+func consumeEventDrop(ctx context.Context, db interface {
+	ExecContext(context.Context, string, ...any) (sql.Result, error)
+}, drop domain.ItemDrop) (bool, error) {
+	result, err := db.ExecContext(ctx, `UPDATE asset_item_drops SET expired_at=clock_timestamp()
 		WHERE object_id=$1 AND world_id=$2 AND channel_id=$3 AND map_id=$4 AND owner_id=$5
 		  AND template_id=$6 AND quantity=$7 AND x=$8 AND y=$9 AND player_drop
 		  AND picked_up_by IS NULL AND expired_at IS NULL AND expires_at>clock_timestamp()`,
