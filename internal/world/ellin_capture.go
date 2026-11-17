@@ -42,7 +42,8 @@ func (s *Server) ellinCapture(ctx context.Context, channel int, live *liveCharac
 	}
 	if mob.hp*10 > mob.stats.HP*7 {
 		g.mu.Unlock()
-		_ = sink.WritePacket(protocol.CaptureMonsterResult(req.ObjectID, req.ItemID, false))
+		// TWMS v148 loads ItemEff.img/2270004/fail for a false result.
+		// The marble only has success frames, so report the refusal in text.
 		return eventPortalNotice(sink, "請先將怪物的生命值降低到七成以下。")
 	}
 	mob.claiming = true
