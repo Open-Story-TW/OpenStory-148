@@ -255,6 +255,12 @@ func (s *Store) TransitionQuest(ctx context.Context, request domain.QuestRequest
 	if result.Character.Mesos < 0 || result.Character.Mesos > domain.MaxMoney() {
 		return domain.QuestResult{}, domain.ErrInsufficient
 	}
+	if action.WillEXP > 0 {
+		change := domain.ProfessionChange{Traits: domain.Traits{Will: action.WillEXP}}
+		if err = applyProfessionChange(ctx, tx, &result.Character, change); err != nil {
+			return domain.QuestResult{}, err
+		}
+	}
 	if err = applyQuestExperience(&result.Character, action.EXP, request.OperationID); err != nil {
 		return domain.QuestResult{}, err
 	}

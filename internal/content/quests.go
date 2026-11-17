@@ -68,6 +68,7 @@ type QuestInfoCondition struct {
 type QuestAction struct {
 	EXP, Mesos  int64
 	Fame        int
+	WillEXP     int
 	Items       []QuestItem
 	NextQuest   int
 	HPDelta     int
@@ -419,6 +420,11 @@ func parseQuestAction(n *wzNode, completingQuest int) QuestAction {
 			a.EXP = int64(questInt(x, &a.Unsupported))
 		case "money":
 			a.Mesos = int64(questInt(x, &a.Unsupported))
+		case "willEXP":
+			a.WillEXP = questInt(x, &a.Unsupported)
+			if a.WillEXP < 0 {
+				a.Unsupported = append(a.Unsupported, "negative willEXP")
+			}
 		case "pop":
 			a.Fame = questInt(x, &a.Unsupported)
 			if a.Fame < -30000 || a.Fame > 30000 {

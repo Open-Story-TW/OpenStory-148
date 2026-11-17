@@ -64,6 +64,16 @@ func (s *Server) changeQuest(ctx context.Context, live *liveCharacter, sink pack
 	if !value.Replayed {
 		s.applyItemBuff(live, sink, domain.ItemUseResult{Character: value.Character, Buffs: value.Buffs, Replaced: value.Replaced})
 	}
+	beforeTraits := request.Session.Character.Traits
+	if value.Character.Traits != beforeTraits {
+		for _, packet := range [][]byte{protocol.TraitStats(request.Session.Character, value.Character), protocol.TraitGain(beforeTraits, value.Character.Traits)} {
+			if packet != nil {
+				if err = sink.WritePacket(packet); err != nil {
+					return value, err
+				}
+			}
+		}
+	}
 	if len(value.Changes) > 0 {
 		if err = sink.WritePacket(protocol.ModifyInventory(value.Changes)); err != nil {
 			return value, err
@@ -116,6 +126,7 @@ func (s *Server) applyProgressResult(live *liveCharacter, value domain.Character
 		c.Fame = value.Fame
 		c.Quests = value.Quests
 		c.QuestRecords = value.QuestRecords
+		c.Traits = value.Traits
 	}
 	snapshot := live.session
 	live.mu.Unlock()
