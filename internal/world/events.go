@@ -689,6 +689,11 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 				return err
 			}
 		}
+		if id == pinkBeanArena {
+			if err := g.preparePinkBeanBattle(room); err != nil {
+				return err
+			}
+		}
 		if required, checked := event.RequiredMobs[id]; checked {
 			actual := make(map[int]int)
 			for _, m := range room.mobs {

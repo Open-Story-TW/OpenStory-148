@@ -87,6 +87,7 @@ type gameplayRoom struct {
 	papulatus       *papulatusField
 	cygnus          *cygnusBattle
 	malaysiaStatues map[int]*malaysiaStatue
+	pinkBean        *pinkBeanBattle
 }
 type gameplaySpace struct {
 	mu            sync.Mutex

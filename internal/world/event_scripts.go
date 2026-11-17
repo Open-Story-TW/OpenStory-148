@@ -77,6 +77,10 @@ func (a *worldScript) eventCommand(ctx context.Context, snapshot domain.Characte
 	}
 	switch command.Kind {
 	case "event_summon":
+		if inst.definition.Name == "PinkBean" {
+			started, err := a.summonPinkBean(ctx, inst, snapshot, command)
+			return scripting.CommandResult{Value: started}, err
+		}
 		return result(s.summonExpeditionBoss(inst, snapshot, a.npcID, a.objectID))
 	case "event_areas":
 		mask, err := s.eventAreaMask(ctx, inst, snapshot)

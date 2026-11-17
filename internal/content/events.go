@@ -121,6 +121,14 @@ func eventDefinitions() map[string]Event {
 			LevelMin: 170, LevelMax: 200, ExpeditionType: 2008, LobbyMap: 271040000,
 			RequiredMobs: map[int]map[int]int{271040100: {}},
 		},
+		"PinkBean": {
+			Name: "PinkBean", Maps: []int{270050100}, ExitMap: 270050300,
+			Seconds: 3600, PartyMin: 3, PartyMax: 30, Keep: 3,
+			LevelMin: 120, LevelMax: 200, ExpeditionType: 2004, LobbyMap: 270050000,
+			RequiredMobs: map[int]map[int]int{270050100: {8820019: 1, 8820020: 1, 8820021: 1, 8820022: 1, 8820023: 1}},
+			Spawns: []EventSpawn{{MapID: 270050100, Life: Life{Kind: "n", TemplateID: 2141000,
+				X: -190, Y: -42, Foothold: 35, RX0: -240, RX1: -140}}},
+		},
 		"VonLeon": {
 			Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
 			Seconds: 3600, PartyMin: 6, PartyMax: 18, Keep: 6,
