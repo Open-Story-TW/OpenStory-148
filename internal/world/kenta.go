@@ -38,11 +38,7 @@ func (s *Server) kentaPortal(ctx context.Context, live *liveCharacter, sink pack
 			return true, sink.WritePacket(protocol.PortalTrainingMessage("請先擊退所有威脅坎特的怪物。"))
 		}
 	case content.KentaBubbles:
-		ok, err := s.collectKentaBubbles(ctx, inst)
-		if err != nil {
-			return true, err
-		}
-		if !ok {
+		if !s.markKentaBubblesReady(inst) {
 			return true, sink.WritePacket(protocol.PortalTrainingMessage("全隊需要收集 20 個氣泡。"))
 		}
 	default:
@@ -59,12 +55,21 @@ func (s *Server) kentaPortal(ctx context.Context, live *liveCharacter, sink pack
 	return true, s.moveEventRoom(ctx, inst, mapID, eventOccupant{live, sink}, next.ID, entry)
 }
 
-func (s *Server) collectKentaBubbles(ctx context.Context, inst *eventInstance) (bool, error) {
+func (s *Server) kentaBubblePicked(session domain.CharacterSession, drop domain.ItemDrop) {
+	if session.Character.MapID != content.KentaBubbles || drop.TemplateID != content.KentaBubble {
+		return
+	}
+	if inst := s.eventOf(session.CharacterID); inst != nil && inst.definition.Name == content.KentaPQName {
+		s.markKentaBubblesReady(inst)
+	}
+}
+
+func (s *Server) markKentaBubblesReady(inst *eventInstance) bool {
 	s.events.mu.Lock()
-	paid := inst.kentaBubblesPaid
+	ended, ready := inst.ended, inst.kentaBubblesDone
 	s.events.mu.Unlock()
-	if paid {
-		return true, nil
+	if ended || ready {
+		return !ended
 	}
 	group := s.eventOccupants(inst.channel, []int{content.KentaBubbles})
 	total := 0
@@ -75,16 +80,22 @@ func (s *Server) collectKentaBubbles(ctx context.Context, inst *eventInstance) (
 		}
 	}
 	if total < 20 {
-		return false, nil
+		return false
 	}
 	s.events.mu.Lock()
 	if inst.ended {
 		s.events.mu.Unlock()
-		return false, nil
+		return false
 	}
-	inst.kentaBubblesPaid = true
+	firstClear := !inst.kentaBubblesDone
+	inst.kentaBubblesDone = true
 	s.events.mu.Unlock()
-	return true, nil
+	if firstClear {
+		effect := eventEffects["clear"]
+		s.broadcastInventoryPacket(inst.channel, content.KentaBubbles, protocol.FieldScreenEffect(effect[0]))
+		s.broadcastInventoryPacket(inst.channel, content.KentaBubbles, protocol.FieldSoundEffect(effect[1]))
+	}
+	return true
 }
 
 func (s *Server) prepareKenta(ctx context.Context, inst *eventInstance, group []eventOccupant) error {

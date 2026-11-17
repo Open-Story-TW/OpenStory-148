@@ -49,7 +49,7 @@ type eventInstance struct {
 
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
-	kentaBubblesPaid bool
+	kentaBubblesDone bool
 }
 
 type eventSpace struct {

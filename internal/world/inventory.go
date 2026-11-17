@@ -108,6 +108,7 @@ func (s *Server) handleInventoryPickup(ctx context.Context, live *liveCharacter,
 	}
 	if result.Drop != nil {
 		s.removeVisibleDrop(*result.Drop, protocol.RemoveItemPickup(objectID, int32(session.CharacterID)))
+		s.kentaBubblePicked(session, *result.Drop)
 	} else {
 		s.broadcastInventoryPacket(session.ChannelID, session.Character.MapID, protocol.RemoveItemPickup(objectID, int32(session.CharacterID)))
 	}
