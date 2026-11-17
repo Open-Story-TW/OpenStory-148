@@ -144,6 +144,9 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	if len(r.OperationID) < 16 || len(r.OperationID) > 128 || len(r.Logs) > 32 || len(r.Items) > 32 || len(r.Drops) > 8 || len(r.QuestData) > 32 || len(r.Quests) > 32 || r.EXP < 0 || r.MesosDelta > maxMesos || r.MesosDelta < -maxMesos {
 		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
 	}
+	if r.EventCredit != 0 && r.EventCredit != 250 && r.EventCredit != 500 && r.EventCredit != 750 {
+		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
+	}
 	if err := validateScriptTravel(r); err != nil {
 		return domain.ScriptExchangeResult{}, err
 	}
@@ -312,6 +315,12 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 			return result, err
 		}
 		if _, err = tx.ExecContext(ctx, `UPDATE game_characters SET level=$1,exp=$2,str=$3,ap=$4,sp=$5 WHERE id=$6`, result.Character.Level, result.Character.EXP, result.Character.STR, result.Character.AP, result.Character.SP, value.ID); err != nil {
+			return result, err
+		}
+	}
+	if r.EventCredit > 0 {
+		if _, err = tx.ExecContext(ctx, `INSERT INTO asset_cash_wallets(account_id,credit) VALUES($1,$2)
+			ON CONFLICT (account_id) DO UPDATE SET credit=asset_cash_wallets.credit+EXCLUDED.credit`, value.AccountID, r.EventCredit); err != nil {
 			return result, err
 		}
 	}

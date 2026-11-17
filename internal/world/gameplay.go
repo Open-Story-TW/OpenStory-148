@@ -16,25 +16,26 @@ import (
 )
 
 type gameplayMob struct {
-	objectID      int32
-	life          content.Life
-	origin        content.Life
-	stats         content.Mob
-	hp            int64
-	controller    int64
-	escortHitAt   time.Time // last collision this mob reported against the escort
-	respawnAt     time.Time
-	claiming      bool
-	contributions []domain.CombatContribution
-	reservation   *combatTicket
-	statuses      combat.MobStatuses
-	damageFloor   int64     // A boss stage can reserve HP while its allies defend it.
-	prelude       bool      // An event opening may take damage without a defeat.
-	fake          bool      // An encounter projection renders without taking damage.
-	qaHeld        bool      // QA !mobhold: never defeated, refilled every tick.
-	qaHeldUntil   time.Time // the hold lapses here (mobHoldTerm)
-	qaOwner       *qaMobOwner
-	oneTime       bool
+	objectID         int32
+	life             content.Life
+	origin           content.Life
+	stats            content.Mob
+	hp               int64
+	controller       int64
+	escortHitAt      time.Time // last collision this mob reported against the escort
+	friendlyAttackAt time.Time
+	respawnAt        time.Time
+	claiming         bool
+	contributions    []domain.CombatContribution
+	reservation      *combatTicket
+	statuses         combat.MobStatuses
+	damageFloor      int64     // A boss stage can reserve HP while its allies defend it.
+	prelude          bool      // An event opening may take damage without a defeat.
+	fake             bool      // An encounter projection renders without taking damage.
+	qaHeld           bool      // QA !mobhold: never defeated, refilled every tick.
+	qaHeldUntil      time.Time // the hold lapses here (mobHoldTerm)
+	qaOwner          *qaMobOwner
+	oneTime          bool
 }
 
 // Event maps reset their one-time spawns between groups.
@@ -444,7 +445,11 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		}
 		return true, s.monsterMovement(channel, live, sink, m)
 	case protocol.RecvMobHitEscort:
-		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(r.Bytes(r.Remaining())))
+		payload := r.Bytes(r.Remaining())
+		if _, christmas := content.ChristmasByMap(partySession(live).Character.MapID); christmas {
+			return true, s.christmasFriendlyDamage(live, sink, payload)
+		}
+		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(payload))
 		if err == nil {
 			s.iceEscortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())

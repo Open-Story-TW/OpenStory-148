@@ -81,6 +81,7 @@ type ScriptExchange struct {
 	Items       []ScriptItemDelta   `json:"items,omitempty"`
 	QuestData   []ScriptQuestChange `json:"quest_data,omitempty"`
 	EXP         int64               `json:"exp,omitempty"`
+	EventCredit int64               `json:"event_credit,omitempty"` // Server-resolved event reward only.
 	Quests      []ScriptQuestForce  `json:"quests,omitempty"`
 	Travel      *ScriptTravel       `json:"travel,omitempty"` // Server-resolved destination; never a raw Lua table field.
 	Look        *ScriptLook         `json:"look,omitempty"`   // Beauty host only; never a raw Lua table field.

@@ -44,6 +44,7 @@ type eventInstance struct {
 	ludi         *ludibriumState
 	dragon       *dragonRiderState
 	ice          *iceKnightState
+	christmas    christmasProgress
 }
 
 type eventSpace struct {
@@ -627,7 +628,7 @@ func (s *Server) tickEvents(now time.Time) {
 	var due, preludes []*eventInstance
 	s.events.mu.Lock()
 	for _, inst := range s.events.running {
-		if !now.Before(inst.deadline) {
+		if !inst.ended && inst.christmas != christmasRewarding && !now.Before(inst.deadline) {
 			due = append(due, inst)
 		} else if !inst.preludeUntil.IsZero() && !now.Before(inst.preludeUntil) {
 			preludes = append(preludes, inst)
@@ -635,7 +636,9 @@ func (s *Server) tickEvents(now time.Time) {
 	}
 	s.events.mu.Unlock()
 	for _, inst := range due {
-		s.eventEnd(inst)
+		if !s.startChristmasBoss(inst, now) {
+			s.eventEnd(inst)
+		}
 	}
 	for _, inst := range preludes {
 		s.startBalrogFight(inst, now)
@@ -767,6 +770,9 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		stats, err := g.catalog.Mob(spawn.Life.TemplateID)
 		if err != nil {
 			return err
+		}
+		if christmas, ok := content.ChristmasByName(event.Name); ok && spawn.Life.TemplateID == christmas.Snowman {
+			stats.Invincible = true
 		}
 		oid := g.alloc()
 		if oid == 0 || room == nil {

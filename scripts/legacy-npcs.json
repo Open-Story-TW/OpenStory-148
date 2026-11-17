@@ -3617,10 +3617,6 @@
       "reason": "cm used as a value (line 112)"
     },
     {
-      "legacy": "npc/9105004.js",
-      "reason": "operator | (line 36)"
-    },
-    {
       "legacy": "npc/9105010.js",
       "reason": "cm.getPlayerStat(EXP) is not supported (line 546)"
     },

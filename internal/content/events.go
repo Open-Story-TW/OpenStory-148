@@ -7,7 +7,8 @@ import "strconv"
 // ordinary maps: while a group is inside nobody else may enter, as with the
 // Legacy event manager's "state" property.
 type Event struct {
-	Name string
+	Name     string
+	LobbyMap int // Zero for events whose entrance is selected by their script.
 	// Maps are the stage maps; the group enters Maps[0] at EntryPortal.
 	Maps        []int
 	EntryPortal int
@@ -25,7 +26,6 @@ type Event struct {
 	// ExpeditionType binds admission to a native expedition instead of a
 	// single party. Expedition entries are restricted to their lobby map.
 	ExpeditionType int
-	LobbyMap       int
 	Ticket         int
 	// RevivalHP is used when the raid revives the player on the same map.
 	RevivalHP int
@@ -195,12 +195,18 @@ var eventByMap = func() map[int]string {
 }()
 
 func EventByName(name string) (Event, bool) {
-	e, ok := events[name]
-	return e, ok
+	if e, ok := events[name]; ok {
+		return e, true
+	}
+	c, ok := ChristmasByName(name)
+	return c.Event, ok
 }
 
 // EventByMap finds the event that owns a stage map.
 func EventByMap(mapID int) (Event, bool) {
-	e, ok := events[eventByMap[mapID]]
-	return e, ok
+	if name := eventByMap[mapID]; name != "" {
+		return EventByName(name)
+	}
+	c, ok := ChristmasByMap(mapID)
+	return c.Event, ok
 }
