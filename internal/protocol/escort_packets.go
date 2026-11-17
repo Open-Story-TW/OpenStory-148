@@ -1,9 +1,39 @@
 package protocol
 
+import "maple-go-server/internal/content"
+
 // The v148 mob-on-mob senders at 0x5EE6B6 and 0x60F1AE write the
 // attacker OID, local character ID and target OID. The separate 0x165
 // request at 0x5FE5D5 describes a mob hitting a field object.
 const RecvMobHitEscort uint16 = 0x167
+
+const (
+	RecvEscortNode        uint16 = 0x16c
+	RecvEscortPathRequest uint16 = 0x16d
+	SendEscortPath        uint16 = 0x1bf
+)
+
+// EscortPath is decoded by TWMS v148 CMob at 0x5FDE96. The path is a
+// linear node array. The last DWORD before the flags is the next node index.
+func EscortPath(objectID int32, x, y, next int, nodes []content.EscortNode) []byte {
+	w := NewWriter(SendEscortPath)
+	w.I32(objectID)
+	w.I32(int32(len(nodes)))
+	w.I32(int32(x))
+	w.I32(int32(y))
+	for _, node := range nodes {
+		w.I32(int32(node.X))
+		w.I32(int32(node.Y))
+		w.I32(int32(node.Attribute))
+		if node.Attribute == 2 {
+			w.I32(int32(node.StopMillis))
+		}
+	}
+	w.I32(int32(next))
+	w.U8(0) // No active stop timer.
+	w.U8(0)
+	return w.Packet()
+}
 
 type MobHitEscort struct {
 	Attacker, CharacterID, Escort int32

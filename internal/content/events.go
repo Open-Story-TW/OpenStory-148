@@ -55,6 +55,7 @@ var events = eventDefinitions()
 
 func eventDefinitions() map[string]Event {
 	definitions := map[string]Event{
+		IceKnightName:   iceKnightEvent(),
 		DragonRiderName: dragonRiderEvent(),
 		LudibriumPQName: ludibriumEvent(),
 		HenesysPQName: {

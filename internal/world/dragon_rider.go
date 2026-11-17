@@ -117,7 +117,7 @@ func (s *Server) dragonRiderPortal(ctx context.Context, channel int, live *liveC
 		if text == "" {
 			text = "現在無法進入龍騎士任務。"
 		}
-		return true, dragonRiderNotice(sink, text)
+		return true, eventPortalNotice(sink, text)
 	}
 	var next int
 	switch {
@@ -132,17 +132,17 @@ func (s *Server) dragonRiderPortal(ctx context.Context, channel int, live *liveC
 	}
 	inst := s.eventOf(actor.CharacterID)
 	if inst == nil || inst.dragon == nil || s.partySnapshotOf(actor.CharacterID).LeaderID != actor.CharacterID {
-		return true, dragonRiderNotice(sink, "請讓隊長通過傳送點。")
+		return true, eventPortalNotice(sink, "請讓隊長通過傳送點。")
 	}
 	inst.dragon.mu.Lock()
 	defer inst.dragon.mu.Unlock()
 	if s.eventOf(actor.CharacterID) != inst || !time.Now().Before(inst.deadline) ||
 		partySession(live).Character.MapID != room || s.mapMonsterCount(channel, room) != 0 {
-		return true, dragonRiderNotice(sink, "請先擊敗這裡的怪物。")
+		return true, eventPortalNotice(sink, "請先擊敗這裡的怪物。")
 	}
-	group := s.dragonRiderGroup(inst, room)
+	group := s.activeEventMembers(inst, room)
 	if len(group) < inst.definition.Keep {
-		return true, dragonRiderNotice(sink, "請等隊員抵達再一起前進。")
+		return true, eventPortalNotice(sink, "請等隊員抵達再一起前進。")
 	}
 	if next == content.DragonRiderExit {
 		return true, s.finishDragonRider(ctx, inst, group)
@@ -156,25 +156,6 @@ func (s *Server) dragonRiderPortal(ctx context.Context, channel int, live *liveC
 		return true, domain.ErrInvalidInput
 	}
 	return true, s.moveEventRoom(ctx, inst, room, eventOccupant{live, sink}, next, entry)
-}
-
-func dragonRiderNotice(sink packetSink, text string) error {
-	if err := sink.WritePacket(protocol.PortalTrainingMessage(text)); err != nil {
-		return err
-	}
-	return sink.WritePacket(protocol.EnableActions())
-}
-
-func (s *Server) dragonRiderGroup(inst *eventInstance, mapID int) []eventOccupant {
-	members := s.eventOccupants(inst.channel, []int{mapID})
-	group := members[:0]
-	for _, member := range members {
-		peer := partySession(member.live)
-		if peer.Character.HP > 0 && s.eventOf(peer.CharacterID) == inst {
-			group = append(group, member)
-		}
-	}
-	return group
 }
 
 func (s *Server) finishDragonRider(ctx context.Context, inst *eventInstance, group []eventOccupant) error {

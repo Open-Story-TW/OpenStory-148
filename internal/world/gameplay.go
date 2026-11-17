@@ -89,6 +89,7 @@ type gameplayRoom struct {
 	malaysiaStatues map[int]*malaysiaStatue
 	pinkBean        *pinkBeanBattle
 	krexel          *krexelBattle
+	ice             *iceEscortRoom
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -436,7 +437,20 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 	case protocol.RecvMobHitEscort:
 		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(r.Bytes(r.Remaining())))
 		if err == nil {
+			s.iceEscortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())
+		}
+		return true, nil
+	case protocol.RecvEscortPathRequest:
+		oid := r.I32()
+		if r.Err() != nil || r.Remaining() != 0 || oid <= 0 {
+			return true, nil
+		}
+		return true, s.iceEscortPath(channel, live, sink, oid)
+	case protocol.RecvEscortNode:
+		oid, next := r.I32(), int(r.I32())
+		if r.Err() == nil && r.Remaining() == 0 && oid > 0 && next > 0 {
+			s.iceEscortNode(channel, live, sink, oid, next)
 		}
 		return true, nil
 	}
@@ -464,6 +478,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 		return err
 	}
 	if handled, err := s.dragonRiderPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script == "" {
@@ -504,6 +521,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.treasurePortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

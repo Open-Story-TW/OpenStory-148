@@ -43,6 +43,7 @@ type eventInstance struct {
 	moon         *henesysState
 	ludi         *ludibriumState
 	dragon       *dragonRiderState
+	ice          *iceKnightState
 }
 
 type eventSpace struct {
@@ -169,6 +170,16 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 			}
 		}
 	}
+	if inst.ice != nil {
+		totalLevel := leader.Character.Level
+		for _, m := range present {
+			totalLevel += partySession(m.live).Character.Level
+		}
+		if err = s.gameplay.prepareIceEscort(inst, int64(totalLevel/here)*1000); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
 	leaderOccupant := eventOccupant{live, sink}
 	var groupToCharge []eventOccupant
 	if e.Ticket != 0 {
@@ -272,6 +283,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.ExpeditionType != 0 && here != size {
 		return nil, nil, "roster_absent", here, qualified
 	}
+	if e.Name == content.IceKnightName && (leader.Character.MapID != content.IceKnightLobby || here != size) {
+		return nil, nil, "party_size", here, qualified
+	}
 	if e.Name == content.DragonRiderName {
 		if leader.Character.MapID != content.DragonRiderGate || here != size {
 			return nil, nil, "party_size", here, qualified
@@ -307,6 +321,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.DragonRiderName {
 		inst.dragon = &dragonRiderState{rewards: map[int64]dragonRiderReward{}}
+	}
+	if e.Name == content.IceKnightName {
+		inst.ice = &iceKnightState{rewards: make(map[int64]int64)}
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
@@ -372,6 +389,25 @@ func (s *Server) moveEventRoom(ctx context.Context, inst *eventInstance, from in
 	s.cancelNPCScriptState(actor.live, false)
 	s.closeEconomyDialog(actor.live)
 	return s.warpEventMember(ctx, inst, from, actor, to, entry)
+}
+
+func (s *Server) activeEventMembers(inst *eventInstance, mapID int) []eventOccupant {
+	members := s.eventOccupants(inst.channel, []int{mapID})
+	group := members[:0]
+	for _, member := range members {
+		peer := partySession(member.live)
+		if peer.Character.HP > 0 && s.eventOf(peer.CharacterID) == inst {
+			group = append(group, member)
+		}
+	}
+	return group
+}
+
+func eventPortalNotice(sink packetSink, text string) error {
+	if err := sink.WritePacket(protocol.PortalTrainingMessage(text)); err != nil {
+		return err
+	}
+	return sink.WritePacket(protocol.EnableActions())
 }
 
 func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bool {

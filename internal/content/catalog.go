@@ -57,16 +57,17 @@ func (a MapArea) Contains(x, y int) bool {
 }
 
 type Map struct {
-	ID          int        `json:"id"`
-	ReturnMap   int        `json:"return_map"`
-	OnUserEnter string     `json:"on_user_enter,omitempty"`
-	FieldLimit  int64      `json:"field_limit"`
-	Town        bool       `json:"town"`
-	Fly         bool       `json:"fly,omitempty"` // WZ info/fly: Soaring (x026/x142) allowed
-	Portals     []Portal   `json:"portals"`
-	Life        []Life     `json:"life"`
-	Footholds   []Foothold `json:"footholds"`
-	Areas       []MapArea  `json:"areas,omitempty"`
+	ID          int          `json:"id"`
+	ReturnMap   int          `json:"return_map"`
+	OnUserEnter string       `json:"on_user_enter,omitempty"`
+	FieldLimit  int64        `json:"field_limit"`
+	Town        bool         `json:"town"`
+	Fly         bool         `json:"fly,omitempty"` // WZ info/fly: Soaring (x026/x142) allowed
+	Portals     []Portal     `json:"portals"`
+	Life        []Life       `json:"life"`
+	Footholds   []Foothold   `json:"footholds"`
+	Areas       []MapArea    `json:"areas,omitempty"`
+	EscortRoute []EscortNode `json:"escort_route,omitempty"`
 }
 
 func (m Map) Portal(name string) (Portal, bool) {
@@ -308,6 +309,9 @@ func parseMap(id int, n *wzNode) (Map, error) {
 		return Map{}, fmt.Errorf("map %d has no info", id)
 	}
 	m := Map{ID: id, ReturnMap: i.intValue("returnMap", id), OnUserEnter: i.stringValue("onUserEnter", ""), FieldLimit: int64(i.intValue("fieldLimit", 0)), Town: i.intValue("town", 0) != 0, Fly: i.intValue("fly", 0) != 0}
+	if id == IceKnightFirst || id == IceKnightSecond {
+		m.EscortRoute = escortRoute(n.child("nodeInfo"))
+	}
 	if p := n.child("portal"); p != nil {
 		for _, x := range p.Children {
 			pid, err := strconv.Atoi(x.Name)

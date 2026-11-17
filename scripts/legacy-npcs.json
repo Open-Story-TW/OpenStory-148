@@ -3369,14 +3369,6 @@
       "reason": "cm.trembleEffect is not supported (line 28)"
     },
     {
-      "legacy": "npc/2159017.js",
-      "reason": "call .size is not supported (line 2)"
-    },
-    {
-      "legacy": "npc/2159018.js",
-      "reason": "call .getMembers is not supported (line 19)"
-    },
-    {
       "legacy": "npc/2159100.js",
       "reason": "cm.removeNpc is not supported (line 12)"
     },
