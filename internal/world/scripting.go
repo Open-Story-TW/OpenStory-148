@@ -188,6 +188,10 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 			if _, known := horntailByMap(snapshot.Character.MapID); known {
 				name = "npc/2083002_horntail.lua"
 			}
+		case content.EscapeCaptiveNPC:
+			if event, ok := content.EventByMap(snapshot.Character.MapID); ok && event.Name == content.EscapeName {
+				name = "npc/9020008_escape.lua"
+			}
 		}
 	}
 	if _, err := scripts.Source(name); err != nil {
