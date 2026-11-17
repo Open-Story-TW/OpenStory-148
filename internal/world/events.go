@@ -46,6 +46,7 @@ type eventInstance struct {
 	ice          *iceKnightState
 	christmas    christmasProgress
 	hoblin       *hoblinPQState
+	romeoSearch  *romeoLabSearch
 }
 
 type eventSpace struct {

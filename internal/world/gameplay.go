@@ -504,6 +504,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.romeoLabPortal(ctx, live, sink, p); handled {
+		return err
+	}
 	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
@@ -551,6 +554,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.romeoLabPortal(ctx, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {
