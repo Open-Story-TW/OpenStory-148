@@ -25,7 +25,6 @@ func (s *Server) ellinCapture(ctx context.Context, channel int, live *liveCharac
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	g := s.gameplay
-	body, _ := g.catalog.MobBodyBounds(content.EllinPoisonMonster)
 	key := mapKey{channel, content.EllinCapture}
 	g.mu.Lock()
 	room := g.rooms[key]
@@ -34,8 +33,10 @@ func (s *Server) ellinCapture(ctx context.Context, channel int, live *liveCharac
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	mob := room.mobs[req.ObjectID]
-	if mob == nil || mob.life.TemplateID != content.EllinPoisonMonster || mob.hp <= 0 || mob.claiming ||
-		!ellinCaptureRange(actor.Character, mob, body.Envelope) {
+	// The stock client selects the target with the marble's WZ capture rectangle.
+	// A moving mob's position may differ across clients, so the server verifies
+	// the actual object in the actor's instance and its authoritative HP.
+	if mob == nil || mob.life.TemplateID != content.EllinPoisonMonster || mob.hp <= 0 || mob.claiming {
 		g.mu.Unlock()
 		return sink.WritePacket(protocol.EnableActions())
 	}
@@ -80,12 +81,4 @@ func holdsCaptureMarble(c domain.Character, slot int) bool {
 		}
 	}
 	return false
-}
-
-func ellinCaptureRange(actor domain.Character, mob *gameplayMob, body content.MobBodyRect) bool {
-	x, y := mob.life.X-actor.X, mob.life.Y-actor.Y
-	if !body.Nonempty() {
-		return x >= -70 && x <= 70 && y >= -100 && y <= 20
-	}
-	return x+body.Right > -70 && x+body.Left < 70 && y+body.Bottom > -100 && y+body.Top < 20
 }
