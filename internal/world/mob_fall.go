@@ -74,6 +74,16 @@ func applyMobMoveLocked(r *gameplayRoom, mob *gameplayMob, m protocol.MonsterMov
 	if floor, ok := fieldFloor(r.definition); ok && m.Y > floor+mobFallSlack {
 		return mobMoveFellOut
 	}
+	switch r.definition.ID {
+	case content.KentaRescue, content.KentaBubbles, content.KentaDefense:
+		if mob.stats.Flying {
+			if !within(mob.life.X, mob.life.Y, m.X, m.Y, 320) || !insideSwimField(r.definition, m.X, m.Y) {
+				return mobMoveRejected
+			}
+			mob.life.X, mob.life.Y = m.X, m.Y-1
+			return mobMoveAccepted
+		}
+	}
 	// Horizontal patrol bounds are WZ authority; clamp checks reject teleports.
 	if m.X < mob.origin.RX0-100 || m.X > mob.origin.RX1+100 || m.Y < mob.origin.Y-400 || m.Y > mob.origin.Y+400 {
 		return mobMoveRejected
@@ -85,6 +95,24 @@ func applyMobMoveLocked(r *gameplayRoom, mob *gameplayMob, m protocol.MonsterMov
 type mobDelivery struct {
 	sink   packetSink
 	packet []byte
+}
+
+func insideSwimField(field content.Map, x, y int) bool {
+	if len(field.Footholds) == 0 {
+		return false
+	}
+	first := field.Footholds[0]
+	bounds := content.MapArea{Left: min(first.X1, first.X2), Right: max(first.X1, first.X2),
+		Top: min(first.Y1, first.Y2), Bottom: max(first.Y1, first.Y2)}
+	for _, foothold := range field.Footholds[1:] {
+		bounds.Left = min(bounds.Left, foothold.X1, foothold.X2)
+		bounds.Right = max(bounds.Right, foothold.X1, foothold.X2)
+		bounds.Top = min(bounds.Top, foothold.Y1, foothold.Y2)
+		bounds.Bottom = max(bounds.Bottom, foothold.Y1, foothold.Y2)
+	}
+	const edgeSlack = 100
+	return x >= bounds.Left-edgeSlack && x <= bounds.Right+edgeSlack &&
+		y >= bounds.Top-edgeSlack && y <= bounds.Bottom+edgeSlack
 }
 
 // respawnMobLocked gives a mob a fresh object ID at its WZ origin with full

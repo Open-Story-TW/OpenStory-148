@@ -46,6 +46,10 @@ type eventInstance struct {
 	ice          *iceKnightState
 	christmas    christmasProgress
 	hoblin       *hoblinPQState
+
+	kentaDefenseAt   time.Time
+	kentaDefended    bool
+	kentaBubblesPaid bool
 }
 
 type eventSpace struct {
@@ -184,6 +188,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 			err = s.gameplay.prepareHoblinPQ(inst, hp)
 		}
 		if err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
+	if e.Name == content.KentaPQName {
+		group := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
+		if err = s.prepareKenta(ctx, inst, group); err != nil {
 			s.eventEnd(inst)
 			return "unavailable", here, qualified, err
 		}
@@ -561,6 +572,10 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	var deadline time.Time
 	if inst != nil {
 		deadline = inst.deadline
+		if c.MapID == content.KentaDefense && !inst.kentaDefenseAt.IsZero() &&
+			inst.kentaDefenseAt.Before(deadline) && time.Now().Before(inst.kentaDefenseAt) {
+			deadline = inst.kentaDefenseAt
+		}
 	}
 	s.events.mu.Unlock()
 	if inst != nil {
@@ -642,16 +657,22 @@ func (s *Server) tickEvents(now time.Time) {
 	if s.events == nil {
 		return
 	}
-	var due, preludes []*eventInstance
+	var due, preludes, kentaDefenses []*eventInstance
 	s.events.mu.Lock()
 	for _, inst := range s.events.running {
 		if !inst.ended && inst.christmas != christmasRewarding && !now.Before(inst.deadline) {
 			due = append(due, inst)
+		} else if inst.definition.Name == content.KentaPQName && !inst.ended && !inst.kentaDefended &&
+			!inst.kentaDefenseAt.IsZero() && !now.Before(inst.kentaDefenseAt) {
+			kentaDefenses = append(kentaDefenses, inst)
 		} else if !inst.preludeUntil.IsZero() && !now.Before(inst.preludeUntil) {
 			preludes = append(preludes, inst)
 		}
 	}
 	s.events.mu.Unlock()
+	for _, inst := range kentaDefenses {
+		s.finishKentaDefense(inst)
+	}
 	for _, inst := range due {
 		if !s.startChristmasBoss(inst, now) {
 			s.eventEnd(inst)
@@ -724,6 +745,10 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		if err != nil {
 			return err
 		}
+		if id == content.KentaDefense {
+			room.kentaWaves = room.mobs
+			room.mobs = make(map[int32]*gameplayMob)
+		}
 		if id == content.PapulatusArena {
 			for mobID := papulatusCrystal; mobID <= papulatusBody; mobID++ {
 				if _, err := g.catalog.Mob(mobID); err != nil {
@@ -787,6 +812,9 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		stats, err := g.catalog.Mob(spawn.Life.TemplateID)
 		if err != nil {
 			return err
+		}
+		if event.Name == content.KentaPQName && spawn.Life.TemplateID == content.KentaEscort {
+			stats.Invincible = true
 		}
 		if christmas, ok := content.ChristmasByName(event.Name); ok && spawn.Life.TemplateID == christmas.Snowman {
 			stats.Invincible = true

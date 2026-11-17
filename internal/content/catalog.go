@@ -98,6 +98,7 @@ type Mob struct {
 	PDD              int   `json:"pdd"`
 	Boss             bool  `json:"boss"`
 	PDRate           int   `json:"pd_rate"`
+	Flying           bool  `json:"flying,omitempty"`
 	OnlyNormalAttack bool  `json:"only_normal_attack,omitempty"`
 	Invincible       bool  `json:"invincible,omitempty"`
 	FixedDamage      int   `json:"fixed_damage,omitempty"`
@@ -239,6 +240,7 @@ func (c *Catalog) Mob(id int) (Mob, error) {
 	// MapleLifeFactory reads maxHP/EXP/etc from this monster's own info before
 	// consulting the linked file's movement/attack animation properties.
 	m = parseMob(id, info)
+	m.Flying = node.child("fly") != nil
 	if m.HP < 1 {
 		return Mob{}, fmt.Errorf("mob %d has no positive maxHP", id)
 	}

@@ -91,6 +91,7 @@ type gameplayRoom struct {
 	malaysiaStatues map[int]*malaysiaStatue
 	pinkBean        *pinkBeanBattle
 	krexel          *krexelBattle
+	kentaWaves      map[int32]*gameplayMob
 	horntail        *horntailField
 	escort          *escortRoom
 	bossForms       *eventBossForms
@@ -470,6 +471,7 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		if err == nil {
 			s.escortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())
+			s.kentaFriendlyDamage(live, sink, hit, time.Now())
 		}
 		return true, nil
 	case protocol.RecvEscortAttack:
@@ -516,6 +518,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.dragonRiderPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.kentaPortal(ctx, live, sink, p); handled {
+		return err
+	}
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
@@ -560,6 +565,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.treasurePortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.kentaPortal(ctx, live, sink, p); handled {
 		return err
 	}
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {

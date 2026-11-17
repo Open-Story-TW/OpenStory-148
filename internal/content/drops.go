@@ -86,6 +86,9 @@ func MonsterDrops(mobID, mapID int) ([]DropDefinition, error) {
 		return nil, fmt.Errorf("invalid drop lookup")
 	}
 	out := append([]DropDefinition(nil), dropsByMob[mobID]...)
+	if mapID == KentaBoss && (mobID == 9300461 || mobID == 9300468) {
+		out = append(out, DropDefinition{ID: mobID, MobID: mobID, TemplateID: KentaScales, Minimum: 1, Maximum: 1, Chance: 1000000})
+	}
 	for _, d := range globalDrops {
 		if d.Continent < 0 || d.Continent < 10 && mapID/100000000 == d.Continent || d.Continent < 100 && mapID/10000000 == d.Continent || d.Continent < 1000 && mapID/1000000 == d.Continent {
 			out = append(out, d)

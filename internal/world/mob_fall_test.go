@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"testing"
 
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 )
@@ -133,5 +134,26 @@ func TestMobBelowFieldInSettlementIsLeftAlone(t *testing.T) {
 	mob.reservation = &combatTicket{}
 	if out := g.reseatFallenMobLocked(room, mob); out != nil || mob.objectID != oldID {
 		t.Fatalf("reserved mob re-seated: out=%d id=%d", len(out), mob.objectID)
+	}
+}
+
+func TestKentaSwimmingMobsUseFieldBounds(t *testing.T) {
+	room := &gameplayRoom{definition: content.Map{
+		ID: content.KentaRescue,
+		Footholds: []content.Foothold{
+			{X1: -700, Y1: 150, X2: 400, Y2: 300},
+			{X1: -700, Y1: 1800, X2: 400, Y2: 1800},
+		},
+	}}
+	origin := content.Life{X: -250, Y: 1100, RX0: -280, RX1: -220}
+	mob := &gameplayMob{origin: origin, life: content.Life{X: -180, Y: 750}, stats: content.Mob{Flying: true}}
+	if verdict := applyMobMoveLocked(room, mob, protocol.MonsterMove{X: 1, Y: 520}); verdict != mobMoveAccepted || mob.life.Y != 519 {
+		t.Fatalf("native swimming path outside the spawn patrol was not stored: verdict=%v life=%+v", verdict, mob.life)
+	}
+	if verdict := applyMobMoveLocked(room, mob, protocol.MonsterMove{X: -65, Y: 2000}); verdict != mobMoveFellOut {
+		t.Fatalf("out-of-bounds mob did not request recovery: %v", verdict)
+	}
+	if verdict := applyMobMoveLocked(room, mob, protocol.MonsterMove{X: -499, Y: 300}); verdict != mobMoveRejected {
+		t.Fatalf("swimming movement accepted an implausible step: %v", verdict)
 	}
 }

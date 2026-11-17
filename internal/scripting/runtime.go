@@ -610,6 +610,7 @@ func (s *Session) installHost() {
 		bind("hoblin_ambush", s.simpleCommand("hoblin_ambush", 0), 1)
 		bind("monster_rush_status", s.simpleCommand("monster_rush_status", 0), 1)
 		bind("monster_rush_donate", s.simpleCommand("monster_rush_donate", 1), 2)
+		bind("kenta_finish", s.simpleCommand("kenta_finish", 0), 1)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err
