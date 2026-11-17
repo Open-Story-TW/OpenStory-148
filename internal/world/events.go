@@ -129,7 +129,7 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	if leader.ChannelID != channel || leader.Character.HP <= 0 || s.tradeActive(live) {
 		return "unavailable", 0, 0, nil
 	}
-	if e.ExpeditionType != 0 && leader.Character.MapID != e.LobbyMap {
+	if e.LobbyMap != 0 && leader.Character.MapID != e.LobbyMap {
 		return "unavailable", 0, 0, nil
 	}
 	// Reserve the expedition while its roster cannot change. The map warps
@@ -358,6 +358,9 @@ func (s *Server) eventEndAt(inst *eventInstance, exitMap int) {
 		for _, o := range occupants {
 			s.eventExit(inst.channel, destination, o.live, o.sink)
 		}
+		if inst.definition.Name == "Papulatus" {
+			s.setPapulatusGate(inst.channel, 0)
+		}
 		s.events.mu.Lock()
 		key := eventKey{inst.channel, inst.definition.Name}
 		if s.events.running[key] == inst {
@@ -584,6 +587,13 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 		room, err := g.room(key)
 		if err != nil {
 			return err
+		}
+		if id == content.PapulatusArena {
+			for mobID := papulatusCrystal; mobID <= papulatusBody; mobID++ {
+				if _, err := g.catalog.Mob(mobID); err != nil {
+					return err
+				}
+			}
 		}
 		if required, checked := event.RequiredMobs[id]; checked {
 			actual := make(map[int]int)

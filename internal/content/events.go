@@ -85,6 +85,11 @@ var events = map[string]Event{
 		LevelMin: 50, LevelMax: 200, ExpeditionType: 2002, LobbyMap: 211042400,
 		RequiredMobs: map[int]map[int]int{280030000: {}},
 	},
+	"Papulatus": {
+		Name: "Papulatus", Maps: []int{PapulatusArena}, ExitMap: PapulatusLobby,
+		Seconds: 2700, PartyMin: 2, PartyMax: 6, Keep: 2, LevelMin: 15, LevelMax: 255,
+		LobbyMap: PapulatusLobby, RequiredMobs: map[int]map[int]int{PapulatusArena: {}},
+	},
 	"ChaosZakum": {
 		Name: "ChaosZakum", Maps: []int{280030001}, ExitMap: 211042301,
 		Seconds: 4500, PartyMin: 3, PartyMax: 30, Keep: 3,

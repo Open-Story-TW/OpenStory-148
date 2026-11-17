@@ -81,6 +81,7 @@ type gameplayRoom struct {
 	reactors   map[int32]*roomReactor // gathering nodes and event reactors
 	moon       *henesysRoom
 	zakum      *zakumField
+	papulatus  *papulatusField
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -153,6 +154,9 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 			return nil, errors.New("gameplay object ID space exhausted")
 		}
 		r.zakum = &zakumField{altar: altar, objectID: oid}
+	}
+	if err := g.addPapulatusReactors(r, key.mapID); err != nil {
+		return nil, err
 	}
 	g.rooms[key] = r
 	return r, nil

@@ -88,6 +88,8 @@ func (s *Server) expeditionStagePortal(ctx context.Context, snapshot domain.Char
 	case portal.Script == "portalNPC1" && snapshot.Character.MapID == 272020110,
 		portal.Script == "out_cygnusAK" && snapshot.Character.MapID == 272030400:
 		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2144018)
+	case portal.Script == "Populatus00" && portal.Name == "in00" && snapshot.Character.MapID == content.PapulatusLobby:
+		return true, s.startRemoteScript(ctx, snapshot.ChannelID, live, sink, 2043000, "npc/2043000_papulatus.lua", "由時鐘塔入口開啟", 0)
 	case portal.Script == "Zakum05" && (snapshot.Character.MapID == 211042300 || snapshot.Character.MapID == 211042301):
 		return true, s.enterZakumLobby(ctx, snapshot, live, sink)
 	case portal.Script == "balog_end" && snapshot.Character.MapID == balrogRewardMap:
@@ -161,7 +163,7 @@ func (s *Server) advanceExpedition(ctx context.Context, snapshot domain.Characte
 // the gameplay rooms.
 func (s *Server) expeditionCombatAllowedLocked(key mapKey, actor int64) bool {
 	e, ok := content.EventByMap(key.mapID)
-	if !ok || e.ExpeditionType == 0 {
+	if !ok || e.ExpeditionType == 0 && e.Name != "Papulatus" {
 		return true
 	}
 	if s.events == nil {
@@ -187,6 +189,10 @@ func (s *Server) expeditionCombatAllowedLocked(key mapKey, actor int64) bool {
 }
 
 func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
+	if key.mapID == content.PapulatusArena {
+		s.papulatusPartDefeated(key, actor, mob)
+		return
+	}
 	if _, ok := content.ZakumAltarByMap(key.mapID); ok {
 		s.zakumPartDefeated(key, actor, mob)
 		return

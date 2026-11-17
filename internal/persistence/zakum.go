@@ -12,7 +12,21 @@ import (
 // failed offering leaves a real item the owner can pick up again.
 func (s *Store) ConsumeZakumEye(ctx context.Context, session domain.CharacterSession, objectID int32) error {
 	altar, ok := content.ZakumAltarByMap(session.Character.MapID)
-	if !ok || objectID <= 0 || session.ChannelID < 1 {
+	if !ok {
+		return domain.ErrInvalidInput
+	}
+	return s.consumeBossOffering(ctx, session, objectID, content.ZakumEye, altar.X-183, altar.X+201, altar.Y-30, altar.Y)
+}
+
+func (s *Store) ConsumePapulatusFragment(ctx context.Context, session domain.CharacterSession, objectID int32) error {
+	if session.Character.MapID != content.PapulatusArena {
+		return domain.ErrInvalidInput
+	}
+	return s.consumeBossOffering(ctx, session, objectID, content.PapulatusFragment, content.PapulatusOfferLeft, content.PapulatusOfferRight, content.PapulatusOfferTop, content.PapulatusOfferBottom)
+}
+
+func (s *Store) consumeBossOffering(ctx context.Context, session domain.CharacterSession, objectID int32, templateID, left, right, top, bottom int) error {
+	if objectID <= 0 || session.ChannelID < 1 {
 		return domain.ErrInvalidInput
 	}
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -32,8 +46,7 @@ func (s *Store) ConsumeZakumEye(ctx context.Context, session domain.CharacterSes
 		  AND template_id=$6 AND quantity=1 AND picked_up_by IS NULL AND expired_at IS NULL
 		  AND expires_at>clock_timestamp() AND source_operation_id IS NULL
 		  AND x BETWEEN $7 AND $8 AND y BETWEEN $9 AND $10`,
-		objectID, world, channel, mapID, session.CharacterID, content.ZakumEye,
-		altar.X-183, altar.X+201, altar.Y-30, altar.Y)
+		objectID, world, channel, mapID, session.CharacterID, templateID, left, right, top, bottom)
 	if err != nil {
 		return err
 	}
