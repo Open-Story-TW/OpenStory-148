@@ -90,6 +90,7 @@ type gameplayRoom struct {
 	pinkBean        *pinkBeanBattle
 	krexel          *krexelBattle
 	ice             *iceEscortRoom
+	iceBoss         *iceKnightArena
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -315,7 +316,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickHenesysPQ(ctx, now)
 			s.tickOXQuizzes(now)
 			s.tickTreasureHunts(now)
-			s.resumeIceEscorts(now)
+			s.tickIceKnight(now)
 		}
 	}
 }
