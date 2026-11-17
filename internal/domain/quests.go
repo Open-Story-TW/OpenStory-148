@@ -27,8 +27,10 @@ type QuestRequest struct {
 
 type QuestResult struct {
 	InventoryResult
-	Quest     QuestState `json:"quest"`
-	NextQuest int        `json:"next_quest,omitempty"`
+	Quest     QuestState  `json:"quest"`
+	NextQuest int         `json:"next_quest,omitempty"`
+	Buffs     []SkillBuff `json:"buffs,omitempty"`
+	Replaced  []SkillBuff `json:"replaced,omitempty"`
 	// Binds retries to the same player-selected reward. Nil means this
 	// transition did not offer a selectable reward (also true of old receipts).
 	RewardSelection *int `json:"reward_selection,omitempty"`

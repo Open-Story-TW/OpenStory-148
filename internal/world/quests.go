@@ -61,6 +61,9 @@ func (s *Server) changeQuest(ctx context.Context, live *liveCharacter, sink pack
 		return value, err
 	}
 	s.applyProgressResult(live, value.Character)
+	if !value.Replayed {
+		s.applyItemBuff(live, sink, domain.ItemUseResult{Character: value.Character, Buffs: value.Buffs, Replaced: value.Replaced})
+	}
 	if len(value.Changes) > 0 {
 		if err = sink.WritePacket(protocol.ModifyInventory(value.Changes)); err != nil {
 			return value, err

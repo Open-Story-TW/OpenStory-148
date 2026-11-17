@@ -37,6 +37,18 @@ func (s *Server) runPortalScript(ctx context.Context, channel int, live *liveCha
 	snapshot := live.session
 	live.mu.Unlock()
 	mapID := snapshot.Character.MapID
+	if mapID == 240040700 && p.Script == "hontale_morph" {
+		// The six consecutive region triggers must not start overlapping NPC
+		// dialogues as the native character walks across the cave entrance.
+		entered, err := s.enterHorntailCavern(ctx, snapshot, live, sink)
+		if err != nil || entered {
+			return err
+		}
+		if err := sink.WritePacket(protocol.PortalTrainingMessage("外人不能進入生命之穴。")); err != nil {
+			return err
+		}
+		return sink.WritePacket(protocol.EnableActions())
+	}
 	if handled, err := s.horntailStagePortal(ctx, snapshot, live, sink, p); handled {
 		return err
 	}

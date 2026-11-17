@@ -124,7 +124,7 @@ func (s *Store) TransitionQuest(ctx context.Context, request domain.QuestRequest
 		result.Character = value
 		result.Quest = findQuest(value.Quests, request.QuestID)
 		result.Replayed = true
-		result.Changes = nil
+		result.Changes, result.Buffs, result.Replaced = nil, nil, nil
 		return result, nil
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
@@ -239,6 +239,17 @@ func (s *Store) TransitionQuest(ctx context.Context, request domain.QuestRequest
 		if err = applyQuestItem(ctx, tx, &result.InventoryResult, item); err != nil {
 			return domain.QuestResult{}, err
 		}
+	}
+	if action.ItemBuff != 0 {
+		recovery, buff, definitionErr := content.ConsumableDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), action.ItemBuff)
+		if definitionErr != nil || buff == nil {
+			return domain.QuestResult{}, domain.ErrInvalidInput
+		}
+		result.Buffs, result.Replaced, err = applyItemBuff(ctx, tx, &result.Character, action.ItemBuff, buff, now)
+		if err != nil {
+			return domain.QuestResult{}, err
+		}
+		result.Character.HP = min(result.Character.MaxHP, result.Character.HP+recovery.HP)
 	}
 	result.Character.Mesos += action.Mesos
 	if result.Character.Mesos < 0 || result.Character.Mesos > domain.MaxMoney() {

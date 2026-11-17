@@ -370,11 +370,17 @@ func hasHorntailDisguise(actor domain.Character, now time.Time) bool {
 }
 
 func (a *worldScript) openHorntailCavern(ctx context.Context, actor domain.CharacterSession) (bool, error) {
-	if a.npcID != 2081005 || a.objectID == 0 || actor.Character.MapID != 240040700 ||
-		actor.Character.HP <= 0 || !hasHorntailDisguise(actor.Character, time.Now()) {
+	if a.npcID != 2081005 || a.objectID == 0 {
 		return false, nil
 	}
-	s := a.server
+	return a.server.enterHorntailCavern(ctx, actor, a.live, a.sink)
+}
+
+func (s *Server) enterHorntailCavern(ctx context.Context, actor domain.CharacterSession, live *liveCharacter, sink packetSink) (bool, error) {
+	if actor.Character.MapID != 240040700 || actor.Character.HP <= 0 ||
+		!hasHorntailDisguise(actor.Character, time.Now()) {
+		return false, nil
+	}
 	dest, err := s.gameplay.catalog.Map(240050000)
 	if err != nil {
 		return false, err
@@ -383,11 +389,8 @@ func (a *worldScript) openHorntailCavern(ctx context.Context, actor domain.Chara
 	if !ok {
 		return false, domain.ErrNotFound
 	}
-	if err := s.cancelSkill(ctx, a.live, a.sink, -content.HorntailDisguiseItem); err != nil {
+	if err := s.warpGameplay(ctx, actor.ChannelID, live, sink, dest.ID, spawn); err != nil {
 		return false, err
 	}
-	if hasHorntailDisguise(partySession(a.live).Character, time.Now()) {
-		return false, nil
-	}
-	return true, s.warpGameplay(ctx, actor.ChannelID, a.live, a.sink, dest.ID, spawn)
+	return true, s.cancelSkill(ctx, live, sink, -content.HorntailDisguiseItem)
 }

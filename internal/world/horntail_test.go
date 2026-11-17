@@ -9,6 +9,7 @@ import (
 
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 )
 
 func TestHorntailRequiresBothHeadsAndSixCrystalHits(t *testing.T) {
@@ -86,4 +87,19 @@ func TestHorntailRequiresBothHeadsAndSixCrystalHits(t *testing.T) {
 		defer s.gameplay.mu.Unlock()
 		return len(s.gameplay.rooms[key].mobs) == 9
 	})
+}
+
+func TestHorntailCaveTriggersLeaveUndisguisedPlayersInTheField(t *testing.T) {
+	server := &Server{}
+	live := &liveCharacter{session: domain.CharacterSession{Character: domain.Character{MapID: 240040700, HP: 100}}}
+	sink := &gameplayTestSink{}
+	for _, name := range []string{"cs00", "cs01"} {
+		portal := content.Portal{Name: name, Script: "hontale_morph"}
+		if err := server.runPortalScript(context.Background(), 1, live, sink, portal); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if live.session.Character.MapID != 240040700 || sink.count(protocol.SendNPCTalk) != 0 || sink.count(0x58) != 2 {
+		t.Fatal("the adjacent cave triggers should report the restriction without opening a dialog")
+	}
 }

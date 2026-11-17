@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"sync"
 	"time"
@@ -70,6 +71,7 @@ type QuestAction struct {
 	NextQuest   int
 	HPDelta     int
 	HPAtLeast   int
+	ItemBuff    int
 	Unsupported []string
 }
 type Quest struct {
@@ -188,8 +190,27 @@ func QuestDefinition(root string, id int) (Quest, error) {
 	q := Quest{ID: id, Name: sources.info.stringValue("name", ""), CanForfeit: sources.info.intValue("resignBlocked", 0) == 0}
 	q.Start = parseQuestRequirement(sources.check.child("0"))
 	q.Complete = parseQuestRequirement(sources.check.child("1"))
-	q.OnStart = parseQuestAction(sources.act.child("0"))
+	startAction := sources.act.child("0")
+	q.OnStart = parseQuestAction(startAction)
 	q.OnComplete = parseQuestAction(sources.act.child("1"))
+	if id == 7300 && q.Start.NPCID == 2081000 && startAction.intValue("ask", 0) == 1 {
+		// The three stop rows only select the next dialogue response.
+		stop := startAction.child("stop")
+		if stop != nil && len(stop.Children) == 3 {
+			valid := true
+			for i, row := range stop.Children {
+				valid = valid && row.Name == strconv.Itoa(i) && len(row.Children) == 1 && row.intValue("answer", 0) == 1
+			}
+			if valid {
+				q.OnStart.Unsupported = slices.DeleteFunc(q.OnStart.Unsupported, func(field string) bool {
+					return field == "ask" || field == "stop"
+				})
+			}
+		}
+	}
+	if q.OnStart.ItemBuff != 0 || q.OnComplete.ItemBuff != 0 && id != 7301 && id != 7303 {
+		q.Unsupported = append(q.Unsupported, "unreviewed quest item buff")
+	}
 	if sources.info.intValue("blocked", 0) != 0 {
 		q.Unsupported = append(q.Unsupported, "blocked")
 	}
@@ -399,6 +420,13 @@ func parseQuestAction(n *wzNode) QuestAction {
 			a.Mesos = int64(questInt(x, &a.Unsupported))
 		case "nextQuest":
 			a.NextQuest = questInt(x, &a.Unsupported)
+		case "buffItemID":
+			id := questInt(x, &a.Unsupported)
+			if id != HorntailDisguiseItem || a.ItemBuff != 0 {
+				a.Unsupported = append(a.Unsupported, "unreviewed or duplicate quest buff item")
+			} else {
+				a.ItemBuff = id
+			}
 		case "item":
 			for _, entry := range x.Children {
 				questFields(entry, []string{"id", "count", "potentialGrade", "prop", "gender", "job", "jobEx"}, &a.Unsupported)
