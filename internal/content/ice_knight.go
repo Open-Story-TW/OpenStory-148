@@ -34,6 +34,7 @@ func iceKnightEvent() Event {
 }
 
 type EscortNode struct {
+	Key             int
 	X, Y, Attribute int
 	StopMillis      int
 }
@@ -55,7 +56,7 @@ func escortRoute(data *wzNode) []EscortNode {
 		if key < 0 {
 			continue
 		}
-		point := waypoint{node: EscortNode{X: entry.intValue("x", 0), Y: entry.intValue("y", 0), Attribute: entry.intValue("attr", 0)}}
+		point := waypoint{node: EscortNode{Key: key, X: entry.intValue("x", 0), Y: entry.intValue("y", 0), Attribute: entry.intValue("attr", 0)}}
 		if stop := entry.child("stopInfo"); stop != nil {
 			point.node.StopMillis = max(0, stop.intValue("stopDuration", 0)) * 1000
 		}

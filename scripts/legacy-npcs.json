@@ -3085,14 +3085,6 @@
       "reason": "cm.getEventManager is not supported (line 35)"
     },
     {
-      "legacy": "npc/2022003.js",
-      "reason": "cm.warpParty is not supported (line 53)"
-    },
-    {
-      "legacy": "npc/2022009.js",
-      "reason": "call .getAllMonstersThreadsafe is not supported (line 17)"
-    },
-    {
       "legacy": "npc/2030008.js",
       "reason": "call .getMembers is not supported (line 109)"
     },

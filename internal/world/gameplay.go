@@ -90,9 +90,10 @@ type gameplayRoom struct {
 	malaysiaStatues map[int]*malaysiaStatue
 	pinkBean        *pinkBeanBattle
 	krexel          *krexelBattle
-	ice             *iceEscortRoom
-	iceBoss         *iceKnightArena
 	horntail        *horntailField
+	escort          *escortRoom
+	bossForms       *eventBossForms
+	rex             *hoblinArena
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -215,8 +216,8 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 		}
 		if mob.controller == c.ID {
 			packets = append(packets, mob.spawnPacket(true, now))
-			if r.ice != nil && r.ice.mob == mob {
-				packets = append(packets, r.ice.pathPacket(r.definition.EscortRoute))
+			if r.escort != nil && r.escort.mob == mob {
+				packets = append(packets, r.escort.pathPacket(r.definition.EscortRoute))
 			}
 		}
 	}
@@ -282,8 +283,8 @@ func (s *Server) leaveGameplay(channel, mapID int, characterID int64, expected .
 			mob.controller = id
 			if mob.hp > 0 {
 				packets = append(packets, delivery{m.sink, mob.spawnPacket(true, time.Now())})
-				if r.ice != nil && r.ice.mob == mob {
-					packets = append(packets, delivery{m.sink, r.ice.pathPacket(r.definition.EscortRoute)})
+				if r.escort != nil && r.escort.mob == mob {
+					packets = append(packets, delivery{m.sink, r.escort.pathPacket(r.definition.EscortRoute)})
 				}
 			}
 			break
@@ -318,7 +319,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickHenesysPQ(ctx, now)
 			s.tickOXQuizzes(now)
 			s.tickTreasureHunts(now)
-			s.tickIceKnight(now)
+			s.tickEscortEvents(now)
 		}
 	}
 }
@@ -451,13 +452,13 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		}
 		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(payload))
 		if err == nil {
-			s.iceEscortHit(channel, live, sink, hit, time.Now())
+			s.escortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())
 		}
 		return true, nil
 	case protocol.RecvEscortAttack:
 		if hit, err := protocol.ReadEscortAttack(r); err == nil {
-			s.iceEscortHit(channel, live, sink, hit, time.Now())
+			s.escortHit(channel, live, sink, hit, time.Now())
 		}
 		return true, nil
 	case protocol.RecvEscortPathRequest:
@@ -465,11 +466,11 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		if r.Err() != nil || r.Remaining() != 0 || oid <= 0 {
 			return true, nil
 		}
-		return true, s.iceEscortPath(channel, live, sink, oid)
+		return true, s.escortPath(channel, live, sink, oid)
 	case protocol.RecvEscortNode:
 		oid, next := r.I32(), int(r.I32())
 		if r.Err() == nil && r.Remaining() == 0 && oid > 0 && next > 0 {
-			s.iceEscortNode(channel, live, sink, oid, next)
+			s.escortNode(channel, live, sink, oid, next)
 		}
 		return true, nil
 	}
@@ -500,6 +501,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 		return err
 	}
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script == "" {
@@ -543,6 +547,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.hoblinPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

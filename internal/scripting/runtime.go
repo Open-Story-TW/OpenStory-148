@@ -606,6 +606,7 @@ func (s *Session) installHost() {
 		bind("ludi_stage", s.simpleCommand("ludi_stage", 0), 1)
 		bind("ice_knight_clear", s.simpleCommand("ice_knight_clear", 0), 1)
 		bind("christmas_finish", s.simpleCommand("christmas_finish", 0), 1)
+		bind("hoblin_ambush", s.simpleCommand("hoblin_ambush", 0), 1)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err

@@ -45,6 +45,7 @@ type eventInstance struct {
 	dragon       *dragonRiderState
 	ice          *iceKnightState
 	christmas    christmasProgress
+	hoblin       *hoblinPQState
 }
 
 type eventSpace struct {
@@ -171,12 +172,18 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 			}
 		}
 	}
-	if inst.ice != nil {
+	if inst.ice != nil || inst.hoblin != nil {
 		totalLevel := leader.Character.Level
 		for _, m := range present {
 			totalLevel += partySession(m.live).Character.Level
 		}
-		if err = s.gameplay.prepareIceEscort(inst, int64(totalLevel/here)*1000); err != nil {
+		hp := int64(totalLevel/here) * 1000
+		if inst.ice != nil {
+			err = s.gameplay.prepareIceEscort(inst, hp)
+		} else {
+			err = s.gameplay.prepareHoblinPQ(inst, hp)
+		}
+		if err != nil {
 			s.eventEnd(inst)
 			return "unavailable", here, qualified, err
 		}
@@ -287,6 +294,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.Name == content.IceKnightName && (leader.Character.MapID != content.IceKnightLobby || here != size) {
 		return nil, nil, "party_size", here, qualified
 	}
+	if e.Name == content.HoblinPQName && ((leader.Character.MapID != content.HoblinTown && leader.Character.MapID != content.HoblinLobby) || here != size) {
+		return nil, nil, "party_size", here, qualified
+	}
 	if e.Name == content.DragonRiderName {
 		if leader.Character.MapID != content.DragonRiderGate || here != size {
 			return nil, nil, "party_size", here, qualified
@@ -325,6 +335,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.IceKnightName {
 		inst.ice = &iceKnightState{rewards: make(map[int64]int64)}
+	}
+	if e.Name == content.HoblinPQName {
+		inst.hoblin = &hoblinPQState{rewards: make(map[int64]int64)}
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}

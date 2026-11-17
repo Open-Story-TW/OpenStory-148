@@ -319,7 +319,7 @@ func parseMap(id int, n *wzNode) (Map, error) {
 		return Map{}, fmt.Errorf("map %d has no info", id)
 	}
 	m := Map{ID: id, ReturnMap: i.intValue("returnMap", id), OnUserEnter: i.stringValue("onUserEnter", ""), FieldLimit: int64(i.intValue("fieldLimit", 0)), Town: i.intValue("town", 0) != 0, Fly: i.intValue("fly", 0) != 0}
-	if id == IceKnightFirst || id == IceKnightSecond {
+	if usesEscortRoute(id) {
 		m.EscortRoute = escortRoute(n.child("nodeInfo"))
 	}
 	if p := n.child("portal"); p != nil {

@@ -15,7 +15,7 @@ type iceKnightState struct {
 	rewards map[int64]int64
 }
 
-type iceEscortRoom struct {
+type escortRoom struct {
 	mob       *gameplayMob
 	next      int
 	done      bool
@@ -23,14 +23,14 @@ type iceEscortRoom struct {
 	stopUntil time.Time
 }
 
-type iceKnightArena struct {
+type eventBossForms struct {
 	active  *gameplayMob
 	next    []content.Mob
 	expires time.Time
 	done    bool
 }
 
-func (room *iceEscortRoom) pathPacket(route []content.EscortNode) []byte {
+func (room *escortRoom) pathPacket(route []content.EscortNode) []byte {
 	mob := room.mob
 	return protocol.EscortPath(mob.objectID, mob.life.X, mob.life.Y, room.next, route, int(time.Until(room.stopUntil).Milliseconds()))
 }
@@ -39,23 +39,26 @@ func (g *gameplaySpace) prepareIceEscort(inst *eventInstance, hp int64) error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	for _, mapID := range []int{content.IceKnightFirst, content.IceKnightSecond} {
-		room := g.rooms[mapKey{inst.channel, mapID}]
-		if room == nil || len(room.definition.EscortRoute) < 2 || hp <= 0 {
-			return domain.ErrInvalidInput
-		}
-		for _, mob := range room.mobs {
-			if mob.life.TemplateID == content.IceEscortMob {
-				mob.stats.HP, mob.hp = hp, hp
-				mob.stats.Invincible = true
-				room.ice = &iceEscortRoom{mob: mob}
-				break
-			}
-		}
-		if room.ice == nil {
-			return domain.ErrInvalidInput
+		if err := prepareEscortRoom(g.rooms[mapKey{inst.channel, mapID}], content.IceEscortMob, hp); err != nil {
+			return err
 		}
 	}
 	return g.prepareIceArena(g.rooms[mapKey{inst.channel, content.IceKnightArena}])
+}
+
+func prepareEscortRoom(room *gameplayRoom, template int, hp int64) error {
+	if room == nil || len(room.definition.EscortRoute) < 2 || hp <= 0 {
+		return domain.ErrInvalidInput
+	}
+	for _, mob := range room.mobs {
+		if mob.life.TemplateID == template {
+			mob.stats.HP, mob.hp = hp, hp
+			mob.stats.Invincible = true
+			room.escort = &escortRoom{mob: mob}
+			return nil
+		}
+	}
+	return domain.ErrInvalidInput
 }
 
 func (g *gameplaySpace) prepareIceArena(room *gameplayRoom) error {
@@ -77,45 +80,45 @@ func (g *gameplaySpace) prepareIceArena(room *gameplayRoom) error {
 		if err != nil || ending.HP <= 0 || !ending.Invincible || ending.RemoveAfter <= 0 {
 			return domain.ErrInvalidInput
 		}
-		room.iceBoss = &iceKnightArena{active: mob, next: []content.Mob{knight, ending}}
+		room.bossForms = &eventBossForms{active: mob, next: []content.Mob{knight, ending}}
 		return nil
 	}
 	return domain.ErrInvalidInput
 }
 
-func (s *Server) iceEscortPath(channel int, live *liveCharacter, sink packetSink, oid int32) error {
+func (s *Server) escortPath(channel int, live *liveCharacter, sink packetSink, oid int32) error {
 	actor := partySession(live)
 	inst := s.eventOf(actor.CharacterID)
-	if inst == nil || inst.ice == nil || inst.channel != channel {
+	if inst == nil || (inst.ice == nil && inst.hoblin == nil) || inst.channel != channel {
 		return nil
 	}
 	g := s.gameplay
 	g.mu.Lock()
 	room := g.rooms[mapKey{channel, actor.Character.MapID}]
-	if room == nil || room.ice == nil || room.ice.done || room.ice.mob.objectID != oid ||
-		room.ice.mob.controller != actor.CharacterID || room.members[actor.CharacterID] == nil {
+	if room == nil || room.escort == nil || room.escort.done || room.escort.mob.objectID != oid ||
+		room.escort.mob.controller != actor.CharacterID || room.members[actor.CharacterID] == nil {
 		g.mu.Unlock()
 		return nil
 	}
-	p := room.ice.pathPacket(room.definition.EscortRoute)
+	p := room.escort.pathPacket(room.definition.EscortRoute)
 	g.mu.Unlock()
 	return sink.WritePacket(p)
 }
 
-func (s *Server) iceEscortNode(channel int, live *liveCharacter, sink packetSink, oid int32, next int) {
+func (s *Server) escortNode(channel int, live *liveCharacter, sink packetSink, oid int32, next int) {
 	actor := partySession(live)
 	inst := s.eventOf(actor.CharacterID)
-	if inst == nil || inst.ice == nil || inst.channel != channel {
+	if inst == nil || (inst.ice == nil && inst.hoblin == nil) || inst.channel != channel {
 		return
 	}
 	g := s.gameplay
 	g.mu.Lock()
 	room := g.rooms[mapKey{channel, actor.Character.MapID}]
-	if room == nil || room.ice == nil {
+	if room == nil || room.escort == nil {
 		g.mu.Unlock()
 		return
 	}
-	stage, route := room.ice, room.definition.EscortRoute
+	stage, route := room.escort, room.definition.EscortRoute
 	member := room.members[actor.CharacterID]
 	now := time.Now()
 	if member == nil || member.live != live || !sameDropSink(member.sink, sink) || stage.done || stage.mob.hp <= 0 ||
@@ -133,6 +136,9 @@ func (s *Server) iceEscortNode(channel int, live *liveCharacter, sink packetSink
 	if next != len(route) {
 		if node.Attribute == 2 && node.StopMillis > 0 {
 			stage.stopUntil = now.Add(time.Duration(node.StopMillis) * time.Millisecond)
+			if room.rex != nil && node.Key == 4 && room.rex.summonAt.IsZero() {
+				room.rex.summonAt = now.Add(1500 * time.Millisecond)
+			}
 		}
 		g.mu.Unlock()
 		return
@@ -140,21 +146,27 @@ func (s *Server) iceEscortNode(channel int, live *liveCharacter, sink packetSink
 	stage.done = true
 	delete(room.mobs, oid)
 	packets := roomBroadcast(room, protocol.KillMonster(oid), -1)
-	packets = append(packets, roomBroadcast(room, protocol.PortalTrainingMessage("冰人已安全抵達，請前往下一關。"), -1)...)
+	notice := "冰人已安全抵達，請前往下一關。"
+	if inst.hoblin != nil {
+		notice = "邪摩斯已安全抵達，請前往下一關。"
+	}
+	packets = append(packets, roomBroadcast(room, protocol.PortalTrainingMessage(notice), -1)...)
 	g.mu.Unlock()
 	deliver(packets)
 }
 
-func (s *Server) tickIceKnight(now time.Time) {
+func (s *Server) tickEscortEvents(now time.Time) {
 	g := s.gameplay
 	var packets []roomDelivery
 	g.mu.Lock()
 	for _, room := range g.rooms {
-		if room.iceBoss != nil && len(room.members) != 0 {
-			packets = append(packets, g.advanceIceArena(room, now)...)
-			continue
+		if room.rex != nil && len(room.members) != 0 {
+			packets = append(packets, g.summonRex(room, now)...)
 		}
-		stage := room.ice
+		if room.bossForms != nil && len(room.members) != 0 {
+			packets = append(packets, g.advanceEventBossForms(room, now)...)
+		}
+		stage := room.escort
 		if stage == nil || stage.stopUntil.IsZero() || now.Before(stage.stopUntil) {
 			continue
 		}
@@ -167,8 +179,8 @@ func (s *Server) tickIceKnight(now time.Time) {
 	deliver(packets)
 }
 
-func (g *gameplaySpace) advanceIceArena(room *gameplayRoom, now time.Time) []roomDelivery {
-	boss := room.iceBoss
+func (g *gameplaySpace) advanceEventBossForms(room *gameplayRoom, now time.Time) []roomDelivery {
+	boss := room.bossForms
 	if boss.done {
 		return nil
 	}
@@ -183,14 +195,25 @@ func (g *gameplaySpace) advanceIceArena(room *gameplayRoom, now time.Time) []roo
 	if boss.active.hp > 0 || boss.active.claiming || len(boss.next) == 0 {
 		return nil
 	}
-	oid := g.alloc()
-	if oid == 0 {
-		return nil
-	}
 	stats := boss.next[0]
 	life := boss.active.life
+	mob, packets := g.spawnEventBossForm(room, life, stats, boss.active.controller, now)
+	if mob == nil {
+		return nil
+	}
+	boss.active, boss.next = mob, boss.next[1:]
+	if stats.RemoveAfter > 0 {
+		boss.expires = now.Add(time.Duration(stats.RemoveAfter) * time.Second)
+	}
+	return packets
+}
+
+func (g *gameplaySpace) spawnEventBossForm(room *gameplayRoom, life content.Life, stats content.Mob, controller int64, now time.Time) (*gameplayMob, []roomDelivery) {
+	oid := g.alloc()
+	if oid == 0 {
+		return nil, nil
+	}
 	life.TemplateID = stats.ID
-	controller := boss.active.controller
 	if room.members[controller] == nil {
 		for id := range room.members {
 			controller = id
@@ -199,38 +222,35 @@ func (g *gameplaySpace) advanceIceArena(room *gameplayRoom, now time.Time) []roo
 	}
 	mob := &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP, controller: controller}
 	room.mobs[oid] = mob
-	boss.active, boss.next = mob, boss.next[1:]
-	if stats.RemoveAfter > 0 {
-		boss.expires = now.Add(time.Duration(stats.RemoveAfter) * time.Second)
-	}
 	packets := roomBroadcast(room, mob.spawnPacket(false, now), -1)
 	if member := room.members[controller]; member != nil {
 		packets = append(packets, roomDelivery{member.sink, mob.spawnPacket(true, now)})
 	}
-	return packets
+	return mob, packets
 }
 
-func (s *Server) iceEscortHit(channel int, live *liveCharacter, sink packetSink, hit protocol.MobHitEscort, now time.Time) {
+func (s *Server) escortHit(channel int, live *liveCharacter, sink packetSink, hit protocol.MobHitEscort, now time.Time) {
 	actor := partySession(live)
 	if int64(hit.CharacterID) != actor.CharacterID {
 		return
 	}
 	inst := s.eventOf(actor.CharacterID)
-	if inst == nil || inst.ice == nil || inst.channel != channel {
+	if inst == nil || (inst.ice == nil && inst.hoblin == nil) || inst.channel != channel {
 		return
 	}
 	g := s.gameplay
 	g.mu.Lock()
-	room := g.rooms[mapKey{channel, actor.Character.MapID}]
-	if room == nil || room.ice == nil || room.ice.done {
+	key := mapKey{channel, actor.Character.MapID}
+	room := g.rooms[key]
+	if room == nil || room.escort == nil || room.escort.done {
 		g.mu.Unlock()
 		return
 	}
 	member := room.members[actor.CharacterID]
-	src, dst := room.mobs[hit.Attacker], room.ice.mob
+	src, dst := room.mobs[hit.Attacker], room.escort.mob
 	if member == nil || member.live != live || !sameDropSink(member.sink, sink) || src == nil ||
 		src.hp <= 0 || src.claiming || dst.hp <= 0 || hit.Escort != dst.objectID ||
-		(src.life.TemplateID != 9300439 && src.life.TemplateID != 9300440) ||
+		!escortThreat(src.life.TemplateID, dst.life.TemplateID) ||
 		!within(src.life.X, src.life.Y, dst.life.X, dst.life.Y, 130) || now.Sub(src.escortHitAt) < 3*time.Second {
 		g.mu.Unlock()
 		return
@@ -239,15 +259,41 @@ func (s *Server) iceEscortHit(channel int, live *liveCharacter, sink packetSink,
 	damage := min(dst.hp, int64(max(1, src.stats.PAD)))
 	dst.hp -= damage
 	dead := dst.hp == 0
+	if dead && inst.hoblin != nil {
+		g.mu.Unlock()
+		if s.rescueHoblinEscort(inst, key, room, dst, actor.CharacterID) {
+			return
+		}
+		g.mu.Lock()
+		if g.rooms[key] != room {
+			g.mu.Unlock()
+			return
+		}
+	}
 	packets := roomBroadcast(room, protocol.DamageEscort(dst.objectID, int(damage), int(dst.hp), int(dst.stats.HP)), -1)
 	if dead {
 		packets = append(packets, roomBroadcast(room, protocol.KillMonster(dst.objectID), -1)...)
-		packets = append(packets, roomBroadcast(room, protocol.PortalTrainingMessage("冰人已倒下，這次挑戰結束了。"), -1)...)
+		notice := "冰人已倒下，這次挑戰結束了。"
+		if inst.hoblin != nil {
+			notice = "邪摩斯已倒下，這次挑戰結束了。"
+		}
+		packets = append(packets, roomBroadcast(room, protocol.PortalTrainingMessage(notice), -1)...)
 	}
 	g.mu.Unlock()
 	deliver(packets)
 	if dead {
 		s.eventEnd(inst)
+	}
+}
+
+func escortThreat(attacker, escort int) bool {
+	switch escort {
+	case content.IceEscortMob:
+		return attacker == 9300439 || attacker == 9300440
+	case content.HoblinEscort, content.HoblinArenaEscort:
+		return (attacker >= 9300276 && attacker <= 9300280) || attacker == content.HoblinKing
+	default:
+		return false
 	}
 }
 
@@ -274,9 +320,9 @@ func (s *Server) iceKnightPortal(ctx context.Context, channel int, live *liveCha
 	g := s.gameplay
 	g.mu.Lock()
 	room := g.rooms[mapKey{inst.channel, roomID}]
-	ready := room != nil && room.ice != nil && room.ice.done
+	ready := room != nil && room.escort != nil && room.escort.done
 	if ready && next == content.IceKnightSecond {
-		g.rooms[mapKey{inst.channel, next}].ice.mob.hp = room.ice.mob.hp
+		g.rooms[mapKey{inst.channel, next}].escort.mob.hp = room.escort.mob.hp
 	}
 	g.mu.Unlock()
 	if !ready {
@@ -320,7 +366,7 @@ func (s *Server) finishIceKnight(ctx context.Context, actor domain.CharacterSess
 	}
 	s.gameplay.mu.Lock()
 	room := s.gameplay.rooms[mapKey{inst.channel, content.IceKnightArena}]
-	done := room != nil && room.iceBoss != nil && room.iceBoss.done
+	done := room != nil && room.bossForms != nil && room.bossForms.done
 	s.gameplay.mu.Unlock()
 	if !done {
 		return false, nil

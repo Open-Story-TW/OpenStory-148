@@ -41,10 +41,10 @@ const (
 // re-spawned to a later entrant from that exact pixel finds no foothold under
 // it and free-falls forever (104010000 slime slope, 2026-11-02).
 func applyMobMoveLocked(r *gameplayRoom, mob *gameplayMob, m protocol.MonsterMove) mobMoveVerdict {
-	if r.ice != nil && r.ice.mob == mob {
+	if r.escort != nil && r.escort.mob == mob {
 		route := r.definition.EscortRoute
-		next := r.ice.next
-		if next >= len(route) || r.ice.done {
+		next := r.escort.next
+		if next >= len(route) || r.escort.done {
 			return mobMoveRejected
 		}
 		from, to := route[max(0, next-1)], route[next]
