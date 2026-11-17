@@ -17,16 +17,16 @@ func hillaTestFixture(t *testing.T, levels ...int) *eventFixture {
 	t.Helper()
 	f := eventTestFixture(t)
 	root := os.Getenv("MAPLEGO_WZ_ROOT")
-	for _, id := range []int{262010000, 262030000, 262030100, 262030200, 262030300} {
+	for _, id := range []int{262010000, 262030000, 262030100, 262030200, 262030300, 262031100, 262031200, 262031300} {
 		dir := filepath.Join(root, "Map.wz", "Map", "Map2")
 		if err := os.MkdirAll(dir, 0700); err != nil {
 			t.Fatal(err)
 		}
 		life := ""
-		mob := map[int]int{262030100: 8870001, 262030200: 8870002, 262030300: 8870000}[id]
+		mob := map[int]int{262030100: 8870001, 262030200: 8870002, 262030300: 8870000, 262031100: 8870101, 262031200: 8870102, 262031300: 8870100}[id]
 		if mob != 0 {
 			count := 8
-			if mob == 8870000 {
+			if mob == 8870000 || mob == 8870100 {
 				count = 1
 			}
 			var rows strings.Builder
@@ -171,4 +171,38 @@ func TestHillaEvictsRemovedExpeditionMembersAndEndsBelowMinimum(t *testing.T) {
 		t.Fatal("removed member still has admission")
 	}
 	f.settle(t, func() bool { return f.mapOf(1) == 262010000 && f.mapOf(2) == 262010000 })
+}
+
+func TestHillaHardChecksTheHardLevelAndBattleMaps(t *testing.T) {
+	f := hillaTestFixture(t, 169, 170)
+	s, ctx := f.server, context.Background()
+	if reason, _, _, err := s.eventStart(ctx, "HillaHard", 1, f.lives[1], f.sinks[1]); err != nil || reason != "level" {
+		t.Fatalf("under-level attempt: %q %v", reason, err)
+	}
+	f.lives[1].session.Character.Level = 170
+	if reason, _, _, err := s.eventStart(ctx, "HillaHard", 1, f.lives[1], f.sinks[1]); err != nil || reason != "" {
+		t.Fatalf("start: %q %v", reason, err)
+	}
+	for _, from := range []int{262031100, 262031200} {
+		key := mapKey{1, from}
+		s.gameplay.mu.Lock()
+		for _, mob := range s.gameplay.rooms[key].mobs {
+			mob.hp = 0
+		}
+		s.gameplay.mu.Unlock()
+		handled, err := s.expeditionStagePortal(ctx, partySession(f.lives[1]), f.lives[1], f.sinks[1], content.Portal{Script: "hillah_next"})
+		if !handled || err != nil || f.mapOf(2) != from+100 {
+			t.Fatalf("the hard roster did not advance: %t %v %d", handled, err, f.mapOf(2))
+		}
+	}
+	key := mapKey{1, 262031300}
+	attempt := s.eventOf(1)
+	s.expeditionBossDefeated(key, 1, 8870000)
+	if attempt.cleared {
+		t.Fatal("the normal boss template cleared hard mode")
+	}
+	s.expeditionBossDefeated(key, 1, 8870100)
+	if !attempt.cleared {
+		t.Fatal("the hard boss did not complete the attempt")
+	}
 }

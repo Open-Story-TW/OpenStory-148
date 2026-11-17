@@ -99,13 +99,13 @@ func (s *Server) expeditionStagePortal(ctx context.Context, snapshot domain.Char
 	case portal.Script == "in_hillah" && snapshot.Character.MapID == 262030000:
 		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2184000)
 	case portal.Script == "out_hillah":
-		if e, ok := content.EventByMap(snapshot.Character.MapID); ok && e.Name == "Hilla" {
+		if e, ok := content.EventByMap(snapshot.Character.MapID); ok && hillaMode(e.Name) {
 			return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2184000)
 		}
 	case portal.Script == "hillah_next":
-		switch snapshot.Character.MapID {
-		case 262030100, 262030200:
-			return true, s.advanceExpedition(ctx, snapshot, live, sink, "Hilla", snapshot.Character.MapID+100)
+		mapID := snapshot.Character.MapID
+		if e, ok := content.EventByMap(mapID); ok && hillaMode(e.Name) && e.Stage(mapID+100) {
+			return true, s.advanceExpedition(ctx, snapshot, live, sink, e.Name, mapID+100)
 		}
 	}
 	return false, nil
@@ -211,12 +211,14 @@ func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
 		s.balrogPartDefeated(key, actor, mob)
 		return
 	}
-	if s.events == nil || key.mapID != 262030300 || mob != 8870000 {
+	event, present := content.EventByMap(key.mapID)
+	if s.events == nil || !present || !hillaMode(event.Name) ||
+		!(key.mapID == 262030300 && mob == 8870000 || key.mapID == 262031300 && mob == 8870100) {
 		return
 	}
 	s.events.mu.Lock()
 	inst := s.events.byMember[actor]
-	won := inst != nil && inst.definition.Name == "Hilla" && inst.channel == key.channel &&
+	won := inst != nil && inst.definition.Name == event.Name && inst.channel == key.channel &&
 		!inst.ended && !inst.starting && !inst.cleared && len(inst.members) >= inst.definition.Keep
 	if won {
 		inst.cleared = true
@@ -226,3 +228,5 @@ func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
 		s.broadcastInventoryPacket(key.channel, key.mapID, protocol.PortalTrainingMessage("已擊敗希拉！拾取獎勵後，可從左側傳送點離開。"))
 	}
 }
+
+func hillaMode(name string) bool { return name == "Hilla" || name == "HillaHard" }

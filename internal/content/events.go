@@ -69,6 +69,12 @@ var events = map[string]Event{
 		LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
 		RequiredMobs: map[int]map[int]int{262030100: {8870001: 8}, 262030200: {8870002: 8}, 262030300: {8870000: 1}},
 	},
+	"HillaHard": {
+		Name: "HillaHard", Maps: []int{262031100, 262031200, 262031300},
+		ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
+		LevelMin: 170, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
+		RequiredMobs: map[int]map[int]int{262031100: {8870101: 8}, 262031200: {8870102: 8}, 262031300: {8870100: 1}},
+	},
 	"BalrogEasy": {
 		Name: "BalrogEasy", Maps: []int{105100400, 105100401}, ExitMap: 105100100,
 		Seconds: 1200, PartyMin: 1, PartyMax: 6, Keep: 1,
