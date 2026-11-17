@@ -176,6 +176,7 @@ func (c *Catalog) Map(id int) (Map, error) {
 	if err != nil {
 		return Map{}, err
 	}
+	addMuLungBossSpawn(&m)
 	c.mu.Lock()
 	c.maps[id] = m
 	c.mu.Unlock()
