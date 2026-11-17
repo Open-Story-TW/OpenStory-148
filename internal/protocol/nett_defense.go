@@ -27,14 +27,14 @@ func NettDefensePoints(points int) []byte {
 	return w.Packet()
 }
 
-// v148 0x52A9E5 decodes the clear flag and four result integers, but this
-// client only renders the clear/fail image.
-func NettDefenseResult(clear bool) []byte {
+// v148 0x52A9E5 draws the result together with these four native counters.
+func NettDefenseResult(clear bool, wave, life, points, experience int) []byte {
 	w := NewWriter(nettResult)
 	w.Bool(clear)
-	for i := 0; i < 4; i++ {
-		w.I32(0)
-	}
+	w.I32(int32(wave))
+	w.I32(int32(life))
+	w.I32(int32(points))
+	w.I32(int32(experience))
 	return w.Packet()
 }
 

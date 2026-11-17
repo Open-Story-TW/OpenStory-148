@@ -206,7 +206,7 @@ func (s *Server) advanceNettDefense(ctx context.Context, inst *eventInstance, no
 		}
 		g.mu.Lock()
 		state.finishAt = now.Add(nettResultTime)
-		packets = append(packets, roomBroadcast(room, protocol.NettDefenseResult(clear), -1)...)
+		packets = append(packets, roomBroadcast(room, protocol.NettDefenseResult(clear, state.wave, state.life, 0, 0), -1)...)
 		g.mu.Unlock()
 		deliver(packets)
 		return
