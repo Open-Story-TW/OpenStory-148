@@ -248,7 +248,7 @@ func TestPassives(t *testing.T) {
 		{23120012, 30, merc, skills.Bonus{WATK: 20, ACCPercent: 10}},
 		{23121004, 30, merc, skills.Bonus{AvoidRate: 20}},
 		{24000003, 20, phantom, skills.Bonus{AvoidRate: 30}},
-		{24001002, 20, phantom, skills.Bonus{Speed: 35, Jump: 20}},
+		{24001002, 20, phantom, skills.Bonus{Speed: 35, Jump: 20, SpeedLimitBonus: 20}},
 		{24100004, 20, phantom, skills.Bonus{Mastery: 50, ACC: 200}},
 		{24100006, 10, phantom, skills.Bonus{LUK: 40}},
 		{24110007, 20, phantom, skills.Bonus{Critical: 50, CriticalDamageMin: 10}},

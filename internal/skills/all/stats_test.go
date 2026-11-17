@@ -44,6 +44,26 @@ func TestTakenDamageMagicGuard(t *testing.T) {
 	}
 }
 
+func TestV148LearnedMovementFromEmbeddedBooks(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	now := time.Now()
+	for _, tc := range []struct {
+		job, skill, rank int
+		speed, jump      int
+	}{
+		{400, 4001005, 20, 150, 123},
+		{2100, 21001001, 5, 160, 123},
+		{2400, 24001002, 20, 160, 123},
+	} {
+		c := domain.Character{Job: tc.job, Level: 30,
+			Skills:    []domain.SkillState{{ID: tc.skill, Level: tc.rank}},
+			Equipment: []domain.Equipment{{Slot: -7, Speed: 50, Jump: 30}}}
+		if got := skills.PlayerStats(c, now); got.Speed != tc.speed || got.Jump != tc.jump {
+			t.Errorf("skill %d gives speed %d / jump %d, want %d / %d", tc.skill, got.Speed, got.Jump, tc.speed, tc.jump)
+		}
+	}
+}
+
 func TestShadowPartnerUsesSourceSkillX(t *testing.T) {
 	now := time.Now()
 	c := domain.Character{STR: 4, DEX: 4, INT: 4, LUK: 4, SkillBuffs: []domain.SkillBuff{{ID: 4211008, Level: 20, Stat: "SHADOWPARTNER", Value: 20, ExpiresAt: now.Add(time.Minute)}}}

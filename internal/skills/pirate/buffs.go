@@ -14,7 +14,7 @@ func init() {
 	for _, id := range []int{5101006, 5201003, 5301002} { // 致命快打／迅雷再起／加農砲推進器 Booster
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: valueBuff("BOOSTER", "x")})
 	}
-	for _, id := range []int{5121000, 5221000, 5321005} { // 楓葉祝福 Maple Warrior
+	for _, id := range []int{5121000, 5221000, 5321005, 5721000, 5821000, 5921000} { // 楓葉祝福 Maple Warrior
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPartyBuff, Cast: party(valueBuff("MAPLE_WARRIOR", "x"))})
 	}
 	for _, id := range []int{5120011, 5220012} { // 反擊 Pirate's Revenge

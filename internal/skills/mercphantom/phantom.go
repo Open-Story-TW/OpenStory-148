@@ -47,7 +47,7 @@ func init() {
 	passive(24120006, expertMastery(cane)) // 手杖專家 Cane Expert
 
 	skills.Register(skills.Handler{ID: 24111002, Kind: skills.KindPassive | skills.KindSpecial, Passive: luckOfPhantomThief, OnLethal: finalFeint})                                                          // 幻影神偷之運 Luck of Phantom Thief
-	skills.Register(skills.Handler{ID: 24001002, Kind: skills.KindSpecial | skills.KindPassive, Cast: skills.CostOnly, Passive: swiftPhantom})                                                               // 幻影疾行 Swift Phantom
+	skills.Register(skills.Handler{ID: 24001002, Kind: skills.KindSpecial | skills.KindPassive, Cast: skills.CostOnly, Passive: skills.MovementPassive})                                                     // 幻影疾行 Swift Phantom
 	skills.Register(skills.Handler{ID: 24101005, Kind: skills.KindBuff, Cast: buff(cane, key("BOOSTER", "x"))})                                                                                              // 手杖推進器 Cane Booster
 	skills.Register(skills.Handler{ID: 24111003, Kind: skills.KindBuff, Cast: buff(0, key("MAXHP", "indieMhpR"), key("MAXMP", "indieMmpR"), key("ABNORMAL_STATUS_R", "x"), key("ELEMENTAL_STATUS_R", "y"))}) // 厄運守護 Bad Luck Ward (Legacy has no statups; WZ values)
 	skills.Register(skills.Handler{ID: 24111005, Kind: skills.KindBuff, Cast: buff(0, key("ANGEL_ATK", "indiePad", "indiepad"), key("ANGEL_ACC", "indieAcc"))})                                              // 月光祝福 Moon Light (WZ spells it indiepad)
@@ -56,11 +56,6 @@ func init() {
 	skills.Register(skills.Handler{ID: 24121007, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: &combat.AttackSpec{MobCast: &combat.MobCastSpec{Dispel: true, UseBox: true}}})                   // 靈魂竊取 Soul Steal
 	skills.Register(skills.Handler{ID: 24121008, Kind: skills.KindPartyBuff, Cast: partyBuff(key("MAPLE_WARRIOR", "x"))})                                                                                    // 楓葉祝福 Maple Warrior
 	skills.Register(skills.Handler{ID: 24121009, Kind: skills.KindSpecial, Cast: skills.HerosWill})                                                                                                          // 勇士的意志 Hero's Will
-}
-
-// swiftPhantom (24001002) is Java speed += psdSpeed and jump += psdJump.
-func swiftPhantom(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{Speed: c.Values["psdSpeed"], Jump: c.Values["psdJump"]}
 }
 
 // luckOfPhantomThief (24111002) is Java PlayerStats localluk += lukX.

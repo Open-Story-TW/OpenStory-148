@@ -141,8 +141,6 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 		p.WDEF += e.WDEF
 		p.MDEF += e.MDEF
 		p.Avoid += e.AVOID
-		p.Speed += e.Speed
-		p.Jump += e.Jump
 	}
 	p.WDEF += pot.WDEF + passive.WDEF
 	p.MDEF += pot.MDEF + passive.MDEF
@@ -155,8 +153,7 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.MDEF += min(30000, floorPercent(p.WDEF, pot.MDEFPercent+passive.MDEFPercent+buff.MDEFPercent))
 	p.WDEF += buff.WDEF
 	p.MDEF += buff.MDEF
-	p.Speed += 100 + pot.Speed + passive.Speed + buff.Speed
-	p.Jump += 100 + pot.Jump + passive.Jump + buff.Jump
+	foldMovement(&p, c, pot, passive, buff)
 	// Native6BE054 adds incEVA into the same flat bucket as physical gear
 	// and flat skill effects. This is a contribution view only: native basic
 	// EVA's table term, all percentage phases and the miss RNG remain pending.

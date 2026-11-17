@@ -252,6 +252,8 @@ type CastPlan struct {
 	Heal           *Heal
 	Dispel         bool
 	ResetCooldowns bool
+	// KeepCooldowns lists other skill cooldowns that ResetCooldowns preserves.
+	KeepCooldowns []int
 	// Toggle makes a recast while the buff is active cancel it at no cost.
 	Toggle bool
 	// Revive makes a Party plan target dead party members in range (not
@@ -327,6 +329,7 @@ type Bonus struct {
 	WATKPercent, MATKPercent   int
 	WDEFPercent, MDEFPercent   int
 	ACC, AVOID, Speed, Jump    int
+	SpeedLimitBonus            int
 	ACCPercent, AVOIDPercent   int
 	// AvoidRate is the chance to dodge outright (Java dodgeChance).
 	AvoidRate                int

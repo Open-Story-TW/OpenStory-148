@@ -26,10 +26,10 @@ func init() {
 	}
 
 	// 盜賊 400
-	passive(4000012, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} }) // 迴避: er
-	skills.Register(skills.Handler{ID: 4001005, Kind: skills.KindPartyBuff, Cast: skills.StandardPartyBuff})         // 速度激發: speed, jump
-	skills.Register(skills.Handler{ID: 4001011, Kind: skills.KindSpecial, Cast: skills.CostOnly})                    // 二段跳
-	strike(4001013, either(pickpocketOn))                                                                            // 狂刃刺擊
+	passive(4000012, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} })                                               // 迴避: er
+	skills.Register(skills.Handler{ID: 4001005, Kind: skills.KindPartyBuff | skills.KindPassive, Cast: skills.StandardPartyBuff, Passive: skills.MovementPassive}) // 速度激發
+	skills.Register(skills.Handler{ID: 4001011, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                  // 二段跳
+	strike(4001013, either(pickpocketOn))                                                                                                                          // 狂刃刺擊
 
 	// 刺客 410, 暗殺者 411, 夜使者 412
 	passive(4100007, physicalTraining)

@@ -48,24 +48,34 @@ func TestCastPlanCostsHealDispelResetAndInfinity(t *testing.T) {
 		t.Fatal(err)
 	}
 	c.SkillBuffs = []domain.SkillBuff{{ID: 128, Level: 1, Stat: "SEAL", Value: 1, ExpiresAt: now.Add(time.Minute)}, {ID: 1001003, Level: 1, Stat: "WDEF", Value: 10, ExpiresAt: now.Add(time.Minute)}}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO game_skill_cooldowns(character_id,skill_id,expires_at) VALUES($1,5121010,$2)`, c.ID, now.Add(time.Minute)); err != nil {
+	if _, err = tx.ExecContext(ctx, `INSERT INTO game_skill_cooldowns(character_id,skill_id,expires_at) VALUES($1,5121010,$2),($1,5821010,$2)`, c.ID, now.Add(time.Minute)); err != nil {
 		t.Fatal(err)
 	}
-	c.SkillCooldowns = append(c.SkillCooldowns, domain.SkillCooldown{ID: 5121010, ExpiresAt: now.Add(time.Minute)})
+	expiry := now.Add(time.Minute)
+	c.SkillCooldowns = append(c.SkillCooldowns,
+		domain.SkillCooldown{ID: 5121010, ExpiresAt: expiry},
+		domain.SkillCooldown{ID: 5821010, ExpiresAt: expiry})
 	r = domain.SkillResult{}
-	effects := skills.CastPlan{Dispel: true, ResetCooldowns: true, Heal: &skills.Heal{HP: 5, MPPercent: 10}}
+	effects := skills.CastPlan{Dispel: true, ResetCooldowns: true, KeepCooldowns: []int{5121010, 5821010}, Heal: &skills.Heal{HP: 5, MPPercent: 10}}
 	if err = applyCastEffects(ctx, tx, &c, &r, 5121010, effects, nil); err != nil {
 		t.Fatal(err)
 	}
 	if len(c.SkillBuffs) != 1 || c.SkillBuffs[0].Stat != "WDEF" || len(r.Expired) != 1 || r.Expired[0].Stat != "SEAL" {
 		t.Fatalf("dispel %+v %+v", c.SkillBuffs, r.Expired)
 	}
-	if len(c.SkillCooldowns) != 1 || c.SkillCooldowns[0].ID != 5121010 || len(r.ResetCooldowns) != 1 || c.HP != min(c.MaxHP, 12) || c.MP != min(c.MaxMP, 30+c.MaxMP/10) {
+	if len(c.SkillCooldowns) != 2 || c.SkillCooldowns[0].ID != 5121010 || c.SkillCooldowns[1].ID != 5821010 || len(r.ResetCooldowns) != 1 || r.ResetCooldowns[0].ID != 1001 || c.HP != min(c.MaxHP, 12) || c.MP != min(c.MaxMP, 30+c.MaxMP/10) {
 		t.Fatalf("reset/heal %+v hp %d mp %d", r.ResetCooldowns, c.HP, c.MP)
 	}
 	var left int
-	if err = tx.QueryRowContext(ctx, `SELECT count(*) FROM game_skill_cooldowns WHERE character_id=$1`, c.ID).Scan(&left); err != nil || left != 1 {
+	if err = tx.QueryRowContext(ctx, `SELECT count(*) FROM game_skill_cooldowns WHERE character_id=$1`, c.ID).Scan(&left); err != nil || left != 2 {
 		t.Fatalf("cooldown rows %d %v", left, err)
+	}
+	for _, id := range []int{5121010, 5821010} {
+		var stored time.Time
+		err = tx.QueryRowContext(ctx, `SELECT expires_at FROM game_skill_cooldowns WHERE character_id=$1 AND skill_id=$2`, c.ID, id).Scan(&stored)
+		if err != nil || !stored.Equal(expiry.Truncate(time.Microsecond)) {
+			t.Fatalf("cooldown %d expiry %v, want %v: %v", id, stored, expiry, err)
+		}
 	}
 	if err = applyCastEffects(ctx, tx, &c, &r, 1, skills.CastPlan{Heal: &skills.Heal{HPPercent: 101}}, nil); !errors.Is(err, domain.ErrInvalidInput) {
 		t.Fatalf("over-100 percent heal accepted: %v", err)

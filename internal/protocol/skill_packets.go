@@ -143,6 +143,11 @@ func readSkillUseTail(v SkillCast, tail []byte) (SkillCast, bool) {
 // castHasPosition is the native predicate 0x669D0E: skills whose use request
 // carries the caster position (mass spells and a few movement buffs).
 func castHasPosition(a int) bool {
+	// v148 mass-spell predicate 0x6AB232 includes the regional Maple Warriors.
+	switch a {
+	case 5721000, 5821000, 5921000:
+		return true
+	}
 	if a > 5120012 {
 		if a > 15101008 {
 			if a > 24111003 {

@@ -296,6 +296,30 @@ func prepared(t *testing.T, id int, ch domain.Character, e combat.Effect) (*comb
 	return ctx, s.Prepare(ctx)
 }
 
+func TestV148ArrowRainStun(t *testing.T) {
+	const arrowRain = 13111000
+	h, ok := skills.Lookup(arrowRain)
+	if !ok || h.Kind&skills.KindMobStatus == 0 || len(h.Attack.OnHit) != 1 {
+		t.Fatalf("Arrow Rain is missing its on-hit monster status: %+v", h)
+	}
+	apply := h.Attack.OnHit[0]
+	effect := combat.Effect{SkillID: arrowRain, Prop: 60, Time: 4 * time.Second}
+	var chance int
+	status, ok := combat.Resolve(apply, effect, 1, 0, now, func(prop int) bool {
+		chance = prop
+		return true
+	})
+	if !ok || chance != 60 || status.Stat != combat.MobStun || status.SkillID != arrowRain || status.ExpiresAt != now.Add(4*time.Second) {
+		t.Fatalf("rank 20 Arrow Rain stun = %+v, chance %d, applied %t", status, chance, ok)
+	}
+	if _, ok := combat.Resolve(apply, effect, 1, 0, now, func(int) bool { return false }); ok {
+		t.Fatal("a missed stun roll applied a status")
+	}
+	if _, ok := combat.Resolve(apply, combat.Effect{SkillID: arrowRain}, 1, 0, now, nil); ok {
+		t.Fatal("an effect with no duration applied a status")
+	}
+}
+
 func withBuff(id int, stat string, value int) domain.Character {
 	return domain.Character{SkillBuffs: []domain.SkillBuff{{ID: id, Stat: stat, Value: value, ExpiresAt: now.Add(time.Minute)}}}
 }

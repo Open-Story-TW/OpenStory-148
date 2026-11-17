@@ -10,17 +10,19 @@ func init() {
 	for _, id := range []int{5121008, 5221010, 5321006} { // 楓葉淨化 Hero's Will
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: skills.HerosWill})
 	}
-	skills.Register(skills.Handler{ID: 5201005, Kind: skills.KindSpecial, Cast: skills.CostOnly})            // 緩降術 Wings: Java has no buff stat
-	skills.Register(skills.Handler{ID: 5121010, Kind: skills.KindPartyBuff, Cast: timeLeap})                 // 時間置換 Time Leap
+	skills.Register(skills.Handler{ID: 5201005, Kind: skills.KindSpecial, Cast: skills.CostOnly}) // 緩降術 Wings: Java has no buff stat
+	for _, id := range []int{5121010, 5821010} {                                                  // 時間置換 Time Leap
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPartyBuff, Cast: timeLeap})
+	}
 	skills.Register(skills.Handler{ID: 5101005, Kind: skills.KindHeal, Cast: mpRecovery})                    // 魔力再生 MP Recovery
 	skills.Register(skills.Handler{ID: 5221006, Kind: skills.KindBuff | skills.KindMorph, Cast: battleship}) // 海盜船 Battleship
 }
 
-// timeLeap (5121010) clears the cooldowns of the party in range (Java
-// isTimeLeap; Java keeps Time Leap's own cooldown).
+// timeLeap clears party cooldowns in range while keeping both original Time Leap variants.
 func timeLeap(c *skills.CastContext) (skills.CastPlan, error) {
 	p := skills.StandardCost(c)
 	p.ResetCooldowns = true
+	p.KeepCooldowns = []int{5121010, 5821010}
 	return skills.PartyPlan(c, &skills.Buff{}, p)
 }
 

@@ -10,6 +10,7 @@ import (
 	"maple-go-server/internal/skills"
 	_ "maple-go-server/internal/skills/all"
 	"os"
+	"slices"
 	"time"
 )
 
@@ -441,7 +442,7 @@ func consumeCastItem(ctx context.Context, tx *sql.Tx, c *domain.Character, r *do
 }
 
 // applyCastEffects applies a plan's effects to one recipient: buff rows,
-// Dispel, ResetCooldowns (never the casting skill's own, Java Time Leap),
+// Dispel, ResetCooldowns (preserving the cast and explicitly exempt skills),
 // then Heal against the new maxima.
 func applyCastEffects(ctx context.Context, tx *sql.Tx, c *domain.Character, r *domain.SkillResult, id int, plan skills.CastPlan, rows []domain.SkillBuff) error {
 	if c.VitalsModel != 1 && touchesMaxima(rows) {
@@ -467,12 +468,13 @@ func applyCastEffects(ctx context.Context, tx *sql.Tx, c *domain.Character, r *d
 		}
 	}
 	if plan.ResetCooldowns && len(c.SkillCooldowns) > 0 {
-		if _, e := tx.ExecContext(ctx, `DELETE FROM game_skill_cooldowns WHERE character_id=$1 AND skill_id<>$2`, c.ID, id); e != nil {
+		keep := append([]int{id}, plan.KeepCooldowns...)
+		if _, e := tx.ExecContext(ctx, `DELETE FROM game_skill_cooldowns WHERE character_id=$1 AND NOT (skill_id=ANY($2::integer[]))`, c.ID, keep); e != nil {
 			return e
 		}
 		kept := c.SkillCooldowns[:0:0]
 		for _, cool := range c.SkillCooldowns {
-			if cool.ID == id {
+			if slices.Contains(keep, cool.ID) {
 				kept = append(kept, cool)
 			} else {
 				r.ResetCooldowns = append(r.ResetCooldowns, cool)

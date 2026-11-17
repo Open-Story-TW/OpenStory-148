@@ -16,7 +16,7 @@ func OwnerOf(skillID int) string {
 		return "bowman"
 	case job >= 400 && job <= 434:
 		return "thief"
-	case job >= 500 && job <= 532:
+	case job >= 500 && job <= 532 || job >= 570 && job <= 572 || job >= 580 && job <= 582 || job >= 590 && job <= 592:
 		return "pirate"
 	case job >= 1100 && job <= 1512:
 		return "cygnus"

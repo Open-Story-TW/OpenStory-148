@@ -13,6 +13,11 @@ import (
 // passives and active buffs, following Java PlayerStats.
 var Stats combat.StatsProvider = effectiveStatsProvider{}
 
+// MovementPassive reads the learned speed, jump and speed cap from v148 WZ.
+func MovementPassive(c *PassiveContext) Bonus {
+	return Bonus{Speed: c.Values["psdSpeed"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
+}
+
 // Bonuses sums the Passive of every learned, unexpired registered skill. The
 // client looks mastery up by job and weapon, so another line's mastery must not
 // raise the damage floor; its other passives, critical rate included, it does count.
@@ -45,7 +50,7 @@ func Bonuses(c domain.Character, now time.Time) Bonus {
 	return total
 }
 
-// Add returns the field-wise sum of two bonuses.
+// Add combines two bonuses, using the highest speed limit bonus.
 func (b Bonus) Add(o Bonus) Bonus {
 	b.MaxHP += o.MaxHP
 	b.MaxMP += o.MaxMP
@@ -71,6 +76,7 @@ func (b Bonus) Add(o Bonus) Bonus {
 	b.AVOID += o.AVOID
 	b.Speed += o.Speed
 	b.Jump += o.Jump
+	b.SpeedLimitBonus = max(b.SpeedLimitBonus, o.SpeedLimitBonus)
 	b.ACCPercent += o.ACCPercent
 	b.AVOIDPercent += o.AVOIDPercent
 	b.AvoidRate += o.AvoidRate
@@ -192,6 +198,7 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	passive := Bonuses(c, now)
 	buff, mw := BuffBonus(c, now)
 	b := passive.Add(buff)
+	foldMovement(&p, c, Bonus{}, passive, buff)
 	scale := func(base, total, percent int) int { return total + int(int64(base)*int64(percent)/100) }
 	str, dex, intl, luk := c.STR, c.DEX, c.INT, c.LUK
 	p.STR = scale(str, p.STR+b.STR, b.STRPercent+mw)
@@ -216,6 +223,19 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	p.ElementAmp += b.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
 	return p
+}
+
+func foldMovement(p *combat.PlayerStats, c domain.Character, potential, passive, buff Bonus) {
+	p.Speed += 100 + potential.Speed + passive.Speed + buff.Speed
+	p.Jump += 100 + potential.Jump + passive.Jump + buff.Jump
+	for _, e := range c.Equipment {
+		if e.Slot < 0 && e.Slot > -100 {
+			p.Speed += e.Speed
+			p.Jump += e.Jump
+		}
+	}
+	p.Speed = min(p.Speed, 140+passive.SpeedLimitBonus)
+	p.Jump = min(p.Jump, 123)
 }
 
 // shadowPartner is the extra line percent of an active Shadow Partner: Java

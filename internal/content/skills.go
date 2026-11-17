@@ -139,8 +139,9 @@ func SkillDefinition(root string, id int) (Skill, error) {
 		}
 		var ok bool
 		s, ok = skillSeeds[id]
-		if !ok {
-			// The seed is v145 data; a skill only v148 has comes from its book.
+		if !ok || id == 5121010 {
+			// The seed is v145 data. Use the v148 book for new skills and
+			// the revised classic Time Leap cooldown.
 			found, _ := skillNode(readV148Skills(fmt.Sprintf("%03d.img.xml", id/10000)))(id)
 			if found == nil {
 				return s, fmt.Errorf("unknown skill%d", id)

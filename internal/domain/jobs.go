@@ -91,6 +91,10 @@ func IsPhantomJob(job int) bool    { return job == 2003 || job/100 == 24 }
 func IsResistanceJob(job int) bool { return job >= 3000 && job <= 3512 }
 func IsDemonJob(job int) bool      { return job == 3001 || job >= 3100 && job <= 3112 }
 func IsCannoneerJob(job int) bool  { return job == 1 || job == 501 || job >= 530 && job <= 532 }
+func isZenJob(job int) bool        { return job == 508 || job >= 570 && job <= 572 }
+func isPirateRevampJob(job int) bool {
+	return job == 509 || job >= 580 && job <= 582 || job >= 590 && job <= 592
+}
 
 // IsBeginnerJob covers every family's level-1 job.
 func IsBeginnerJob(job int) bool {
@@ -176,6 +180,10 @@ func CanLearnSkill(job, skillID int) bool {
 		// 9100 guild skills belong to the guild, not a character.
 		return ValidJob(job)
 	}
+	// The regional first-tier books 508 and 509 are inherited only by their own branches.
+	if isZenJob(owner) != isZenJob(job) || isPirateRevampJob(owner) != isPirateRevampJob(job) {
+		return false
+	}
 	if job < 0 || job/100 != owner/100 || job/1000 != owner/1000 {
 		return false
 	}
@@ -205,6 +213,7 @@ func init() {
 		{0, 0}, {100, 100}, {110, 112}, {120, 122}, {130, 132}, {200, 200}, {210, 212}, {220, 222}, {230, 232},
 		{300, 300}, {310, 312}, {320, 322}, {400, 400}, {410, 412}, {420, 422}, {430, 434},
 		{500, 501}, {510, 512}, {520, 522}, {530, 532},
+		{508, 509}, {570, 572}, {580, 582}, {590, 592},
 		{1000, 1000}, {1100, 1100}, {1110, 1112}, {1200, 1200}, {1210, 1212}, {1300, 1300}, {1310, 1312}, {1400, 1400}, {1410, 1412}, {1500, 1500}, {1510, 1512},
 		{2000, 2003}, {2100, 2100}, {2110, 2112}, {2200, 2200}, {2210, 2218}, {2300, 2300}, {2310, 2312}, {2400, 2400}, {2410, 2412},
 		{3000, 3001}, {3100, 3100}, {3110, 3112}, {3200, 3200}, {3210, 3212}, {3300, 3300}, {3310, 3312}, {3500, 3500}, {3510, 3512},

@@ -29,15 +29,15 @@ func init() {
 	passive(13110003, func(c *skills.PassiveContext) skills.Bonus { // 弓術精通: Java trueMastery and critical minimum only
 		return skills.Bonus{Mastery: c.Values["mastery"], CriticalDamageMin: c.Values["criticaldamageMin"]}
 	})
-	passive(13110008, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} })  // 躲避: Java dodgeChance
-	pvpOnly(13110009)                                                                                                  // 致命箭: hidden, Legacy never applies it
-	skills.Register(skills.Handler{ID: 13111000, Kind: skills.KindAttack, Attack: windShoot(noAmmo)})                  // 箭雨: Java AOE, no monster status
-	skills.Register(skills.Handler{ID: 13111001, Kind: skills.KindBuff, Cast: value("CONCENTRATE", "x")})              // 集中: CONCENTRATE x, epad
-	skills.Register(skills.Handler{ID: 13111002, Kind: skills.KindAttack, Attack: windShoot()})                        // 暴風神射: keydown quirk is built into S0b
-	skills.Register(skills.Handler{ID: 13111004, Kind: skills.KindSummon, Cast: summonBuff("PUPPET"), Attack: puppet}) // 替身術
-	skills.Register(skills.Handler{ID: 13111005, Kind: skills.KindBuff | skills.KindMorph, Cast: morph(1003)})         // 阿爾法 (Eagle Eye)
-	skills.Register(skills.Handler{ID: 13111006, Kind: skills.KindAttack, Attack: windShoot()})                        // 疾風光速神弩: Legacy has no drain for it
-	skills.Register(skills.Handler{ID: 13111007, Kind: skills.KindAttack, Attack: windShoot(noAmmo)})                  // 疾風掃射: Java AOE
+	passive(13110008, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} })                   // 躲避: Java dodgeChance
+	pvpOnly(13110009)                                                                                                                   // 致命箭: hidden, Legacy never applies it
+	skills.Register(skills.Handler{ID: 13111000, Kind: skills.KindAttack | skills.KindMobStatus, Attack: windShoot(noAmmo, hit(stun))}) // 箭雨: WZ stun
+	skills.Register(skills.Handler{ID: 13111001, Kind: skills.KindBuff, Cast: value("CONCENTRATE", "x")})                               // 集中: CONCENTRATE x, epad
+	skills.Register(skills.Handler{ID: 13111002, Kind: skills.KindAttack, Attack: windShoot()})                                         // 暴風神射: keydown quirk is built into S0b
+	skills.Register(skills.Handler{ID: 13111004, Kind: skills.KindSummon, Cast: summonBuff("PUPPET"), Attack: puppet})                  // 替身術
+	skills.Register(skills.Handler{ID: 13111005, Kind: skills.KindBuff | skills.KindMorph, Cast: morph(1003)})                          // 阿爾法 (Eagle Eye)
+	skills.Register(skills.Handler{ID: 13111006, Kind: skills.KindAttack, Attack: windShoot()})                                         // 疾風光速神弩: Legacy has no drain for it
+	skills.Register(skills.Handler{ID: 13111007, Kind: skills.KindAttack, Attack: windShoot(noAmmo)})                                   // 疾風掃射: Java AOE
 }
 
 // windShoot is a Wind Archer shoot attack; Soul Arrow shoots without arrows

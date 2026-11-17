@@ -30,7 +30,7 @@ func init() {
 	attack(21000002, melee(nil))                                                                                                                                              // Double Swing
 	attack(21000004, ranged(nil, damageFrom(21110002, "w")))                                                                                                                  // Combo Smash: +w with Full Swing
 	passive(21000005, nil)                                                                                                                                                    // PvP armor (Java pvpSkills only)
-	skills.Register(skills.Handler{ID: 21001001, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                            // Combat Step (movement)
+	skills.Register(skills.Handler{ID: 21001001, Kind: skills.KindSpecial | skills.KindPassive, Cast: skills.CostOnly, Passive: skills.MovementPassive})                      // Combat Step
 	skills.Register(skills.Handler{ID: 21001003, Kind: skills.KindBuff, Cast: polearmBooster})                                                                                // Polearm Booster
 
 	// Aran 2110

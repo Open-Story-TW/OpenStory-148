@@ -103,8 +103,31 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 130 { // 93 from v145 and 37 the v148 books added
+	if count != 134 { // 93 from v145 and 41 the v148 books added
 		t.Fatalf("registered %d pirate skills", count)
+	}
+}
+
+func TestV148PirateRegionalPartyCasts(t *testing.T) {
+	for _, id := range []int{5721000, 5821000, 5921000} {
+		p := cast(t, id, 30)
+		if p.Self != nil || p.Party == nil || p.Area == nil ||
+			p.Area.Left != -400 || p.Area.Top != -300 || p.Area.Right != 400 || p.Area.Bottom != 300 ||
+			stats(p.Party)["MAPLE_WARRIOR"] != 15 || p.Party.Duration != 900*time.Second || p.MPCost != 70 {
+			t.Errorf("%d: Maple Warrior plan %+v, buff %+v", id, p, p.Party)
+		}
+	}
+	for _, tc := range []struct {
+		id, level int
+		cooldown  time.Duration
+	}{{5121010, 5, 1500 * time.Second}, {5821010, 30, 1200 * time.Second}} {
+		p := cast(t, tc.id, tc.level)
+		if p.Self != nil || p.Party == nil || !p.ResetCooldowns ||
+			len(p.KeepCooldowns) != 2 || p.KeepCooldowns[0] != 5121010 || p.KeepCooldowns[1] != 5821010 ||
+			p.Cooldown != tc.cooldown || p.Area == nil ||
+			p.Area.Left != -400 || p.Area.Top != -300 || p.Area.Right != 400 || p.Area.Bottom != 300 {
+			t.Errorf("%d: Time Leap plan %+v", tc.id, p)
+		}
 	}
 }
 

@@ -1,10 +1,28 @@
 package protocol
 
 import (
+	"encoding/binary"
+	"encoding/hex"
 	"maple-go-server/internal/domain"
 	"testing"
 	"time"
 )
+
+func TestV148RegionalMapleWarriorCastPosition(t *testing.T) {
+	// Real 5921000 at rank 30, with caster at (-185, 215) and a 1000ms delay.
+	wire, err := hex.DecodeString("a3004751a001e8585a001e47ffd70080e80300")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []int{5721000, 5821000, 5921000, 5221000} {
+		binary.LittleEndian.PutUint32(wire[6:10], uint32(id))
+		cast, err := ReadSkillCast(NewReader(wire[2:]))
+		if err != nil || cast.SkillID != id || cast.Level != 30 || !cast.HasPosition || cast.X != -185 || cast.Y != 215 ||
+			cast.Affected != 0x80 || cast.ActionDelay != 1000 || cast.HasMobs {
+			t.Fatalf("cast %d: %+v, %v", id, cast, err)
+		}
+	}
+}
 
 func TestNativeSkillPackets(t *testing.T) {
 	w := NewRawWriter()

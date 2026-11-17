@@ -2,6 +2,29 @@ package domain
 
 import "testing"
 
+func TestV148PirateJobBooks(t *testing.T) {
+	for _, job := range []int{508, 509, 570, 571, 572, 580, 581, 582, 590, 591, 592} {
+		if !ValidJob(job) || ExtendedSPJob(job) || SkillBook(job) != 0 || SubJobFor(job) != SubJobNone {
+			t.Errorf("invalid v148 pirate book or SP layout for %d", job)
+		}
+	}
+	for _, tc := range []struct {
+		job, skill int
+		allowed    bool
+	}{
+		{572, 5721000, true}, {582, 5821000, true}, {592, 5921000, true},
+		{582, 5821010, true}, {512, 5121010, true},
+		{571, 5721000, false}, {572, 5821000, false}, {592, 5821010, false},
+		{512, 5821010, false}, {582, 5121010, false}, {572, 5001003, false},
+		{572, 5081002, true}, {582, 5091003, true}, {592, 5091003, true},
+		{582, 5081002, false}, {572, 5091003, false}, {512, 5091003, false},
+	} {
+		if got := CanLearnSkill(tc.job, tc.skill); got != tc.allowed {
+			t.Errorf("job %d, skill %d: learned=%v want %v", tc.job, tc.skill, got, tc.allowed)
+		}
+	}
+}
+
 func TestCanLearnSkillFollowsLegacyAncestry(t *testing.T) {
 	for _, tc := range []struct {
 		job, skill int
