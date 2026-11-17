@@ -240,6 +240,27 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 	if v, ok := mapReactors.Load(key); ok {
 		return v.([]Reactor), nil
 	}
+	defs, err := readMapReactorDefinitions(root, mapID)
+	if err != nil {
+		return nil, err
+	}
+	var out []Reactor
+	for _, def := range defs {
+		id := def.TemplateID
+		elevator := id == HeliosElevatorDoor && (mapID == 222020100 || mapID == 222020200)
+		krexel := id == KrexelReactor && mapID == KrexelArena
+		if !elevator && !krexel && !TreasureHuntReactor(mapID, id) {
+			if _, err = GatherNodeDefinition(root, id); err != nil {
+				continue
+			}
+		}
+		out = append(out, def)
+	}
+	mapReactors.Store(key, out)
+	return out, nil
+}
+
+func readMapReactorDefinitions(root string, mapID int) ([]Reactor, error) {
 	node, err := readWZ(filepath.Join(root, "Map.wz", "Map", fmt.Sprintf("Map%d", mapID/100000000), fmt.Sprintf("%09d.img.xml", mapID)))
 	if err != nil {
 		return nil, err
@@ -256,17 +277,9 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 			if err != nil {
 				continue
 			}
-			isElevatorDoor := id == HeliosElevatorDoor && (mapID == 222020100 || mapID == 222020200)
-			isKrexelReactor := id == KrexelReactor && mapID == KrexelArena
-			if !isElevatorDoor && !isKrexelReactor && !TreasureHuntReactor(mapID, id) {
-				if _, err = GatherNodeDefinition(root, id); err != nil {
-					continue
-				}
-			}
 			out = append(out, Reactor{Index: index, TemplateID: id, X: n.intValue("x", 0), Y: n.intValue("y", 0), Facing: n.intValue("f", 0), Respawn: n.intValue("reactorTime", 0)})
 		}
 	}
-	mapReactors.Store(key, out)
 	return out, nil
 }
 
