@@ -1,4 +1,4 @@
--- 梅莉，怪物公園入場券。
+-- 瑪麗，怪物公園入場券。
 local offers = {
     {piece = 4001513, ticket = 4001514, price = 50000},
     {piece = 4001515, ticket = 4001516, price = 100000},
@@ -13,7 +13,7 @@ for i, offer in ipairs(offers) do
     local cost = action == 1 and "（10 個 #t" .. offer.piece .. "#）" or "（" .. offer.price .. " 楓幣）"
     choices[i] = {id = i, text = "#t" .. offer.ticket .. "#" .. cost}
 end
-local offer = offers[npc:menu("請選擇票券。每日最多可用楓幣購買 3 張入場券。", choices)]
+local offer = offers[npc:menu("請選擇票券。每日最多可用楓幣購買 5 張入場券。", choices)]
 if not offer then
     return
 end
@@ -22,7 +22,7 @@ if action == 1 then
     options.items[2] = {id = offer.piece, quantity = -10}
 else
     options.mesos = -offer.price
-    options.logs = {{scope = "character", period = "day", name = "monster_park_tickets", delta = 1, maximum = 3}}
+    options.logs = {{scope = "character", period = "day", name = "monster_park_tickets", delta = 1, maximum = 5}}
 end
 if npc:exchange(options).ok then
     npc:say("已取得 #b#t" .. offer.ticket .. "##k，祝您挑戰順利！", false, false)
