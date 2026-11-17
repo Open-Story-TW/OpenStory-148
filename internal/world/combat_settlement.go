@@ -218,9 +218,16 @@ func (s *Server) executeCombatTicket(ctx context.Context, repo domain.CombatSett
 			return s.rejectCombatTicket(t)
 		}
 		s.gameplay.mu.Lock()
+		now := time.Now()
 		targetsCurrent := !slices.ContainsFunc(t.targets, func(mob *gameplayMob) bool { return mob.fake }) &&
-			s.eruptionClaimsCurrentLocked(t, time.Now()) &&
+			s.eruptionClaimsCurrentLocked(t, now) &&
 			s.expeditionCombatAllowedLocked(t.key, t.actorSession.CharacterID)
+		for i, mob := range t.targets {
+			if !mob.rushUntil.IsZero() {
+				t.request.Targets[i].MonsterRush = true
+				targetsCurrent = targetsCurrent && now.Before(mob.rushUntil)
+			}
+		}
 		s.gameplay.mu.Unlock()
 		if !targetsCurrent {
 			unlock()

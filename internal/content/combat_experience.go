@@ -79,6 +79,18 @@ func CombatExperienceMetadata(root string, mapID, mobID int) (CombatExperienceRu
 	return r, nil
 }
 
+func CombatTargetExperienceMetadata(root string, mapID int, target domain.CombatTarget) (CombatExperienceRules, error) {
+	if target.MonsterRush && (target.MobID != MonsterRushMob || !MonsterRushMap(mapID)) {
+		return CombatExperienceRules{}, domain.ErrInvalidInput
+	}
+	rules, err := CombatExperienceMetadata(root, mapID, target.MobID)
+	if err == nil && target.MonsterRush {
+		rules.MaximumHP = MonsterRushHP
+		rules.Experience = monsterRushExperience
+	}
+	return rules, err
+}
+
 // CombatExperienceGrants preserves Java's group ceil, per-contributor 20/80
 // round, cumulative base, and LAST contributor metadata. Sorting contributors
 // by character identity makes the HashMap-dependent overwrite deterministic.

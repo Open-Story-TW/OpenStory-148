@@ -21,24 +21,9 @@ const (
 	monsterRushGoal     = int64(700_000_000_000)
 	monsterRushDelay    = 5 * time.Minute
 	monsterRushDuration = 20 * time.Minute
-	monsterRushMob      = 3110300
-	monsterRushHP       = 800_000_000
 )
 
 var monsterRushAmounts = []int64{69, 50_000_000, 100_000_000, 200_000_000, 400_000_000, 800_000_000, 1_500_000_000}
-
-type monsterRushAnchor struct {
-	mapID int
-	x     int
-	y     int
-	fh    int
-}
-
-var monsterRushAnchors = []monsterRushAnchor{
-	{260000000, 108, 275, 13}, {680000000, 2037, 193, 297},
-	{211000000, -1463, 94, 156}, {600000000, 2031, 501, 210},
-	{120000000, 1180, 305, 24},
-}
 
 type monsterRushSpawn struct {
 	room *gameplayRoom
@@ -170,35 +155,36 @@ func (s *Server) runMonsterRush(ctx context.Context) {
 }
 
 func (g *gameplaySpace) monsterRushSpawnsLocked(channel int) (content.Mob, []monsterRushSpawn, error) {
-	stats, err := g.catalog.Mob(monsterRushMob)
+	stats, err := g.catalog.Mob(content.MonsterRushMob)
 	if err != nil {
 		return stats, nil, err
 	}
-	stats.HP = monsterRushHP
-	entries := make([]monsterRushSpawn, 0, len(monsterRushAnchors))
-	for _, a := range monsterRushAnchors {
-		room, err := g.room(mapKey{channel, a.mapID})
+	stats = content.MonsterRushStats(stats)
+	anchors := content.MonsterRushAnchors()
+	entries := make([]monsterRushSpawn, 0, len(anchors))
+	for _, a := range anchors {
+		room, err := g.room(mapKey{channel, a.MapID})
 		if err != nil {
 			return stats, nil, err
 		}
 		found := false
 		for _, f := range room.definition.Footholds {
-			if f.ID != a.fh || a.x < min(f.X1, f.X2) || a.x > max(f.X1, f.X2) || f.X1 == f.X2 {
+			if f.ID != a.Foothold || a.X < min(f.X1, f.X2) || a.X > max(f.X1, f.X2) || f.X1 == f.X2 {
 				continue
 			}
-			y := f.Y1 + (a.x-f.X1)*(f.Y2-f.Y1)/(f.X2-f.X1)
-			if y < a.y-2 || y > a.y+2 {
+			y := f.Y1 + (a.X-f.X1)*(f.Y2-f.Y1)/(f.X2-f.X1)
+			if y < a.Y-2 || y > a.Y+2 {
 				break
 			}
 			entries = append(entries, monsterRushSpawn{room, content.Life{
-				Kind: "m", TemplateID: monsterRushMob, X: a.x, Y: y, Foothold: a.fh,
+				Kind: "m", TemplateID: content.MonsterRushMob, X: a.X, Y: y, Foothold: a.Foothold,
 				RX0: min(f.X1, f.X2), RX1: max(f.X1, f.X2), RespawnSeconds: -1,
 			}})
 			found = true
 			break
 		}
 		if !found {
-			return stats, nil, fmt.Errorf("monster rush foothold %d absent from map %d at (%d,%d)", a.fh, a.mapID, a.x, a.y)
+			return stats, nil, fmt.Errorf("monster rush foothold %d absent from map %d at (%d,%d)", a.Foothold, a.MapID, a.X, a.Y)
 		}
 	}
 	return stats, entries, nil
@@ -240,7 +226,7 @@ func (g *gameplaySpace) removeMonsterRushMobs(now time.Time) {
 	g.mu.Lock()
 	var deliveries []roomDelivery
 	for key, room := range g.rooms {
-		if !slices.ContainsFunc(monsterRushAnchors, func(anchor monsterRushAnchor) bool { return anchor.mapID == key.mapID }) {
+		if !content.MonsterRushMap(key.mapID) {
 			continue
 		}
 		for id, mob := range room.mobs {

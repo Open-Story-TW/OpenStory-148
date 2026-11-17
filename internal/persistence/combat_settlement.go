@@ -353,7 +353,7 @@ func (s *Store) ApplyCombatAttack(ctx context.Context, q domain.CombatAttackRequ
 		frozenMembers = append(frozenMembers, m)
 	}
 	for _, target := range q.Targets {
-		rules, e := content.CombatExperienceMetadata(os.Getenv("MAPLEGO_WZ_ROOT"), actor.MapID, target.MobID)
+		rules, e := content.CombatTargetExperienceMetadata(os.Getenv("MAPLEGO_WZ_ROOT"), actor.MapID, target)
 		if e != nil {
 			return result, e
 		}
@@ -414,7 +414,7 @@ func (s *Store) ApplyCombatAttack(ctx context.Context, q domain.CombatAttackRequ
 				break
 			}
 		}
-		rules, e := content.CombatExperienceMetadata(os.Getenv("MAPLEGO_WZ_ROOT"), actor.MapID, target.MobID)
+		rules, e := content.CombatTargetExperienceMetadata(os.Getenv("MAPLEGO_WZ_ROOT"), actor.MapID, target)
 		if e != nil {
 			return result, e
 		}

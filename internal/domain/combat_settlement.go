@@ -86,6 +86,7 @@ type CombatTarget struct {
 	BeforeHP         int64
 	Damage           int
 	Defeated         bool
+	MonsterRush      bool                 `json:",omitempty"` // Set by the world from the reserved spawn.
 	Contributions    []CombatContribution // Inclusive of this attack only on successful commit.
 	Lines            []CombatDamageLine   `json:",omitempty"`
 }
