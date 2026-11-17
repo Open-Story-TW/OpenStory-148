@@ -68,6 +68,7 @@ type Map struct {
 	Footholds   []Foothold   `json:"footholds"`
 	Areas       []MapArea    `json:"areas,omitempty"`
 	EscortRoute []EscortNode `json:"escort_route,omitempty"`
+	obstacles   []fieldObstacle
 }
 
 func (m Map) Portal(name string) (Portal, bool) {
@@ -181,6 +182,11 @@ func (c *Catalog) Map(id int) (Map, error) {
 		return Map{}, err
 	}
 	addMuLungBossSpawn(&m)
+	if id == 280020000 || id == 280020001 {
+		if objects, loadErr := readWZ(filepath.Join(c.root, "Map.wz", "Obj", "trap.img.xml")); loadErr == nil {
+			m.obstacles = loadFieldObstacles(node, objects)
+		}
+	}
 	c.mu.Lock()
 	c.maps[id] = m
 	c.mu.Unlock()

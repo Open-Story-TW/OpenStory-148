@@ -426,10 +426,15 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 	valid := false
 	limit := 0
 	if room != nil {
-		mob := room.mobs[q.ObjectID]
-		if mob != nil && mob.hp > 0 && mob.stats.ID == q.MonsterID && within(c.X, c.Y, mob.life.X, mob.life.Y, 220) {
-			valid = true
-			limit = max(1, mob.stats.PAD*2)
+		if q.Type == protocol.FieldObstacleDamage {
+			valid = room.definition.MatchesObstacleDamage(c.X, c.Y, q.Damage)
+			limit = q.Damage
+		} else {
+			mob := room.mobs[q.ObjectID]
+			if mob != nil && mob.hp > 0 && mob.stats.ID == q.MonsterID && within(c.X, c.Y, mob.life.X, mob.life.Y, 220) {
+				valid = true
+				limit = max(1, mob.stats.PAD*2)
+			}
 		}
 	}
 	s.gameplay.mu.Unlock()
@@ -473,11 +478,13 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 	}
 	s.refreshParty(live)
 	_ = sink.WritePacket(protocol.UpdateHPMP(c.HP, c.MP))
-	if c.HP > 0 {
-		go s.runSkillTriggers(expectedMember, nil, q.Damage, q.ObjectID, q.DefType)
+	if q.Type != protocol.FieldObstacleDamage {
+		if c.HP > 0 {
+			go s.runSkillTriggers(expectedMember, nil, q.Damage, q.ObjectID, q.DefType)
+		}
+		packet := protocol.PlayerDamagePacket(c.ID, q)
+		s.publishSkillForeign(session, live, sink, packet)
 	}
-	packet := protocol.PlayerDamagePacket(c.ID, q)
-	s.publishSkillForeign(session, live, sink, packet)
 	if c.HP == 0 {
 		if err := s.clearDeathBuffs(ctx, live, sink); err != nil {
 			// HP remains authoritatively dead/dirty. The timer retries, and a

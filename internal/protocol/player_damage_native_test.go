@@ -44,3 +44,23 @@ func TestNativeContactDamageRequiresFinalFlagByte(t *testing.T) {
 		t.Fatal("unexplained trailing bytes accepted")
 	}
 }
+
+func TestNativeFieldObstacleDamage(t *testing.T) {
+	raw, err := hex.DecodeString("0100000002000000fd00fa0000000000000000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	q, err := ReadPlayerDamage(NewReader(raw))
+	if err != nil || q.Tick != 2 || q.Type != FieldObstacleDamage || q.Damage != 250 || q.ObjectID != 0 {
+		t.Fatalf("native obstacle damage: %+v %v", q, err)
+	}
+	for _, input := range [][]byte{raw[:len(raw)-1], append(append([]byte(nil), raw...), 0)} {
+		if _, err := ReadPlayerDamage(NewReader(input)); err == nil {
+			t.Fatalf("accepted invalid obstacle packet length %d", len(input))
+		}
+	}
+	raw[len(raw)-1] = 1
+	if _, err := ReadPlayerDamage(NewReader(raw)); err == nil {
+		t.Fatal("accepted unreviewed obstacle damage flags")
+	}
+}

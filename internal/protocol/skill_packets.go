@@ -19,6 +19,8 @@ const (
 	RecvPotentialRegeneration uint16 = 0xa0
 )
 
+const FieldObstacleDamage = -3
+
 type SkillAllocation struct {
 	Tick    uint32
 	SkillID int
@@ -261,8 +263,15 @@ func ReadSkillCancel(r *Reader) (int, error) {
 func ReadPlayerDamage(r *Reader) (PlayerDamage, error) {
 	r.U32()
 	v := PlayerDamage{Tick: r.U32(), Type: int8(r.U8())}
-	r.U8()
+	element := r.U8()
 	v.Damage = int(r.I32())
+	if v.Type == FieldObstacleDamage {
+		// Native lava/steam hits carry five zero bytes after the damage.
+		if r.U32() != 0 || r.U8() != 0 || element != 0 || v.Damage <= 0 || r.Err() != nil || r.Remaining() != 0 {
+			return v, ErrMalformed
+		}
+		return v, nil
+	}
 	r.Skip(2)
 	if v.Type != -1 {
 		return v, ErrMalformed
