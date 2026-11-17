@@ -125,12 +125,16 @@ func (s *Server) escapeStagePortal(ctx context.Context, snapshot domain.Characte
 	switch mapID {
 	case content.EscapeTower, content.EscapeTraps:
 		if portal.Name == "goal00" {
-			state.reached[mapID] = true
-			s.broadcastInventoryPacket(inst.channel, mapID, protocol.FieldScreenEffect(eventEffects["clear"][0]))
-			s.broadcastInventoryPacket(inst.channel, mapID, protocol.FieldSoundEffect(eventEffects["clear"][1]))
+			if !state.reached[mapID] {
+				state.reached[mapID] = true
+				s.broadcastInventoryPacket(inst.channel, mapID, protocol.FieldScreenEffect(eventEffects["clear"][0]))
+				s.broadcastInventoryPacket(inst.channel, mapID, protocol.FieldSoundEffect(eventEffects["clear"][1]))
+			}
 			return true, sink.WritePacket(protocol.EnableActions())
 		}
-		if portal.Name == "next00" && state.reached[mapID] {
+		// The visible exit is at the top as well. The native clear marker is
+		// separately triggered and is not an extra admission requirement.
+		if portal.Name == "next00" {
 			next = mapID + 100
 		}
 	case content.EscapeApproach, content.EscapePassage:
