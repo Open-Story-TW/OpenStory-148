@@ -12,7 +12,7 @@ const (
 	EscapePrison      = 921160600
 	EscapeBossRoom    = 921160700
 	EscapeLobbyNPC    = 9020005
-	EscapeCaptiveNPC  = 9020008
+	EscapeCaptiveNPC  = 9020006
 	EscapeBoss        = 9300454
 	EscapeKey         = 4001528
 	EscapeRewardKey   = 4001534
@@ -42,8 +42,14 @@ func escapeEvent() Event {
 		Name: EscapeName, Maps: stages, LobbyMap: EscapeLobby, ExitMap: EscapeLobby,
 		Seconds: 1200, PartyMin: 3, PartyMax: 6, Keep: 1, LevelMin: 120, LevelMax: 255,
 		RequiredMobs: required,
-		Spawns: []EventSpawn{{MapID: EscapeBossRoom, Life: Life{Kind: "m", TemplateID: EscapeBoss,
-			X: -2161, Y: -181, Foothold: 6, RX0: -2183, RX1: -1736, RespawnSeconds: -1}}},
+		Spawns: []EventSpawn{
+			{MapID: EscapeBossRoom, Life: Life{Kind: "m", TemplateID: EscapeBoss,
+				X: -2161, Y: -181, Foothold: 6, RX0: -2183, RX1: -1736, RespawnSeconds: -1}},
+			// The static 9020008 in the boss room is hidden. The v148
+			// prisonBreak_PQ script belongs to the spawned captive 9020006.
+			{MapID: EscapeBossRoom, Life: Life{Kind: "n", TemplateID: EscapeCaptiveNPC,
+				X: -2161, Y: -181, Foothold: 6, RX0: -2163, RX1: -2111}},
+		},
 	}
 }
 
