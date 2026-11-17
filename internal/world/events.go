@@ -35,6 +35,7 @@ type eventInstance struct {
 	members      map[int64]struct{}
 	deadline     time.Time
 	preludeUntil time.Time
+	summoned     bool
 	properties   map[string]string
 	starting     bool
 	cleared      bool
@@ -605,6 +606,14 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 	for _, spawn := range event.Spawns {
 		key := mapKey{channel, spawn.MapID}
 		room := g.rooms[key]
+		if spawn.Life.Kind == "n" {
+			oid := g.alloc()
+			if oid == 0 || room == nil {
+				return errors.New("unable to spawn event NPC")
+			}
+			room.npcs[oid] = spawn.Life
+			continue
+		}
 		stats, err := g.catalog.Mob(spawn.Life.TemplateID)
 		if err != nil {
 			return err

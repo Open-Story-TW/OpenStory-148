@@ -85,14 +85,14 @@ func (s *Server) reviveGameplay(ctx context.Context, channel int, live *liveChar
 	if err != nil || current.ReturnMap == 999999999 {
 		return reject("no_return_map")
 	}
-	if inst := s.eventOf(c.ID); inst != nil && inst.definition.Name == "Hilla" && inst.definition.Stage(c.MapID) {
+	if inst := s.eventOf(c.ID); inst != nil && inst.definition.RevivalHP > 0 && inst.definition.Stage(c.MapID) {
 		entry, ok := current.Spawn()
 		if !ok {
 			return reject("no_spawn")
 		}
 		s.cancelNPCScript(live)
 		s.closeEconomyDialog(live)
-		return s.warpGameplayTransition(ctx, channel, live, sink, c.MapID, entry, &revivalTransition{fromMap: c.MapID, hp: 50})
+		return s.warpGameplayTransition(ctx, channel, live, sink, c.MapID, entry, &revivalTransition{fromMap: c.MapID, hp: inst.definition.RevivalHP})
 	}
 	to, err := s.gameplay.catalog.Map(current.ReturnMap)
 	if err != nil {

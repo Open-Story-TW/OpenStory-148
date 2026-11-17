@@ -23,6 +23,7 @@ const (
 	SendDamageMonster       uint16 = 0x1b3
 	SendMonsterHP           uint16 = 0x1b9
 	SendSpawnNPC            uint16 = 0x1cf
+	SendRemoveNPC           uint16 = 0x1d0
 	SendNPCController       uint16 = 0x1d2
 	SendNPCTalk             uint16 = 0x241
 )
@@ -115,6 +116,19 @@ func SpawnNPC(objectID int32, n content.Life, controller bool) []byte {
 	w.I16(int16(n.RX0))
 	w.I16(int16(n.RX1))
 	w.Bool(!n.Hidden)
+	return w.Packet()
+}
+
+func RemoveNPC(objectID int32, controller bool) []byte {
+	op := SendRemoveNPC
+	if controller {
+		op = SendNPCController
+	}
+	w := NewWriter(op)
+	if controller {
+		w.U8(0)
+	}
+	w.I32(objectID)
 	return w.Packet()
 }
 

@@ -24,6 +24,8 @@ type Event struct {
 	// single party. Expedition entries are restricted to their lobby map.
 	ExpeditionType int
 	LobbyMap       int
+	// RevivalHP is used when the raid revives the player on the same map.
+	RevivalHP int
 	// Exact static encounter populations needed from the mounted v148 maps.
 	RequiredMobs map[int]map[int]int
 }
@@ -63,7 +65,7 @@ var events = map[string]Event{
 	"Hilla": {
 		Name: "Hilla", Maps: []int{262030100, 262030200, 262030300},
 		ExitMap: 262010000, Seconds: 3600, PartyMin: 2, PartyMax: 6, Keep: 2,
-		LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000,
+		LevelMin: 120, LevelMax: 200, ExpeditionType: 2010, LobbyMap: 262030000, RevivalHP: 50,
 		RequiredMobs: map[int]map[int]int{262030100: {8870001: 8}, 262030200: {8870002: 8}, 262030300: {8870000: 1}},
 	},
 	"BalrogEasy": {
@@ -88,6 +90,22 @@ var events = map[string]Event{
 		Seconds: 4500, PartyMin: 3, PartyMax: 30, Keep: 3,
 		LevelMin: 100, LevelMax: 200, ExpeditionType: 2005, LobbyMap: 211042401,
 		RequiredMobs: map[int]map[int]int{280030001: {}},
+	},
+	"VonLeon": {
+		Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
+		Seconds: 3600, PartyMin: 3, PartyMax: 18, Keep: 3,
+		LevelMin: 120, LevelMax: 200, ExpeditionType: 2007, LobbyMap: 211070000, RevivalHP: 50,
+		RequiredMobs: map[int]map[int]int{211070100: {}},
+		Spawns: []EventSpawn{{MapID: 211070100, Life: Life{Kind: "n", TemplateID: 2161000,
+			X: 0, Y: -181, Foothold: 1, RX0: -75, RX1: 75}}},
+	},
+	"Arkarium": {
+		Name: "Arkarium", Maps: []int{272030400}, ExitMap: 272020110,
+		Seconds: 3000, PartyMin: 3, PartyMax: 18, Keep: 3,
+		LevelMin: 120, LevelMax: 200, ExpeditionType: 2009, LobbyMap: 272020110, RevivalHP: 50,
+		RequiredMobs: map[int]map[int]int{272030400: {9300304: 1}},
+		Spawns: []EventSpawn{{MapID: 272030400, Life: Life{Kind: "n", TemplateID: 2144010,
+			X: 0, Y: -181, Foothold: 8, RX0: -75, RX1: 75}}},
 	},
 }
 

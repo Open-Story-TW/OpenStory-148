@@ -592,6 +592,7 @@ func (s *Session) installHost() {
 		}
 		bind("event_finish", s.simpleCommand("event_finish", 0), 1)
 		bind("event_leave", s.simpleCommand("event_leave", 0), 1)
+		bind("event_summon", s.simpleCommand("event_summon", 0), 1)
 		bind("event_areas", s.simpleCommand("event_areas", 0), 1)
 		bind("event_party_exp", s.simpleCommand("event_party_exp", 1), 2)
 		bind("transit_status", s.simpleCommand("transit_status", 0), 1)

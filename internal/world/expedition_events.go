@@ -81,6 +81,13 @@ func (s *Server) eventExpeditionChangedLocked() {
 
 func (s *Server) expeditionStagePortal(ctx context.Context, snapshot domain.CharacterSession, live *liveCharacter, sink packetSink, portal content.Portal) (bool, error) {
 	switch {
+	case portal.Script == "portalNPC" &&
+		(snapshot.Character.MapID == 211070000 && portal.Name == "lionCastleenter" ||
+			snapshot.Character.MapID == 211070100 && portal.Name == "lioncastleout"):
+		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2161005)
+	case portal.Script == "portalNPC1" && snapshot.Character.MapID == 272020110,
+		portal.Script == "out_cygnusAK" && snapshot.Character.MapID == 272030400:
+		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2144018)
 	case portal.Script == "Zakum05" && (snapshot.Character.MapID == 211042300 || snapshot.Character.MapID == 211042301):
 		return true, s.enterZakumLobby(ctx, snapshot, live, sink)
 	case portal.Script == "balog_end" && snapshot.Character.MapID == balrogRewardMap:
@@ -182,6 +189,10 @@ func (s *Server) expeditionCombatAllowedLocked(key mapKey, actor int64) bool {
 func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
 	if _, ok := content.ZakumAltarByMap(key.mapID); ok {
 		s.zakumPartDefeated(key, actor, mob)
+		return
+	}
+	if encounter, ok := summonedBosses[key.mapID]; ok {
+		s.finishSummonedBoss(encounter, key, actor, mob)
 		return
 	}
 	if key.mapID == balrogArena {

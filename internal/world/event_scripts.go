@@ -76,6 +76,8 @@ func (a *worldScript) eventCommand(ctx context.Context, snapshot domain.Characte
 		return invalid, domain.ErrForbidden
 	}
 	switch command.Kind {
+	case "event_summon":
+		return result(s.summonExpeditionBoss(inst, snapshot, a.npcID, a.objectID))
 	case "event_areas":
 		mask, err := s.eventAreaMask(ctx, inst, snapshot)
 		return scripting.CommandResult{Value: mask}, err
