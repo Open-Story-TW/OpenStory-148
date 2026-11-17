@@ -446,6 +446,12 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, err
 		}
 		return true, s.monsterMovement(channel, live, sink, m)
+	case protocol.RecvReactorClick:
+		objectID := r.I32()
+		if r.Err() == nil && r.Remaining() == 0 && objectID > 0 {
+			return true, s.clickRomeoBeaker(ctx, live, sink, objectID)
+		}
+		return true, nil
 	case protocol.RecvMobHitEscort:
 		payload := r.Bytes(r.Remaining())
 		if _, christmas := content.ChristmasByMap(partySession(live).Character.MapID); christmas {

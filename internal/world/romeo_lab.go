@@ -20,7 +20,7 @@ type romeoLabSearch struct {
 
 func (s *Server) romeoLabPortal(ctx context.Context, live *liveCharacter, sink packetSink, portal content.Portal) (bool, error) {
 	switch portal.Script {
-	case "party5_click", "rnj1_pt00", "jnr1_pt00", "rnj1_out", "jnr1_out":
+	case "party5_click", "rnj1_pt00", "jnr1_pt00", "rnj1_out", "jnr1_out", "rnj2_out", "jnr2_out":
 	default:
 		return false, nil
 	}
@@ -60,6 +60,15 @@ func (s *Server) romeoLabPortal(ctx context.Context, live *liveCharacter, sink p
 			return true, sink.WritePacket(protocol.PortalTrainingMessage("研究室內還有怪物。"))
 		}
 		next = first + 100
+	case current == first+100 && (portal.Script == "rnj2_out" || portal.Script == "jnr2_out"):
+		s.gameplay.mu.Lock()
+		room := s.gameplay.rooms[mapKey{inst.channel, current}]
+		filled := romeoFullBeakers(room) == 3
+		s.gameplay.mu.Unlock()
+		if !filled {
+			return true, sink.WritePacket(protocol.PortalTrainingMessage("請將三個燒杯都裝滿可疑液體。"))
+		}
+		next = first + 200
 	default:
 		return false, nil
 	}

@@ -5,6 +5,16 @@ const (
 	JulietPQName = "JulietPQ"
 )
 
+func RomeoLabReactor(mapID, templateID int) bool {
+	switch mapID {
+	case 926100000, 926110000:
+		return templateID == 2618005
+	case 926100100, 926110100:
+		return templateID == 2618000 || templateID == 2618006 || templateID == 2618009 || templateID == 2618010
+	}
+	return false
+}
+
 // The two factions share the same seven objective rooms and keep their own
 // entrance and exit maps. Quest 1205 describes exactly four level 70+ players.
 func romeoJulietEvent(name string, lobby, first int) Event {

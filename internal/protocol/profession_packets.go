@@ -17,6 +17,7 @@ const (
 	RecvCraftEffect    uint16 = 0x100 // 0x905F35
 	RecvCraftMake      uint16 = 0x101 // 0x8F21B5
 	RecvReactorHit     uint16 = 0x17d // 0x68F640, 0x6902A5
+	RecvReactorClick   uint16 = 0x17e // type 9: reactor object ID, 0x68FC65
 	RecvStartHarvest   uint16 = 0x1a1 // 0x8F2124
 	RecvStopHarvest    uint16 = 0x1a2 // 0x8F2124
 
