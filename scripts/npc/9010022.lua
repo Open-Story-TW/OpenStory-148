@@ -4,8 +4,8 @@
 -- the character's level and answers with the chosen id. Differences from
 -- Legacy: under level 10 the refusal is a dialogue page instead of a chat
 -- line; 中式結婚 (700000000) is left out because the server's map data does
--- not have that map; Legacy's saveReturnLocation("MULUNG_TC") is not kept,
--- since the server has no saved return locations yet.
+-- not have that map. Escape uses the saved MULUNG_TC return location read
+-- by prisonBreak_exit.lua.
 local level = npc:level()
 if level < 10 then
     npc:say("沒有可以通過次元之鏡移動的地方。", false, false)
@@ -42,4 +42,11 @@ end
 
 local choice = npc:ask_map_selection(offered)
 local destination = byID[choice]
+if destination.map == 921160000 then
+    local saved = npc:exchange({quest_data = {{id = 1900000001, data = tostring(npc:map_id())}}})
+    if not saved.ok then
+        npc:say("暫時無法記錄返回位置，請再試一次。", false, false)
+        return
+    end
+end
 npc:warp(destination.map, destination.portal)
