@@ -28,6 +28,7 @@ type gameplayMob struct {
 	contributions []domain.CombatContribution
 	reservation   *combatTicket
 	statuses      combat.MobStatuses
+	damageFloor   int64     // A boss stage can reserve HP while its allies defend it.
 	prelude       bool      // An event opening may take damage without a defeat.
 	fake          bool      // An encounter projection renders without taking damage.
 	qaHeld        bool      // QA !mobhold: never defeated, refilled every tick.
@@ -49,10 +50,11 @@ func (m *gameplayMob) lethalHP() int64 {
 	if m.fake {
 		return 0
 	}
+	floor := m.damageFloor
 	if m.qaHeld || m.prelude {
-		return m.hp - 1
+		floor = max(floor, 1)
 	}
-	return m.hp
+	return max(m.hp-floor, 0)
 }
 
 type gameplayMember struct {
@@ -82,6 +84,7 @@ type gameplayRoom struct {
 	moon       *henesysRoom
 	zakum      *zakumField
 	papulatus  *papulatusField
+	cygnus     *cygnusBattle
 }
 type gameplaySpace struct {
 	mu            sync.Mutex

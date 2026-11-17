@@ -186,6 +186,9 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		return "unavailable", here, qualified, nil
 	}
 	s.eventSettle(inst)
+	if e.Name == "Cygnus" {
+		s.startCygnusBattle(inst)
+	}
 	return "", here, qualified, err
 }
 
@@ -593,6 +596,11 @@ func (g *gameplaySpace) resetEventRooms(channel int, event content.Event) error 
 				if _, err := g.catalog.Mob(mobID); err != nil {
 					return err
 				}
+			}
+		}
+		if id == cygnusArena {
+			if err := g.prepareCygnusBattle(room); err != nil {
+				return err
 			}
 		}
 		if required, checked := event.RequiredMobs[id]; checked {

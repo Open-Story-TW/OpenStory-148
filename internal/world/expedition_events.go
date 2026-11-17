@@ -81,6 +81,8 @@ func (s *Server) eventExpeditionChangedLocked() {
 
 func (s *Server) expeditionStagePortal(ctx context.Context, snapshot domain.CharacterSession, live *liveCharacter, sink packetSink, portal content.Portal) (bool, error) {
 	switch {
+	case portal.Script == "in_cygnus" && (snapshot.Character.MapID == 271040000 || snapshot.Character.MapID == cygnusArena):
+		return true, s.openPortalNPC(ctx, snapshot.ChannelID, live, sink, 2143004)
 	case portal.Script == "portalNPC" &&
 		(snapshot.Character.MapID == 211070000 && portal.Name == "lionCastleenter" ||
 			snapshot.Character.MapID == 211070100 && portal.Name == "lioncastleout"):
@@ -191,6 +193,10 @@ func (s *Server) expeditionCombatAllowedLocked(key mapKey, actor int64) bool {
 func (s *Server) expeditionBossDefeated(key mapKey, actor int64, mob int) {
 	if key.mapID == content.PapulatusArena {
 		s.papulatusPartDefeated(key, actor, mob)
+		return
+	}
+	if key.mapID == cygnusArena && mob == cygnusBody {
+		s.finishCygnusBattle(key, actor)
 		return
 	}
 	if _, ok := content.ZakumAltarByMap(key.mapID); ok {

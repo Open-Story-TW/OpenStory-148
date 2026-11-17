@@ -96,6 +96,12 @@ var events = map[string]Event{
 		LevelMin: 100, LevelMax: 200, ExpeditionType: 2005, LobbyMap: 211042401,
 		RequiredMobs: map[int]map[int]int{280030001: {}},
 	},
+	"Cygnus": {
+		Name: "Cygnus", Maps: []int{271040100}, ExitMap: 271040210,
+		Seconds: 3600, PartyMin: 3, PartyMax: 18, Keep: 3,
+		LevelMin: 170, LevelMax: 200, ExpeditionType: 2008, LobbyMap: 271040000,
+		RequiredMobs: map[int]map[int]int{271040100: {}},
+	},
 	"VonLeon": {
 		Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
 		Seconds: 3600, PartyMin: 6, PartyMax: 18, Keep: 6,
