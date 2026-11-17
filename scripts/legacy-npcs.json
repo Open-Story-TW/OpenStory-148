@@ -247,12 +247,6 @@
       "lua_sha256": "892028f2d6fda3e0b660c1f2f04b11d82696c54672396ccd267dd74fe6caa07b"
     },
     {
-      "legacy": "npc/1032009.js",
-      "source_sha256": "3ff48e986f748e67392a9d9040a0174ccb5badcb2f1fd212cdb7283c89be2e4f",
-      "lua": "npc/1032009.lua",
-      "lua_sha256": "c2ecdabf2da9d87c3cf7f03ff0ffcc8f9bb2c129345b520fad2ec7592d410b91"
-    },
-    {
       "legacy": "npc/1032100.js",
       "source_sha256": "ae4c0af012b824a4adb8da151de69e1490374dba8fa8be9b6fbea8bed2875f02",
       "lua": "npc/1032100.lua",
@@ -923,12 +917,6 @@
       "source_sha256": "77bfa6c55919ddd176600d2cc69a71c79b29f35aa6816aa85ef46b5e71240a03",
       "lua": "npc/2012000.lua",
       "lua_sha256": "7eecbade384edd0bd33ee726c3fc31ac88d3133fb50a4aa66abbabfd1e75824e"
-    },
-    {
-      "legacy": "npc/2012002.js",
-      "source_sha256": "98f8416a8e642bcd5e41694bba25c2093bf90c5ab0b9f19f90e00398ec38dd57",
-      "lua": "npc/2012002.lua",
-      "lua_sha256": "34237ff9a36c98319c045e59d56501daabd131dc177e1238d87b54f793c32500"
     },
     {
       "legacy": "npc/2012006.js",
@@ -2977,10 +2965,6 @@
       "reason": "cm.achievement is not supported (line 20)"
     },
     {
-      "legacy": "npc/1032008.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
-    },
-    {
       "legacy": "npc/1032102.js",
       "reason": "Unexpected token (29:8)"
     },
@@ -3075,10 +3059,6 @@
     {
       "legacy": "npc/1300013.js",
       "reason": "call .getMembers is not supported (line 12)"
-    },
-    {
-      "legacy": "npc/2012001.js",
-      "reason": "cm.getEventManager is not supported (line 10)"
     },
     {
       "legacy": "npc/2012018.js",

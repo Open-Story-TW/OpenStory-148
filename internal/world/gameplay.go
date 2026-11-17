@@ -34,12 +34,13 @@ type gameplayMob struct {
 	qaHeld        bool      // QA !mobhold: never defeated, refilled every tick.
 	qaHeldUntil   time.Time // the hold lapses here (mobHoldTerm)
 	qaOwner       *qaMobOwner
+	oneTime       bool
 }
 
 // Event maps reset their one-time spawns between groups.
 func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
 	_, eventMap := content.EventByMap(mapID)
-	if eventMap && m.life.RespawnSeconds == -1 {
+	if m.oneTime || eventMap && m.life.RespawnSeconds == -1 {
 		return time.Time{}
 	}
 	return now.Add(time.Duration(max(5, m.life.RespawnSeconds)) * time.Second)

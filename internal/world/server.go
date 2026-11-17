@@ -53,6 +53,7 @@ type Server struct {
 	elevators        *elevatorSpace
 	quizzes          *oxQuizSpace
 	hak              *hakSpace
+	boatInvaders     map[mapKey][]*gameplayMob // Only the transit ticker changes this map.
 	guilds           *guildSpace
 	guildOnce        sync.Once
 	ready            atomic.Bool
@@ -136,6 +137,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	s.elevators = &elevatorSpace{starts: make(map[mapKey]time.Time)}
 	s.quizzes = newOXQuizSpace()
 	s.hak = &hakSpace{seats: make(map[int]*hakSeat)}
+	s.boatInvaders = make(map[mapKey][]*gameplayMob)
 	if cfg.ScriptsDir != "" {
 		// A bad file on disk must not stop the world: it is reported and the
 		// built-in source keeps running.

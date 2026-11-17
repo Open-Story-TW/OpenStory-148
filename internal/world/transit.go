@@ -13,6 +13,7 @@ type transitLeg struct {
 	dock, boarding, ride, arrival int
 	usher, attendant              int
 	alternateUsher, ticket        int
+	cabin                         int
 }
 
 type transitLine struct {
@@ -32,17 +33,21 @@ var transitLines = []transitLine{
 		{dock: 200000131, boarding: 200000132, ride: 200090200, arrival: 240000100, usher: 2012021, attendant: 2012022},
 		{dock: 240000110, boarding: 240000111, ride: 200090210, arrival: 200000100, usher: 2082001, attendant: 2082002},
 	}},
+	{5 * time.Minute, 7 * time.Minute, [2]transitLeg{
+		{dock: 200000151, boarding: 200000152, ride: 200090400, arrival: 260000100, usher: 2012025, attendant: 2012024},
+		{dock: 260000100, boarding: 260000110, ride: 200090410, arrival: 200000100, usher: 2102000, attendant: 2102001},
+	}},
 	{5 * time.Minute, time.Minute, [2]transitLeg{
 		{dock: 103020000, boarding: 600010004, ride: 600010005, arrival: 600010001, usher: 9201068, attendant: 9201057, alternateUsher: 1052007, ticket: 4031711},
 		{dock: 600010001, boarding: 600010002, ride: 600010003, arrival: 103020000, usher: 9201068, attendant: 9201057, ticket: 4031713},
 	}},
+	{3 * time.Minute, 5 * time.Minute, [2]transitLeg{
+		{dock: 104020110, boarding: 104020111, ride: 200090010, arrival: 200000100, usher: 1032008, attendant: 1032009, cabin: 200090011},
+		{dock: 200000111, boarding: 200000112, ride: 200090000, arrival: 104020110, usher: 2012001, attendant: 2012002, cabin: 200090001},
+	}},
 	{5 * time.Minute, time.Minute, [2]transitLeg{
 		{dock: 103000000, boarding: 540010100, ride: 540010101, arrival: 540010000, usher: 9270041, attendant: 9270017, ticket: 4031731},
 		{dock: 540010000, boarding: 540010001, ride: 540010002, arrival: 103000000, usher: 9270038, attendant: 9270018, ticket: 4031732},
-	}},
-	{5 * time.Minute, 7 * time.Minute, [2]transitLeg{
-		{dock: 200000151, boarding: 200000152, ride: 200090400, arrival: 260000100, usher: 2012025, attendant: 2012024},
-		{dock: 260000100, boarding: 260000110, ride: 200090410, arrival: 200000100, usher: 2102000, attendant: 2102001},
 	}},
 }
 
@@ -55,7 +60,7 @@ const (
 )
 
 func (line transitLine) phase(start, now time.Time) transitPhase {
-	elapsed := max(now.Sub(start), 0) % (line.departure + line.duration)
+	elapsed := line.elapsed(start, now)
 	switch {
 	case elapsed < line.departure-time.Minute:
 		return transitBoarding
@@ -64,6 +69,10 @@ func (line transitLine) phase(start, now time.Time) transitPhase {
 	default:
 		return transitAway
 	}
+}
+
+func (line transitLine) elapsed(start, now time.Time) time.Duration {
+	return max(now.Sub(start), 0) % (line.departure + line.duration)
 }
 
 func (s *Server) runTransit(ctx context.Context) {
@@ -91,6 +100,15 @@ func (s *Server) tickTransit(ctx context.Context, now time.Time) {
 			}
 			for channel := 1; channel <= s.wcfg.ChannelCount; channel++ {
 				s.moveTransitPassengers(ctx, channel, from, to)
+				if leg.cabin != 0 {
+					switch {
+					case phase != transitAway:
+						s.moveTransitPassengers(ctx, channel, leg.cabin, leg.arrival)
+						s.clearBoatInvasion(channel, leg.ride)
+					case line.elapsed(s.transitStart, now) >= line.departure+time.Minute:
+						s.spawnBoatInvasion(channel, leg.ride)
+					}
+				}
 			}
 		}
 	}
