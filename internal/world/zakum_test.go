@@ -27,8 +27,8 @@ func TestZakumRequiresOfferingThenArmsThenThreeBodies(t *testing.T) {
 		arena, lobby, exit, count int
 		expedition                int
 	}{
-		{"Zakum", 280030000, 211042400, 211042300, 2, 2002},
-		{"ChaosZakum", 280030001, 211042401, 211042301, 3, 2005},
+		{"Zakum", 280030000, 211042400, 211042300, 5, 2002},
+		{"ChaosZakum", 280030001, 211042401, 211042301, 5, 2005},
 	} {
 		t.Run(mode.name, func(t *testing.T) {
 			ctx := context.Background()
@@ -59,10 +59,14 @@ func TestZakumRequiresOfferingThenArmsThenThreeBodies(t *testing.T) {
 			for id := 1; id <= mode.count; id++ {
 				party.Members = append(party.Members, domain.PartyMember{CharacterID: int64(id)})
 			}
-			for _, m := range party.Members {
+			for _, m := range party.Members[:mode.count-1] {
 				f.join(t, m.CharacterID, 120, mode.lobby, party)
 			}
 			s.parties.addExpeditionParty(&expedition{id: 8, kind: mode.expedition, leader: 1, snapshots: map[int64]domain.PartySnapshot{}}, party)
+			if reason, here, _, err := s.eventStart(ctx, mode.name, 1, f.lives[1], f.sinks[1]); err != nil || reason != "party_size" || here != mode.count-1 {
+				t.Fatalf("a player short: %q count=%d err=%v", reason, here, err)
+			}
+			f.join(t, int64(mode.count), 120, mode.lobby, party)
 			if reason, _, _, err := s.eventStart(ctx, mode.name, 1, f.lives[1], f.sinks[1]); err != nil || reason != "zakum_prerequisite" {
 				t.Fatalf("missing prerequisite: reason=%q err=%v", reason, err)
 			}

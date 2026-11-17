@@ -12,7 +12,7 @@ local response = npc:event_start(chaos and "ChaosZakum" or "Zakum")
 if response.ok then
     return
 end
-local limits = chaos and "3 至 30 人（100 至 200 級）" or "2 至 30 人（50 至 200 級）"
+local limits = chaos and "5 至 30 人（100 至 200 級）" or "5 至 30 人（50 至 200 級）"
 local message = {
     no_expedition = "請先在遠征介面建立" .. name .. "遠征隊。",
     expedition_type = "遠征隊的難度和這個入口不符。",

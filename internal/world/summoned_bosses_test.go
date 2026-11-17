@@ -39,13 +39,17 @@ func TestExpeditionChallengeNPCStartsTheBossExactlyOnce(t *testing.T) {
 			}
 			s := f.server
 			p := domain.PartySnapshot{ID: 50, LeaderID: 1}
-			for id := int64(1); id <= 3; id++ {
+			for id := int64(1); id <= 6; id++ {
 				p.Members = append(p.Members, domain.PartyMember{CharacterID: id})
 			}
-			for _, m := range p.Members {
+			for _, m := range p.Members[:len(p.Members)-1] {
 				f.join(t, m.CharacterID, 150, e.LobbyMap, p)
 			}
 			s.parties.addExpeditionParty(&expedition{id: 8, kind: e.ExpeditionType, leader: 1, snapshots: map[int64]domain.PartySnapshot{}}, p)
+			if reason, here, _, err := s.eventStart(context.Background(), mode.event, 1, f.lives[1], f.sinks[1]); err != nil || reason != "party_size" || here != 5 {
+				t.Fatalf("a player short: %q count=%d err=%v", reason, here, err)
+			}
+			f.join(t, 6, 150, e.LobbyMap, p)
 			if reason, _, _, err := s.eventStart(context.Background(), mode.event, 1, f.lives[1], f.sinks[1]); err != nil || reason != "" {
 				t.Fatalf("start: %q %v", reason, err)
 			}

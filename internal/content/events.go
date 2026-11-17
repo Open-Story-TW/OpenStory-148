@@ -81,7 +81,7 @@ var events = map[string]Event{
 	},
 	"Zakum": {
 		Name: "Zakum", Maps: []int{280030000}, ExitMap: 211042300,
-		Seconds: 3000, PartyMin: 2, PartyMax: 30, Keep: 2,
+		Seconds: 3000, PartyMin: 5, PartyMax: 30, Keep: 5,
 		LevelMin: 50, LevelMax: 200, ExpeditionType: 2002, LobbyMap: 211042400,
 		RequiredMobs: map[int]map[int]int{280030000: {}},
 	},
@@ -92,13 +92,13 @@ var events = map[string]Event{
 	},
 	"ChaosZakum": {
 		Name: "ChaosZakum", Maps: []int{280030001}, ExitMap: 211042301,
-		Seconds: 4500, PartyMin: 3, PartyMax: 30, Keep: 3,
+		Seconds: 4500, PartyMin: 5, PartyMax: 30, Keep: 5,
 		LevelMin: 100, LevelMax: 200, ExpeditionType: 2005, LobbyMap: 211042401,
 		RequiredMobs: map[int]map[int]int{280030001: {}},
 	},
 	"VonLeon": {
 		Name: "VonLeon", Maps: []int{211070100}, ExitMap: 211061001,
-		Seconds: 3600, PartyMin: 3, PartyMax: 18, Keep: 3,
+		Seconds: 3600, PartyMin: 6, PartyMax: 18, Keep: 6,
 		LevelMin: 120, LevelMax: 200, ExpeditionType: 2007, LobbyMap: 211070000, RevivalHP: 50,
 		RequiredMobs: map[int]map[int]int{211070100: {}},
 		Spawns: []EventSpawn{{MapID: 211070100, Life: Life{Kind: "n", TemplateID: 2161000,
@@ -106,7 +106,7 @@ var events = map[string]Event{
 	},
 	"Arkarium": {
 		Name: "Arkarium", Maps: []int{272030400}, ExitMap: 272020110,
-		Seconds: 3000, PartyMin: 3, PartyMax: 18, Keep: 3,
+		Seconds: 3000, PartyMin: 6, PartyMax: 18, Keep: 6,
 		LevelMin: 120, LevelMax: 200, ExpeditionType: 2009, LobbyMap: 272020110, RevivalHP: 50,
 		RequiredMobs: map[int]map[int]int{272030400: {9300304: 1}},
 		Spawns: []EventSpawn{{MapID: 272030400, Life: Life{Kind: "n", TemplateID: 2144010,
