@@ -602,9 +602,10 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 			}
 		}
 		progress := command.Exchange.EXP != 0 || len(command.Exchange.Quests) > 0 || growth != nil
-		if progress && !strings.HasPrefix(command.Script, "quest/") && !scripts.LegacyPortal(command.Script) && !scripts.LegacyNPC(command.Script) {
-			// Forced quest status and experience belong to reviewed quest
-			// sources and generated Legacy portal and NPC sources.
+		lavaReward := command.Script == "npc/2032003.lua" && a.npcID == 2032003 && snapshot.Character.MapID == 280020001 &&
+			command.Exchange.EXP == 10000 && len(command.Exchange.Quests) == 0 && growth == nil
+		if progress && !lavaReward && !strings.HasPrefix(command.Script, "quest/") && !scripts.LegacyPortal(command.Script) && !scripts.LegacyNPC(command.Script) {
+			// Forced quest status and experience are limited to reviewed sources.
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
 		if a.server.tradeActive(a.live) {

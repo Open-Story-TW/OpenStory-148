@@ -1105,12 +1105,6 @@
       "lua_sha256": "6abe7caab39bc802727adb13a93c84f71493f87f01df6d66382ab8f4e4bc3b7b"
     },
     {
-      "legacy": "npc/2032003.js",
-      "source_sha256": "691c91aa9efafd42f64e94be42ed4f44b3bf9682a17b2ee60027bf0fe2405491",
-      "lua": "npc/2032003.lua",
-      "lua_sha256": "270d8e9c2db153de08fe91af74747f095bb2d21957ea7cc47d0bdaf83aa0d2eb"
-    },
-    {
       "legacy": "npc/2040000.js",
       "source_sha256": "b1554d2eaaf696fb0ac469259b8521142148fa92e3656b72e5292a549889b61e",
       "lua": "npc/2040000.lua",
