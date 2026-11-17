@@ -94,6 +94,9 @@ type gameplayRoom struct {
 	escort          *escortRoom
 	bossForms       *eventBossForms
 	rex             *hoblinArena
+	romeoWave       bool
+	romeoSwitch     int
+	romeoBoss       *romeoBossRoom
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -321,6 +324,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickOXQuizzes(now)
 			s.tickTreasureHunts(now)
 			s.tickEscortEvents(now)
+			s.tickRomeoBossResults()
 		}
 	}
 }
@@ -449,6 +453,9 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 	case protocol.RecvReactorClick:
 		objectID := r.I32()
 		if r.Err() == nil && r.Remaining() == 0 && objectID > 0 {
+			if handled, err := s.clickRomeoArchive(ctx, live, sink, objectID); handled {
+				return true, err
+			}
 			return true, s.clickRomeoBeaker(ctx, live, sink, objectID)
 		}
 		return true, nil
@@ -458,6 +465,9 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, s.christmasFriendlyDamage(live, sink, payload)
 		}
 		hit, err := protocol.ReadMobHitEscort(protocol.NewReader(payload))
+		if err == nil && s.romeoEscortHit(channel, live, hit, time.Now()) {
+			return true, nil
+		}
 		if err == nil {
 			s.escortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())

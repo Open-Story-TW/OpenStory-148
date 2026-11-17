@@ -19,18 +19,25 @@ type romeoLabSearch struct {
 }
 
 func (s *Server) romeoLabPortal(ctx context.Context, live *liveCharacter, sink packetSink, portal content.Portal) (bool, error) {
-	switch portal.Script {
-	case "party5_click", "rnj1_pt00", "jnr1_pt00", "rnj1_out", "jnr1_out", "rnj2_out", "jnr2_out":
-	default:
+	session := partySession(live)
+	if session.Character.MapID < 926100000 || session.Character.MapID > 926110600 {
 		return false, nil
 	}
-	session := partySession(live)
 	inst := s.eventOf(session.CharacterID)
 	if inst == nil || (inst.definition.Name != content.RomeoPQName && inst.definition.Name != content.JulietPQName) {
 		return false, nil
 	}
 	first, current := inst.definition.Maps[0], session.Character.MapID
 	actor := eventOccupant{live, sink}
+	if current >= first+200 && current <= first+202 {
+		return s.romeoArchivePortal(ctx, inst, actor, current, portal)
+	}
+	if current == first+203 {
+		return s.romeoMadmanPortal(ctx, inst, actor, session, portal)
+	}
+	if current >= first+300 && current <= first+400 {
+		return s.romeoLanePortal(ctx, inst, actor, session, portal)
+	}
 	var next int
 	switch {
 	case current == first && portal.Script == "party5_click" && portal.Type == 11:

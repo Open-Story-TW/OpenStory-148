@@ -42,7 +42,7 @@ func (s *Server) npcScriptability(npcs map[int32]content.Life) [][]byte {
 			_, err := scripts.Source(fmt.Sprintf("npc/%d.lua", npc.TemplateID))
 			scripted = err == nil
 		}
-		if shopErr == nil || scripted {
+		if shopErr == nil || scripted || romeoDialogueNPC(npc.TemplateID) {
 			ids = append(ids, npc.TemplateID)
 			seen[npc.TemplateID] = true
 		}

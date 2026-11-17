@@ -47,6 +47,9 @@ type eventInstance struct {
 	christmas    christmasProgress
 	hoblin       *hoblinPQState
 	romeoSearch  *romeoLabSearch
+	romeoLanes   *romeoLabLanes
+	romeoArchive romeoLabArchive
+	romeoAngered bool
 }
 
 type eventSpace struct {
