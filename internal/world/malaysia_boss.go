@@ -80,6 +80,10 @@ func (s *Server) offerMalaysiaBossItem(ctx context.Context, session domain.Chara
 	if err != nil {
 		return
 	}
+	bodyStats, err := g.catalog.Mob(def.FirstForm + 1)
+	if err != nil {
+		return
+	}
 	key := mapKey{channel: drop.ChannelID, mapID: drop.MapID}
 	g.mu.Lock()
 	room := g.rooms[key]
@@ -92,11 +96,15 @@ func (s *Server) offerMalaysiaBossItem(ctx context.Context, session domain.Chara
 		g.mu.Unlock()
 		return
 	}
-	mob := g.newMalaysiaBoss(def, stats)
-	if mob == nil {
+	opener := g.newMalaysiaBoss(def, stats)
+	body := g.newMalaysiaBoss(def, bodyStats)
+	if opener == nil || body == nil {
 		g.mu.Unlock()
 		return
 	}
+	// Both WZ opening forms have only a one-pixel stand sprite. Their
+	// removeAfter=2 revive starts the attackable boss after the animation.
+	opener.fake = true
 	statue.offering = true
 	g.mu.Unlock()
 
@@ -106,7 +114,10 @@ func (s *Server) offerMalaysiaBossItem(ctx context.Context, session domain.Chara
 
 	g.mu.Lock()
 	statue.offering = false
-	if err != nil || g.rooms[key] != room || s.eventOf(session.CharacterID) != attempt {
+	s.events.mu.Lock()
+	active := !attempt.ended && len(attempt.members) >= attempt.definition.Keep
+	s.events.mu.Unlock()
+	if err != nil || g.rooms[key] != room || !active {
 		g.mu.Unlock()
 		if err == nil {
 			s.removeVisibleDrop(drop, protocol.RemoveItemExpired(drop.ObjectID))
@@ -116,9 +127,30 @@ func (s *Server) offerMalaysiaBossItem(ctx context.Context, session domain.Chara
 	statue.form = def.FirstForm
 	statue.reactor.state = 1
 	updates := roomBroadcast(room, protocol.ReactorState(statue.reactor.objectID, 1, def.X, def.Y), -1)
-	updates = append(updates, spawnMalaysiaBoss(room, mob)...)
+	updates = append(updates, spawnMalaysiaBoss(room, opener)...)
 	g.mu.Unlock()
 	s.removeVisibleDrop(drop, protocol.RemoveItemExpired(drop.ObjectID))
+	deliver(updates)
+	time.AfterFunc(2*time.Second, func() {
+		s.reviveMalaysiaBossOpener(key, room, statue, attempt, opener, body)
+	})
+}
+
+func (s *Server) reviveMalaysiaBossOpener(key mapKey, room *gameplayRoom, statue *malaysiaStatue, attempt *eventInstance, opener, body *gameplayMob) {
+	g := s.gameplay
+	g.mu.Lock()
+	s.events.mu.Lock()
+	active := !attempt.ended && len(attempt.members) >= attempt.definition.Keep
+	s.events.mu.Unlock()
+	if !active || g.rooms[key] != room || room.mobs[opener.objectID] != opener || statue.form != opener.stats.ID {
+		g.mu.Unlock()
+		return
+	}
+	delete(room.mobs, opener.objectID)
+	statue.form = body.stats.ID
+	updates := roomBroadcast(room, protocol.RemoveMonster(opener.objectID), -1)
+	updates = append(updates, spawnMalaysiaBoss(room, body)...)
+	g.mu.Unlock()
 	deliver(updates)
 }
 
@@ -135,7 +167,7 @@ func (s *Server) malaysiaBossFormDefeated(key mapKey, actor int64, form int) {
 	}
 	var updates []roomDelivery
 	for _, statue := range room.malaysiaStatues {
-		if statue.form != form || form <= 0 {
+		if statue.form != form || form <= statue.definition.FirstForm {
 			continue
 		}
 		if form == statue.definition.LastForm {
