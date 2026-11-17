@@ -13,6 +13,7 @@ var activityNPCs = map[int]content.Life{
 	103000000: {Kind: "n", TemplateID: 9270041, X: 840, Y: 66, Foothold: 94, RX0: 840, RX1: 840},
 	540010000: {Kind: "n", TemplateID: 9270038, X: 84, Y: 275, Foothold: 1, RX0: 84, RX1: 84},
 	100000000: {Kind: "n", TemplateID: rpsNPC, X: 390, Y: 274, Foothold: 113, RX0: 390, RX1: 390},
+	120000000: {Kind: "n", TemplateID: monsterRushNPC, X: 1140, Y: 305, Foothold: 24, RX0: 1140, RX1: 1140},
 }
 
 func activityLife(m content.Map, judgement bool) []content.Life {

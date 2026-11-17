@@ -608,6 +608,8 @@ func (s *Session) installHost() {
 		bind("ice_knight_clear", s.simpleCommand("ice_knight_clear", 0), 1)
 		bind("christmas_finish", s.simpleCommand("christmas_finish", 0), 1)
 		bind("hoblin_ambush", s.simpleCommand("hoblin_ambush", 0), 1)
+		bind("monster_rush_status", s.simpleCommand("monster_rush_status", 0), 1)
+		bind("monster_rush_donate", s.simpleCommand("monster_rush_donate", 1), 2)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err

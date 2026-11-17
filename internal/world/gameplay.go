@@ -31,6 +31,7 @@ type gameplayMob struct {
 	statuses         combat.MobStatuses
 	damageFloor      int64     // A boss stage can reserve HP while its allies defend it.
 	prelude          bool      // An event opening may take damage without a defeat.
+	rushUntil        time.Time // Public Monster Rush spawns expire without respawning.
 	fake             bool      // An encounter projection renders without taking damage.
 	qaHeld           bool      // QA !mobhold: never defeated, refilled every tick.
 	qaHeldUntil      time.Time // the hold lapses here (mobHoldTerm)
@@ -41,7 +42,7 @@ type gameplayMob struct {
 // Event maps reset their one-time spawns between groups.
 func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
 	_, eventMap := content.EventByMap(mapID)
-	if m.oneTime || (eventMap || content.TreasureHuntMap(mapID)) && m.life.RespawnSeconds == -1 {
+	if m.oneTime || !m.rushUntil.IsZero() || (eventMap || content.TreasureHuntMap(mapID)) && m.life.RespawnSeconds == -1 {
 		return time.Time{}
 	}
 	return now.Add(time.Duration(max(5, m.life.RespawnSeconds)) * time.Second)

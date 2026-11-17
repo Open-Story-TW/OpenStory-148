@@ -202,6 +202,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	// Optional in-process dummies (build tag loaddummy + MAPLEGO_LOAD_DUMMY=1).
 	s.startLoadDummies(ctx)
 	go s.runGameplay(ctx)
+	go s.runMonsterRush(ctx)
 	go s.runTransit(ctx)
 	go s.runSkills(ctx)
 	go s.runCombatLoot(ctx)
