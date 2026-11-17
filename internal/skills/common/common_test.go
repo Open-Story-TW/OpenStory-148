@@ -164,7 +164,12 @@ func TestBuffStatsAreSendable(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		p, err := cast(t, id, def.MaxLevel, gm)
+		character := gm
+		if id == 80001065 || id == 80001089 {
+			character.MapID = content.EscapeTower
+			character.SkillBuffs = []domain.SkillBuff{{ID: 80001065, Stat: "MONSTER_RIDING", Value: 1992002, ExpiresAt: time.Unix(1, 0)}}
+		}
+		p, err := cast(t, id, def.MaxLevel, character)
 		if err != nil {
 			t.Errorf("skill %d: %v", id, err)
 			continue
@@ -410,5 +415,38 @@ func TestGMHide(t *testing.T) {
 	p := mustCast(t, 9001004, 1, domain.Character{GM: 1})
 	if stats(p.Self)["GM_HIDE"] != 1 || !p.Toggle || p.Self.Duration != 2*time.Hour {
 		t.Fatalf("gm hide %+v", p)
+	}
+}
+
+func TestEscapeBalloonAndFlightFollowTheNativeFields(t *testing.T) {
+	const balloon, flight = 80001065, 80001089
+	for _, id := range []int{balloon, flight} {
+		def, _ := values(t, id, 1)
+		handler, registered := skills.Lookup(id)
+		if !def.Disabled || !registered || !handler.AllowDisabledCast || handler.DropOnEnter == nil {
+			t.Fatalf("skill %d raw WZ or cast scope changed", id)
+		}
+		if !handler.DropOnEnter(domain.Character{MapID: content.EscapeApproach}) {
+			t.Fatalf("skill %d persisted outside the tower", id)
+		}
+		if _, err := cast(t, id, 1, domain.Character{MapID: content.EscapeApproach}); err == nil {
+			t.Fatalf("skill %d could be activated outside a tower", id)
+		}
+	}
+
+	for _, field := range []int{content.EscapeTower, content.EscapeTraps} {
+		character := domain.Character{MapID: field}
+		mount := mustCast(t, balloon, 1, character)
+		if !mount.Toggle || mount.MPCost != 10 || stats(mount.Self)["MONSTER_RIDING"] != 1992002 {
+			t.Fatalf("field %d had unexpected mount result %+v", field, mount)
+		}
+		if _, err := cast(t, flight, 1, character); err == nil {
+			t.Fatalf("field %d allowed unmounted flight", field)
+		}
+		character.SkillBuffs = []domain.SkillBuff{{ID: balloon, Stat: "MONSTER_RIDING", Value: 1992002, ExpiresAt: time.Unix(1, 0)}}
+		flying := mustCast(t, flight, 1, character)
+		if !flying.Toggle || flying.MPCost != 5 || stats(flying.Self)["SOARING"] != 1 {
+			t.Fatalf("field %d had unexpected flight result %+v", field, flying)
+		}
 	}
 }

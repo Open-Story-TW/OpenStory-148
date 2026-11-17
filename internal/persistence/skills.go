@@ -268,7 +268,7 @@ func (s *Store) CastSkill(ctx context.Context, req domain.SkillCastRequest) (dom
 		return r, domain.ErrForbidden
 	}
 	template, e := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), req.SkillID)
-	if e != nil || template.Disabled || !template.CanLearnBy(c) {
+	if e != nil || (template.Disabled && !handler.AllowDisabledCast) || !template.CanLearnBy(c) {
 		return r, domain.ErrForbidden
 	}
 	state.Level = level

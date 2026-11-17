@@ -47,6 +47,9 @@ type Handler struct {
 	// LevelFrom names the learned skill whose level a linked skill is cast
 	// at (33101008 uses 33101004's level); zero means the skill itself.
 	LevelFrom int
+	// AllowDisabledCast accepts an already learned native activation whose WZ
+	// disables ordinary use. Allocation still follows the raw WZ flag.
+	AllowDisabledCast bool
 	// Cast resolves a RecvSkillCast activation (buff, party buff, heal,
 	// summon, field object). Nil means the skill cannot be cast that way.
 	Cast func(*CastContext) (CastPlan, error)
