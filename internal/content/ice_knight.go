@@ -21,9 +21,9 @@ func iceKnightEvent() Event {
 		PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,
 		Maps: []int{IceKnightFirst, IceKnightSecond, IceKnightArena},
 		Spawns: []EventSpawn{
-			{MapID: IceKnightFirst, Life: Life{Kind: "m", TemplateID: IceEscortMob, X: -2022, Y: 93, Foothold: 71,
+			{MapID: IceKnightFirst, Life: Life{Kind: "m", TemplateID: IceEscortMob, X: -2046, Y: 93, Foothold: 71,
 				RX0: -2070, RX1: 1867, RespawnSeconds: -1}},
-			{MapID: IceKnightSecond, Life: Life{Kind: "m", TemplateID: IceEscortMob, X: -2793, Y: 93, Foothold: 99,
+			{MapID: IceKnightSecond, Life: Life{Kind: "m", TemplateID: IceEscortMob, X: -2792, Y: 93, Foothold: 99,
 				RX0: -2880, RX1: 2175, RespawnSeconds: -1}},
 			{MapID: IceKnightArena, Life: Life{Kind: "m", TemplateID: IceKnightBoss, X: -579, Y: 153, Foothold: 1,
 				RX0: -620, RX1: -530, RespawnSeconds: -1}},

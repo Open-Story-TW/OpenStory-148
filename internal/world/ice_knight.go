@@ -16,10 +16,16 @@ type iceKnightState struct {
 }
 
 type iceEscortRoom struct {
-	mob    *gameplayMob
-	next   int
-	done   bool
-	lastAt time.Time
+	mob       *gameplayMob
+	next      int
+	done      bool
+	lastAt    time.Time
+	stopUntil time.Time
+}
+
+func (room *iceEscortRoom) pathPacket(route []content.EscortNode) []byte {
+	mob := room.mob
+	return protocol.EscortPath(mob.objectID, mob.life.X, mob.life.Y, room.next, route, int(time.Until(room.stopUntil).Milliseconds()))
 }
 
 func (g *gameplaySpace) prepareIceEscort(inst *eventInstance, hp int64) error {
@@ -59,8 +65,7 @@ func (s *Server) iceEscortPath(channel int, live *liveCharacter, sink packetSink
 		g.mu.Unlock()
 		return nil
 	}
-	mob := room.ice.mob
-	p := protocol.EscortPath(oid, mob.life.X, mob.life.Y, room.ice.next, room.definition.EscortRoute)
+	p := room.ice.pathPacket(room.definition.EscortRoute)
 	g.mu.Unlock()
 	return sink.WritePacket(p)
 }
@@ -80,9 +85,10 @@ func (s *Server) iceEscortNode(channel int, live *liveCharacter, sink packetSink
 	}
 	stage, route := room.ice, room.definition.EscortRoute
 	member := room.members[actor.CharacterID]
+	now := time.Now()
 	if member == nil || member.live != live || !sameDropSink(member.sink, sink) || stage.done || stage.mob.hp <= 0 ||
 		stage.mob.objectID != oid || stage.mob.controller != actor.CharacterID || next != stage.next+1 || next > len(route) ||
-		time.Since(stage.lastAt) < 100*time.Millisecond {
+		!stage.stopUntil.IsZero() || now.Sub(stage.lastAt) < 100*time.Millisecond {
 		g.mu.Unlock()
 		return
 	}
@@ -91,8 +97,11 @@ func (s *Server) iceEscortNode(channel int, live *liveCharacter, sink packetSink
 		g.mu.Unlock()
 		return
 	}
-	stage.next, stage.lastAt = next, time.Now()
+	stage.next, stage.lastAt = next, now
 	if next != len(route) {
+		if node.Attribute == 2 && node.StopMillis > 0 {
+			stage.stopUntil = now.Add(time.Duration(node.StopMillis) * time.Millisecond)
+		}
 		g.mu.Unlock()
 		return
 	}
@@ -100,6 +109,24 @@ func (s *Server) iceEscortNode(channel int, live *liveCharacter, sink packetSink
 	delete(room.mobs, oid)
 	packets := roomBroadcast(room, protocol.KillMonster(oid), -1)
 	packets = append(packets, roomBroadcast(room, protocol.PortalTrainingMessage("冰人已安全抵達，請前往下一關。"), -1)...)
+	g.mu.Unlock()
+	deliver(packets)
+}
+
+func (s *Server) resumeIceEscorts(now time.Time) {
+	g := s.gameplay
+	var packets []roomDelivery
+	g.mu.Lock()
+	for _, room := range g.rooms {
+		stage := room.ice
+		if stage == nil || stage.stopUntil.IsZero() || now.Before(stage.stopUntil) {
+			continue
+		}
+		stage.stopUntil = time.Time{}
+		if stage.mob.hp > 0 && !stage.done {
+			packets = append(packets, roomBroadcast(room, protocol.ResumeEscort(stage.mob.objectID), -1)...)
+		}
+	}
 	g.mu.Unlock()
 	deliver(packets)
 }
@@ -123,7 +150,7 @@ func (s *Server) iceEscortHit(channel int, live *liveCharacter, sink packetSink,
 	member := room.members[actor.CharacterID]
 	src, dst := room.mobs[hit.Attacker], room.ice.mob
 	if member == nil || member.live != live || !sameDropSink(member.sink, sink) || src == nil ||
-		src.controller != actor.CharacterID || src.hp <= 0 || src.claiming || dst.hp <= 0 || hit.Escort != dst.objectID ||
+		src.hp <= 0 || src.claiming || dst.hp <= 0 || hit.Escort != dst.objectID ||
 		(src.life.TemplateID != 9300439 && src.life.TemplateID != 9300440) ||
 		!within(src.life.X, src.life.Y, dst.life.X, dst.life.Y, 130) || now.Sub(src.escortHitAt) < 3*time.Second {
 		g.mu.Unlock()

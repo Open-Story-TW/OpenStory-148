@@ -212,6 +212,9 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 		}
 		if mob.controller == c.ID {
 			packets = append(packets, mob.spawnPacket(true, now))
+			if r.ice != nil && r.ice.mob == mob {
+				packets = append(packets, r.ice.pathPacket(r.definition.EscortRoute))
+			}
 		}
 	}
 	packets = append(packets, summonEnterPacketsLocked(r)...)
@@ -276,6 +279,9 @@ func (s *Server) leaveGameplay(channel, mapID int, characterID int64, expected .
 			mob.controller = id
 			if mob.hp > 0 {
 				packets = append(packets, delivery{m.sink, mob.spawnPacket(true, time.Now())})
+				if r.ice != nil && r.ice.mob == mob {
+					packets = append(packets, delivery{m.sink, r.ice.pathPacket(r.definition.EscortRoute)})
+				}
 			}
 			break
 		}
@@ -309,6 +315,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickHenesysPQ(ctx, now)
 			s.tickOXQuizzes(now)
 			s.tickTreasureHunts(now)
+			s.resumeIceEscorts(now)
 		}
 	}
 }
@@ -439,6 +446,11 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		if err == nil {
 			s.iceEscortHit(channel, live, sink, hit, time.Now())
 			s.moonBunnyHit(channel, live, sink, hit, time.Now())
+		}
+		return true, nil
+	case protocol.RecvEscortAttack:
+		if hit, err := protocol.ReadEscortAttack(r); err == nil {
+			s.iceEscortHit(channel, live, sink, hit, time.Now())
 		}
 		return true, nil
 	case protocol.RecvEscortPathRequest:
