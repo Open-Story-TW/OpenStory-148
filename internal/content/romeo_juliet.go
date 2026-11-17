@@ -1,8 +1,10 @@
 package content
 
 const (
-	RomeoPQName  = "RomeoPQ"
-	JulietPQName = "JulietPQ"
+	RomeoPQName    = "RomeoPQ"
+	JulietPQName   = "JulietPQ"
+	RomeoLabLiquid = 4001132
+	RomeoLabBeaker = 2618000
 )
 
 func RomeoJulietEvent(name string) bool {

@@ -249,7 +249,7 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 		id := def.TemplateID
 		elevator := id == HeliosElevatorDoor && (mapID == 222020100 || mapID == 222020200)
 		krexel := id == KrexelReactor && mapID == KrexelArena
-		if !elevator && !krexel && !TreasureHuntReactor(mapID, id) {
+		if !elevator && !krexel && !TreasureHuntReactor(mapID, id) && !RomeoLabReactor(mapID, id) {
 			if _, err = GatherNodeDefinition(root, id); err != nil {
 				continue
 			}

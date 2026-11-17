@@ -170,6 +170,10 @@ func (s *Store) PickupItem(ctx context.Context, r domain.ItemPickupRequest) (dom
 	if dx*dx+dy*dy > 180*180 {
 		return domain.InventoryResult{}, domain.ErrForbidden
 	}
+	if drop.TemplateID == content.RomeoLabLiquid && content.RomeoLabReactor(drop.MapID, content.RomeoLabBeaker) &&
+		(drop.Quantity != 1 || holdsTemplate(c, drop.TemplateID)) {
+		return domain.InventoryResult{}, domain.ErrForbidden
+	}
 	if drop.QuestID > 0 {
 		remaining, needErr := content.QuestDropRemaining(os.Getenv("MAPLEGO_WZ_ROOT"), c, drop.QuestID, drop.TemplateID)
 		if needErr != nil || remaining < drop.Quantity {

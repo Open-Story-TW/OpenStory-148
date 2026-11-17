@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	romeoBeaker      = 2618000
+	romeoBeaker      = content.RomeoLabBeaker
 	romeoBeakerDoor  = 2618006
-	romeoLiquid      = 4001132
+	romeoLiquid      = content.RomeoLabLiquid
 	romeoBeakerFull  = 7
 	romeoBeakerDrain = 9500 * time.Millisecond // v148 Reactor.wz/2618000, states 1–6
 )
