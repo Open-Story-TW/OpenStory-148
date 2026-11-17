@@ -354,7 +354,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
 		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps", "christmas_finish", "hoblin_ambush",
-		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage":
+		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage", "pirate_pq_stage":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
@@ -483,6 +483,12 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 			return result("unavailable")
 		}
 		status, err := a.server.ellinNPC(ctx, snapshot, eventOccupant{a.live, a.sink}, a.npcID)
+		return scripting.CommandResult{Value: status}, err
+	case "pirate_pq_stage":
+		if a.npcID != 2094002 {
+			return result(map[string]any{"state": "unavailable"})
+		}
+		status, err := a.server.piratePQTalk(ctx, snapshot, eventOccupant{a.live, a.sink})
 		return scripting.CommandResult{Value: status}, err
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {

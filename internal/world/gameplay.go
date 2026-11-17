@@ -334,6 +334,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickEscortEvents(now)
 			s.tickJudgement(ctx, now)
 			s.tickEllinPQ(now)
+			s.tickPiratePQ(ctx, now)
 		}
 	}
 }
@@ -549,6 +550,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.ellinPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.piratePQPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
 	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
@@ -599,6 +603,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.ellinPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.piratePQPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

@@ -3229,18 +3229,6 @@
       "reason": "cm.sendDojoRanks is not supported (line 7)"
     },
     {
-      "legacy": "npc/2094000.js",
-      "reason": "call .getMembers is not supported (line 11)"
-    },
-    {
-      "legacy": "npc/2094001.js",
-      "reason": "cm.gainNX is not supported (line 27)"
-    },
-    {
-      "legacy": "npc/2094002.js",
-      "reason": "cm.getEventManager is not supported (line 18)"
-    },
-    {
       "legacy": "npc/2096000.js",
       "reason": "call .killMonster is not supported (line 2)"
     },

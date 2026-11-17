@@ -48,6 +48,7 @@ type eventInstance struct {
 	hoblin       *hoblinPQState
 	escape       *escapeState
 	ellin        *ellinPQState
+	pirate       *piratePQState
 
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
@@ -209,6 +210,13 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		}
 	}
 	leaderOccupant := eventOccupant{live, sink}
+	if inst.pirate != nil {
+		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
+		if err = s.preparePiratePQ(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
 	if inst.ellin != nil {
 		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
 		if err = s.prepareEllinPQ(ctx, inst, group); err != nil {
@@ -264,7 +272,7 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
 	}
-	if (inst.escape != nil || inst.ellin != nil) && here-len(failed) < e.PartyMin {
+	if (inst.escape != nil || inst.ellin != nil || inst.pirate != nil) && here-len(failed) < e.PartyMin {
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, nil
 	}
@@ -332,6 +340,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.Name == content.IceKnightName && (leader.Character.MapID != content.IceKnightLobby || here != size) {
 		return nil, nil, "party_size", here, qualified
 	}
+	if e.Name == content.PiratePQName && (leader.Character.MapID != content.PiratePQLobby || here != size) {
+		return nil, nil, "party_size", here, qualified
+	}
 	if e.Name == content.EllinPQName && (leader.Character.MapID != content.EllinLobby || here != size) {
 		return nil, nil, "party_size", here, qualified
 	}
@@ -382,6 +393,10 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.HoblinPQName {
 		inst.hoblin = &hoblinPQState{rewards: make(map[int64]int64)}
+	}
+	if e.Name == content.PiratePQName {
+		inst.pirate = &piratePQState{rewards: make(map[int64]piratePQReward)}
+		inst.pirate.startSection(content.PiratePQShore, time.Now())
 	}
 	if e.Name == content.EllinPQName {
 		inst.ellin = &ellinPQState{rewards: make(map[int64]ellinReward)}
@@ -610,7 +625,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	inst := s.events.byMember[c.ID]
 	var deadline time.Time
 	if inst != nil {
-		deadline = inst.deadline
+		deadline = inst.currentDeadline()
 		if c.MapID == content.KentaDefense && !inst.kentaDefenseAt.IsZero() &&
 			inst.kentaDefenseAt.Before(deadline) && time.Now().Before(inst.kentaDefenseAt) {
 			deadline = inst.kentaDefenseAt
@@ -699,7 +714,7 @@ func (s *Server) tickEvents(now time.Time) {
 	var due, preludes, kentaDefenses []*eventInstance
 	s.events.mu.Lock()
 	for _, inst := range s.events.running {
-		if !inst.ended && inst.christmas != christmasRewarding && !now.Before(inst.deadline) {
+		if !inst.ended && inst.christmas != christmasRewarding && !now.Before(inst.currentDeadline()) {
 			due = append(due, inst)
 		} else if inst.definition.Name == content.KentaPQName && !inst.ended && !inst.kentaDefended &&
 			!inst.kentaDefenseAt.IsZero() && !now.Before(inst.kentaDefenseAt) {
@@ -720,6 +735,15 @@ func (s *Server) tickEvents(now time.Time) {
 	for _, inst := range preludes {
 		s.startBalrogFight(inst, now)
 	}
+}
+
+func (inst *eventInstance) currentDeadline() time.Time {
+	if inst.pirate != nil {
+		if phase := time.Unix(0, inst.pirate.deadline.Load()); phase.Before(inst.deadline) {
+			return phase
+		}
+	}
+	return inst.deadline
 }
 
 func (s *Server) eventOf(id int64) *eventInstance {
