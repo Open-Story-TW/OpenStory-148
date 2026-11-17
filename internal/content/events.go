@@ -70,7 +70,7 @@ var events = map[string]Event{
 	},
 	"BalrogEasy": {
 		Name: "BalrogEasy", Maps: []int{105100400, 105100401}, ExitMap: 105100100,
-		Seconds: 1200, PartyMin: 3, PartyMax: 6, Keep: 3,
+		Seconds: 1200, PartyMin: 1, PartyMax: 6, Keep: 1,
 		LevelMin: 45, LevelMax: 200, ExpeditionType: 2000, LobbyMap: 105100100,
 		RequiredMobs: map[int]map[int]int{105100400: {}, 105100401: {}},
 		Spawns: []EventSpawn{

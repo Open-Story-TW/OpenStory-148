@@ -42,15 +42,18 @@ func balrogTestFixture(t *testing.T, size int) *eventFixture {
 	return f
 }
 
-func TestBalrogMinimumThreeAndOpening(t *testing.T) {
-	small := balrogTestFixture(t, 2)
-	reason, _, _, err := small.server.eventStart(context.Background(), "BalrogEasy", 1, small.lives[1], small.sinks[1])
-	if err != nil || reason != "party_size" || small.mapOf(1) != 105100100 {
-		t.Fatalf("two members: reason=%q map=%d err=%v", reason, small.mapOf(1), err)
+func TestBalrogOriginalRosterMinimum(t *testing.T) {
+	f := balrogTestFixture(t, 1)
+	reason, _, _, err := f.server.eventStart(context.Background(), "BalrogEasy", 1, f.lives[1], f.sinks[1])
+	if err != nil || reason != "" || f.mapOf(1) != balrogArena {
+		t.Fatalf("expedition member: reason=%q map=%d err=%v", reason, f.mapOf(1), err)
 	}
+}
+
+func TestBalrogOpeningWithThreeMembers(t *testing.T) {
 	f := balrogTestFixture(t, 3)
 	s := f.server
-	reason, _, _, err = s.eventStart(context.Background(), "BalrogEasy", 1, f.lives[1], f.sinks[1])
+	reason, _, _, err := s.eventStart(context.Background(), "BalrogEasy", 1, f.lives[1], f.sinks[1])
 	if err != nil || reason != "" || f.mapOf(3) != balrogArena {
 		t.Fatalf("three members: reason=%q map=%d err=%v", reason, f.mapOf(3), err)
 	}
