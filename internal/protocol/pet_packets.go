@@ -79,6 +79,7 @@ func ReadPetFood(r *Reader) (PetFoodRequest, error) {
 func ReadPetMove(r *Reader) (PetMove, error) {
 	var v PetMove
 	index := r.I32()
+	r.Skip(1) // TWMS v148 sends a byte before the starting position.
 	v.StartX, v.StartY = r.I16(), r.I16()
 	r.Skip(4)
 	start := r.Pos()

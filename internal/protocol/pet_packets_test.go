@@ -52,6 +52,7 @@ func TestReadPetRequests(t *testing.T) {
 func TestReadPetMoveRelaysFragments(t *testing.T) {
 	w := NewRawWriter()
 	w.I32(1)
+	w.U8(1)
 	w.I16(10)
 	w.I16(20)
 	w.I32(0)
@@ -66,7 +67,7 @@ func TestReadPetMoveRelaysFragments(t *testing.T) {
 	w.Bytes(frag.Packet())
 	w.Zero(9)
 	move, err := ReadPetMove(NewReader(w.Packet()))
-	if err != nil || move.Index != 1 || !move.Changed || move.X != 40 || move.Y != 50 || !bytes.Equal(move.Fragments, frag.Packet()) {
+	if err != nil || move.Index != 1 || move.StartX != 10 || move.StartY != 20 || !move.Changed || move.X != 40 || move.Y != 50 || !bytes.Equal(move.Fragments, frag.Packet()) {
 		t.Fatalf("move %+v %v", move, err)
 	}
 	out := NewReader(MovePet(77, move.Index, move.StartX, move.StartY, move.Fragments))
