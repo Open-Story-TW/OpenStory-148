@@ -99,16 +99,13 @@ func (s *Server) climbRomeoLane(ctx context.Context, inst *eventInstance, actor 
 	row, column := int(portal[2]-'0'), int(portal[3]-'0')
 	s.events.mu.Lock()
 	lanes := inst.romeoLanes
-	if lanes == nil || lanes.owners[lane] != session.CharacterID || lanes.progress[lane] != row {
-		s.events.mu.Unlock()
+	next, valid := lanes.step(lane, row, column, session.CharacterID)
+	s.events.mu.Unlock()
+	if !valid {
 		return eventPortalNotice(actor.sink, "請使用目前所在樓層的傳送點。")
 	}
-	correct := lanes.columns[row][lane] == column
-	s.events.mu.Unlock()
-	next := row + 1
 	message := "通過這一層。"
-	if !correct {
-		next = max(0, row-1)
+	if next <= row {
 		message = "這個傳送點通往較低的樓層。"
 	}
 	target := fmt.Sprintf("pt%d0", next)
@@ -125,6 +122,18 @@ func (s *Server) climbRomeoLane(ctx context.Context, inst *eventInstance, actor 
 	lanes.progress[lane] = next
 	s.events.mu.Unlock()
 	return eventPortalNotice(actor.sink, message)
+}
+
+// A player who falls can retry a lower platform. The portal dispatcher checks
+// the player's position, and higher platforms still require a correct answer.
+func (lanes *romeoLabLanes) step(lane, row, column int, characterID int64) (int, bool) {
+	if lanes == nil || lanes.owners[lane] != characterID || row > lanes.progress[lane] {
+		return 0, false
+	}
+	if lanes.columns[row][lane] == column {
+		return row + 1, true
+	}
+	return max(0, row-1), true
 }
 
 func (s *Server) romeoWarpNamed(ctx context.Context, inst *eventInstance, actor eventOccupant, from, to int, name string) error {
