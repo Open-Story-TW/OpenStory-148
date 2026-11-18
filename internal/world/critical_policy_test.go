@@ -12,6 +12,28 @@ import (
 	"maple-go-server/internal/protocol"
 )
 
+func TestBossCriticalAuditKeepsOrdinaryHistoryIndependent(t *testing.T) {
+	var audits targetCriticalAudits
+	ordinary := audits.forTarget(false, 20)
+	boss := audits.forTarget(true, 20)
+	if ordinary == boss || audits.forTarget(true, 0) != ordinary || audits.forTarget(false, 0) != ordinary {
+		t.Fatal("only a boss with an active boss-rate bonus should use separate history")
+	}
+
+	const character = 1
+	ordinary.Normal(character)
+	for i := 0; i < 250; i++ {
+		if i%5 >= 2 {
+			boss.Normal(character)
+		} else if !boss.Admit(character, 35) {
+			t.Fatalf("boss hit at the configured rate was rejected on line %d", i)
+		}
+	}
+	if !ordinary.Admit(character, 15) {
+		t.Fatal("boss history rejected a legal ordinary-target critical")
+	}
+}
+
 func TestReviewedCriticalityEvidencePreservesUnknownWithoutSettingRawBit(t *testing.T) {
 	t.Setenv("MAPLEGO_COMBAT_EVIDENCE_CHARACTERS", "7")
 	q := domain.CombatTarget{ObjectID: 1, MobID: 9300306, BeforeHP: 1000, Lines: []domain.CombatDamageLine{{Raw: 426, Applied: 426, Criticality: domain.CombatCriticalUnknown}}}

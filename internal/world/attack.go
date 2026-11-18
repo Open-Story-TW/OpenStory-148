@@ -45,8 +45,20 @@ type genericAttack struct {
 	summonOwnerLevel int
 }
 
-// criticalAudit limits unmarked critical values to what each attacker's rate allows.
-var criticalAudit combat.CriticalAudit
+// Critical history stays separate when a boss has a different rate.
+type targetCriticalAudits struct {
+	ordinary combat.CriticalAudit
+	boss     combat.CriticalAudit
+}
+
+func (a *targetCriticalAudits) forTarget(boss bool, bossBonus int) *combat.CriticalAudit {
+	if boss && bossBonus != 0 {
+		return &a.boss
+	}
+	return &a.ordinary
+}
+
+var criticalAudits targetCriticalAudits
 
 // legacyAttack reports families with reviewed bespoke handlers and MCP
 // evidence; they keep their own path until migrated.
@@ -313,15 +325,16 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	killed := false
 	for i, mob := range mobs {
 		tp := plan.Targets[i]
+		audit := criticalAudits.forTarget(mob.stats.Boss, stats.BossCritRate)
 		targetCritRate := stats.CriticalRateAgainst(actx.Effect.CriticalRate, mob.stats.Boss)
 		for j, over := range tp.Critical {
 			if !over {
 				if tp.Lines[j] > 0 {
-					criticalAudit.Normal(c.ID)
+					audit.Normal(c.ID)
 				}
 				continue
 			}
-			if !criticalAudit.Admit(c.ID, targetCritRate) {
+			if !audit.Admit(c.ID, targetCritRate) {
 				slog.Warn("attack_crit_excess", "character", c.ID, "skill", a.SkillID, "claimed", tp.Lines[j], "bound", tp.Normal[j], "crit_rate", targetCritRate)
 				tp.Lines[j], tp.Critical[j] = min(tp.Lines[j], tp.Normal[j]), false
 				tp.Clipped++
