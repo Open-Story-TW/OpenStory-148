@@ -4,8 +4,8 @@
 -- the character's level and answers with the chosen id. Differences from
 -- Legacy: under level 10 the refusal is a dialogue page instead of a chat
 -- line; 中式結婚 (700000000) is left out because the server's map data does
--- not have that map. Escape uses the saved MULUNG_TC return location read
--- by prisonBreak_exit.lua.
+-- not have that map. Escape and Azwan use the saved MULUNG_TC return location
+-- read by their exit portals.
 local level = npc:level()
 if level < 10 then
     npc:say("沒有可以通過次元之鏡移動的地方。", false, false)
@@ -19,6 +19,7 @@ local entries = {
     { id = 10, text = "組隊訓練場", map = 910340700, portal = 0, min = 25, max = 30 },
     { id = 2, text = "怪物嘉年華1", map = 980000000, portal = 4, min = 30, max = 50 },
     { id = 3, text = "怪物嘉年華2", map = 980030000, portal = 4, min = 51, max = 70 },
+    { id = 4, text = "霧之海的鬼盜船", map = 923020000, portal = 0, min = 120, max = 159 },
     { id = 5, text = "奈特的金字塔", map = 926010000, portal = 4, min = 60, max = 109 },
     { id = 11, text = "時空的裂縫", map = 221023300, portal = 0, min = 20 },
     { id = 12, text = "毒霧森林", map = 300030100, portal = 0, min = 70 },
@@ -29,6 +30,7 @@ local entries = {
     { id = 17, text = "御龍魔", map = 240080000, portal = 0, min = 120 },
     { id = 21, text = "陷入危險的坎特", map = 923040000, portal = 0, min = 120 },
     { id = 22, text = "逃脫", map = 921160000, portal = 0, min = 120 },
+    { id = 27, text = "阿斯旺反抗戰", map = 262010000, portal = 0, min = 40 },
 }
 
 local offered = {}
@@ -42,7 +44,7 @@ end
 
 local choice = npc:ask_map_selection(offered)
 local destination = byID[choice]
-if destination.map == 921160000 then
+if destination.map == 921160000 or destination.map == 262010000 then
     local saved = npc:exchange({quest_data = {{id = 1900000001, data = tostring(npc:map_id())}}})
     if not saved.ok then
         npc:say("暫時無法記錄返回位置，請再試一次。", false, false)

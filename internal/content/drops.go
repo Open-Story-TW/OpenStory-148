@@ -85,7 +85,17 @@ func MonsterDrops(mobID, mapID int) ([]DropDefinition, error) {
 	if mobID < 1 || mapID < 0 {
 		return nil, fmt.Errorf("invalid drop lookup")
 	}
-	out := append([]DropDefinition(nil), dropsByMob[mobID]...)
+	var out []DropDefinition
+	seenAmoria := false
+	for _, row := range dropsByMob[mobID] {
+		if restricted, allowed := AmoriaMonsterDrop(mapID, mobID, row.TemplateID); restricted {
+			if seenAmoria || !allowed {
+				continue
+			}
+			seenAmoria = true
+		}
+		out = append(out, row)
+	}
 	if mapID == KentaBoss && (mobID == 9300461 || mobID == 9300468) {
 		out = append(out, DropDefinition{ID: mobID, MobID: mobID, TemplateID: KentaScales, Minimum: 1, Maximum: 1, Chance: 1000000})
 	}

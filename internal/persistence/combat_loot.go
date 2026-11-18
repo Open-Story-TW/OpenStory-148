@@ -109,7 +109,9 @@ func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.Charact
 			continue
 		}
 		definition, err := inventoryDefinition(row.TemplateID)
-		if err != nil || definition.InvType < 1 || definition.InvType > 4 || definition.Cash || definition.Quest && row.QuestID == 0 {
+		_, amoriaDrop := content.AmoriaMonsterDrop(value.MapID, mobID, row.TemplateID)
+		if err != nil || definition.InvType < 1 || definition.InvType > 4 || definition.Cash ||
+			definition.Quest && row.QuestID == 0 && !amoriaDrop {
 			plan.Unsupported = append(plan.Unsupported, row.ID)
 			continue
 		}

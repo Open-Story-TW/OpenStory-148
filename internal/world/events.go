@@ -54,9 +54,13 @@ type eventInstance struct {
 	romeoArchive romeoLabArchive
 	romeoAngered bool
 
+	azwanSweepRewards map[int64]azwanSweepReward
+	amoria            *amoriaState
+
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
 	kentaBubblesDone bool
+	ghost            *ghostMatch
 }
 
 type eventSpace struct {
@@ -158,9 +162,17 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		return reason, here, qualified, nil
 	}
 	nett := content.NettEvent(e.Name)
+	azwan := e.Name == content.AzwanSweepName
 	if nett {
 		group := append(append([]eventOccupant{}, present...), eventOccupant{live, sink})
 		if !s.nettCanEnter(ctx, group) {
+			s.eventEnd(inst)
+			return "daily", here, qualified, nil
+		}
+	}
+	if azwan {
+		group := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
+		if !s.eventRosterBelowLogLimit(ctx, group, azwanDaily, azwanDailyLimit) {
 			s.eventEnd(inst)
 			return "daily", here, qualified, nil
 		}
@@ -222,6 +234,14 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		}
 	}
 	leaderOccupant := eventOccupant{live, sink}
+	if inst.amoria != nil {
+		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
+		reason, err := s.prepareAmoria(ctx, inst, group)
+		if reason != "" || err != nil {
+			s.eventEnd(inst)
+			return reason, here, qualified, err
+		}
+	}
 	if inst.pirate != nil {
 		group := append(append([]eventOccupant(nil), present...), leaderOccupant)
 		if err = s.preparePiratePQ(ctx, inst, group); err != nil {
@@ -291,12 +311,18 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, err
 	}
-	if (inst.escape != nil || inst.ellin != nil || inst.pirate != nil || nett) && here-len(failed) < e.PartyMin {
+	if (inst.escape != nil || inst.ellin != nil || inst.pirate != nil || nett || inst.amoria != nil) && here-len(failed) < e.PartyMin {
 		s.eventEnd(inst)
 		return "unavailable", here, qualified, nil
 	}
 	if nett {
 		if err := s.startNettDefense(ctx, inst); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, nil
+		}
+	}
+	if azwan {
+		if err := s.startAzwanSweep(ctx, inst, here); err != nil {
 			s.eventEnd(inst)
 			return "unavailable", here, qualified, nil
 		}
@@ -327,7 +353,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		expeditionID, size, group, reason = s.eventExpeditionRoster(e, leader.CharacterID, live)
 	} else {
 		partyID, size, group, reason = s.eventPartyRoster(leader.CharacterID)
-		if reason == "no_party" && e.Ticket != 0 && e.PartyMin == 1 {
+		if reason == "no_party" && e.PartyMin == 1 && (e.Ticket != 0 || e.Name == content.AzwanSweepName) {
 			size, reason = 1, ""
 		}
 	}
@@ -353,7 +379,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		}
 		present = append(present, m)
 	}
-	if here < e.PartyMin || size > e.PartyMax || e.Ticket != 0 && here != size {
+	if here < e.PartyMin || size > e.PartyMax || (e.Ticket != 0 || e.Name == content.AzwanSweepName) && here != size {
 		return nil, nil, "party_size", here, qualified
 	}
 	if qualified != here {
@@ -403,7 +429,10 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	occupied := len(s.eventOccupants(leader.ChannelID, e.Maps)) > 0
 	inst = &eventInstance{id: platform.NewID(), definition: e, channel: leader.ChannelID, partyID: partyID, expeditionID: expeditionID,
 		members: map[int64]struct{}{leader.CharacterID: {}}, deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second),
-		properties: map[string]string{}, starting: expeditionID != 0 || content.NettEvent(e.Name)}
+		properties: map[string]string{}, starting: expeditionID != 0 || content.NettEvent(e.Name) || e.Name == content.AzwanSweepName}
+	if e.Name == content.AzwanSweepName {
+		inst.azwanSweepRewards = make(map[int64]azwanSweepReward)
+	}
 	if e.Name == content.HenesysPQName {
 		inst.moon = &henesysState{}
 	}
@@ -428,6 +457,9 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	}
 	if e.Name == content.EscapeName {
 		inst.escape = newEscapeState()
+	}
+	if e.Name == content.AmoriaName {
+		inst.amoria = newAmoriaState()
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
@@ -552,6 +584,9 @@ func (s *Server) eventSettle(inst *eventInstance) {
 	if inst.cleared {
 		keep = 1 // Victorious expedition members may finish picking up their drops.
 	}
+	if inst.ghost != nil {
+		keep = int(inst.ghost.minimum.Load())
+	}
 	short := !inst.starting && !inst.ended && len(inst.members) < keep
 	s.events.mu.Unlock()
 	if short {
@@ -662,6 +697,12 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 			if left := int(time.Until(deadline) / time.Second); left > 0 {
 				_ = sink.WritePacket(protocol.Clock(left))
 			}
+			if inst.ghost != nil {
+				s.ghostHUD(inst, eventOccupant{live, sink})
+			}
+			if inst.definition.Name == content.AzwanSweepName {
+				_ = azwanStageEffect(sink, inst.definition.Maps, c.MapID)
+			}
 			return
 		}
 		s.eventUnregister(inst, c.ID)
@@ -714,7 +755,10 @@ func (s *Server) eventPartyLeft(partyID int64, ids []int64) {
 		s.events.mu.Lock()
 		inst := s.events.byMember[id]
 		s.events.mu.Unlock()
-		if inst == nil || inst.partyID != partyID {
+		if inst == nil {
+			continue
+		}
+		if inst.partyID != partyID && !inst.belongsToGhostParty(partyID) {
 			continue
 		}
 		moved := false
@@ -763,6 +807,14 @@ func (s *Server) tickEvents(now time.Time) {
 }
 
 func (inst *eventInstance) currentDeadline() time.Time {
+	if inst.ghost != nil {
+		return inst.ghostEndTime()
+	}
+	if inst.amoria != nil {
+		if bonus := inst.amoria.bonusDeadline.Load(); bonus != 0 {
+			return time.Unix(0, bonus)
+		}
+	}
 	if inst.pirate != nil {
 		if phase := time.Unix(0, inst.pirate.deadline.Load()); phase.Before(inst.deadline) {
 			return phase

@@ -225,7 +225,14 @@ func (c *Catalog) readMapXML(id int) (*wzNode, error) {
 		}
 		if current.child("link") == nil {
 			// A linked field has the linked geometry and its own entry rules.
+			inherited := append([]wzNode(nil), current.Children...)
 			*current = *info
+			current.Children = append([]wzNode(nil), info.Children...)
+			for _, property := range inherited {
+				if current.child(property.Name) == nil {
+					current.Children = append(current.Children, property)
+				}
+			}
 			if defense != nil && field != id {
 				if inherited := node.child("monsterDefense"); inherited != nil {
 					*inherited = *defense
@@ -345,6 +352,32 @@ func parseMob(id int, info *wzNode) Mob {
 		}
 	}
 	return mob
+}
+
+// Map links share the source image's contents while retaining the requested
+// map ID. Ghost Ship's red and blue courses therefore get separate rooms.
+func readMapWZ(root string, id int) (*wzNode, error) {
+	visited := make(map[int]bool)
+	for {
+		if visited[id] {
+			return nil, fmt.Errorf("cyclic WZ map link at %d", id)
+		}
+		visited[id] = true
+		path := filepath.Join(root, "Map.wz", "Map", fmt.Sprintf("Map%d", id/100000000), fmt.Sprintf("%09d.img.xml", id))
+		node, err := readWZ(path)
+		if err != nil {
+			return nil, err
+		}
+		link := node.child("info").child("link")
+		if link == nil {
+			return node, nil
+		}
+		linkedID, err := strconv.Atoi(link.Value)
+		if err != nil || linkedID < 0 || linkedID > 999999998 {
+			return nil, fmt.Errorf("invalid WZ map link %q in %d", link.Value, id)
+		}
+		id = linkedID
+	}
 }
 
 func parseMap(id int, n *wzNode) (Map, error) {

@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"bytes"
 	"encoding/hex"
 	"testing"
 )
@@ -27,6 +28,27 @@ func TestReadMonsterMoveAcceptsLiveV148Frames(t *testing.T) {
 		if m.ObjectID <= 0 || len(m.Fragments) == 0 {
 			t.Fatalf("parsed %+v", m)
 		}
+		// v148 writes the initial velocity at the start of the path. Set a
+		// signed, nonzero velocity in the captured frame before relaying it.
+		velocity := []byte{0x96, 0xff, 0x04, 0x00}
+		copy(data[39:43], velocity)
+		m, err = ReadMonsterMove(NewReader(data[2:]))
+		if err != nil || m.StartVX != -106 || m.StartVY != 4 {
+			t.Fatalf("path velocity: %+v %v", m, err)
+		}
+		if sent := MonsterMovePacket(m); !bytes.Equal(sent[18:22], velocity) {
+			t.Fatalf("relayed path velocity %x, want %x", sent[18:22], velocity)
+		}
+	}
+}
+
+func TestNettDefenseWalkUsesNativePathWithoutAction(t *testing.T) {
+	want, err := hex.DecodeString("ae0143420f0000ff0000000000008e039b0096ff0000010024039b0096ff000010000000000003e803")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := NettDefenseWalk(1000003, 910, 804, 155, 16, 1000); !bytes.Equal(got, want) {
+		t.Fatalf("walk packet = %x, want %x", got, want)
 	}
 }
 

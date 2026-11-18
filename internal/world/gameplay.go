@@ -102,6 +102,7 @@ type gameplayRoom struct {
 	romeoWave       bool
 	romeoSwitch     int
 	romeoBoss       *romeoBossRoom
+	ghostDeck       *ghostDeck
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -348,6 +349,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickPiratePQ(ctx, now)
 			s.tickNettDefense(ctx, now)
 			s.tickRomeoBossResults()
+			s.tickAmoria(ctx, now)
 		}
 	}
 }
@@ -586,6 +588,12 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.piratePQPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.ghostPortal(ctx, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.amoriaPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
 	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
@@ -645,6 +653,12 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.romeoLabPortal(ctx, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.ghostPortal(ctx, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.amoriaPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {

@@ -131,3 +131,53 @@ func TestMapFlyFlagFollowsWZInfo(t *testing.T) {
 		}
 	}
 }
+
+func TestLinkedMapKeepsOwnIDAndSharesWZContent(t *testing.T) {
+	root := t.TempDir()
+	dir := filepath.Join(root, "Map.wz", "Map", "Map9")
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	fixtures := map[string]string{
+		"923020111.img.xml": `<imgdir name="923020111.img">
+			<imgdir name="info"><int name="returnMap" value="923020001"/></imgdir>
+			<imgdir name="portal"><imgdir name="0"><string name="pn" value="sp"/><int name="pt" value="0"/></imgdir></imgdir>
+			<imgdir name="life"><imgdir name="0"><string name="type" value="m"/><string name="id" value="9700036"/></imgdir></imgdir>
+			<imgdir name="reactor"><imgdir name="0"><string name="id" value="2301000"/><int name="x" value="125"/></imgdir></imgdir>
+		</imgdir>`,
+		"923020121.img.xml": `<imgdir><imgdir name="info"><string name="link" value="923020111"/></imgdir></imgdir>`,
+		"923020122.img.xml": `<imgdir><imgdir name="info"><string name="link" value="923020123"/></imgdir></imgdir>`,
+		"923020123.img.xml": `<imgdir><imgdir name="info"><string name="link" value="923020122"/></imgdir></imgdir>`,
+		"923020124.img.xml": `<imgdir><imgdir name="info"><string name="link" value="923020111"/><int name="returnMap" value="923020009"/><string name="onUserEnter" value="linkedEntry"/></imgdir></imgdir>`,
+	}
+	for name, xml := range fixtures {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(xml), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	c, err := NewCatalog(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	blue, err := c.Map(923020121)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if blue.ID != 923020121 || blue.ReturnMap != 923020001 || len(blue.Life) != 1 || blue.Life[0].TemplateID != 9700036 {
+		t.Fatalf("linked field lost its ID or inherited content: %+v", blue)
+	}
+	if _, ok := blue.Spawn(); !ok {
+		t.Fatal("linked field did not inherit the spawn")
+	}
+	custom, err := c.Map(923020124)
+	if err != nil || custom.ReturnMap != 923020009 || custom.OnUserEnter != "linkedEntry" || len(custom.Life) != 1 {
+		t.Fatalf("linked field lost its own entry rules: %+v, %v", custom, err)
+	}
+	reactors, err := readMapReactorDefinitions(root, blue.ID)
+	if err != nil || len(reactors) != 1 || reactors[0].TemplateID != 2301000 || reactors[0].X != 125 {
+		t.Fatalf("linked field did not inherit its reactor: %+v, %v", reactors, err)
+	}
+	if _, err := c.Map(923020122); err == nil {
+		t.Fatal("accepted a cyclic map link")
+	}
+}

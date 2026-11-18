@@ -234,6 +234,9 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 	if err = s.enterGuild(ctx, live, sink); err != nil {
 		return err
 	}
+	if err = s.sendAzwanHonor(ctx, snapshot, sink); err != nil {
+		return err
+	}
 	s.enqueueMapEntry(channel, live, sink)
 	s.eventEntered(channel, live, sink)
 	return nil

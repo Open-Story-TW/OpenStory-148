@@ -55,7 +55,7 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 			}
 		} else if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor &&
 			!content.TreasureHuntReactor(mapID, def.TemplateID) && !content.EscapeReactor(mapID, def.TemplateID) &&
-			!content.RomeoLabReactor(mapID, def.TemplateID) {
+			!content.RomeoLabReactor(mapID, def.TemplateID) && !content.AmoriaReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue
@@ -122,6 +122,11 @@ func (g *gameplaySpace) tickReactors(now time.Time) {
 	for _, r := range g.rooms {
 		if len(r.members) == 0 {
 			continue
+		}
+		for _, packet := range r.ghostDeck.resetPackets(now) {
+			for _, member := range r.members {
+				packets = append(packets, delivery{member.sink, packet})
+			}
 		}
 		for _, x := range r.reactors {
 			var p []byte
@@ -221,8 +226,8 @@ func (s *Server) startHarvest(channel int, live *liveCharacter, sink packetSink,
 	return sink.WritePacket(protocol.HarvestMessage(objectID, code))
 }
 
-// hitReactor advances the node the character is gathering. Hits on anything
-// else are ignored: gathering nodes are the only reactors the server runs.
+// hitReactor advances the current map's scripted switches or the node the
+// character is gathering.
 func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacter, sink packetSink, objectID int32, stop bool) error {
 	if !stop {
 		if handled, err := s.hitZakumMineReactor(ctx, channel, live, sink, objectID); handled {
@@ -237,6 +242,9 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 	live.mu.Unlock()
 	if !stop && s.hitHorntailCrystal(channel, c, objectID) {
 		return sink.WritePacket(protocol.EnableActions())
+	}
+	if !stop && s.hitGhostDeck(channel, c, objectID) {
+		return nil
 	}
 	var all, others []packetSink
 	var packets [][]byte

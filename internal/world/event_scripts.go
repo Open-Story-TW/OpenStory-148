@@ -46,6 +46,10 @@ func (a *worldScript) eventCommand(ctx context.Context, snapshot domain.Characte
 		if !eventWord.MatchString(command.Text) {
 			return invalid, domain.ErrInvalidInput
 		}
+		if command.Text == content.AmoriaName && (a.npcID != content.AmoriaLeader ||
+			command.Script != "npc/9201048.lua" || !a.hasNPCContext(snapshot)) {
+			return invalid, domain.ErrForbidden
+		}
 		reason, here, qualified, err := s.eventStart(ctx, command.Text, snapshot.ChannelID, a.live, a.sink)
 		return scripting.CommandResult{Value: map[string]any{"ok": reason == "" && err == nil, "reason": reason, "here": int64(here), "qualified": int64(qualified)}}, err
 	case "event_get":

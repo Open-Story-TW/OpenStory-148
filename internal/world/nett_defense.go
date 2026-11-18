@@ -1,10 +1,8 @@
 package world
 
 import (
-	"cmp"
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 	"time"
 
@@ -82,53 +80,14 @@ func nettGroundY(fh content.Foothold, x int) int {
 }
 
 func (s *Server) nettGroupLog(ctx context.Context, inst *eventInstance, group []eventOccupant, action string, change domain.ScriptLogChange) error {
-	repo, ok := s.repo.(domain.EventLogRepository)
-	if !ok || len(group) != content.NettLanes {
+	if len(group) != content.NettLanes {
 		return domain.ErrForbidden
 	}
-	slices.SortFunc(group, func(a, b eventOccupant) int {
-		return cmp.Compare(partySession(a.live).CharacterID, partySession(b.live).CharacterID)
-	})
-	for _, member := range group {
-		member.live.persistMu.Lock()
-		defer member.live.persistMu.Unlock()
-	}
-	all := make([]domain.ScriptExchange, 0, len(group))
-	for _, member := range group {
-		session := s.skillSession(member.live)
-		if session.ChannelID != inst.channel || session.Character.MapID != inst.definition.Maps[0] ||
-			session.Character.HP <= 0 || s.eventOf(session.CharacterID) != inst {
-			return domain.ErrStaleOwner
-		}
-		all = append(all, domain.ScriptExchange{Session: session,
-			OperationID: "event-" + inst.id + "-nett-" + action, Logs: []domain.ScriptLogChange{change}})
-	}
-	results, err := repo.ExecuteEventLogs(ctx, all)
-	if err != nil {
-		return err
-	}
-	for i, result := range results {
-		value := result.Character
-		// A roster log increments the revision without changing vitals. Keep
-		// combat damage and regeneration newer than the latest SQL checkpoint.
-		value.HP, value.MP = all[i].Session.Character.HP, all[i].Session.Character.MP
-		s.applyInventoryResult(group[i].live, value)
-	}
-	return nil
+	return s.exchangeEventRosterLog(ctx, inst, group, inst.definition.Maps[0], "nett-"+action, change)
 }
 
 func (s *Server) nettCanEnter(ctx context.Context, group []eventOccupant) bool {
-	repo, ok := s.repo.(domain.ScriptRepository)
-	if !ok || len(group) != content.NettLanes {
-		return false
-	}
-	for _, member := range group {
-		logs, err := repo.ReadScriptLogs(ctx, s.skillSession(member.live), []domain.ScriptLogKey{nettDaily})
-		if err != nil || len(logs) != 1 || logs[0].Value >= nettDailyLimit {
-			return false
-		}
-	}
-	return true
+	return len(group) == content.NettLanes && s.eventRosterBelowLogLimit(ctx, group, nettDaily, nettDailyLimit)
 }
 
 func (s *Server) startNettDefense(ctx context.Context, inst *eventInstance) error {

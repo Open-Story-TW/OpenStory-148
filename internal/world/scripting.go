@@ -180,6 +180,10 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 	if name == "" {
 		name = fmt.Sprintf("npc/%d.lua", npcID)
 		switch npcID {
+		case content.AmoriaBonusNPC:
+			if snapshot.Character.MapID == content.AmoriaBonus {
+				name = "npc/amoria_bonus.lua"
+			}
 		case 2083000:
 			if snapshot.Character.MapID == 240050000 {
 				name = "npc/2083000_horntail.lua"
@@ -354,7 +358,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
 		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps", "christmas_finish", "hoblin_ambush",
-		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage", "pirate_pq_stage", "pet_training":
+		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage", "pirate_pq_stage", "pet_training", "ghost_ship_queue", "ghost_ship_accept":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
@@ -439,6 +443,8 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		return a.subwayChallenge(ctx, snapshot, command)
 	case "monster_rush_status", "monster_rush_donate":
 		return a.monsterRush(ctx, snapshot, command)
+	case "amoria_entry", "amoria_ticket", "amoria_board", "amoria_stage":
+		return a.amoriaCommand(ctx, snapshot, command)
 	case "henesys_finish":
 		inst := a.server.eventOf(snapshot.CharacterID)
 		if a.npcID != 1012114 || snapshot.Character.MapID != content.HenesysPQMap || inst == nil || inst.moon == nil {
@@ -489,6 +495,24 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 			return result(map[string]any{"state": "unavailable"})
 		}
 		status, err := a.server.piratePQTalk(ctx, snapshot, eventOccupant{a.live, a.sink})
+		return scripting.CommandResult{Value: status}, err
+	case "ghost_ship_queue", "ghost_ship_accept", "ghost_ship_waiting":
+		if a.npcID != content.GhostRegistrar {
+			return result("unavailable")
+		}
+		if command.Kind == "ghost_ship_waiting" {
+			return result(a.server.ghostWaitingStatus(snapshot))
+		}
+		if len(command.Ints) != 1 {
+			return scripting.CommandResult{}, domain.ErrInvalidInput
+		}
+		var status string
+		var err error
+		if command.Kind == "ghost_ship_queue" {
+			status, err = a.server.ghostQueue(ctx, snapshot, content.GhostRoom(command.Ints[0]))
+		} else {
+			status, err = a.server.ghostAccept(ctx, snapshot, command.Ints[0] == 1)
+		}
 		return scripting.CommandResult{Value: status}, err
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {

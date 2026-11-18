@@ -249,7 +249,7 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 		id := def.TemplateID
 		elevator := id == HeliosElevatorDoor && (mapID == 222020100 || mapID == 222020200)
 		krexel := id == KrexelReactor && mapID == KrexelArena
-		if !elevator && !krexel && !TreasureHuntReactor(mapID, id) && !EscapeReactor(mapID, id) && !RomeoLabReactor(mapID, id) {
+		if !elevator && !krexel && !TreasureHuntReactor(mapID, id) && !EscapeReactor(mapID, id) && !RomeoLabReactor(mapID, id) && !AmoriaReactor(mapID, id) {
 			if _, err = GatherNodeDefinition(root, id); err != nil {
 				continue
 			}
@@ -261,7 +261,7 @@ func MapReactors(root string, mapID int) ([]Reactor, error) {
 }
 
 func readMapReactorDefinitions(root string, mapID int) ([]Reactor, error) {
-	node, err := readWZ(filepath.Join(root, "Map.wz", "Map", fmt.Sprintf("Map%d", mapID/100000000), fmt.Sprintf("%09d.img.xml", mapID)))
+	node, err := readMapWZ(root, mapID)
 	if err != nil {
 		return nil, err
 	}

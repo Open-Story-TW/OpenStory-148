@@ -223,12 +223,6 @@
       "lua_sha256": "1e5d25ee9f8f05c710c87d7e808fc89f36404e6edf7256e11c7661e4e5a15590"
     },
     {
-      "legacy": "npc/1032003.js",
-      "source_sha256": "31c27873f7b807de6871bde41914435b7d3d3beaf12311ae72e63dd5118fa34e",
-      "lua": "npc/1032003.lua",
-      "lua_sha256": "3530e06eb8065123c10f059ce60bf713f919192202bb36ff79393c06d407553e"
-    },
-    {
       "legacy": "npc/1032004.js",
       "source_sha256": "e8cf97ef93e32ce676f404109bbf16b5c02a9956044219681dead22c9deac67c",
       "lua": "npc/1032004.lua",
@@ -2945,14 +2939,6 @@
       "reason": "cm.sendDirectionStatus is not supported (line 14)"
     },
     {
-      "legacy": "npc/1043000.js",
-      "reason": "cm.getEventMap is not supported (line 15)"
-    },
-    {
-      "legacy": "npc/1043001.js",
-      "reason": "cm.getEventMap is not supported (line 15)"
-    },
-    {
       "legacy": "npc/1052015.js",
       "reason": "cm.getPlayer().getBattler is not supported (line 9)"
     },
@@ -3159,10 +3145,6 @@
     {
       "legacy": "npc/2060100.js",
       "reason": "cm.warpParty is not supported (line 10)"
-    },
-    {
-      "legacy": "npc/2060103.js",
-      "reason": "cm.getEventManager is not supported (line 14)"
     },
     {
       "legacy": "npc/2080000.js",

@@ -234,6 +234,7 @@ func (s *Server) executeCombatTicket(ctx context.Context, repo domain.CombatSett
 			s.releaseCombatClaims(t)
 			return s.rejectCombatTicket(t)
 		}
+		s.placeAmoriaFairyLoot(t)
 		t.hash, err = domain.CombatManifestHash(t.request)
 		if err != nil {
 			unlock()
@@ -544,6 +545,7 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 			if !content.JudgementRoom(t.key.mapID) {
 				_ = s.spawnCombatLoot(ctx, t.actor, t.sink, q.SpawnOperationID, q.MobID, q.X, q.Y)
 			}
+			s.amoriaMobDefeated(t.key, t.actorSession.CharacterID, q)
 			if _, known := horntailByMap(t.key.mapID); known {
 				s.horntailDefeated(ctx, t, q)
 			} else if t.key.mapID == pinkBeanArena {
@@ -553,6 +555,7 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 			}
 		}
 	}
+	s.ghostCombat(t)
 	if t.generic != nil {
 		e := combat.AttackEvent{Session: t.actorSession, Channel: t.key.channel, SkillID: t.request.SkillID, Kind: combat.KindForOpcode(t.generic.attack.Opcode), Summon: t.generic.summon != nil, Now: time.Now()}
 		if m := t.generic.summon; m != nil {

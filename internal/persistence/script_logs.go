@@ -279,10 +279,10 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 	}
 	setQuestRecords(&result.Character, r.QuestData)
 	for _, delta := range r.Items {
-		// Grants share the quest reward allocator so equipment rewards work;
-		// removals stay limited to stackable, non-cash items.
 		if delta.Quantity > 0 {
 			err = applyQuestItem(ctx, tx, &result.InventoryResult, content.QuestItem{ID: delta.TemplateID, Count: delta.Quantity})
+		} else if delta.TemplateID/1000000 == 1 {
+			err = consumeScriptEquipment(ctx, tx, &result.InventoryResult, delta)
 		} else {
 			err = applyScriptItem(ctx, tx, &result.InventoryResult, delta)
 		}
@@ -517,6 +517,38 @@ func applyScriptLook(ctx context.Context, tx *sql.Tx, result *domain.InventoryRe
 		return err
 	}
 	return domain.ErrInsufficient
+}
+
+func consumeScriptEquipment(ctx context.Context, tx *sql.Tx, result *domain.InventoryResult, delta domain.ScriptItemDelta) error {
+	definition, err := inventoryDefinition(delta.TemplateID)
+	if err != nil || definition.InvType != 1 || definition.Cash || delta.Quantity >= 0 || delta.Quantity < -domain.MaxInventorySlots {
+		return domain.ErrInvalidInput
+	}
+	c := &result.Character
+	for range -delta.Quantity {
+		index := -1
+		for i, equipment := range c.Equipment {
+			if equipment.ItemID != delta.TemplateID || equipment.Slot <= 0 || equipment.CashID != 0 || equipment.ExpiresAt > 0 {
+				continue
+			}
+			if index < 0 || equipment.Slot < c.Equipment[index].Slot {
+				index = i
+			}
+		}
+		if index < 0 {
+			return domain.ErrInsufficient
+		}
+		equipment := c.Equipment[index]
+		if _, err = tx.ExecContext(ctx, `DELETE FROM asset_equipment_metadata WHERE equipment_id=$1`, equipment.ID); err != nil {
+			return err
+		}
+		if _, err = tx.ExecContext(ctx, `DELETE FROM asset_equipment WHERE id=$1 AND character_id=$2`, equipment.ID, c.ID); err != nil {
+			return err
+		}
+		c.Equipment = append(c.Equipment[:index], c.Equipment[index+1:]...)
+		result.Changes = append(result.Changes, domain.InventoryChange{Mode: 3, InvType: 1, Slot: equipment.Slot})
+	}
+	return nil
 }
 
 func applyScriptItem(ctx context.Context, tx *sql.Tx, result *domain.InventoryResult, delta domain.ScriptItemDelta) error {

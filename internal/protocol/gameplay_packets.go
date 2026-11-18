@@ -361,16 +361,17 @@ func MeleeAttackPacket(c domain.Character, a MeleeAttack) []byte {
 }
 
 type MonsterMove struct {
-	ObjectID       int32
-	MoveID         uint16
-	UseSkill       bool
-	Action         byte
-	SkillData      uint32
-	Pairs          [][2]int16
-	Values         []int16
-	StartX, StartY int16
-	X, Y           int
-	Fragments      []byte
+	ObjectID         int32
+	MoveID           uint16
+	UseSkill         bool
+	Action           byte
+	SkillData        uint32
+	Pairs            [][2]int16
+	Values           []int16
+	StartX, StartY   int16
+	StartVX, StartVY int16
+	X, Y             int
+	Fragments        []byte
 }
 
 func ReadMonsterMove(r *Reader) (MonsterMove, error) {
@@ -404,7 +405,8 @@ func ReadMonsterMove(r *Reader) (MonsterMove, error) {
 	r.U8()
 	m.StartX = r.I16()
 	m.StartY = r.I16()
-	r.Skip(4)
+	m.StartVX = r.I16()
+	m.StartVY = r.I16()
 	start := r.Pos()
 	x, y, absolute := parseAbsolutePosition(r)
 	m.Fragments = r.BytesBetween(start, r.Pos())
@@ -440,8 +442,8 @@ func MonsterMovePacket(m MonsterMove) []byte {
 	}
 	w.I16(m.StartX)
 	w.I16(m.StartY)
-	w.I16(8)
-	w.I16(1)
+	w.I16(m.StartVX)
+	w.I16(m.StartVY)
 	w.Bytes(m.Fragments)
 	return w.Packet()
 }

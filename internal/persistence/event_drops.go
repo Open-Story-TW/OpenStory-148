@@ -9,6 +9,36 @@ import (
 
 var _ domain.EventDropRepository = (*Store)(nil)
 
+func (s *Store) TransformEventDrop(ctx context.Context, drop domain.ItemDrop, templateID, x, y int) (domain.ItemDrop, bool, error) {
+	result := domain.ItemDrop{
+		WorldID: drop.WorldID, ChannelID: drop.ChannelID, MapID: drop.MapID, OwnerID: drop.OwnerID,
+		InvType: templateID / 1000000, TemplateID: templateID, Quantity: 1, X: x, Y: y,
+	}
+	if result.InvType < 2 || result.InvType > 4 {
+		return domain.ItemDrop{}, false, domain.ErrInvalidInput
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return domain.ItemDrop{}, false, err
+	}
+	defer tx.Rollback()
+	ok, err := consumeEventDrop(ctx, tx, drop)
+	if err != nil || !ok {
+		return domain.ItemDrop{}, false, err
+	}
+	err = tx.QueryRowContext(ctx, `
+		INSERT INTO asset_item_drops (world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,1) RETURNING object_id`,
+		result.WorldID, result.ChannelID, result.MapID, result.OwnerID, x, y, result.InvType, templateID).Scan(&result.ObjectID)
+	if err != nil {
+		return domain.ItemDrop{}, false, err
+	}
+	if err := tx.Commit(); err != nil {
+		return domain.ItemDrop{}, false, err
+	}
+	return result, true, nil
+}
+
 func (s *Store) ConsumeEventDrop(ctx context.Context, drop domain.ItemDrop) (bool, error) {
 	return consumeEventDrop(ctx, s.db, drop)
 }

@@ -64,6 +64,9 @@ func (s *Server) runPortalScript(ctx context.Context, channel int, live *liveCha
 	if handled, err := s.monsterParkPortal(ctx, snapshot, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.azwanSweepPortal(ctx, snapshot, live, sink, p); handled {
+		return err
+	}
 	name := "portal/" + p.Script + ".lua"
 	if s.scripts == nil || p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())

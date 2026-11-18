@@ -57,6 +57,7 @@ func eventDefinitions() map[string]Event {
 	definitions := map[string]Event{
 		RomeoPQName:     romeoJulietEvent(RomeoPQName, 261000011, 926100000),
 		JulietPQName:    romeoJulietEvent(JulietPQName, 261000021, 926110000),
+		AmoriaName:      amoriaEvent(),
 		IceKnightName:   iceKnightEvent(),
 		EscapeName:      escapeEvent(),
 		HoblinPQName:    hoblinPQEvent(),
@@ -66,6 +67,7 @@ func eventDefinitions() map[string]Event {
 		DragonRiderName: dragonRiderEvent(),
 		LudibriumPQName: ludibriumEvent(),
 		ZakumMineName:   zakumMineEvent(),
+		AzwanSweepName:  azwanSweepEvent(),
 		NettNormal:      nettEvent(NettNormal, NettNormalBase, 60, 89),
 		NettHard:        nettEvent(NettHard, NettHardBase, 90, 109),
 		HenesysPQName: {
@@ -214,6 +216,9 @@ func EventByName(name string) (Event, bool) {
 
 // EventByMap finds the event that owns a stage map.
 func EventByMap(mapID int) (Event, bool) {
+	if room, ok := GhostRoomOf(mapID); ok {
+		return room.Event(), true
+	}
 	if name := eventByMap[mapID]; name != "" {
 		return EventByName(name)
 	}

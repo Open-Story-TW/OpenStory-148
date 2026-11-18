@@ -369,7 +369,7 @@ func TestSpecialCasts(t *testing.T) {
 	if p := cast(t, 5201005, 10); p.Self != nil || p.Party != nil || p.MPCost != 14 {
 		t.Fatalf("wings is cost only %+v", p)
 	}
-	if p := cast(t, 5121010, 30); !p.ResetCooldowns || p.Party == nil || len(p.Party.Stats) != 0 || p.Area == nil || p.Cooldown != 1200*time.Second {
+	if p := cast(t, 5821010, 30); !p.ResetCooldowns || p.Party == nil || len(p.Party.Stats) != 0 || p.Area == nil || p.Cooldown != 1200*time.Second {
 		t.Fatalf("time leap %+v", p)
 	}
 	if p := cast(t, 5101005, 10); p.HPCost != 500 || p.Heal == nil || p.Heal.MP != 300 || p.Cooldown != 10*time.Second {

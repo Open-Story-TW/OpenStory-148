@@ -69,3 +69,8 @@ type EventDropRepository interface {
 	ConsumeEventDrop(context.Context, ItemDrop) (bool, error)
 	ExpireEventDrops(context.Context, int, int, int) error
 }
+
+// EventDropTransformer consumes a placed item and creates its result together.
+type EventDropTransformer interface {
+	TransformEventDrop(context.Context, ItemDrop, int, int, int) (ItemDrop, bool, error)
+}

@@ -41,17 +41,27 @@ func NettDefenseResult(clear bool, wave, life, points, experience int) []byte {
 // NettDefenseWalk relays a single absolute walk fragment for a server-driven
 // lane mob. It uses the same monster path packet as native controlled mobs.
 func NettDefenseWalk(objectID int32, from, x, y, foothold, duration int) []byte {
+	vx := int16((x - from) * 1000 / duration)
 	w := &Writer{}
 	w.U8(1)
 	w.U8(0)
 	w.I16(int16(x))
 	w.I16(int16(y))
-	w.I16(int16((x - from) * 1000 / duration))
+	w.I16(vx)
 	w.I16(0)
 	w.I16(int16(foothold))
-	w.I16(int16(from))
-	w.I16(int16(y))
-	w.U8(3)
+	w.I16(0) // horizontal foothold offset
+	w.I16(0) // vertical foothold offset
+	w.U8(3)  // walk left
 	w.I16(int16(duration))
-	return MonsterMovePacket(MonsterMove{ObjectID: objectID, StartX: int16(from), StartY: int16(y), Fragments: w.Packet()})
+	return MonsterMovePacket(MonsterMove{
+		ObjectID: objectID,
+		// The v148 move handler (0x60CE54) uses the action's high bit to
+		// append a path without resetting the current action and queued path.
+		Action:    0xff,
+		StartX:    int16(from),
+		StartY:    int16(y),
+		StartVX:   vx,
+		Fragments: w.Packet(),
+	})
 }

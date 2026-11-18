@@ -605,6 +605,10 @@ func (s *Session) installHost() {
 		bind("henesys_finish", s.simpleCommand("henesys_finish", 0), 1)
 		bind("hak_board", s.simpleCommand("hak_board", 1), 2)
 		bind("open_rps", s.simpleCommand("open_rps", 0), 1)
+		bind("amoria_entry", s.simpleCommand("amoria_entry", 0), 1)
+		bind("amoria_ticket", s.simpleCommand("amoria_ticket", 0), 1)
+		bind("amoria_board", s.simpleCommand("amoria_board", 0), 1)
+		bind("amoria_stage", s.simpleCommand("amoria_stage", 0), 1)
 		bind("ludi_stage", s.simpleCommand("ludi_stage", 0), 1)
 		bind("ice_knight_clear", s.simpleCommand("ice_knight_clear", 0), 1)
 		bind("christmas_finish", s.simpleCommand("christmas_finish", 0), 1)
@@ -616,6 +620,9 @@ func (s *Session) installHost() {
 		bind("pet_training", s.simpleCommand("pet_training", 0), 1)
 		bind("ellin_stage", s.simpleCommand("ellin_stage", 0), 1)
 		bind("pirate_pq_stage", s.simpleCommand("pirate_pq_stage", 0), 1)
+		bind("ghost_ship_queue", s.simpleCommand("ghost_ship_queue", 1), 2)
+		bind("ghost_ship_accept", s.simpleCommand("ghost_ship_accept", 1), 2)
+		bind("ghost_ship_waiting", s.simpleCommand("ghost_ship_waiting", 0), 1)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err
