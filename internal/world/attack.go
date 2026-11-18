@@ -45,17 +45,41 @@ type genericAttack struct {
 	summonOwnerLevel int
 }
 
-// Critical history stays separate when a boss has a different rate.
 type targetCriticalAudits struct {
 	ordinary combat.CriticalAudit
-	boss     combat.CriticalAudit
+	// The physical attack line count has four bits. Each boss position has its own history.
+	boss [16]combat.CriticalAudit
 }
 
-func (a *targetCriticalAudits) forTarget(boss bool, bossBonus int) *combat.CriticalAudit {
+func (a *targetCriticalAudits) forLine(boss bool, bossBonus, connectedIndex int) *combat.CriticalAudit {
 	if boss && bossBonus != 0 {
-		return &a.boss
+		return &a.boss[min(connectedIndex, len(a.boss)-1)]
 	}
 	return &a.ordinary
+}
+
+func (a *targetCriticalAudits) apply(target *combat.TargetPlan, boss bool, bossBonus, firstRate int, character int64, skill int) {
+	connectedIndex := 0
+	for j, over := range target.Critical {
+		if target.Lines[j] == 0 {
+			// A native miss skips the critical roll and the boss rate increment.
+			continue
+		}
+		audit := a.forLine(boss, bossBonus, connectedIndex)
+		rate := target.LineCriticalRate(firstRate, connectedIndex)
+		if target.BossCriticalStep != 0 {
+			connectedIndex++
+		}
+		if !over {
+			audit.Normal(character)
+			continue
+		}
+		if !audit.Admit(character, rate) {
+			slog.Warn("attack_crit_excess", "character", character, "skill", skill, "claimed", target.Lines[j], "bound", target.Normal[j], "crit_rate", rate)
+			target.Lines[j], target.Critical[j] = min(target.Lines[j], target.Normal[j]), false
+			target.Clipped++
+		}
+	}
 }
 
 var criticalAudits targetCriticalAudits
@@ -325,21 +349,8 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	killed := false
 	for i, mob := range mobs {
 		tp := plan.Targets[i]
-		audit := criticalAudits.forTarget(mob.stats.Boss, stats.BossCritRate)
 		targetCritRate := stats.CriticalRateAgainst(actx.Effect.CriticalRate, mob.stats.Boss)
-		for j, over := range tp.Critical {
-			if !over {
-				if tp.Lines[j] > 0 {
-					audit.Normal(c.ID)
-				}
-				continue
-			}
-			if !audit.Admit(c.ID, targetCritRate) {
-				slog.Warn("attack_crit_excess", "character", c.ID, "skill", a.SkillID, "claimed", tp.Lines[j], "bound", tp.Normal[j], "crit_rate", targetCritRate)
-				tp.Lines[j], tp.Critical[j] = min(tp.Lines[j], tp.Normal[j]), false
-				tp.Clipped++
-			}
-		}
+		criticalAudits.apply(&tp, mob.stats.Boss, stats.BossCritRate, targetCritRate, c.ID, a.SkillID)
 		lines := append([]int(nil), tp.Lines...)
 		damage := int(combat.ClipToHP(lines, mob.lethalHP()))
 		q := domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage)}

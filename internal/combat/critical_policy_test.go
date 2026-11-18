@@ -63,6 +63,37 @@ func TestReviewedCrusherRetainsAllNativeDamageWithoutInventingCriticalBits(t *te
 	}
 }
 
+func TestNativeBossCriticalAccumulatesByPhysicalLineAndResetsPerTarget(t *testing.T) {
+	ctx := crusherContext(t)
+	ctx.Stats.CritRate, ctx.Stats.BossCritRate = 15, 20
+	ctx.Targets[1].Mob.Boss = false
+	plan, err := PlanAttack(&AttackSpec{Kind: Melee}, ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, target := range plan.Targets {
+		firstRate := ctx.Stats.CriticalRateAgainst(ctx.Effect.CriticalRate, ctx.Targets[i].Mob.Boss)
+		want := []int{35, 55, 75, 95, 95, 95, 95, 95}
+		if i == 1 {
+			want = []int{15, 15, 15, 15, 15, 15, 15, 15}
+		}
+		for index, rate := range want {
+			if got := target.LineCriticalRate(firstRate, index); got != rate {
+				t.Fatalf("target %d connected hit %d rate = %d, want %d", i, index, got, rate)
+			}
+		}
+	}
+	next, err := PlanAttack(&AttackSpec{Kind: Melee}, ctx, nil)
+	if err != nil || next.Targets[0].LineCriticalRate(35, 0) != 35 {
+		t.Fatalf("the first hit of a new cast did not reset: %+v, %v", next.Targets, err)
+	}
+	ctx.Kind = Magic
+	magic, err := PlanAttack(&AttackSpec{Kind: Magic}, ctx, nil)
+	if err != nil || magic.Targets[0].LineCriticalRate(35, 3) != 35 {
+		t.Fatalf("magic boss critical rate changed: %+v, %v", magic.Targets, err)
+	}
+}
+
 func TestReviewedCriticalPolicyKeepsFixedAndOtherBranchesAndFiniteCap(t *testing.T) {
 	ctx := crusherContext(t)
 	dc := DamageContext{Stats: ctx.Stats, Effect: ctx.Effect, Mob: ctx.Targets[0].Mob}

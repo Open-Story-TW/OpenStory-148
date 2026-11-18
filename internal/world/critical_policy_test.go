@@ -7,6 +7,7 @@ import (
 	"errors"
 	"testing"
 
+	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
@@ -14,15 +15,19 @@ import (
 
 func TestBossCriticalAuditKeepsOrdinaryHistoryIndependent(t *testing.T) {
 	var audits targetCriticalAudits
-	ordinary := audits.forTarget(false, 20)
-	boss := audits.forTarget(true, 20)
-	if ordinary == boss || audits.forTarget(true, 0) != ordinary || audits.forTarget(false, 0) != ordinary {
+	ordinary := audits.forLine(false, 20, 0)
+	boss := audits.forLine(true, 20, 0)
+	lateBoss := audits.forLine(true, 20, 3)
+	if ordinary == boss || boss == lateBoss || ordinary == lateBoss || audits.forLine(true, 0, 3) != ordinary || audits.forLine(false, 20, 3) != ordinary {
 		t.Fatal("only a boss with an active boss-rate bonus should use separate history")
 	}
 
 	const character = 1
 	ordinary.Normal(character)
 	for i := 0; i < 250; i++ {
+		if !lateBoss.Admit(character, 95) {
+			t.Fatalf("native 100 percent line clipped at observation %d", i)
+		}
 		if i%5 >= 2 {
 			boss.Normal(character)
 		} else if !boss.Admit(character, 35) {
@@ -31,6 +36,35 @@ func TestBossCriticalAuditKeepsOrdinaryHistoryIndependent(t *testing.T) {
 	}
 	if !ordinary.Admit(character, 15) {
 		t.Fatal("boss history rejected a legal ordinary-target critical")
+	}
+}
+
+func TestBossCriticalHistoryDoesNotAdvancePastMisses(t *testing.T) {
+	var audits targetCriticalAudits
+	clipped := 0
+	for n := 0; n < 160; n++ {
+		plan := combat.TargetPlan{BossCriticalStep: 20,
+			Lines: []int{0, 0, 0, 150}, Normal: []int{100, 100, 100, 100},
+			Critical: []bool{false, false, false, true}}
+		audits.apply(&plan, true, 20, 35, 7, 5121007)
+		if plan.Clipped != 0 {
+			if plan.Lines[3] != 100 || plan.Critical[3] {
+				t.Fatal("the limited line did not use its ordinary damage cap")
+			}
+			clipped++
+		}
+	}
+	if clipped == 0 {
+		t.Fatal("zero lines advanced the first connected hit to 100 percent")
+	}
+	for n := 0; n < 8; n++ {
+		plan := combat.TargetPlan{BossCriticalStep: 20,
+			Lines: []int{50, 50, 50, 150}, Normal: []int{100, 100, 100, 100},
+			Critical: []bool{false, false, false, true}}
+		audits.apply(&plan, true, 20, 35, 7, 5121007)
+		if plan.Lines[3] != 150 || !plan.Critical[3] {
+			t.Fatal("a fully connected fourth hit did not reach 100 percent")
+		}
 	}
 }
 

@@ -62,6 +62,8 @@ type TargetPlan struct {
 	Lines       []int                      // Applied per-line damage after ceilings (before HP clip).
 	Criticality []domain.CombatCriticality // Only populated for reviewed ambiguous wire families.
 	Statuses    []ActiveStatus
+	// BossCriticalStep is the physical boss bonus already included in the first hit's rate.
+	BossCriticalStep int
 	// Critical marks lines above the noncritical bound: the wire does not say,
 	// but only a critical reaches there. Other clients need it to draw the number.
 	Critical []bool
@@ -71,6 +73,13 @@ type TargetPlan struct {
 	// counts non-zero lines under the mastery floor (a client roll cannot
 	// produce them).
 	Clipped, BelowFloor int
+}
+
+func (t TargetPlan) LineCriticalRate(firstRate, connectedIndex int) int {
+	if t.BossCriticalStep == 0 {
+		return firstRate
+	}
+	return min(100-criticalAuditBase, firstRate+connectedIndex*t.BossCriticalStep)
 }
 
 func (t TargetPlan) Total() int64 {
@@ -235,6 +244,10 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 			ceiling, floor, ownCeiling = modified, 0, true
 		}
 		tp := TargetPlan{ObjectID: t.ObjectID}
+		if t.Mob.Boss && (ctx.Kind == Melee || ctx.Kind == Shoot) {
+			// The native physical calculation adds the boss rate on each connected line.
+			tp.BossCriticalStep = max(0, ctx.Stats.BossCritRate)
+		}
 		landed := false
 		base := e.Lines(ctx.Kind)
 		for j, l := range in.Lines {
