@@ -57,18 +57,19 @@ func (a MapArea) Contains(x, y int) bool {
 }
 
 type Map struct {
-	ID          int          `json:"id"`
-	ReturnMap   int          `json:"return_map"`
-	OnUserEnter string       `json:"on_user_enter,omitempty"`
-	FieldLimit  int64        `json:"field_limit"`
-	Town        bool         `json:"town"`
-	Fly         bool         `json:"fly,omitempty"` // WZ info/fly: Soaring (x026/x142) allowed
-	Portals     []Portal     `json:"portals"`
-	Life        []Life       `json:"life"`
-	Footholds   []Foothold   `json:"footholds"`
-	Areas       []MapArea    `json:"areas,omitempty"`
-	EscortRoute []EscortNode `json:"escort_route,omitempty"`
-	NettDefense *NettDefense `json:"-"`
+	ID          int            `json:"id"`
+	ReturnMap   int            `json:"return_map"`
+	OnUserEnter string         `json:"on_user_enter,omitempty"`
+	FieldLimit  int64          `json:"field_limit"`
+	Town        bool           `json:"town"`
+	Fly         bool           `json:"fly,omitempty"` // WZ info/fly: Soaring (x026/x142) allowed
+	Portals     []Portal       `json:"portals"`
+	Life        []Life         `json:"life"`
+	Footholds   []Foothold     `json:"footholds"`
+	Areas       []MapArea      `json:"areas,omitempty"`
+	EscortRoute []EscortNode   `json:"escort_route,omitempty"`
+	NettDefense *NettDefense   `json:"-"`
+	Carnival    *CarnivalField `json:"carnival,omitempty"`
 	obstacles   []fieldObstacle
 }
 
@@ -93,6 +94,7 @@ func (m Map) Spawn() (Portal, bool) {
 type Mob struct {
 	ID               int   `json:"id"`
 	Level            int   `json:"level"`
+	CarnivalPoints   int   `json:"carnival_points,omitempty"`
 	HP               int64 `json:"hp"`
 	MP               int   `json:"mp"`
 	EXP              int64 `json:"exp"`
@@ -344,6 +346,10 @@ func readWZ(path string) (*wzNode, error) {
 
 func parseMob(id int, info *wzNode) Mob {
 	mob := Mob{ID: id, Level: info.intValue("level", 1), HP: int64(info.intValue("maxHP", 0)), MP: info.intValue("maxMP", 0), EXP: int64(info.intValue("exp", 0)), PAD: info.intValue("PADamage", 0), PDD: info.intValue("PDDamage", 0), Boss: info.intValue("boss", 0) != 0, PDRate: info.intValue("PDRate", 0), OnlyNormalAttack: info.intValue("onlyNormalAttack", 0) != 0, Invincible: info.intValue("invincible", 0) != 0, FixedDamage: info.intValue("fixedDamage", 0), HasFixedDamage: info.child("fixedDamage") != nil, MDD: info.intValue("MDDamage", 0), MDRate: info.intValue("MDRate", 0), EVA: info.intValue("eva", 0), ElemAttr: info.stringValue("elemAttr", ""), Undead: info.intValue("undead", 0) != 0, DropItemPeriod: info.intValue("dropItemPeriod", 0), RemoveAfter: info.intValue("removeAfter", 0)}
+	mob.CarnivalPoints = info.intValue("getCP", 0)
+	if mob.CarnivalPoints <= 0 {
+		mob.CarnivalPoints = info.intValue("point", 0)
+	}
 	if revive := info.child("revive"); revive != nil {
 		for _, node := range revive.Children {
 			if template, err := strconv.Atoi(node.Value); err == nil && template > 0 {
@@ -456,6 +462,9 @@ func parseMap(id int, n *wzNode) (Map, error) {
 	}
 	if _, ok := m.Spawn(); !ok {
 		return Map{}, fmt.Errorf("map %d has no spawn portal", id)
+	}
+	if err := parseCarnivalField(&m, n); err != nil {
+		return Map{}, err
 	}
 	return m, nil
 }

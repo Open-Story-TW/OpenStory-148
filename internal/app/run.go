@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -37,6 +38,11 @@ func Run(kind string, run Service) error {
 				launcherKey = "required"
 			}
 		}
+	}
+	// A public server must only talk to its own launcher, over the encrypted
+	// channel the key exchange sets up.
+	if cfg.Public && kind != "admin" && launcherKey != "required" {
+		return fmt.Errorf("MAPLEGO_DEPLOY=public needs %s and %s=1", protocol.LauncherKeyEnv, protocol.LauncherKeyRequiredEnv)
 	}
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()

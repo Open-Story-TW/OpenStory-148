@@ -3071,18 +3071,6 @@
       "reason": "cm.getEventMap is not supported (line 15)"
     },
     {
-      "legacy": "npc/2040034.js",
-      "reason": "call .size is not supported (line 39)"
-    },
-    {
-      "legacy": "npc/2040035.js",
-      "reason": "cm.addTrait is not supported (line 4)"
-    },
-    {
-      "legacy": "npc/2040036.js",
-      "reason": "cm.getEventInstance is not supported (line 15)"
-    },
-    {
       "legacy": "npc/2040037.js",
       "reason": "cm.getEventInstance is not supported (line 14)"
     },
@@ -3091,24 +3079,8 @@
       "reason": "cm.getEventInstance is not supported (line 10)"
     },
     {
-      "legacy": "npc/2040039.js",
-      "reason": "cm.getEventInstance is not supported (line 15)"
-    },
-    {
       "legacy": "npc/2040040.js",
       "reason": "cm.getEventInstance is not supported (line 8)"
-    },
-    {
-      "legacy": "npc/2040042.js",
-      "reason": "cm.getEventInstance is not supported (line 15)"
-    },
-    {
-      "legacy": "npc/2040043.js",
-      "reason": "cm.getEventInstance is not supported (line 19)"
-    },
-    {
-      "legacy": "npc/2040044.js",
-      "reason": "cm.getEventInstance is not supported (line 16)"
     },
     {
       "legacy": "npc/2040046.js",

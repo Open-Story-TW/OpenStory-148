@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 )
@@ -80,6 +81,9 @@ func (s *Server) reviveGameplay(ctx context.Context, channel int, live *liveChar
 		return reject("target")
 	case c.HP != 0 || c.MaxHP < 1:
 		return reject("alive")
+	}
+	if content.CarnivalArenaMode(c.MapID) != 0 {
+		return s.carnivalRevive(ctx, live, sink, partySession(live))
 	}
 	current, err := s.gameplay.catalog.Map(c.MapID)
 	if err != nil || current.ReturnMap == 999999999 {

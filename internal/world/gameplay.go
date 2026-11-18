@@ -38,6 +38,7 @@ type gameplayMob struct {
 	qaOwner          *qaMobOwner
 	oneTime          bool
 	nettLane         *content.NettLane
+	carnivalSummoned bool
 }
 
 // Event maps reset their one-time spawns between groups.
@@ -103,6 +104,7 @@ type gameplayRoom struct {
 	romeoSwitch     int
 	romeoBoss       *romeoBossRoom
 	ghostDeck       *ghostDeck
+	carnival        *carnivalMatch
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -114,6 +116,7 @@ type gameplaySpace struct {
 	doors         map[doorKey]*townPortal
 	qaMobOutcomes map[string]qaMobOutcome
 	judgement     *judgementSchedule
+	carnival      *carnivalState
 }
 
 func newGameplaySpace() (*gameplaySpace, error) {
@@ -129,7 +132,9 @@ func newGameplaySpace() (*gameplaySpace, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &gameplaySpace{catalog: c, rooms: make(map[mapKey]*gameplayRoom), nextID: 1000000, bootID: hex.EncodeToString(nonce[:]), judgement: judgement}, nil
+	space := &gameplaySpace{catalog: c, rooms: make(map[mapKey]*gameplayRoom), nextID: 1000000, bootID: hex.EncodeToString(nonce[:]), judgement: judgement}
+	space.prepareCarnival()
+	return space, nil
 }
 
 func (g *gameplaySpace) alloc() int32 {
@@ -217,6 +222,9 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 	}
 	now := time.Now()
 	packets := s.npcScriptability(r.npcs)
+	if r.carnival != nil {
+		packets = append(packets, g.carnivalEntryPacketsLocked(visit)...)
+	}
 	if r.zakum != nil {
 		packets = append(packets, r.zakum.enterPacket())
 	}
@@ -345,6 +353,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickTreasureHunts(now)
 			s.tickEscortEvents(now)
 			s.tickJudgement(ctx, now)
+			s.tickCarnival(ctx, now)
 			s.tickEllinPQ(now)
 			s.tickPiratePQ(ctx, now)
 			s.tickNettDefense(ctx, now)
@@ -396,6 +405,8 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		return false, nil
 	}
 	switch op {
+	case protocol.RecvCarnivalAction:
+		return true, s.handleCarnivalAction(channel, live, sink, r.Bytes(r.Remaining()))
 	case protocol.RecvNettDefense:
 		// CField_Defense sends this periodic request while its HUD is active.
 		// The server's own clock controls movement and wave scheduling.
@@ -574,6 +585,9 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 		return err
 	}
 	if handled, err := s.iceKnightPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.carnivalRevivePortal(ctx, live, sink, p); handled {
 		return err
 	}
 	if handled, err := s.romeoLabPortal(ctx, live, sink, p); handled {

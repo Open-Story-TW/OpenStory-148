@@ -180,6 +180,14 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 	if name == "" {
 		name = fmt.Sprintf("npc/%d.lua", npcID)
 		switch npcID {
+		case 2042005:
+			if s.carnivalLegacyEnabled() && snapshot.Character.MapID == content.CarnivalSecondLobby {
+				name = "npc/carnival_ii_lobby.lua"
+			}
+		case 2042008:
+			if s.carnivalLegacyEnabled() && content.CarnivalArenaMode(snapshot.Character.MapID+100) == 2 {
+				name = "npc/carnival_ii_wait.lua"
+			}
 		case content.AmoriaBonusNPC:
 			if snapshot.Character.MapID == content.AmoriaBonus {
 				name = "npc/amoria_bonus.lua"
@@ -191,6 +199,20 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 		case 2083002:
 			if _, known := horntailByMap(snapshot.Character.MapID); known {
 				name = "npc/2083002_horntail.lua"
+			}
+		case 9000080:
+			switch snapshot.Character.MapID {
+			case content.RavanaLobby, content.RavanaArena, content.RavanaStoryArena:
+				name = "npc/9000080_ravana.lua"
+			}
+		case 9000098:
+			if snapshot.Character.MapID == content.RavanaTrial {
+				name = "npc/9000098_ravana.lua"
+				if ravanaCanTurnIn(snapshot.Character, content.RavanaFirstSpark, content.RavanaQuestSpark) {
+					name = "quest/3862.lua"
+				} else if ravanaCanTurnIn(snapshot.Character, content.RavanaEntryQuest, content.RavanaSpark) {
+					name = "quest/3864.lua"
+				}
 			}
 		}
 	}
@@ -358,12 +380,18 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
 		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps", "christmas_finish", "hoblin_ambush",
-		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage", "pirate_pq_stage", "pet_training", "ghost_ship_queue", "ghost_ship_accept":
+		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage", "pirate_pq_stage", "pet_training", "ghost_ship_queue", "ghost_ship_accept", "carnival_leave":
 		if !a.hasNPCContext(snapshot) {
 			return scripting.CommandResult{}, domain.ErrForbidden
 		}
 	}
 	result := func(value any) (scripting.CommandResult, error) { return scripting.CommandResult{Value: value}, nil }
+	if command.Kind == "carnival_leave" {
+		return a.leaveCarnivalNPC(ctx, snapshot, command)
+	}
+	if strings.HasPrefix(command.Kind, "carnival_ii_") {
+		return a.carnivalLegacyCommand(ctx, snapshot, command)
+	}
 	if strings.HasPrefix(command.Kind, "scene_") {
 		return a.sceneCommand(snapshot, command)
 	}

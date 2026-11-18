@@ -19,6 +19,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	maplev1 "maple-go-server/api/maplev1"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/platform"
 	"maple-go-server/internal/protocol"
@@ -186,7 +187,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 	for channel := 1; channel <= wcfg.ChannelCount; channel++ {
 		channelID := channel
 		for _, host := range cfg.ListenHosts() {
-			address := net.JoinHostPort(host, strconv.Itoa(wcfg.ChannelBasePort+channel-1))
+			address := net.JoinHostPort(host, strconv.Itoa(wcfg.ChannelPort(channel)))
 			if err = g.Listen(ctx, address, func(ctx context.Context, c net.Conn) { s.handle(ctx, c, channelID) }); err != nil {
 				return err
 			}
@@ -697,6 +698,22 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 				slog.Warn("item_use_disconnect", "world", s.cfg.WorldID, "character", live.session.CharacterID, "item", req.TemplateID, "slot", req.Slot, "error", err)
 				return
 			}
+		case protocol.RecvUseScriptedItem:
+			if live == nil {
+				return
+			}
+			req, err := protocol.ReadUseScriptedItem(r)
+			if err != nil || req.TemplateID != content.RavanaBurning {
+				_ = c.WritePacket(protocol.EnableActions())
+				break
+			}
+			useCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+			err = s.craftRavanaSpark(useCtx, live, c, req)
+			cancel()
+			if err != nil {
+				slog.Warn("ravana_spark_use_disconnect", "world", s.cfg.WorldID, "character", live.session.CharacterID, "error", err)
+				return
+			}
 		case protocol.RecvChangeChannel:
 			if live == nil {
 				return
@@ -729,7 +746,7 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 			s.tradeLeave(live)
 			s.merchantLeave(live)
 			s.closeEconomyDialog(live)
-			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), s.wcfg.Host), s.wcfg.ChannelBasePort+target-1)) == nil {
+			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), s.wcfg.Host), s.wcfg.AdvertisedChannelPort(target))) == nil {
 				awaitRedirectDisconnect(c)
 			}
 			return
@@ -760,7 +777,7 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 			s.merchantLeave(live)
 			s.closeEconomyDialog(live)
 			s.leaveScene(live, c)
-			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), s.cfg.Bind), s.cfg.CashshopPort)) == nil {
+			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), s.cfg.CashshopHost()), s.cfg.AdvertisedCashshopPort())) == nil {
 				awaitRedirectDisconnect(c)
 			}
 			return

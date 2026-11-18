@@ -3,6 +3,7 @@ package domain
 import (
 	"net"
 	"testing"
+	"time"
 )
 
 func TestTrustedClientIPIsLoopbackOrTailnet(t *testing.T) {
@@ -36,5 +37,21 @@ func TestAdvertisedHostFollowsTheTailnetListener(t *testing.T) {
 	}
 	if got := AdvertisedHost(nil, "127.0.0.1"); got != "127.0.0.1" {
 		t.Errorf("missing address advertised %q", got)
+	}
+}
+
+func TestResolveIPv4KeepsAddressesAndReportsUnknownNames(t *testing.T) {
+	if got := ResolveIPv4("203.0.113.7"); got != "203.0.113.7" {
+		t.Errorf("address resolved to %q", got)
+	}
+	if got := ResolveIPv4("localhost"); got != "127.0.0.1" {
+		t.Errorf("localhost resolved to %q", got)
+	}
+	if got := ResolveIPv4("no-such-host.invalid"); got != "" {
+		t.Errorf("unknown name resolved to %q", got)
+	}
+	resolvedHosts.Store("stale.invalid", resolvedHost{ip: "203.0.113.9", at: time.Now().Add(-time.Hour)})
+	if got := ResolveIPv4("stale.invalid"); got != "203.0.113.9" {
+		t.Errorf("failed lookup dropped the last answer: %q", got)
 	}
 }

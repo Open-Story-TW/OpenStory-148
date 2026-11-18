@@ -88,6 +88,12 @@ Java 對照與 MariaDB 使用自己的 listener。`.local/java-baseline.json` �
 
 預設每四小時以當地時間 03:50 為週期基準，第 5 至第 10 分鐘開放報名，第 11 分鐘開始 20 分鐘的比賽。可用 `MAPLEGO_LOLCASTLE_ANCHOR` 指定 RFC3339 週期基準。每人入場費為 1,000,000 楓幣。每間場地從截止時仍在場的玩家中抽出一人，每位在場玩家計入 500,000 楓幣獎池。清完場內怪物後，最高分玩家有 2 分鐘拾取獎品。
 
+### 怪物擂台賽 II 舊版相容模式
+
+原版 v148 任務 1302 標示停用。相容模式預設關閉，需要 World 服務的 `MAPLEGO_CARNIVAL_II_COMPAT=1` 和支援此模式的登入器程序環境 `OPEN_MAPLE_CARNIVAL_II_COMPAT=1`。資料使用原版 v148 WZ 匯出的 `980030000`、`980030010` 與 `980031000` 到 `980033400` 內的大廳、等候室、戰場、復活區、結算室及其 NPC、怪物與道具。
+
+Lv. 51–70 玩家從次元之鏡進入大廳。前兩個場地需要兩支各 2–4 人的隊伍，第三個場地需要兩支各 3–6 人的隊伍。同場兩隊人數須相同，由先進等候室的隊長確認挑戰。比賽計時使用 WZ 內容，結算依 Piggy2 的 `2042007` 勝負與 CP 經驗值規則。
+
 ## 開發與測試
 
 ```powershell
@@ -196,3 +202,21 @@ USE 欄物品的 WZ `spec` 有 `time` 加上 `pad`、`mad`、`pdd`、`mdd`、`ac
 4. 玩家都更新後設定 `MAPLEGO_LAUNCHER_KEY_REQUIRED=1`，`launcher_key` 顯示 `required`。
 
 私鑰格式錯誤時服務會直接啟動失敗，不會當成沒有設定。`MAPLEGO_LAUNCHER_KEY=<私鑰> go run ./cmd/launcherkey -public` 可以從私鑰印出公鑰。
+
+## 對外部署模式
+
+預設所有服務、資料庫與快取都只能在本機位址，啟動時會檢查。設定 `MAPLEGO_DEPLOY=public` 後放寬這項檢查，讓服務器可以放在玩家從網際網路連得到的主機上。
+
+| 環境變數 | 用途 |
+| --- | --- |
+| `MAPLEGO_DEPLOY` | `public` 開啟對外部署模式；不設定或 `local` 維持只能在本機 |
+| `MAPLEGO_PUBLIC_HOST` | 玩家連線用的公網 IPv4 位址或網域名稱，必填。填網域時，服務器在通知客戶端換頻道、進出商城的當下查詢它的 IPv4 位址 |
+| `MAPLEGO_BIND` | 監聽位址，對外部署模式預設 `0.0.0.0` |
+| `MAPLEGO_HEALTH_ADDR` | 健康檢查位址，預設仍在 `127.0.0.1`，因為同一個埠也提供管理用的端點 |
+| `MAPLEGO_PUBLIC_CASHSHOP_PORT` | 前面有代理並由代理指定對外埠號時，玩家連商城要用的埠號；不設定就用 `MAPLEGO_CASHSHOP_PORT` |
+
+`MAPLEGO_WORLDS_JSON` 裡每個世界的 `host` 也要是公網位址或網域，另外可以加 `public_channel_ports`，依頻道順序列出玩家要用的對外埠號，數量要等於 `channel_count`。服務器仍然監聽 `channel_base_port` 起算的埠，這份清單只影響告訴客戶端的埠號。
+
+這個模式下資料庫與 Redis 可以在別台主機，資料庫名稱也不再限定 `maple_go_` 開頭。登入、世界與商城三個服務必須設定 `MAPLEGO_LAUNCHER_KEY` 並把 `MAPLEGO_LAUNCHER_KEY_REQUIRED` 設成 `1`，否則拒絕啟動。
+
+目前的限制：玩家選角進入頻道、換頻道與進出商城時，服務器是用角色編號加上來源位址來認人，這個做法只接受本機與 Tailscale 的來源位址。對外部署模式沒有放寬這一點，所以從網際網路連進來的玩家可以登入並看到角色列表，但還進不了遊戲。要開放得先讓登入器在加密通道裡帶一次性的交接憑證。

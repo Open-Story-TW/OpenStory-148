@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 )
 
 func (s *Server) eventRosterBelowLogLimit(ctx context.Context, group []eventOccupant, key domain.ScriptLogKey, maximum int64) bool {
@@ -22,7 +23,7 @@ func (s *Server) eventRosterBelowLogLimit(ctx context.Context, group []eventOccu
 	return true
 }
 
-func (s *Server) exchangeEventRosterLog(ctx context.Context, inst *eventInstance, group []eventOccupant, mapID int, action string, change domain.ScriptLogChange) error {
+func (s *Server) exchangeEventRosterLog(ctx context.Context, inst *eventInstance, group []eventOccupant, mapID int, action string, change domain.ScriptLogChange, reset ...domain.ScriptQuestForce) error {
 	repo, ok := s.repo.(domain.EventLogRepository)
 	if !ok || len(group) == 0 {
 		return domain.ErrForbidden
@@ -40,8 +41,13 @@ func (s *Server) exchangeEventRosterLog(ctx context.Context, inst *eventInstance
 		if session.ChannelID != inst.channel || session.Character.MapID != mapID || session.Character.HP <= 0 || s.eventOf(session.CharacterID) != inst {
 			return domain.ErrStaleOwner
 		}
+		for _, quest := range reset {
+			if questStateOf(session.Character, quest.QuestID) != 2 {
+				return domain.ErrForbidden
+			}
+		}
 		requests = append(requests, domain.ScriptExchange{Session: session,
-			OperationID: "event-" + inst.id + "-" + action, Logs: []domain.ScriptLogChange{change}})
+			OperationID: "event-" + inst.id + "-" + action, Logs: []domain.ScriptLogChange{change}, Quests: reset})
 	}
 	results, err := repo.ExecuteEventLogs(ctx, requests)
 	if err != nil {
@@ -51,7 +57,17 @@ func (s *Server) exchangeEventRosterLog(ctx context.Context, inst *eventInstance
 		value := result.Character
 		// A roster log changes the revision without changing the newer live vitals.
 		value.HP, value.MP = requests[i].Session.Character.HP, requests[i].Session.Character.MP
-		s.applyInventoryResult(group[i].live, value)
+		member := group[i]
+		if len(reset) == 0 {
+			s.applyInventoryResult(member.live, value)
+			continue
+		}
+		s.applyProgressResult(member.live, value)
+		if visit := s.sceneFor(member.live, member.sink); visit != nil {
+			for _, quest := range result.Quests {
+				_ = s.writeScenePackets(visit, protocol.QuestUpdate(quest))
+			}
+		}
 	}
 	return nil
 }

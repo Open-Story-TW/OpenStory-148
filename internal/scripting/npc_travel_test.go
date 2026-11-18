@@ -10,8 +10,10 @@ import (
 
 // travelHost answers level queries and records warps.
 type travelHost struct {
-	level int64
-	warps [][]int64
+	level           int64
+	warps           [][]int64
+	carnivalII      bool
+	enteredCarnival bool
 }
 
 func (h *travelHost) Execute(_ context.Context, _ Identity, c Command) (CommandResult, error) {
@@ -21,6 +23,11 @@ func (h *travelHost) Execute(_ context.Context, _ Identity, c Command) (CommandR
 	case "warp":
 		h.warps = append(h.warps, c.Ints)
 		return CommandResult{}, nil
+	case "carnival_ii_enabled":
+		return CommandResult{Value: h.carnivalII}, nil
+	case "carnival_ii_enter":
+		h.enteredCarnival = true
+		return CommandResult{Value: "entered"}, nil
 	}
 	return CommandResult{}, fmt.Errorf("unexpected command %s", c.Kind)
 }
@@ -63,7 +70,7 @@ func TestDimensionalMirrorOffersLevelBracketsAndWarps(t *testing.T) {
 		{25, "[801 10 11]"},
 		{45, "[801 2 11 27]"},
 		{50, "[801 9 2 11 27]"},
-		{65, "[801 9 3 5 11 27]"},
+		{65, "[801 9 5 11 27]"},
 		{119, "[801 9 11 12 13 14 15 27]"},
 		{120, "[801 9 4 11 12 13 14 15 16 17 21 22 27]"},
 		{159, "[801 9 4 11 12 13 14 15 16 17 21 22 27]"},
@@ -91,6 +98,18 @@ func TestDimensionalMirrorOffersLevelBracketsAndWarps(t *testing.T) {
 	s, event = startNPC(t, 9010022, host)
 	if _, err := s.Respond(context.Background(), Response{Identity: testIdentity, PromptID: event.Prompt.ID, Kind: "map_selection", Choice: 17}); err == nil || len(host.warps) != 0 {
 		t.Fatalf("accepted an unoffered destination: %v %v", err, host.warps)
+	}
+}
+
+func TestDimensionalMirrorOffersCarnivalIIOnlyWhenEnabled(t *testing.T) {
+	host := &travelHost{level: 65, carnivalII: true}
+	s, event := startNPC(t, 9010022, host)
+	if got := fmt.Sprint(choiceIDs(event.Prompt)); got != "[801 9 3 5 11 27]" {
+		t.Fatalf("enabled Carnival II menu: %s", got)
+	}
+	event = respond(t, s, event, Response{Choice: 3})
+	if event.Kind != "done" || !host.enteredCarnival || len(host.warps) != 0 {
+		t.Fatalf("Carnival II should use scene admission: %+v, %+v", host, event)
 	}
 }
 

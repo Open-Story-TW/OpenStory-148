@@ -41,6 +41,7 @@ type combatTicket struct {
 	rewardNotified     map[int64]bool // guarded by recipient persistence locks
 	committedCooldown  *domain.SkillCooldown
 	cooldownPublished  bool // guarded by the actor persistMu
+	carnivalMatch      *carnivalMatch
 }
 
 func cloneCombatSession(s domain.CharacterSession) domain.CharacterSession {
@@ -219,9 +220,11 @@ func (s *Server) executeCombatTicket(ctx context.Context, repo domain.CombatSett
 		}
 		s.gameplay.mu.Lock()
 		now := time.Now()
+		room := s.gameplay.rooms[t.key]
 		targetsCurrent := !slices.ContainsFunc(t.targets, func(mob *gameplayMob) bool { return mob.fake }) &&
 			s.eruptionClaimsCurrentLocked(t, now) &&
-			s.expeditionCombatAllowedLocked(t.key, t.actorSession.CharacterID)
+			s.expeditionCombatAllowedLocked(t.key, t.actorSession.CharacterID) &&
+			(room == nil || s.gameplay.carnivalCanAttackLocked(room, t.actorSession.CharacterID, now))
 		for i, mob := range t.targets {
 			if !mob.rushUntil.IsZero() {
 				t.request.Targets[i].MonsterRush = true
@@ -394,6 +397,7 @@ func (s *Server) commitCombatTicket(t *combatTicket, result domain.CombatAttackR
 			if room := g.rooms[t.key]; room != nil && room.judgement != nil {
 				room.judgement.scores[t.actorSession.CharacterID] += judgementMobPoints(q.MobID)
 			}
+			g.carnivalScoreLocked(g.rooms[t.key], t, mob.stats.CarnivalPoints)
 		}
 	}
 	s.applyGenericStatusesLocked(t, time.Now())
@@ -455,6 +459,7 @@ func combatRoomPeers(room *gameplayRoom) []combatLivePeer {
 
 func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, result domain.CombatAttackResult) {
 	t.publishAppliedDamageEvidence()
+	s.publishCarnivalScores(t)
 	if t.generic != nil && t.generic.then != nil {
 		defer t.generic.then()
 	}

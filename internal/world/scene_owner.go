@@ -72,6 +72,7 @@ func (s *Server) detachScene(v *sceneVisit) {
 	}
 	if s.gameplay != nil {
 		s.leaveGameplay(owner.ChannelID, owner.Character.MapID, owner.CharacterID, v.sink)
+		s.gameplay.leaveCarnivalSession(v)
 		s.RemoveTownPortal(owner.ChannelID, owner.CharacterID)
 	}
 	if s.skills != nil {
@@ -165,6 +166,9 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 		s.detachScene(old)
 	}
 	if err = s.restoreJudgementLobby(ctx, &snapshot); err != nil {
+		return err
+	}
+	if err = s.restoreCarnivalLobby(ctx, &snapshot); err != nil {
 		return err
 	}
 	// Fetch fallible content before publishing any new local owner/field packet.

@@ -293,7 +293,7 @@ func (s *Server) dispatch(ctx context.Context, c *protocol.Conn, st *state, op u
 		if transfer.ClientHandle <= 0 {
 			return fmt.Errorf("missing one-use client handoff handle")
 		}
-		if err = c.WritePacket(protocol.ServerIP(w.Host, w.ChannelBasePort+st.channel-1, transfer.ClientHandle)); err != nil {
+		if err = c.WritePacket(protocol.ServerIP(domain.ResolveIPv4(w.Host), w.AdvertisedChannelPort(st.channel), transfer.ClientHandle)); err != nil {
 			return err
 		}
 		st.redirected = true

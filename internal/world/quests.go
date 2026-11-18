@@ -155,6 +155,9 @@ func (s *Server) handleQuest(ctx context.Context, channel int, live *liveCharact
 	if request.QuestID == dailyResetQuest && (request.Action == 1 || request.Action == 4) {
 		return s.completeDailyResetQuest(ctx, live, sink, request, before)
 	}
+	if request.QuestID == content.CarnivalInvitationQuest {
+		return s.acceptCarnivalQuest(ctx, channel, live, sink, request)
+	}
 	if request.Action == 4 || request.Action == 5 {
 		// Only reviewed source mappings can launch a quest script.
 		name := fmt.Sprintf("quest/%d.lua", request.QuestID)

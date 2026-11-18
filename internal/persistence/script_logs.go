@@ -376,7 +376,14 @@ func (s *Store) ExecuteEventLogs(ctx context.Context, exchanges []domain.ScriptE
 		if len(exchange.Logs) != 1 {
 			return nil, domain.ErrInvalidInput
 		}
-		requests[i] = domain.ScriptExchange{Session: exchange.Session, OperationID: exchange.OperationID, Logs: exchange.Logs}
+		if len(exchange.Quests) != 0 &&
+			(len(exchange.Quests) != 1 || exchange.Quests[0].QuestID != content.RavanaEntryQuest ||
+				exchange.Quests[0].State != 1 || exchange.Quests[0].Data != nil ||
+				exchange.Session.Character.MapID != content.RavanaArena ||
+				exchange.Logs[0].Key != (domain.ScriptLogKey{Scope: domain.LogCharacter, Period: domain.LogDaily, Name: "ravana_entries"})) {
+			return nil, domain.ErrInvalidInput
+		}
+		requests[i] = domain.ScriptExchange{Session: exchange.Session, OperationID: exchange.OperationID, Logs: exchange.Logs, Quests: exchange.Quests}
 	}
 	return s.executeEventExchanges(ctx, requests)
 }

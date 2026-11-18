@@ -6,12 +6,24 @@ import "maple-go-server/internal/domain"
 
 const (
 	RecvUseItem         uint16 = 0x7c
+	RecvUseScriptedItem uint16 = 0x82
 	SendModifyInventory uint16 = 0x2a
 )
 
 func ReadUseItem(r *Reader) (domain.UseItemRequest, error) {
 	req := domain.UseItemRequest{ClientTick: r.U32(), Slot: int(r.I16()), TemplateID: int(r.I32())}
 	if r.Err() != nil || r.Remaining() != 0 || req.Slot < 1 || req.Slot > 128 || req.TemplateID <= 0 {
+		return domain.UseItemRequest{}, ErrMalformed
+	}
+	return req, nil
+}
+
+// ReadUseScriptedItem is the v148 single-item double-click request observed
+// for the Burning Sunburst. Its payload ends with an additional int32 of 1.
+func ReadUseScriptedItem(r *Reader) (domain.UseItemRequest, error) {
+	req := domain.UseItemRequest{ClientTick: r.U32(), Slot: int(r.I16()), TemplateID: int(r.I32())}
+	singleUse := r.I32()
+	if r.Err() != nil || r.Remaining() != 0 || req.Slot < 1 || req.Slot > 128 || req.TemplateID <= 0 || singleUse != 1 {
 		return domain.UseItemRequest{}, ErrMalformed
 	}
 	return req, nil

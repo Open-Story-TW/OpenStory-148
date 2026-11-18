@@ -212,7 +212,7 @@ type EventItemRepository interface {
 	ExecuteEventItems(context.Context, []ScriptExchange) ([]ScriptExchangeResult, error)
 }
 
-// EventLogRepository applies server-created roster logs atomically.
+// EventLogRepository applies server-created roster logs and reviewed quest resets atomically.
 type EventLogRepository interface {
 	ExecuteEventLogs(context.Context, []ScriptExchange) ([]ScriptExchangeResult, error)
 }

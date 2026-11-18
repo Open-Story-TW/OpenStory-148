@@ -68,6 +68,8 @@ func eventDefinitions() map[string]Event {
 		LudibriumPQName: ludibriumEvent(),
 		ZakumMineName:   zakumMineEvent(),
 		AzwanSweepName:  azwanSweepEvent(),
+		RavanaName:      ravanaEvent(false),
+		RavanaStoryName: ravanaEvent(true),
 		NettNormal:      nettEvent(NettNormal, NettNormalBase, 60, 89),
 		NettHard:        nettEvent(NettHard, NettHardBase, 90, 109),
 		HenesysPQName: {

@@ -96,6 +96,7 @@ func MonsterDrops(mobID, mapID int) ([]DropDefinition, error) {
 		}
 		out = append(out, row)
 	}
+	out = append(out, ravanaDropRows(mobID, mapID)...)
 	if mapID == KentaBoss && (mobID == 9300461 || mobID == 9300468) {
 		out = append(out, DropDefinition{ID: mobID, MobID: mobID, TemplateID: KentaScales, Minimum: 1, Maximum: 1, Chance: 1000000})
 	}

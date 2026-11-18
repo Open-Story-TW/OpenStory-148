@@ -450,7 +450,7 @@ func (s *server) handle(ctx context.Context, raw net.Conn) {
 				continue
 			}
 			handedOff = true
-			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), world.Host), world.ChannelBasePort+transfer.ChannelID-1)) == nil {
+			if c.WritePacket(protocol.ChannelChange(domain.AdvertisedHost(raw.LocalAddr(), world.Host), world.AdvertisedChannelPort(transfer.ChannelID))) == nil {
 				awaitRedirectDisconnect(c)
 			}
 			return

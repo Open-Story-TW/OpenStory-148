@@ -35,8 +35,9 @@ local entries = {
 
 local offered = {}
 local byID = {}
+local carnival_ii = npc:carnival_ii_enabled()
 for _, entry in ipairs(entries) do
-    if level >= entry.min and (entry.max == nil or level <= entry.max) then
+    if (entry.id ~= 3 or carnival_ii) and level >= entry.min and (entry.max == nil or level <= entry.max) then
         offered[#offered + 1] = { id = entry.id, text = entry.text }
         byID[entry.id] = entry
     end
@@ -44,6 +45,12 @@ end
 
 local choice = npc:ask_map_selection(offered)
 local destination = byID[choice]
+if destination.id == 3 then
+    if npc:carnival_ii_enter() ~= "entered" then
+        npc:say("暫時無法進入怪物擂台賽 II。", false, false)
+    end
+    return
+end
 if destination.map == 921160000 or destination.map == 262010000 then
     local saved = npc:exchange({quest_data = {{id = 1900000001, data = tostring(npc:map_id())}}})
     if not saved.ok then

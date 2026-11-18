@@ -163,6 +163,14 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	}
 	nett := content.NettEvent(e.Name)
 	azwan := e.Name == content.AzwanSweepName
+	ravana := e.Name == content.RavanaName
+	if ravana {
+		group := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
+		if !s.eventRosterBelowLogLimit(ctx, group, ravanaDaily, ravanaDailyLimit) {
+			s.eventEnd(inst)
+			return "daily", here, qualified, nil
+		}
+	}
 	if nett {
 		group := append(append([]eventOccupant{}, present...), eventOccupant{live, sink})
 		if !s.nettCanEnter(ctx, group) {
@@ -327,6 +335,12 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 			return "unavailable", here, qualified, nil
 		}
 	}
+	if ravana {
+		if err := s.startRavana(ctx, inst, here); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, nil
+		}
+	}
 	s.events.mu.Lock()
 	inst.starting = false
 	partial := e.ExpeditionType != 0 && (inst.ended || len(inst.members) != here)
@@ -353,7 +367,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		expeditionID, size, group, reason = s.eventExpeditionRoster(e, leader.CharacterID, live)
 	} else {
 		partyID, size, group, reason = s.eventPartyRoster(leader.CharacterID)
-		if reason == "no_party" && e.PartyMin == 1 && (e.Ticket != 0 || e.Name == content.AzwanSweepName) {
+		if reason == "no_party" && e.PartyMin == 1 && (e.Ticket != 0 || e.Name == content.AzwanSweepName || e.Name == content.RavanaStoryName) {
 			size, reason = 1, ""
 		}
 	}
@@ -379,11 +393,21 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		}
 		present = append(present, m)
 	}
-	if here < e.PartyMin || size > e.PartyMax || (e.Ticket != 0 || e.Name == content.AzwanSweepName) && here != size {
+	if here < e.PartyMin || size > e.PartyMax || (e.Ticket != 0 || e.Name == content.AzwanSweepName || e.Name == content.RavanaName) && here != size {
 		return nil, nil, "party_size", here, qualified
 	}
 	if qualified != here {
 		return nil, nil, "level", here, qualified
+	}
+	if e.Name == content.RavanaStoryName && questStateOf(leader.Character, content.RavanaStoryQuest) != 1 {
+		return nil, nil, "ravana_story", here, qualified
+	}
+	if e.Name == content.RavanaName {
+		for _, member := range append(append([]eventOccupant(nil), present...), eventOccupant{live: live}) {
+			if !ravanaHasEntry(partySession(member.live).Character) {
+				return nil, nil, "ravana_spark", here, qualified
+			}
+		}
 	}
 	if e.ExpeditionType != 0 && here != size {
 		return nil, nil, "roster_absent", here, qualified
@@ -429,7 +453,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	occupied := len(s.eventOccupants(leader.ChannelID, e.Maps)) > 0
 	inst = &eventInstance{id: platform.NewID(), definition: e, channel: leader.ChannelID, partyID: partyID, expeditionID: expeditionID,
 		members: map[int64]struct{}{leader.CharacterID: {}}, deadline: time.Now().Add(time.Duration(e.Seconds) * time.Second),
-		properties: map[string]string{}, starting: expeditionID != 0 || content.NettEvent(e.Name) || e.Name == content.AzwanSweepName}
+		properties: map[string]string{}, starting: expeditionID != 0 || content.NettEvent(e.Name) || e.Name == content.AzwanSweepName || e.Name == content.RavanaName}
 	if e.Name == content.AzwanSweepName {
 		inst.azwanSweepRewards = make(map[int64]azwanSweepReward)
 	}
@@ -551,6 +575,12 @@ func eventPortalNotice(sink packetSink, text string) error {
 }
 
 func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bool {
+	if g := s.gameplay; g != nil && (content.CarnivalMatchField(mapID) || content.CarnivalSecondField(mapID)) {
+		g.mu.Lock()
+		allowed := g.carnivalEntryLocked(session, mapID)
+		g.mu.Unlock()
+		return allowed
+	}
 	if content.JudgementRoom(mapID) || !s.treasureAllowsEntry(session, mapID) {
 		return false
 	}
