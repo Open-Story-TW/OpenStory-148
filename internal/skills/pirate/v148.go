@@ -74,6 +74,7 @@ func init() {
 		return skills.Bonus{Mastery: c.Values["mastery"]}
 	})
 	skills.Register(skills.Handler{ID: 5100013, Kind: skills.KindPassive}) // 耐久: see the server's periodic recovery
+	skills.Register(skills.Handler{ID: 5700005, Kind: skills.KindPassive}) // 血脈通暢: periodic max-HP and max-MP recovery
 	passive(5220019, func(c *skills.PassiveContext) skills.Bonus {         // 船員指令
 		if c.Active(summonCrew) {
 			return skills.Bonus{WATK: c.Values["pad"]}

@@ -43,3 +43,25 @@ func TestReviewedPeriodicRecoveryOriginalWZMapRates(t *testing.T) {
 		}
 	}
 }
+
+func TestReviewedBloodCirculationOriginalWZ(t *testing.T) {
+	if os.Getenv("MAPLEGO_WZ_ROOT") == "" {
+		t.Skip("original WZ required")
+	}
+	now := time.Unix(1000, 0)
+	for _, job := range []int{570, 571, 572} {
+		c := domain.Character{
+			MapID: 40000, Job: job, Level: 120,
+			HP: 1025, MP: 63, MaxHP: 7193, MaxMP: 84,
+			Skills: []domain.SkillState{{ID: bloodCirculationSkill, Level: 15}},
+		}
+		want := PeriodicRecoveryPlan{SkillID: bloodCirculationSkill, HP: 575, MP: 6, Interval: 5 * time.Second}
+		if plans, err := ReviewedRecoveryPlans(c, now); err != nil || len(plans) != 1 || plans[0] != want {
+			t.Fatalf("job %d: plans %v, want %v (%v)", job, plans, want, err)
+		}
+		c.Job = 510
+		if plans, err := ReviewedRecoveryPlans(c, now); err != nil || len(plans) != 0 {
+			t.Fatalf("foreign job applied Blood Circulation: %v (%v)", plans, err)
+		}
+	}
+}

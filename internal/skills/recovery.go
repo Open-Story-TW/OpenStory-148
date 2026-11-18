@@ -13,10 +13,13 @@ type PeriodicRecoveryPlan struct {
 	Interval        time.Duration
 }
 
-const durabilitySkill = 5100013
+const (
+	durabilitySkill       = 5100013
+	bloodCirculationSkill = 5700005
+)
 
 func IsReviewedRecoverySkill(id int) bool {
-	return id == 1110000 || id == 11110000 || id == durabilitySkill
+	return id == 1110000 || id == 11110000 || id == durabilitySkill || id == bloodCirculationSkill
 }
 
 // ReviewedRecoveryTick follows Java PlayerStats.relocHeal's exact job switch.
@@ -59,7 +62,8 @@ func ReviewedRecoveryPlans(c domain.Character, now time.Time) ([]PeriodicRecover
 		}
 		eligible := state.ID == 1110000 && (c.Job == 111 || c.Job == 112) ||
 			state.ID == 11110000 && (c.Job == 1111 || c.Job == 1112) ||
-			state.ID == durabilitySkill && c.Job >= 510 && c.Job <= 512
+			state.ID == durabilitySkill && c.Job >= 510 && c.Job <= 512 ||
+			state.ID == bloodCirculationSkill && c.Job >= 570 && c.Job <= 572
 		if !eligible {
 			continue
 		}
@@ -75,10 +79,10 @@ func ReviewedRecoveryPlans(c domain.Character, now time.Time) ([]PeriodicRecover
 		if err != nil {
 			return nil, err
 		}
-		if state.ID == durabilitySkill {
+		if state.ID == durabilitySkill || state.ID == bloodCirculationSkill {
 			percent, seconds := values["x"], values["y"]
 			if percent < 1 || percent > 100 || seconds < 1 || seconds > 86400 {
-				return nil, fmt.Errorf("invalid durability recovery values")
+				return nil, fmt.Errorf("invalid percentage recovery values")
 			}
 			maxHP, maxMP := c.MaxHP, c.MaxMP
 			if c.VitalsModel == 1 {

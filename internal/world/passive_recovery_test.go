@@ -73,6 +73,29 @@ func TestReviewedPassiveRecoveryFourSecondRuntimeAndNoDuplicateBase(t *testing.T
 		}
 	}
 }
+
+func TestBloodCirculationUpdatesLiveVitalsAfterFiveSeconds(t *testing.T) {
+	s, live, start := recoveryWorldFixture(t, &gameplayTestSink{})
+	c := &live.session.Character
+	c.Job, c.Level = 570, 120
+	c.VitalsModel = 0
+	c.HP, c.MP, c.MaxHP, c.MaxMP = 1025, 63, 7193, 84
+	c.Equipment[0].Potential = domain.EquipmentPotential{}
+	c.Skills = []domain.SkillState{{ID: 5700005, Level: 15}}
+	member := s.skills.members[1]
+
+	s.tickReviewedRecoveryAt(member, start)
+	s.tickReviewedRecoveryAt(member, start.Add(5*time.Second-time.Millisecond))
+	if c.HP != 1025 || c.MP != 63 {
+		t.Fatalf("recovered before interval: %d/%d", c.HP, c.MP)
+	}
+	s.tickReviewedRecoveryAt(member, start.Add(5*time.Second))
+	s.tickReviewedRecoveryAt(member, start.Add(5*time.Second))
+	if c.HP != 1600 || c.MP != 69 || !live.dirty {
+		t.Fatalf("expected one 575 HP / 6 MP recovery, got %d/%d", c.HP, c.MP)
+	}
+}
+
 func TestReviewedPassiveRecoveryPendingExpiredDeadAndFreshLevel(t *testing.T) {
 	s, live, _, start := periodicRecoveryFixture(t, 1110000, 111)
 	m := s.skills.members[1]
