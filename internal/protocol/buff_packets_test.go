@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"maple-go-server/internal/domain"
 	"testing"
 	"time"
 
@@ -166,5 +167,26 @@ func TestEnergyChargeCarriesV148MovementByte(t *testing.T) {
 	// opcode, mask, suffix, two-state (value, source, u8, i32, term), delay, v148 byte, movement byte.
 	if want := 2 + 32 + 3 + 4 + 4 + 1 + 4 + 2 + 2 + 1 + 1; len(p) != want {
 		t.Fatalf("energy charge length %d want %d", len(p), want)
+	}
+}
+
+func TestV148BlueAuraSourceRankAndOwnerTail(t *testing.T) {
+	now := time.Now()
+	for _, rank := range []struct{ id, level int }{{32111012, 20}, {32110000, 10}} {
+		rows := []domain.SkillBuff{{ID: rank.id, Level: rank.level, Stat: "BLUE_AURA", Value: rank.level, ExpiresAt: now.Add(time.Minute), SourceCharacterID: 41}}
+		for _, holder := range []int64{41, 42} {
+			r := NewReader(SkillBuffsFor(domain.Character{ID: holder, SkillBuffs: rows}, rows, now))
+			if got := r.U16(); got != 0x2d {
+				t.Fatalf("local Blue Aura opcode %#x", got)
+			}
+			r.Skip(32)
+			if level, id, duration := int(r.I16()), int(r.I32()), r.I32(); level != rank.level || id != rank.id || duration != 60000 {
+				t.Fatalf("Blue Aura triplet = %d,%d,%d", level, id, duration)
+			}
+			r.Skip(3)
+			if owner := r.U8() != 0; owner != (holder == 41) || r.Err() != nil {
+				t.Fatalf("Blue Aura owner = %t for holder %d", owner, holder)
+			}
+		}
 	}
 }

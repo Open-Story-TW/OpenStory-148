@@ -275,7 +275,7 @@ type CastPlan struct {
 	// orbs): the cast fails unless each stat is active with at least that
 	// value; the row keeps its expiry.
 	Consume []StatValue
-	// ApplyAs stores Self under another skill's ID (at ApplyLevel, default
+	// ApplyAs stores Self or Party under another skill's ID (at ApplyLevel, default
 	// the cast level): 35111004 cast in Missile Tank becomes 35121013, like
 	// Java MapleStatEffect. Toggle then checks that skill's rows.
 	ApplyAs, ApplyLevel int

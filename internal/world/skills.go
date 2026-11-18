@@ -92,7 +92,7 @@ func (s *Server) enterSkills(ctx context.Context, channel int, live *liveCharact
 		return err
 	}
 	for _, group := range protocol.GroupSkillBuffs(activeSkillBuffs(c, now)) {
-		if e := sink.WritePacket(protocol.SkillBuffsAmong(group, c.SkillBuffs, now)); e != nil {
+		if e := sink.WritePacket(protocol.SkillBuffsFor(c, group, now)); e != nil {
 			return e
 		}
 	}
@@ -110,7 +110,8 @@ func (s *Server) dropOnEnter(c domain.Character, now time.Time) {
 	done := map[int]bool{}
 	for _, b := range activeSkillBuffs(c, now) {
 		h, ok := skills.Lookup(b.ID)
-		if done[b.ID] || !ok || h.DropOnEnter == nil || !h.DropOnEnter(c) {
+		receivedAura := skills.IsBlueAuraRow(b) && b.SourceCharacterID != 0 && b.SourceCharacterID != c.ID
+		if done[b.ID] || !ok || !receivedAura && (h.DropOnEnter == nil || !h.DropOnEnter(c)) {
 			continue
 		}
 		done[b.ID] = true
@@ -312,12 +313,12 @@ func (s *Server) cancelSkillLocked(ctx context.Context, live *liveCharacter, sin
 		// the current state without replaying a cast or affected effect.
 		var rows []domain.SkillBuff
 		for _, b := range activeSkillBuffs(session.Character, time.Now()) {
-			if b.ID == id {
+			if skills.MatchesPartyBuff(id, b) {
 				rows = append(rows, b)
 			}
 		}
 		if len(rows) > 0 {
-			if e := sink.WritePacket(protocol.SkillBuffsAmong(rows, session.Character.SkillBuffs, time.Now())); e != nil {
+			if e := sink.WritePacket(protocol.SkillBuffsFor(session.Character, rows, time.Now())); e != nil {
 				return e
 			}
 		}
@@ -404,8 +405,15 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 	if s.skills == nil || s.gameplay == nil {
 		return sink.WritePacket(protocol.EnableActions())
 	}
-	live.persistMu.Lock()
-	defer live.persistMu.Unlock()
+	var caster *skillMember
+	if q.Type == protocol.MobContactDamage {
+		var unlock func()
+		caster, unlock = s.lockContactDamage(live)
+		defer unlock()
+	} else {
+		live.persistMu.Lock()
+		defer live.persistMu.Unlock()
+	}
 	session := s.skillSession(live)
 	c := session.Character
 	if err := assetOutcomeUncertain(live, session); err != nil {
@@ -467,13 +475,28 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 		// GM !god: the hit is reported and answered, never applied.
 		hpLoss, mpLoss = 0, 0
 	}
-	lethal := live.session.Character.HP-hpLoss <= 0
-	live.session.Character.HP = max(0, live.session.Character.HP-hpLoss)
-	live.session.Character.MP = max(0, live.session.Character.MP-mpLoss)
-	live.dirty = true
-	c = live.session.Character
 	live.mu.Unlock()
-	if lethal {
+	var shared blueAuraDamage
+	var split bool
+	c, shared, split = s.applyBlueAuraContact(expectedMember, caster, q.Damage, hpLoss, mpLoss, now)
+	if !split {
+		live.mu.Lock()
+		live.session.Character.HP = max(0, live.session.Character.HP-hpLoss)
+		live.session.Character.MP = max(0, live.session.Character.MP-mpLoss)
+		live.dirty = true
+		c = live.session.Character
+		live.mu.Unlock()
+	}
+	if split {
+		s.refreshParty(caster.live)
+		_ = s.writeScenePackets(shared.visit, protocol.UpdateHPMP(shared.caster.HP, shared.caster.MP))
+		if shared.caster.HP == 0 {
+			if err := s.clearDeathBuffs(ctx, caster.live, caster.sink, shared.visit); err != nil {
+				slog.Warn("death_buff_cancellation_failed", "character", shared.caster.ID, "error", err)
+			}
+		}
+	}
+	if c.HP == 0 {
 		c = s.reviveOnLethal(live, expectedMember, q, c, now)
 	}
 	s.refreshParty(live)

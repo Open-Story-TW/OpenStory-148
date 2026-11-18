@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/skills"
 	"testing"
 	"time"
 )
@@ -228,5 +229,72 @@ func TestHyperBodyRecipientCancellationIsLocalAndClampsCurrentVitals(t *testing.
 	caster, e := s.GetCharacter(ctx, actors[0].CharacterID)
 	if e != nil || len(caster.SkillBuffs) != 2 || caster.MaxHP != 739 || caster.MP != 40 {
 		t.Fatal("recipient cancel propagated to caster", e)
+	}
+}
+
+func TestV148BlueAuraPartySourceAndNativeCancel(t *testing.T) {
+	ctx, s, actors := hyperBodyFixture(t)
+	caster := actors[0].CharacterID
+	fixture := func(query string, args ...any) {
+		t.Helper()
+		if _, err := s.db.ExecContext(ctx, query, args...); err != nil {
+			t.Fatal(err)
+		}
+	}
+	refresh := func() {
+		t.Helper()
+		for i := range actors {
+			c, err := s.GetCharacter(ctx, actors[i].CharacterID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			actors[i].Character = c
+		}
+	}
+	fixture(`UPDATE game_characters SET job=3212,level=200,base_max_mp=1000,mp=1000 WHERE id=$1`, caster)
+	fixture(`INSERT INTO game_skills(character_id,skill_id,level,master_level) VALUES($1,32111012,20,20)`, caster)
+	refresh()
+
+	for i, want := range []struct{ id, rank int }{{32111012, 20}, {32110000, 10}} {
+		if i == 1 {
+			fixture(`INSERT INTO game_skills(character_id,skill_id,level,master_level) VALUES($1,32110000,10,10)`, caster)
+			refresh()
+		}
+		q := hyperBodyRequest(t, ctx, s, actors, fmt.Sprintf("blue-aura-test-cast-%d", i), uint32(71+i))
+		q.SkillID = skills.BlueAuraSkill
+		result, err := s.ApplyPartySkillCast(ctx, q)
+		if err != nil || result.ToggledOff || len(result.Recipients) != 2 {
+			t.Fatalf("cast %d: %v, %v", i, result.ToggledOff, err)
+		}
+		var expiry time.Time
+		for _, member := range result.Recipients {
+			aura, ok := skills.ActiveBlueAura(member.Character, time.Now())
+			if !ok || aura.SourceCharacterID != caster || aura.ID != want.id || aura.Level != want.rank || aura.Value != want.rank {
+				t.Fatalf("cast %d stored Blue Aura %+v", i, aura)
+			}
+			if member.Character.ID == caster {
+				expiry = aura.ExpiresAt
+				if member.Character.MP != q.Session.Character.MP-42 {
+					t.Fatalf("cast %d MP %d from %d", i, member.Character.MP, q.Session.Character.MP)
+				}
+			}
+		}
+		refresh()
+
+		cancel := hyperBodyRequest(t, ctx, s, actors, fmt.Sprintf("blue-aura-test-cancel-%d", i), 0)
+		cancel.SkillID, cancel.ClientLevel, cancel.CancelAuraExpiry = skills.BlueAuraSkill, 0, &expiry
+		result, err = s.ApplyPartySkillCast(ctx, cancel)
+		if err != nil || !result.ToggledOff || len(result.Recipients) != 2 {
+			t.Fatalf("cancel %d: %v, %v", i, result.ToggledOff, err)
+		}
+		for _, member := range result.Recipients {
+			if _, ok := skills.ActiveBlueAura(member.Character, time.Now()); ok || member.Character.MP != member.Session.Character.MP || len(member.Expired) != 1 {
+				t.Fatalf("cancel %d did not expire the party's aura without a cost", i)
+			}
+		}
+		if replay, err := s.ApplyPartySkillCast(ctx, cancel); err != nil || !replay.Replayed || !replay.ToggledOff {
+			t.Fatalf("native cancellation replay %d: %v", i, err)
+		}
+		refresh()
 	}
 }

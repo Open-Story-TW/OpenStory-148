@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/skills"
 	"os"
@@ -51,7 +52,11 @@ func (s *Store) PartySkillCastOutcome(ctx context.Context, lease domain.WorldLea
 
 func validPartySkillRequest(q domain.PartySkillCastRequest) bool {
 	h, ok := skills.Lookup(q.SkillID)
-	if !ok || h.Cast == nil || h.Kind&skills.KindPartyBuff == 0 || q.ClientLevel < 1 || q.ClientLevel > 255 || len(q.OperationID) < 16 || len(q.OperationID) > 200 || len(q.Members) < 1 || len(q.Members) > domain.PartyCapacity || len(q.PartyMembers) > domain.PartyCapacity {
+	if !ok || h.Cast == nil || h.Kind&skills.KindPartyBuff == 0 || q.ClientLevel > 255 || q.ClientLevel < 0 || len(q.OperationID) < 16 || len(q.OperationID) > 200 || len(q.Members) < 1 || len(q.Members) > domain.PartyCapacity || len(q.PartyMembers) > domain.PartyCapacity {
+		return false
+	}
+	if q.CancelAuraExpiry == nil && q.ClientLevel == 0 ||
+		q.CancelAuraExpiry != nil && (q.SkillID != skills.BlueAuraSkill || q.ClientLevel != 0 || q.CancelAuraExpiry.IsZero()) {
 		return false
 	}
 	seen := map[int64]bool{}
@@ -89,9 +94,13 @@ func (s *Store) ApplyPartySkillCast(ctx context.Context, q domain.PartySkillCast
 	if _, e = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1,0))`, q.OperationID); e != nil {
 		return r, e
 	}
+	var clientTick any
+	if q.CancelAuraExpiry == nil {
+		clientTick = int64(q.ClientTick)
+	}
 	var oldOp, oldHash string
 	var raw []byte
-	e = tx.QueryRowContext(ctx, `SELECT operation_id,payload_hash,result FROM asset_skill_casts WHERE operation_id=$1 OR(actor_id=$2 AND session_id=$3 AND generation=$4 AND client_tick=$5)`, q.OperationID, q.Session.CharacterID, q.Session.SessionID, q.Session.Generation, int64(q.ClientTick)).Scan(&oldOp, &oldHash, &raw)
+	e = tx.QueryRowContext(ctx, `SELECT operation_id,payload_hash,result FROM asset_skill_casts WHERE operation_id=$1 OR(actor_id=$2 AND session_id=$3 AND generation=$4 AND client_tick=$5)`, q.OperationID, q.Session.CharacterID, q.Session.SessionID, q.Session.Generation, clientTick).Scan(&oldOp, &oldHash, &raw)
 	if e == nil {
 		if oldOp != q.OperationID || oldHash != hash {
 			return r, domain.ErrForbidden
@@ -170,18 +179,37 @@ func (s *Store) ApplyPartySkillCast(ctx context.Context, q domain.PartySkillCast
 			return r, domain.ErrAlreadyExists
 		}
 	}
-	plan, e := skills.PartyCast(os.Getenv("MAPLEGO_WZ_ROOT"), actor, q.SkillID, q.ClientLevel, now)
-	if e != nil {
-		return r, domain.ErrForbidden
+	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	var plan skills.CastPlan
+	if q.CancelAuraExpiry == nil {
+		plan, e = skills.PartyCast(root, actor, q.SkillID, q.ClientLevel, now)
+		if e != nil {
+			return r, domain.ErrForbidden
+		}
 	}
-	if plan.Toggle && skills.ActiveBuff(actor, q.SkillID, now) {
+	applied, appliedLevel := skills.PartyBuffSource(plan, q.SkillID, q.ClientLevel)
+	if plan.ApplyAs != 0 {
+		if _, e = content.SkillDefinition(root, applied); e != nil || appliedLevel < 1 || appliedLevel > 255 {
+			return r, domain.ErrInvalidInput
+		}
+	}
+	activeAura, _ := skills.ActiveBlueAura(actor, now)
+	if q.CancelAuraExpiry != nil && (activeAura.SourceCharacterID != actor.ID || !activeAura.ExpiresAt.Equal(*q.CancelAuraExpiry)) {
+		return r, domain.ErrStaleOwner
+	}
+	if q.CancelAuraExpiry != nil || skills.PartyToggleActive(plan, actor, q.SkillID, now) {
 		// A toggle recast removes the skill from the caster and the party
 		// at no cost.
 		r.ToggledOff = true
 		for _, m := range members {
 			c := chars[m.CharacterID]
 			result := domain.SkillResult{}
-			if e = removeSkillBuffs(ctx, tx, &c, &result, func(b domain.SkillBuff) bool { return b.ID == q.SkillID }); e != nil {
+			if e = removeSkillBuffs(ctx, tx, &c, &result, func(b domain.SkillBuff) bool {
+				if q.SkillID == skills.BlueAuraSkill {
+					return skills.IsBlueAuraRow(b) && b.SourceCharacterID == activeAura.SourceCharacterID
+				}
+				return b.ID == applied
+			}); e != nil {
 				return r, e
 			}
 			if e = commitInventoryState(ctx, tx, &c); e != nil {
@@ -191,9 +219,14 @@ func (s *Store) ApplyPartySkillCast(ctx context.Context, q domain.PartySkillCast
 		}
 		return s.finishPartySkillCast(ctx, tx, q, hash, r)
 	}
-	rows, ok := skillBuffRows(q.SkillID, q.ClientLevel, plan.Party, now)
+	rows, ok := skillBuffRows(applied, appliedLevel, plan.Party, now)
 	if !ok {
 		return r, domain.ErrInvalidInput
+	}
+	if q.SkillID == skills.BlueAuraSkill {
+		for i := range rows {
+			rows[i].SourceCharacterID = actor.ID
+		}
 	}
 	var paid domain.SkillResult
 	if e = payCastCost(ctx, tx, &actor, &paid, q.SkillID, plan, now); e != nil {
@@ -241,7 +274,11 @@ func (s *Store) finishPartySkillCast(ctx context.Context, tx *sql.Tx, q domain.P
 	if e != nil {
 		return r, e
 	}
-	if _, e = tx.ExecContext(ctx, `INSERT INTO asset_skill_casts(operation_id,actor_id,world_id,session_id,generation,client_tick,skill_id,payload_hash,result) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`, q.OperationID, q.Session.CharacterID, q.Session.Lease.WorldID, q.Session.SessionID, q.Session.Generation, int64(q.ClientTick), q.SkillID, hash, raw); e != nil {
+	var clientTick any
+	if q.CancelAuraExpiry == nil {
+		clientTick = int64(q.ClientTick)
+	}
+	if _, e = tx.ExecContext(ctx, `INSERT INTO asset_skill_casts(operation_id,actor_id,world_id,session_id,generation,client_tick,skill_id,payload_hash,result) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`, q.OperationID, q.Session.CharacterID, q.Session.Lease.WorldID, q.Session.SessionID, q.Session.Generation, clientTick, q.SkillID, hash, raw); e != nil {
 		return r, e
 	}
 	if e = tx.Commit(); e != nil {

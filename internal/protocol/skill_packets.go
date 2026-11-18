@@ -19,7 +19,10 @@ const (
 	RecvPotentialRegeneration uint16 = 0xa0
 )
 
-const FieldObstacleDamage = -3
+const (
+	FieldObstacleDamage = -3
+	MobContactDamage    = -1
+)
 
 type SkillAllocation struct {
 	Tick    uint32
@@ -441,9 +444,21 @@ func SkillBuffs(rows []domain.SkillBuff, now time.Time) []byte {
 // that stat in active (the owner's buffs), so stacked sources stay in the
 // client's list. Rows of one source per stat give the same bytes as SkillBuffs.
 func SkillBuffsAmong(rows, active []domain.SkillBuff, now time.Time) []byte {
+	return skillBuffsAmong(rows, active, 0, now)
+}
+
+// SkillBuffsFor keeps the native Blue Aura owner marker on local updates.
+func SkillBuffsFor(c domain.Character, rows []domain.SkillBuff, now time.Time) []byte {
+	return skillBuffsAmong(rows, c.SkillBuffs, c.ID, now)
+}
+
+func skillBuffsAmong(rows, active []domain.SkillBuff, characterID int64, now time.Time) []byte {
 	stats, id, ok := buffRows(rows)
 	if !ok {
 		return nil
+	}
+	for i, row := range rows {
+		stats[i].blueAuraOwner = row.Stat == "BLUE_AURA" && characterID != 0 && row.SourceCharacterID == characterID
 	}
 	p, _ := TemporaryStatSetIndie(id, rows[0].ExpiresAt.Sub(now), stats, IndieEntries(rows, active, now))
 	return p

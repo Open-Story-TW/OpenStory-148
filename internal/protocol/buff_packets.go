@@ -11,6 +11,8 @@ import (
 type BuffStat struct {
 	Stat  buffstat.Stat
 	Value int
+
+	blueAuraOwner bool
 }
 
 func buffSpecs(stats []BuffStat) ([]buffstat.Spec, map[int]int, error) {
@@ -81,13 +83,20 @@ func TemporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat
 	w.U8(0)
 	w.U8(0)
 	w.U8(0)
-	// Tail fields are located natively but their meaning is not reviewed;
-	// they are sent as zero and each skill's MCP acceptance checks the effect.
+	blueAuraOwner := false
+	for _, stat := range stats {
+		blueAuraOwner = blueAuraOwner || stat.blueAuraOwner
+	}
+	// Preserve zero for tails without an established value.
 	for _, s := range buffstat.LocalTails(specs) {
 		for _, v := range s.Tail {
 			switch v {
 			case buffstat.ValueU8:
-				w.U8(0)
+				if s.Name == "BLUE_AURA" && blueAuraOwner {
+					w.U8(1) // v148 0x71F0DD/0x92B6F7: native owner toggle.
+				} else {
+					w.U8(0)
+				}
 			case buffstat.ValueI16:
 				w.I16(0)
 			case buffstat.ValueI32:

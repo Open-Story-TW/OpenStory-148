@@ -25,6 +25,8 @@ type SkillBuff struct {
 	// Counter is server-only state of the effect (remaining hits); it is
 	// never encoded into a packet.
 	Counter int `json:"counter,omitempty"`
+	// SourceCharacterID identifies the caster of a persisted party effect.
+	SourceCharacterID int64 `json:"source_character_id,omitempty"`
 }
 type SkillAllocateRequest struct {
 	Session     CharacterSession

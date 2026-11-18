@@ -53,14 +53,14 @@ func readSkillState(ctx context.Context, q questQuerier, c *domain.Character) er
 	if e != nil {
 		return e
 	}
-	rows, e = q.QueryContext(ctx, `SELECT skill_id,level,stat,value,expires_at,next_tick,counter FROM game_skill_buffs WHERE character_id=$1 ORDER BY stat`, c.ID)
+	rows, e = q.QueryContext(ctx, `SELECT skill_id,level,stat,value,expires_at,next_tick,counter,source_character_id FROM game_skill_buffs WHERE character_id=$1 ORDER BY stat`, c.ID)
 	if e != nil {
 		return e
 	}
 	for rows.Next() {
 		var b domain.SkillBuff
 		var tick sql.NullTime
-		if e = rows.Scan(&b.ID, &b.Level, &b.Stat, &b.Value, &b.ExpiresAt, &tick, &b.Counter); e != nil {
+		if e = rows.Scan(&b.ID, &b.Level, &b.Stat, &b.Value, &b.ExpiresAt, &tick, &b.Counter, &b.SourceCharacterID); e != nil {
 			rows.Close()
 			return e
 		}
@@ -629,7 +629,7 @@ func replaceSkillBuffs(ctx context.Context, tx *sql.Tx, c *domain.Character, r *
 		if !b.NextTick.IsZero() {
 			next = b.NextTick
 		}
-		if _, e := tx.ExecContext(ctx, `INSERT INTO game_skill_buffs(character_id,skill_id,level,stat,value,expires_at,next_tick,counter) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(character_id,stat,skill_id) DO UPDATE SET level=$3,value=$5,expires_at=$6,next_tick=$7,counter=$8`, c.ID, b.ID, b.Level, b.Stat, b.Value, b.ExpiresAt, next, b.Counter); e != nil {
+		if _, e := tx.ExecContext(ctx, `INSERT INTO game_skill_buffs(character_id,skill_id,level,stat,value,expires_at,next_tick,counter,source_character_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(character_id,stat,skill_id) DO UPDATE SET level=$3,value=$5,expires_at=$6,next_tick=$7,counter=$8,source_character_id=$9`, c.ID, b.ID, b.Level, b.Stat, b.Value, b.ExpiresAt, next, b.Counter, b.SourceCharacterID); e != nil {
 			return e
 		}
 	}
@@ -688,7 +688,7 @@ func settleSkillVitals(c *domain.Character) error {
 	return nil
 }
 func (s *Store) CancelSkill(ctx context.Context, session domain.CharacterSession, id int) (domain.SkillResult, error) {
-	return s.advanceSkillBuffs(ctx, session, id, func(b domain.SkillBuff) bool { return b.ID == id && id != 0 })
+	return s.advanceSkillBuffs(ctx, session, id, func(b domain.SkillBuff) bool { return id != 0 && skills.MatchesPartyBuff(id, b) })
 }
 func (s *Store) TickSkillBuffs(ctx context.Context, session domain.CharacterSession) (domain.SkillResult, error) {
 	return s.advanceSkillBuffs(ctx, session, 0, func(domain.SkillBuff) bool { return false })

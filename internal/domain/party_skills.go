@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"sort"
+	"time"
 )
 
 // Members are frozen server-authoritative candidate sessions, never a wire list.
@@ -19,6 +20,8 @@ type PartySkillCastRequest struct {
 	PartyID, PartyRevision int64
 	PartyMembers           []int64
 	Members                []CharacterSession
+	// CancelAuraExpiry pins a native Blue Aura cancellation to the active cast.
+	CancelAuraExpiry *time.Time `json:",omitempty"`
 }
 type PartySkillRecipient struct {
 	Session        CharacterSession

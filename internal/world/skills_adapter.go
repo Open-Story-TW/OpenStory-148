@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"maple-go-server/internal/protocol"
+	"maple-go-server/internal/skills"
 )
 
 func (s *Server) handleSkills(ctx context.Context, live *liveCharacter, sink packetSink, op uint16, r *protocol.Reader) (bool, error) {
@@ -38,6 +39,9 @@ func (s *Server) handleSkills(ctx context.Context, live *liveCharacter, sink pac
 			return reject()
 		}
 		s.endSkillPrepare(liveChannel(live), live, id)
+		if skills.IsBlueAuraSkill(id) {
+			return true, s.cancelBlueAura(ctx, live, sink)
+		}
 		return true, s.cancelSkill(ctx, live, sink, id)
 	case protocol.RecvItemCancel:
 		id, err := protocol.ReadItemCancel(r)

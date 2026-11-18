@@ -23,13 +23,13 @@ type aura struct {
 }
 
 var auras = []aura{
-	{id: 32001003, advanced: 32120000, stat: "DARK_AURA", valueKey: "x"}, // 黑色繩索 Dark Aura: damage x%
-	{id: 32111012, advanced: 32110000, stat: "BLUE_AURA"},                // 藍色繩索 Blue Aura
-	{id: 32101003, advanced: 32120001, stat: "YELLOW_AURA"},              // 黃色繩索 Yellow Aura (Legacy blocks it: client error 38)
+	{id: 32001003, advanced: 32120000, stat: "DARK_AURA", valueKey: "x"},                  // 黑色繩索 Dark Aura: damage x%
+	{id: skills.BlueAuraSkill, advanced: skills.AdvancedBlueAuraSkill, stat: "BLUE_AURA"}, // 藍色繩索 Blue Aura
+	{id: 32101003, advanced: 32120001, stat: "YELLOW_AURA"},                               // 黃色繩索 Yellow Aura (Legacy blocks it: client error 38)
 }
 
 // auraFamily are the skills whose buffs one aura cast replaces.
-var auraFamily = []int{32001003, 32111012, 32101003, 32111005, 32110007, 32110008, 32110009}
+var auraFamily = []int{32001003, skills.BlueAuraSkill, skills.AdvancedBlueAuraSkill, 32101003, 32111005, 32110007, 32110008, 32110009}
 
 func init() {
 	for _, a := range auras {
@@ -39,7 +39,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 32120000, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus { // 進階黑色繩索
 		return skills.Bonus{MATK: c.Values["madX"]}
 	}})
-	skills.Register(skills.Handler{ID: 32110000, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus { // 進階藍色繩索
+	skills.Register(skills.Handler{ID: skills.AdvancedBlueAuraSkill, Kind: skills.KindPassive, DropOnEnter: notBattleMage, Passive: func(c *skills.PassiveContext) skills.Bonus { // 進階藍色繩索
 		return skills.Bonus{ASR: c.Values["asrR"], TER: c.Values["terR"]}
 	}})
 	skills.Register(skills.Handler{ID: 32120001, Kind: skills.KindPassive | skills.KindMobStatus, Passive: func(c *skills.PassiveContext) skills.Bonus { // 進階黃色繩索
@@ -61,12 +61,6 @@ func notBattleMage(h domain.Character) bool { return h.Job < 3200 || h.Job > 321
 func (a aura) cast(c *skills.CastContext) (skills.CastPlan, error) {
 	p := cost(c)
 	p.Toggle = true
-	// Java cancels the recipient's other auras and Body Boost first.
-	for _, id := range auraFamily {
-		if id != a.id {
-			p.Replace = append(p.Replace, id)
-		}
-	}
 	level, values := c.Level, c.Values
 	if lv := learnedLevel(c.Caster, a.advanced, c.Now); lv > 0 {
 		v, err := skillValues(a.advanced, lv)
@@ -74,6 +68,16 @@ func (a aura) cast(c *skills.CastContext) (skills.CastPlan, error) {
 			return p, err
 		}
 		level, values = lv, v
+		if a.id == skills.BlueAuraSkill {
+			p.ApplyAs, p.ApplyLevel = a.advanced, lv
+		}
+	}
+	// Replace the old aura and Body Boost whenever the native source changes.
+	source, _ := skills.PartyBuffSource(p, a.id, c.Level)
+	for _, id := range auraFamily {
+		if id != source {
+			p.Replace = append(p.Replace, id)
+		}
 	}
 	v := level
 	if a.valueKey != "" {
@@ -90,7 +94,7 @@ func (a aura) cast(c *skills.CastContext) (skills.CastPlan, error) {
 // same duration (Retime).
 func bodyBoost(c *skills.CastContext) (skills.CastPlan, error) {
 	d, running := 0, 0
-	for _, a := range []struct{ id, d int }{{32001003, 60}, {32101003, 60}, {32111012, 10}} {
+	for _, a := range []struct{ id, d int }{{32001003, 60}, {32101003, 60}, {skills.BlueAuraSkill, 10}, {skills.AdvancedBlueAuraSkill, 10}} {
 		if skills.ActiveBuff(c.Caster, a.id, c.Now) {
 			d, running = a.d, a.id
 			break

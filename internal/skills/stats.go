@@ -195,12 +195,18 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 		case "ELEMENTAL_STATUS_R":
 			b.TER += v
 		case "BLUE_AURA":
-			// The value is the source skill level; Java adds that level's
-			// y+z to the defense percentages.
+			// v148 uses z of the active advanced source and its actual rank.
+			if row.ID != AdvancedBlueAuraSkill && row.ID != 32110008 {
+				continue
+			}
 			if def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), row.ID); err == nil {
 				if values, err := def.Values(min(max(v, 1), def.MaxLevel)); err == nil {
-					b.WDEFPercent += values["y"] + values["z"]
-					b.MDEFPercent += values["y"] + values["z"]
+					percent := values["z"]
+					if row.ID == 32110008 { // Preserve Body Boost's separate effect.
+						percent += values["y"]
+					}
+					b.WDEFPercent += percent
+					b.MDEFPercent += percent
 				}
 			}
 		}

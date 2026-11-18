@@ -364,7 +364,7 @@ func TestAuras(t *testing.T) {
 	if p, _ = castAs(t, withSkill(mage, 32120000, 30), 32001003, 20); stats(p.Party)["DARK_AURA"] != 20 || p.MPCost != 30 {
 		t.Fatalf("advanced dark aura %+v %+v", p, p.Party)
 	}
-	if p, _ = castAs(t, withSkill(mage, 32110000, 10), 32111012, 20); stats(p.Party)["BLUE_AURA"] != 10 || p.MPCost != 42 {
+	if p, _ = castAs(t, withSkill(mage, 32110000, 10), 32111012, 20); stats(p.Party)["BLUE_AURA"] != 10 || p.MPCost != 42 || p.ApplyAs != 32110000 || p.ApplyLevel != 10 {
 		t.Fatalf("advanced blue aura %+v %+v", p, p.Party)
 	}
 	if p = cast(t, 32101003, 20); stats(p.Party)["YELLOW_AURA"] != 20 {
@@ -373,17 +373,26 @@ func TestAuras(t *testing.T) {
 	if _, err := castAs(t, mage, 32111005, 20); err == nil {
 		t.Fatal("body boost without an aura")
 	}
-	if len(p.Replace) != 6 || p.Replace[0] != 32001003 {
+	if len(p.Replace) != 7 || p.Replace[0] != 32001003 || p.Replace[2] != 32110000 {
 		t.Fatalf("yellow aura replaces %v", p.Replace)
 	}
 	if p, _ = castAs(t, withBuff(mage, 32111012, 20, "BLUE_AURA", 20), 32111005, 20); p.Self == nil || p.Self.Duration != 10*time.Second || stats(p.Self)["BODY_BOOST"] != 20 || p.Cooldown != 120*time.Second || len(p.Retime) != 1 || p.Retime[0] != (skills.SkillDuration{SkillID: 32111012, Duration: 10 * time.Second}) {
 		t.Fatalf("body boost over blue %+v %+v", p, p.Self)
+	}
+	if p, _ = castAs(t, withBuff(mage, 32110000, 10, "BLUE_AURA", 10), 32111005, 20); p.Self == nil || p.Self.Duration != 10*time.Second || len(p.Retime) != 1 || p.Retime[0] != (skills.SkillDuration{SkillID: 32110000, Duration: 10 * time.Second}) {
+		t.Fatalf("body boost over advanced blue %+v %+v", p, p.Self)
 	}
 	if p, _ = castAs(t, withBuff(mage, 32001003, 20, "DARK_AURA", 10), 32111005, 20); p.Self.Duration != 60*time.Second {
 		t.Fatalf("body boost over dark %+v", p.Self)
 	}
 	if b := passive(t, 32110000, 10, mage); b.ASR != 20 || b.TER != 20 {
 		t.Errorf("advanced blue aura passive %+v", b)
+	}
+	for _, effect := range []struct{ id, rank, percent int }{{32111012, 20, 0}, {32110000, 10, 60}, {32110008, 20, 38}} {
+		bonus, _ := skills.BuffBonus(withBuff(mage, effect.id, effect.rank, "BLUE_AURA", effect.rank), now)
+		if bonus.WDEFPercent != effect.percent || bonus.MDEFPercent != effect.percent {
+			t.Errorf("Blue Aura %d rank %d defense = %d/%d, want %d", effect.id, effect.rank, bonus.WDEFPercent, bonus.MDEFPercent, effect.percent)
+		}
 	}
 }
 
@@ -524,7 +533,7 @@ func TestBatchTwoCoreWiring(t *testing.T) {
 }
 
 func TestAurasLeaveNonBattleMagesOnEntry(t *testing.T) {
-	for _, id := range []int{32001003, 32111012, 32101003, 32110007, 32110008, 32110009} {
+	for _, id := range []int{32001003, 32111012, 32110000, 32101003, 32110007, 32110008, 32110009} {
 		h, _ := skills.Lookup(id)
 		if h.DropOnEnter == nil || !h.DropOnEnter(domain.Character{Job: 3112}) || !h.DropOnEnter(domain.Character{Job: 0}) || h.DropOnEnter(domain.Character{Job: 3212}) || h.DropOnEnter(domain.Character{Job: 3200}) {
 			t.Errorf("%d drop on enter", id)

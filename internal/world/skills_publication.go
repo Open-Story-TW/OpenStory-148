@@ -195,7 +195,7 @@ func (s *Server) publishSkillExpiry(source *skillMember, sink packetSink, peers 
 		done[old.Stat] = true
 		for _, b := range c.SkillBuffs {
 			if b.Stat == old.Stat && b.ExpiresAt.After(now) {
-				_ = sink.WritePacket(protocol.SkillBuffsAmong([]domain.SkillBuff{b}, c.SkillBuffs, now))
+				_ = sink.WritePacket(protocol.SkillBuffsFor(c, []domain.SkillBuff{b}, now))
 				break
 			}
 		}
@@ -366,7 +366,7 @@ func (s *Server) publishUpdatedRows(m *skillMember, peers []*skillMember, c doma
 		if len(rows) == 0 {
 			continue
 		}
-		_ = m.sink.WritePacket(protocol.SkillBuffsAmong(rows, c.SkillBuffs, now))
+		_ = m.sink.WritePacket(protocol.SkillBuffsFor(c, rows, now))
 		for _, target := range peers {
 			if s.skillVisible(m, target) {
 				_ = target.sink.WritePacket(protocol.ForeignSkillBuffs(m.characterID, rows))

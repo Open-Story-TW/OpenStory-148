@@ -21,12 +21,13 @@ type partySkillPeer struct {
 	audience []*skillMember // transient FX audience captured before SQL
 }
 type partySkillTicket struct {
-	request   domain.PartySkillCastRequest
-	plan      skills.CastPlan // caster-side plan used to pick recipients
-	hash      string
-	peers     []partySkillPeer // immutable ascendingCID lock order
-	source    *skillMember
-	resolving bool // skillSpace.mu only
+	request    domain.PartySkillCastRequest
+	plan       skills.CastPlan // caster-side plan used to pick recipients
+	hash       string
+	peers      []partySkillPeer // immutable ascendingCID lock order
+	source     *skillMember
+	auraSource int64 // source on the toggle path, zero on a legacy row
+	resolving  bool  // skillSpace.mu only
 }
 
 func (s *Server) partySkillVitalsPending(live *liveCharacter, session domain.CharacterSession) bool {
@@ -73,11 +74,22 @@ func (s *Server) rejectPartySkill(t *partySkillTicket) error {
 	return nil
 }
 func (s *Server) castPartySkill(ctx context.Context, live *liveCharacter, sink packetSink, q protocol.SkillCast) error {
+	return s.applyPartySkill(ctx, live, sink, q, false)
+}
+
+func (s *Server) cancelBlueAura(ctx context.Context, live *liveCharacter, sink packetSink) error {
+	return s.applyPartySkill(ctx, live, sink, protocol.SkillCast{SkillID: skills.BlueAuraSkill}, true)
+}
+
+func (s *Server) applyPartySkill(ctx context.Context, live *liveCharacter, sink packetSink, q protocol.SkillCast, cancelAura bool) error {
 	repo, ok := s.repo.(domain.PartySkillRepository)
 	partyRepo, partyOK := s.repo.(domain.PartyRepository)
 	// Only mass spells (native predicate 0x669D0E) carry a position; Time
 	// Leap and other party skills use the server's position.
-	if !ok || !partyOK || s.skills == nil || s.tradeActive(live) {
+	if !ok || !partyOK || s.skills == nil || !cancelAura && s.tradeActive(live) {
+		if cancelAura {
+			return s.cancelSkill(ctx, live, sink, q.SkillID)
+		}
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	live.persistMu.Lock()
@@ -85,6 +97,11 @@ func (s *Server) castPartySkill(ctx context.Context, live *liveCharacter, sink p
 	source := s.skillMemberFor(initial, live, sink)
 	visit := s.sceneFor(live, sink)
 	blocked := s.combatVitalsPending(live, initial)
+	aura, _ := skills.ActiveBlueAura(initial.Character, time.Now())
+	if cancelAura && aura.SourceCharacterID != initial.CharacterID {
+		defer live.persistMu.Unlock()
+		return s.cancelSkillLocked(ctx, live, sink, q.SkillID)
+	}
 	live.persistMu.Unlock()
 	if source == nil || visit == nil || blocked {
 		return s.writeScenePackets(visit, protocol.EnableActions())
@@ -130,28 +147,46 @@ func (s *Server) castPartySkill(ctx context.Context, live *liveCharacter, sink p
 		slog.Info("party_skill_rejected", "character", current.CharacterID, "skill", q.SkillID, "reason", "stale_or_pending")
 		return s.writeScenePackets(visit, protocol.EnableActions())
 	}
-	plan, e := skills.PartyCast(os.Getenv("MAPLEGO_WZ_ROOT"), current.Character, q.SkillID, q.Level, time.Now())
-	if e != nil {
-		slog.Info("party_skill_rejected", "character", current.CharacterID, "skill", q.SkillID, "error", e)
-		return s.writeScenePackets(visit, protocol.UpdateHPMP(current.Character.HP, current.Character.MP), protocol.EnableActions())
+	var plan skills.CastPlan
+	if cancelAura {
+		found, ok := skills.ActiveBlueAura(current.Character, time.Now())
+		if !ok || found.SourceCharacterID != current.CharacterID || !found.ExpiresAt.Equal(aura.ExpiresAt) {
+			return s.writeScenePackets(visit, protocol.EnableActions())
+		}
+	} else {
+		plan, e = skills.PartyCast(os.Getenv("MAPLEGO_WZ_ROOT"), current.Character, q.SkillID, q.Level, time.Now())
+		if e != nil {
+			slog.Info("party_skill_rejected", "character", current.CharacterID, "skill", q.SkillID, "error", e)
+			return s.writeScenePackets(visit, protocol.UpdateHPMP(current.Character.HP, current.Character.MP), protocol.EnableActions())
+		}
 	}
 	// Maple Warrior's mass-spell position is advisory. Java applies it using
 	// the current server character position; this handler likewise selects
 	// every recipient from authoritative coordinates, never the supplied XY.
 	// A stale client position must not veto this self/party stat buff.
-	mapleWarrior := len(plan.Party.Stats) == 1 && plan.Party.Stats[0].Stat == "MAPLE_WARRIOR"
+	mapleWarrior := plan.Party != nil && len(plan.Party.Stats) == 1 && plan.Party.Stats[0].Stat == "MAPLE_WARRIOR"
 	if q.HasPosition && !mapleWarrior && !within(current.Character.X, current.Character.Y, int(q.X), int(q.Y), 64) {
 		slog.Info("party_skill_rejected", "character", current.CharacterID, "skill", q.SkillID, "reason", "position", "server_x", current.Character.X, "server_y", current.Character.Y, "wire_x", q.X, "wire_y", q.Y)
 		return s.writeScenePackets(visit, protocol.EnableActions())
 	}
 	maxima := false
-	for _, v := range plan.Party.Stats {
-		maxima = maxima || v.Stat == "MAXHP" || v.Stat == "MAXMP"
+	if plan.Party != nil {
+		for _, v := range plan.Party.Stats {
+			maxima = maxima || v.Stat == "MAXHP" || v.Stat == "MAXMP"
+		}
 	}
 	// A toggle recast removes the skill from every same-map party member,
 	// wherever they stand.
-	toggleOff := plan.Toggle && skills.ActiveBuff(current.Character, q.SkillID, time.Now())
+	toggleOff := cancelAura || skills.PartyToggleActive(plan, current.Character, q.SkillID, time.Now())
 	t := &partySkillTicket{source: source, plan: plan, request: domain.PartySkillCastRequest{Session: current, OperationID: fmt.Sprintf("party-skill-%s-%d-%d", current.SessionID, current.Generation, q.Tick), ClientTick: q.Tick, SkillID: q.SkillID, ClientLevel: q.Level, PartyID: party.Party.ID, PartyRevision: party.Party.Revision}}
+	if q.SkillID == skills.BlueAuraSkill {
+		currentAura, _ := skills.ActiveBlueAura(current.Character, time.Now())
+		t.auraSource = currentAura.SourceCharacterID
+	}
+	if cancelAura {
+		t.request.CancelAuraExpiry = &aura.ExpiresAt
+		t.request.OperationID = fmt.Sprintf("blue-aura-cancel-%s-%d-%d", current.SessionID, current.Generation, aura.ExpiresAt.UnixNano())
+	}
 	for _, p := range party.Party.Members {
 		t.request.PartyMembers = append(t.request.PartyMembers, p.CharacterID)
 	}
@@ -219,7 +254,8 @@ func (s *Server) castPartySkill(ctx context.Context, live *liveCharacter, sink p
 // Validate the entire immutable result before changing any live recipient.
 // A malformed second recipient must not leave an already-mutated first peer.
 func validPartySkillResult(t *partySkillTicket, r domain.PartySkillCastResult) bool {
-	if r.OperationID != t.request.OperationID || r.ManifestHash != t.hash || len(r.Recipients) != len(t.peers) {
+	if r.OperationID != t.request.OperationID || r.ManifestHash != t.hash || len(r.Recipients) != len(t.peers) ||
+		t.request.CancelAuraExpiry != nil && !r.ToggledOff {
 		return false
 	}
 	expected := map[int64]partySkillPeer{}
@@ -227,6 +263,8 @@ func validPartySkillResult(t *partySkillTicket, r domain.PartySkillCastResult) b
 		expected[p.session.CharacterID] = p
 	}
 	seen := map[int64]bool{}
+	applied, level := skills.PartyBuffSource(t.plan, t.request.SkillID, t.request.ClientLevel)
+	blueAura := t.request.SkillID == skills.BlueAuraSkill
 	for _, v := range r.Recipients {
 		p, ok := expected[v.Character.ID]
 		if !ok || seen[v.Character.ID] {
@@ -246,11 +284,18 @@ func validPartySkillResult(t *partySkillTicket, r domain.PartySkillCastResult) b
 		var expiry time.Time
 		got := 0
 		for _, buff := range a.SkillBuffs {
-			if buff.ID != t.request.SkillID {
+			if r.ToggledOff && blueAura {
+				if skills.IsBlueAuraRow(buff) && buff.SourceCharacterID == t.auraSource {
+					return false
+				}
+				continue
+			}
+			if buff.ID != applied {
 				continue
 			}
 			value, ok := want[buff.Stat]
-			if !ok || buff.Level != t.request.ClientLevel || buff.Value != value || got > 0 && !buff.ExpiresAt.Equal(expiry) {
+			if !ok || buff.Level != level || buff.Value != value || got > 0 && !buff.ExpiresAt.Equal(expiry) ||
+				blueAura && buff.SourceCharacterID != t.source.characterID {
 				return false
 			}
 			expiry = buff.ExpiresAt
@@ -349,11 +394,12 @@ func (s *Server) commitPartySkill(t *partySkillTicket, result domain.PartySkillC
 	now := time.Now()
 	var sourceErr error
 	skillID := t.request.SkillID
+	applied, _ := skills.PartyBuffSource(t.plan, skillID, t.request.ClientLevel)
 	for _, entry := range committed {
 		p, c := entry.peer, entry.session.Character
 		var buffs []domain.SkillBuff
 		for _, b := range c.SkillBuffs {
-			if b.ID == skillID && b.ExpiresAt.After(now) {
+			if b.ID == applied && b.ExpiresAt.After(now) {
 				buffs = append(buffs, b)
 			}
 		}
@@ -376,7 +422,7 @@ func (s *Server) commitPartySkill(t *partySkillTicket, result domain.PartySkillC
 		// effects do not emit an already-expired temporary-state or cast flash.
 		if !result.ToggledOff && len(buffs) == len(plannedBuffStats(t.plan.Party.Stats)) {
 			if len(buffs) > 0 {
-				if e := p.member.sink.WritePacket(protocol.SkillBuffsAmong(buffs, c.SkillBuffs, now)); e != nil && p.member == t.source {
+				if e := p.member.sink.WritePacket(protocol.SkillBuffsFor(c, buffs, now)); e != nil && p.member == t.source {
 					sourceErr = e
 				}
 				for _, target := range peers {
