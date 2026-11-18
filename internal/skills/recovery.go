@@ -22,9 +22,8 @@ func IsReviewedRecoverySkill(id int) bool {
 	return id == 1110000 || id == 11110000 || id == durabilitySkill || id == bloodCirculationSkill
 }
 
-// ReviewedRecoveryTick follows Java PlayerStats.relocHeal's exact job switch.
-// Cygnus's WZ hp field is deliberately not invented into a supported effect:
-// this Java branch consumes only mp; native generic skill-side HP remains UAT.
+// ReviewedRecoveryTick applies the eligible job's HP and MP recovery.
+// Native ordinary regeneration requests omit these skill bonuses.
 func ReviewedRecoveryTick(c *TriggerContext) *BuffChange {
 	if c == nil || c.Character.HP <= 0 {
 		return nil
@@ -44,7 +43,7 @@ func ReviewedRecoveryTick(c *TriggerContext) *BuffChange {
 		return nil
 	}
 	change := &BuffChange{HealMP: 3 + stats.INT/10 + mp}
-	if hero && hp > 0 {
+	if hp > 0 {
 		change.HealHP = 10 + hp
 	}
 	return change

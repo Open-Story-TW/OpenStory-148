@@ -37,7 +37,7 @@ func periodicRecoveryFixture(t *testing.T, id, job int) (*Server, *liveCharacter
 	return s, live, sink, now
 }
 func TestReviewedPassiveRecoveryFourSecondRuntimeAndNoDuplicateBase(t *testing.T) {
-	for _, tc := range []struct{ id, job, hp int }{{1110000, 111, 20}, {11110000, 1111, 0}} {
+	for _, tc := range []struct{ id, job, hp int }{{1110000, 111, 20}, {11110000, 1111, 20}} {
 		s, live, sink, start := periodicRecoveryFixture(t, tc.id, tc.job)
 		m := s.skills.members[1]
 		s.tickReviewedRecoveryAt(m, start)
@@ -61,9 +61,6 @@ func TestReviewedPassiveRecoveryFourSecondRuntimeAndNoDuplicateBase(t *testing.T
 			t.Fatal(err)
 		}
 		wantHP := 20 + tc.hp
-		if tc.id == 11110000 {
-			wantHP += 10
-		}
 		if c := live.session.Character; c.HP != wantHP || c.MP != 37 {
 			t.Fatal("ordinary91 duplicated passive base", c.HP, c.MP)
 		}
