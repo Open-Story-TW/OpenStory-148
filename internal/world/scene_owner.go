@@ -2,6 +2,9 @@ package world
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/binary"
+	"os"
 	"time"
 
 	"maple-go-server/internal/domain"
@@ -125,6 +128,23 @@ func (s *Server) installScene(v *sceneVisit, full domain.CharacterSession) {
 	s.mu.Unlock()
 }
 
+func offerCriticalDisplay(live *liveCharacter, sink packetSink) error {
+	live.criticalDisplayNonce.Store(0)
+	if os.Getenv("MAPLEGO_CRITICAL_DISPLAY") != "1" {
+		return nil
+	}
+	var challenge [8]byte
+	if _, err := rand.Read(challenge[:]); err != nil {
+		return err
+	}
+	nonce := binary.LittleEndian.Uint64(challenge[:])
+	if nonce == 0 {
+		return nil
+	}
+	live.criticalDisplayNonce.Store(nonce)
+	return sink.WritePacket(protocol.CriticalDisplayOffer(nonce))
+}
+
 // This is the only initial scene installer. Missing durable validation fails
 // closed even if a consumed handoff looks locally newer or online is empty.
 func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, sink packetSink, channel int) error {
@@ -186,6 +206,9 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 		if err = sink.WritePacket(protocol.LongDamageModePacket(limit)); err != nil {
 			return err
 		}
+	}
+	if err = offerCriticalDisplay(live, sink); err != nil {
+		return err
 	}
 	// Repeated on every map so a switch changed in the admin reaches players
 	// who are already connected.

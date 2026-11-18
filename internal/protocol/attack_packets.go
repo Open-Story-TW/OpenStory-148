@@ -85,12 +85,34 @@ func QuirkFor(skillID int) AttackQuirk {
 }
 
 type AttackLine struct {
-	Raw    uint32 // Preserve bit31 and low31 damage. A clear bit does not prove a noncritical hit for every sender.
-	Damage int    // Authoritative applied value for remote output.
-	Long   int64  // Long damage: the value a token line stands for, -1 if unannounced.
+	Raw               uint32 // Preserve bit31 and low31 damage. A clear bit does not prove a noncritical hit for every sender.
+	Damage            int    // Authoritative applied value for remote output.
+	Long              int64  // Long damage: the value a token line stands for, -1 if unannounced.
+	visualCriticality attackVisualCriticality
 }
 
+type attackVisualCriticality uint8
+
+const (
+	displayUnspecified attackVisualCriticality = iota
+	displayOrdinary
+	displayCritical
+)
+
 func (l AttackLine) Critical() bool { return l.Raw&0x80000000 != 0 }
+
+// InferCriticalDisplay is the unnegotiated fallback. It preserves the native
+// damage word and does not overwrite a complete frame's presentation metadata.
+func (l *AttackLine) InferCriticalDisplay() {
+	if l.visualCriticality == displayUnspecified {
+		l.visualCriticality = displayCritical
+	}
+}
+
+func (l AttackLine) displayIsCritical() bool {
+	return l.visualCriticality == displayCritical || (l.visualCriticality == displayUnspecified && l.Critical())
+}
+
 func (l AttackLine) Claimed() int {
 	if l.Long != 0 {
 		return max(int(l.Long), 0)
@@ -401,7 +423,7 @@ func RemoteAttackPacket(c domain.Character, q RemoteAttack) []byte {
 				return nil
 			}
 			v := q.Long.Wire(l.Damage)
-			if l.Critical() {
+			if l.displayIsCritical() {
 				v |= 0x80000000
 			}
 			w.U32(v)

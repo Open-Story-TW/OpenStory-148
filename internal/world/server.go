@@ -64,16 +64,20 @@ type Server struct {
 // liveCharacter is the connection-local aggregate. Move updates stay in memory;
 // progress checkpoints flush through SaveCharacter with fencing.
 type liveCharacter struct {
-	mu               sync.Mutex
-	persistMu        sync.Mutex // serialize checkpoints and durable asset commands
-	rps              *rpsGame   // guarded by persistMu
-	nativeHandle     int64
-	god              bool // GM !god; guarded by mu, lost on relog or channel change.
-	session          domain.CharacterSession
-	movedAt          time.Time                 // when the client last reported session.Character.X/Y; guarded by mu
-	longDamage       protocol.LongDamageLedger // Owned by the session's read loop.
-	statDetail       []byte                    // Last 0x614 frame sent; guarded by mu.
-	panelClicks      int                       // Demo panel presses this session; guarded by mu.
+	mu           sync.Mutex
+	persistMu    sync.Mutex // serialize checkpoints and durable asset commands
+	rps          *rpsGame   // guarded by persistMu
+	nativeHandle int64
+	god          bool // GM !god; guarded by mu, lost on relog or channel change.
+	session      domain.CharacterSession
+	movedAt      time.Time                 // when the client last reported session.Character.X/Y; guarded by mu
+	longDamage   protocol.LongDamageLedger // Owned by the session's read loop.
+
+	criticalDisplay      protocol.CriticalDisplayFrame
+	criticalDisplayNonce atomic.Uint64
+
+	statDetail       []byte // Last 0x614 frame sent; guarded by mu.
+	panelClicks      int    // Demo panel presses this session; guarded by mu.
 	dirty            bool
 	saving           bool
 	chat             chatBudget
@@ -358,6 +362,7 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 		}
 		if live != nil {
 			packet = live.longDamage.Absorb(packet)
+			packet, live.criticalDisplay = protocol.SplitCriticalDisplay(packet, live.criticalDisplayNonce.Load())
 		}
 		r := protocol.NewReader(packet)
 		op := r.U16()

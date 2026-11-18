@@ -834,6 +834,9 @@ func (s *Server) publishGameplayWarp(ctx context.Context, channel int, live *liv
 	if err = sink.WritePacket(warp); err != nil {
 		return err
 	}
+	if err = offerCriticalDisplay(live, sink); err != nil {
+		return err
+	}
 	if s.maps != nil {
 		s.maps.Enter(channel, value.MapID, value, sink)
 	}

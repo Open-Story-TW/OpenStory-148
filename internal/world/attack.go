@@ -358,8 +358,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 			q.Lines = append(q.Lines, domain.CombatDamageLine{Raw: l.Raw, Applied: lines[j], Criticality: tp.Criticality[j], Long: l.Long})
 			gen.attack.Targets[i].Lines[j].Damage = lines[j]
 			if tp.Critical[j] {
-				// Broadcast only; the settlement above keeps the raw wire value.
-				gen.attack.Targets[i].Lines[j].Raw |= 0x80000000
+				gen.attack.Targets[i].Lines[j].InferCriticalDisplay()
 			}
 		}
 		for len(q.Lines) < a.LineCount() {
@@ -553,6 +552,7 @@ func (s *Server) genericAttackRoute(ctx context.Context, channel int, live *live
 		}
 		return false, nil
 	}
+	live.criticalDisplay.Apply(a.Targets, live.criticalDisplayNonce.Load())
 	if legacyAttack(op, job, a.SkillID) {
 		generic := false
 		if op == protocol.RecvMeleeAttack {
