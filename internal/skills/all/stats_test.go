@@ -1,6 +1,7 @@
 package all
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -87,6 +88,25 @@ func TestMercedesPotentialPowerMovement(t *testing.T) {
 		if got := skills.PlayerStats(c, now); got.Speed != tc.speed {
 			t.Errorf("rank %d, equipment speed %d: speed %d, want %d", tc.rank, tc.equipmentSpeed, got.Speed, tc.speed)
 		}
+	}
+}
+
+func TestV148ThunderBreakerExtremeDodgeMovement(t *testing.T) {
+	if os.Getenv("MAPLEGO_WZ_ROOT") == "" {
+		t.Skip("original v148 WZ required")
+	}
+	const extremeDodge = 15000000
+	now := time.Unix(1000, 0)
+	c := domain.Character{Job: 1500, Level: 30}
+	before := skills.PlayerStats(c, now)
+	c.Skills = []domain.SkillState{{ID: extremeDodge, Level: 10}}
+	after := skills.PlayerStats(c, now)
+	if after.Accuracy-before.Accuracy != 220 || after.Jump != 110 || after.Speed != 100 || after.Avoid != before.Avoid {
+		t.Fatalf("base %+v, Extreme Dodge %+v", before, after)
+	}
+	c.Equipment = []domain.Equipment{{Slot: -7, Speed: 60}}
+	if got := skills.PlayerStats(c, now); got.Speed != 160 {
+		t.Fatalf("equipped speed %d, want 160", got.Speed)
 	}
 }
 

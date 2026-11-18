@@ -9,7 +9,7 @@ import (
 
 // Thunder Breaker 1500, 1510, 1511.
 func init() {
-	passive(15000000, accAvoid)                                                                    // 極限迴避
+	passive(15000000, extremeDodge)                                                                // 極限迴避
 	pvpOnly(15000005)                                                                              // 籤 攻擊: PvP only
 	skills.Register(skills.Handler{ID: 15001001, Kind: skills.KindAttack, Attack: thunderMelee()}) // 衝擊拳
 	skills.Register(skills.Handler{ID: 15001002, Kind: skills.KindAttack, Attack: thunderMelee()}) // 旋風斬
@@ -115,4 +115,11 @@ func dice(c *skills.CastContext) (skills.CastPlan, error) {
 		p.Self = &skills.Buff{Duration: time.Duration(c.Value("time")) * time.Second, Stats: []skills.StatValue{stat("DICE_ROLL", r)}}
 	}
 	return p, nil
+}
+
+func extremeDodge(c *skills.PassiveContext) skills.Bonus {
+	if _, original := c.Values["accX"]; !original {
+		return accAvoid(c)
+	}
+	return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
 }
