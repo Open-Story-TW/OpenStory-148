@@ -153,7 +153,7 @@ func TestPassives(t *testing.T) {
 	if b := passive(t, 3000001, 20, archer(0)); b != (skills.Bonus{Critical: 40}) {
 		t.Errorf("critical shot %+v", b)
 	}
-	if b := passive(t, 3000002, 15, archer(0)); b != (skills.Bonus{ACC: 225, AVOID: 225, Speed: 30, Range: 120}) {
+	if b := passive(t, 3000002, 15, archer(0)); b != (skills.Bonus{ACC: 225, AVOID: 225, Speed: 30, Range: 120, SpeedLimitBonus: 20}) {
 		t.Errorf("archery mastery %+v", b)
 	}
 	if b := passive(t, 3100000, 20, archer(1452000)); b != (skills.Bonus{Mastery: 50, ACC: 120}) {

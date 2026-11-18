@@ -17,9 +17,10 @@ func criticalShot(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{Critical: c.Values["prop"]}
 }
 
-// archeryMastery (3000002 百步穿楊) is the WZ acc/eva/speed/range passive.
-// Java only reads its range (defRange); the client applies acc, eva and speed
-// itself, so the effective stats follow the WZ values.
+// archeryMastery (3000002 百步穿楊) also raises the movement speed cap.
 func archeryMastery(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{ACC: c.Values["acc"], AVOID: c.Values["eva"], Speed: c.Values["speed"], Range: c.Values["range"]}
+	return skills.Bonus{
+		ACC: c.Values["acc"], AVOID: c.Values["eva"], Speed: c.Values["speed"],
+		Range: c.Values["range"], SpeedLimitBonus: c.Values["speedMax"],
+	}
 }

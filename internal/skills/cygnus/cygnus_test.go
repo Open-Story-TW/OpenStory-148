@@ -564,7 +564,7 @@ func TestPassives(t *testing.T) {
 		{12110001, 20, domain.Character{}, skills.Bonus{MPConsume: 50, ElementAmp: 50}},
 		{12111004, 20, domain.Character{}, skills.Bonus{TER: 30}},
 		{13000000, 20, domain.Character{}, skills.Bonus{Critical: 40}},
-		{13000001, 15, domain.Character{}, skills.Bonus{Range: 120}},
+		{13000001, 15, domain.Character{}, skills.Bonus{ACC: 225, AVOID: 225, Speed: 30, Range: 120, SpeedLimitBonus: 20}},
 		{13110003, 20, domain.Character{}, skills.Bonus{Mastery: 65, CriticalDamageMin: 15}},
 		{13110008, 10, domain.Character{}, skills.Bonus{AvoidRate: 30}},
 		{14000000, 20, domain.Character{}, skills.Bonus{ACC: 160, AVOID: 160}},

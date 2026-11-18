@@ -51,6 +51,8 @@ func TestV148LearnedMovementFromEmbeddedBooks(t *testing.T) {
 		job, skill, rank int
 		speed, jump      int
 	}{
+		{300, 3000002, 15, 160, 123},
+		{1300, 13000001, 15, 160, 123},
 		{400, 4001005, 20, 150, 123},
 		{2100, 21001001, 5, 160, 123},
 		{2400, 24001002, 20, 160, 123},

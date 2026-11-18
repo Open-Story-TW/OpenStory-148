@@ -9,8 +9,11 @@ import (
 // Wind Archer 1300, 1310, 1311.
 func init() {
 	passive(13000000, critical("prop"))                             // 霸王箭: Java critSkill for 1300–1312
-	passive(13000001, func(c *skills.PassiveContext) skills.Bonus { // 精通射手: Java only reads range
-		return skills.Bonus{Range: c.Values["range"]}
+	passive(13000001, func(c *skills.PassiveContext) skills.Bonus { // 精通射手
+		return skills.Bonus{
+			ACC: c.Values["acc"], AVOID: c.Values["eva"], Speed: c.Values["speed"],
+			Range: c.Values["range"], SpeedLimitBonus: c.Values["speedMax"],
+		}
 	})
 	pvpOnly(13000005)                                                                           // 自然吸血術: PvP only
 	skills.Register(skills.Handler{ID: 13001003, Kind: skills.KindAttack, Attack: windShoot()}) // 二連箭
