@@ -19,8 +19,14 @@ func init() {
 	skills.Register(spirit(14001005, combat.Physical))                                                                                       // 黑暗雷鳥
 
 	passive(14100000, mastery("acc", claw)) // 精準暗器: GameConstants.getMasterySkill
-	passive(14100001, critical("prop"))     // 強力投擲
-	pvpOnly(14100005)                       // 驅逐: Legacy never reads it
+	strongThrow := critical("prop")
+	passive(14100001, func(c *skills.PassiveContext) skills.Bonus { // 強力投擲
+		if weaponType(c.Character) != claw {
+			return skills.Bonus{}
+		}
+		return strongThrow(c)
+	})
+	pvpOnly(14100005) // 驅逐: Legacy never reads it
 	passive(14100010, physicalTraining)
 	skills.Register(skills.Handler{ID: 14101002, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")}) // 極速暗殺
 	skills.Register(skills.Handler{ID: 14101003, Kind: skills.KindPartyBuff, Cast: party(generic)})   // 速度激發: speed, jump
