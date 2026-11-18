@@ -237,7 +237,7 @@ func TestPassives(t *testing.T) {
 		c         domain.Character
 		want      skills.Bonus
 	}{
-		{23000001, 15, merc, skills.Bonus{AvoidRate: 20}},
+		{23000001, 15, merc, skills.Bonus{AvoidRate: 20, Speed: 30, SpeedLimitBonus: 25}},
 		{23000003, 20, merc, skills.Bonus{Critical: 40}},
 		{23100005, 20, merc, skills.Bonus{Mastery: 50, ACC: 120}},
 		{23100005, 20, phantom, skills.Bonus{}},

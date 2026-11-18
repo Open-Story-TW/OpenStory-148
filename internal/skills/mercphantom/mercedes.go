@@ -55,10 +55,12 @@ func init() {
 		register(id, r)
 	}
 
-	passive(23000001, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} }) // 潛在力量 Potential Power (Java dodgeChance += er)
-	passive(23000003, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{Critical: c.Values["cr"]} })  // 鋒利瞄準 Sharp Aiming
-	passive(23000004, nil)                                                                                            // 內查斯特雷音 link skill: Java pvpSkills, no PvE effect
-	passive(23100005, weaponMastery(dualBowgun, 23120009))                                                            // 雙弩槍精通 Dual Bowguns Mastery
+	passive(23000001, func(c *skills.PassiveContext) skills.Bonus { // 潛在力量
+		return skills.Bonus{AvoidRate: c.Values["er"], Speed: c.Values["psdSpeed"], SpeedLimitBonus: c.Values["speedMax"]}
+	})
+	passive(23000003, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{Critical: c.Values["cr"]} }) // 鋒利瞄準 Sharp Aiming
+	passive(23000004, nil)                                                                                           // 內查斯特雷音 link skill: Java pvpSkills, no PvE effect
+	passive(23100005, weaponMastery(dualBowgun, 23120009))                                                           // 雙弩槍精通 Dual Bowguns Mastery
 	passive(23100008, func(c *skills.PassiveContext) skills.Bonus {
 		return skills.Bonus{STR: c.Values["strX"], DEX: c.Values["dexX"]}
 	}) // 體能訓練 Physical Training

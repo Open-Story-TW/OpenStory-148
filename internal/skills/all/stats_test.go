@@ -64,6 +64,30 @@ func TestV148LearnedMovementFromEmbeddedBooks(t *testing.T) {
 	}
 }
 
+func TestMercedesPotentialPowerMovement(t *testing.T) {
+	const potentialPower = 23000001
+	now := time.Unix(1000, 0)
+	for _, tc := range []struct {
+		rank, equipmentSpeed, speed int
+	}{
+		{0, 0, 100},
+		{15, 0, 130},
+		{0, 60, 140},
+		{15, 60, 165},
+	} {
+		c := domain.Character{Job: 2300, Level: 120}
+		if tc.rank != 0 {
+			c.Skills = []domain.SkillState{{ID: potentialPower, Level: tc.rank}}
+		}
+		if tc.equipmentSpeed != 0 {
+			c.Equipment = []domain.Equipment{{Slot: -7, Speed: tc.equipmentSpeed}}
+		}
+		if got := skills.PlayerStats(c, now); got.Speed != tc.speed {
+			t.Errorf("rank %d, equipment speed %d: speed %d, want %d", tc.rank, tc.equipmentSpeed, got.Speed, tc.speed)
+		}
+	}
+}
+
 func TestShadowPartnerUsesSourceSkillX(t *testing.T) {
 	now := time.Now()
 	c := domain.Character{STR: 4, DEX: 4, INT: 4, LUK: 4, SkillBuffs: []domain.SkillBuff{{ID: 4211008, Level: 20, Stat: "SHADOWPARTNER", Value: 20, ExpiresAt: now.Add(time.Minute)}}}
