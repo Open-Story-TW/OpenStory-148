@@ -210,7 +210,7 @@ func (s *AttackSpec) Allows(k AttackKind) bool {
 }
 
 // PlayerStats are the effective attacker numbers S0a computes (passives,
-// buffs, equipment). BaseStats provides an equipment-only fallback.
+// buffs, equipment). BaseStats provides the fallback before skill bonuses.
 type PlayerStats struct {
 	ResourceCosts                                            content.ResourceCostModifiers // Prepared outside the room lock; no WZ reads in PlanAttack.
 	Job, Level                                               int

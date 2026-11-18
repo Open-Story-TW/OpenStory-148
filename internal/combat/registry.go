@@ -16,7 +16,7 @@ var (
 )
 
 // SetStatsProvider installs S0a's effective-stat calculator; nil restores
-// the equipment-only BaseStats fallback.
+// the BaseStats fallback.
 func SetStatsProvider(p StatsProvider) {
 	statsMu.Lock()
 	defer statsMu.Unlock()

@@ -88,7 +88,7 @@ func NormalEffectFor(c domain.Character) Effect {
 	return e
 }
 
-// BaseStats is the equipment-only fallback used until S0a's StatsProvider
+// BaseStats includes equipment and intrinsic job stats before the StatsProvider
 // adds passives and buffs. Cash appearance slots never add stats.
 func BaseStats(c domain.Character, _ time.Time) (PlayerStats, error) {
 	p := PlayerStats{Job: c.Job, Level: c.Level, STR: c.STR, DEX: c.DEX, INT: c.INT, LUK: c.LUK}
@@ -113,6 +113,8 @@ func BaseStats(c domain.Character, _ time.Time) (PlayerStats, error) {
 	if p.STR < 0 || p.DEX < 0 || p.INT < 0 || p.LUK < 0 || p.WATK < 0 || p.MATK < 0 {
 		return p, fmt.Errorf("invalid attack stats")
 	}
+	_, projectileAttack := content.ZenProjectile(c.Job)
+	p.WATK += projectileAttack
 	return p, nil
 }
 

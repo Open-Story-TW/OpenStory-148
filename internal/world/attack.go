@@ -434,9 +434,13 @@ func itemStack(c domain.Character, itemID, n int) (domain.InventoryItem, bool) {
 // to its own (Java PlayerHandler.rangedAttack projectileWatk). Only a stack the
 // character really holds counts, and the cost check still consumes from that stack.
 func projectileAttack(c domain.Character, slot int) int {
+	builtIn, _ := content.ZenProjectile(c.Job)
 	for _, it := range c.Items {
 		if it.InvType != 2 || it.Slot != slot || it.Quantity < 1 || combat.AmmoOf(it.TemplateID) == combat.AmmoNone {
 			continue
+		}
+		if it.TemplateID == builtIn {
+			return 0 // BaseStats already includes this projectile's attack.
 		}
 		if def, err := content.ItemDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), it.TemplateID); err == nil {
 			return def.ProjectileAttack
