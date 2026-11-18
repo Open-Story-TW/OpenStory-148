@@ -140,6 +140,35 @@ func TestV148ThunderBreakerExtremeDodgeMovement(t *testing.T) {
 	}
 }
 
+func TestV148ZenPassivesReachMovementDefenseAndVitals(t *testing.T) {
+	now := time.Unix(1000, 0)
+	actor := domain.Character{
+		Job: 571, Level: 100, VitalsModel: 1, BaseMaxHP: 1800, BaseMaxMP: 1600,
+		Equipment: []domain.Equipment{{Slot: -7, Speed: 60, WDEF: 581, MDEF: 602}},
+	}
+	base := skills.PlayerStats(actor, now)
+	baseDetail := skills.StatDetail(actor, now)
+	actor.Skills = []domain.SkillState{{ID: 5080000, Level: 10}, {ID: 5710004, Level: 20}}
+	got := skills.PlayerStats(actor, now)
+	if base.Speed != 140 || got.Speed != 160 || got.Jump != 110 || got.Accuracy-base.Accuracy != 220 {
+		t.Fatalf("movement and accuracy: before %+v, after %+v", base, got)
+	}
+	if got.WDEF != base.WDEF+base.WDEF*30/100 || got.MDEF != base.MDEF+base.MDEF*30/100 {
+		t.Fatalf("defense: before %+v, after %+v", base, got)
+	}
+	if detail := skills.StatDetail(actor, now); detail.StatusResist-baseDetail.StatusResist != 20 {
+		t.Fatalf("status resistance: before %d, after %d", baseDetail.StatusResist, detail.StatusResist)
+	}
+	hp, mp, err := content.DerivedVitals(actor, now)
+	if err != nil || hp != 2400 || mp != 2200 {
+		t.Fatalf("vitals = %d/%d, want 2400/2200: %v", hp, mp, err)
+	}
+	actor.Equipment[0].Speed = 0
+	if got := skills.PlayerStats(actor, now); got.Speed != 100 {
+		t.Fatalf("unequipped speed %d, want 100", got.Speed)
+	}
+}
+
 func TestShadowPartnerUsesSourceSkillX(t *testing.T) {
 	now := time.Now()
 	c := domain.Character{STR: 4, DEX: 4, INT: 4, LUK: 4, SkillBuffs: []domain.SkillBuff{{ID: 4211008, Level: 20, Stat: "SHADOWPARTNER", Value: 20, ExpiresAt: now.Add(time.Minute)}}}

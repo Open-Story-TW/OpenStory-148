@@ -53,6 +53,15 @@ func init() {
 		return skills.Bonus{STR: c.Values["strX"], DEX: c.Values["dexX"]}
 	}
 	passive(5000007, critical("cr"))                               // 初階爆擊: cr, criticaldamageMin
+	passive(5080000, func(c *skills.PassiveContext) skills.Bonus { // 俠客行
+		return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
+	})
+	passive(5710004, func(c *skills.PassiveContext) skills.Bonus { // 金剛不壞
+		return skills.Bonus{
+			MaxHP: c.Values["mhpX"], MaxMP: c.Values["mmpX"], ASR: c.Values["asrR"],
+			WDEFPercent: c.Values["pddR"], MDEFPercent: c.Values["mddR"],
+		}
+	})
 	passive(5100010, training)                                     // 體能訓練
 	passive(5200009, training)                                     // 體能訓練
 	passive(5110011, func(c *skills.PassiveContext) skills.Bonus { // 爆擊鬥氣: cr and both critical damage bounds
