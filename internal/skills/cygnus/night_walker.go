@@ -18,13 +18,13 @@ func init() {
 	skills.Register(skills.Handler{ID: 14001004, Kind: skills.KindAttack, Attack: nightShoot()})                                             // 雙飛斬 (Lucky Seven)
 	skills.Register(spirit(14001005, combat.Physical))                                                                                       // 黑暗雷鳥
 
-	passive(14100000, mastery("acc", claw)) // 精準暗器: GameConstants.getMasterySkill
-	strongThrow := critical("prop")
+	passive(14100000, mastery("acc", claw))                         // 精準暗器: GameConstants.getMasterySkill
 	passive(14100001, func(c *skills.PassiveContext) skills.Bonus { // 強力投擲
 		if weaponType(c.Character) != claw {
 			return skills.Bonus{}
 		}
-		return strongThrow(c)
+		// The original claw calculation reads the skill's damage field for the minimum critical bonus.
+		return skills.Bonus{Critical: c.Values["prop"], CriticalDamageMin: c.Values["damage"]}
 	})
 	pvpOnly(14100005) // 驅逐: Legacy never reads it
 	passive(14100010, physicalTraining)
