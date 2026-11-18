@@ -103,7 +103,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 135 { // 93 from v145 and 42 from the v148 books
+	if count != 137 { // 93 from v145 and 44 from the v148 books
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }
@@ -363,8 +363,10 @@ func TestSummonsAndMindControl(t *testing.T) {
 }
 
 func TestSpecialCasts(t *testing.T) {
-	if p := cast(t, 5121008, 5); !p.Dispel || p.Self != nil || p.Cooldown != 360*time.Second || p.MPCost != 30 {
-		t.Fatalf("maple purify %+v", p)
+	for _, id := range []int{5121008, 5721002, 5821008} {
+		if p := cast(t, id, 5); !p.Dispel || p.Self != nil || p.Party != nil || p.Cooldown != 360*time.Second || p.MPCost != 30 {
+			t.Fatalf("maple purify %d %+v", id, p)
+		}
 	}
 	if p := cast(t, 5201005, 10); p.Self != nil || p.Party != nil || p.MPCost != 14 {
 		t.Fatalf("wings is cost only %+v", p)

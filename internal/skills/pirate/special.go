@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	for _, id := range []int{5121008, 5221010, 5321006} { // 楓葉淨化 Hero's Will
+	for _, id := range []int{5121008, 5221010, 5321006, 5721002, 5821008} { // 楓葉淨化 Hero's Will
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: skills.HerosWill})
 	}
 	skills.Register(skills.Handler{ID: 5201005, Kind: skills.KindSpecial, Cast: skills.CostOnly}) // 緩降術 Wings: Java has no buff stat
