@@ -64,8 +64,11 @@ func init() {
 	})
 	passive(5100010, training)                                     // 體能訓練
 	passive(5200009, training)                                     // 體能訓練
-	passive(5110011, func(c *skills.PassiveContext) skills.Bonus { // 爆擊鬥氣: cr and both critical damage bounds
-		return skills.Bonus{Critical: c.Values["cr"], CriticalDamageMin: c.Values["criticaldamageMin"], CriticalDamage: c.Values["criticaldamageMax"]}
+	passive(5110011, func(c *skills.PassiveContext) skills.Bonus { // 爆擊鬥氣
+		return skills.Bonus{
+			Critical: c.Values["cr"], BossCritical: c.Values["prop"],
+			CriticalDamageMin: c.Values["criticaldamageMin"], CriticalDamage: c.Values["criticaldamageMax"],
+		}
 	})
 	passive(5120014, func(c *skills.PassiveContext) skills.Bonus {
 		return skills.Bonus{FullDefenseIgnore: c.Values["x"] > 0}

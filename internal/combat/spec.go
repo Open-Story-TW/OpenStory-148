@@ -220,6 +220,7 @@ type PlayerStats struct {
 	Accuracy                                                 int
 	Mastery                                                  int     // Percent.
 	CritRate, CritDamage                                     int     // Percent chance / extra percent on a critical.
+	BossCritRate                                             int     // Extra critical chance against boss monsters.
 	DamageRate, BossDamageRate                               int     // Percent bonus (0 = none).
 	IgnoreDefense                                            int     // Percent of monster PDRate/MDRate ignored.
 	FullDefenseIgnore                                        bool    // A physical hit can proc full defense ignore.
@@ -229,6 +230,15 @@ type PlayerStats struct {
 	DodgeRate, ASR, TER, CritDamageMin                       int     // Effective view; no new probabilistic gate is implied.
 	PotentialAvoidPercent                                    int     // Native incEVAr source, not DodgeRate; full base-EVA percentage application remains pending.
 	PotentialDamageMultiplier, PotentialBossDamageMultiplier float64 // zero means identity; each option multiplies once.
+}
+
+// CriticalRateAgainst includes the skill's rate and the target's boss bonus.
+func (p PlayerStats) CriticalRateAgainst(skillRate int, boss bool) int {
+	rate := p.CritRate + skillRate
+	if boss {
+		rate += p.BossCritRate
+	}
+	return rate
 }
 
 // StatsProvider is implemented by S0a (skills.Stats): passives, buffs and

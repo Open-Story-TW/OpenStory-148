@@ -157,6 +157,7 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.CritDamageMin = pot.CriticalDamageMin + passive.CriticalDamageMin + buff.CriticalDamageMin
 	p.Mastery += passive.Mastery + buff.Mastery
 	p.CritRate += pot.Critical + passive.Critical + buff.Critical
+	p.BossCritRate += passive.BossCritical + buff.BossCritical
 	p.CritDamage += pot.CriticalDamage + passive.CriticalDamage + buff.CriticalDamage
 	p.DamageRate += passive.DamagePercent + buff.DamagePercent
 	p.BossDamageRate += passive.BossDamagePercent + buff.BossDamagePercent

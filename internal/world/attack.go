@@ -313,6 +313,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	killed := false
 	for i, mob := range mobs {
 		tp := plan.Targets[i]
+		targetCritRate := stats.CriticalRateAgainst(actx.Effect.CriticalRate, mob.stats.Boss)
 		for j, over := range tp.Critical {
 			if !over {
 				if tp.Lines[j] > 0 {
@@ -320,8 +321,8 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 				}
 				continue
 			}
-			if !criticalAudit.Admit(c.ID, stats.CritRate+actx.Effect.CriticalRate) {
-				slog.Warn("attack_crit_excess", "character", c.ID, "skill", a.SkillID, "claimed", tp.Lines[j], "bound", tp.Normal[j], "crit_rate", stats.CritRate)
+			if !criticalAudit.Admit(c.ID, targetCritRate) {
+				slog.Warn("attack_crit_excess", "character", c.ID, "skill", a.SkillID, "claimed", tp.Lines[j], "bound", tp.Normal[j], "crit_rate", targetCritRate)
 				tp.Lines[j], tp.Critical[j] = min(tp.Lines[j], tp.Normal[j]), false
 				tp.Clipped++
 			}

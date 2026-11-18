@@ -169,6 +169,45 @@ func TestV148ZenPassivesReachMovementDefenseAndVitals(t *testing.T) {
 	}
 }
 
+func TestV148CriticalRageAppliesBossRateOnlyAgainstBosses(t *testing.T) {
+	now := time.Unix(1000, 0)
+	actor := domain.Character{Job: 511, Level: 100}
+	const unrelatedSkill = 5110000
+	def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), unrelatedSkill)
+	if err != nil {
+		t.Fatal(err)
+	}
+	values, err := def.Values(20)
+	if err != nil || values["prop"] == 0 {
+		t.Fatalf("unrelated skill's ordinary critical rate: %v %v", values, err)
+	}
+	variants := []struct {
+		name        string
+		skill       domain.SkillState
+		normalBonus int
+		bossBonus   int
+	}{
+		{name: "unlearned"},
+		{name: "critical rage", skill: domain.SkillState{ID: 5110011, Level: 20}, normalBonus: 15, bossBonus: 35},
+		{name: "unrelated skill", skill: domain.SkillState{ID: unrelatedSkill, Level: 20}, normalBonus: values["prop"], bossBonus: values["prop"]},
+		{name: "expired", skill: domain.SkillState{ID: 5110011, Level: 20, ExpiresAt: now.Add(-time.Second)}},
+	}
+	const attackCriticalRate = 7
+	base := skills.PlayerStats(actor, now).CritRate + attackCriticalRate
+	for _, tc := range variants {
+		t.Run(tc.name, func(t *testing.T) {
+			c := actor
+			if tc.skill.ID != 0 {
+				c.Skills = []domain.SkillState{tc.skill}
+			}
+			stats := skills.PlayerStats(c, now)
+			if ordinary, boss := stats.CriticalRateAgainst(attackCriticalRate, false), stats.CriticalRateAgainst(attackCriticalRate, true); ordinary != base+tc.normalBonus || boss != base+tc.bossBonus {
+				t.Fatalf("ordinary/boss critical = %d/%d, want %d/%d", ordinary, boss, base+tc.normalBonus, base+tc.bossBonus)
+			}
+		})
+	}
+}
+
 func TestShadowPartnerUsesSourceSkillX(t *testing.T) {
 	now := time.Now()
 	c := domain.Character{STR: 4, DEX: 4, INT: 4, LUK: 4, SkillBuffs: []domain.SkillBuff{{ID: 4211008, Level: 20, Stat: "SHADOWPARTNER", Value: 20, ExpiresAt: now.Add(time.Minute)}}}

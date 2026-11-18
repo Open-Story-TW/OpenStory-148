@@ -99,6 +99,7 @@ func (b Bonus) Add(o Bonus) Bonus {
 	b.AVOIDPercent += o.AVOIDPercent
 	b.AvoidRate += o.AvoidRate
 	b.Critical += o.Critical
+	b.BossCritical += o.BossCritical
 	b.CriticalDamage += o.CriticalDamage
 	b.CriticalDamageMin += o.CriticalDamageMin
 	b.Mastery += o.Mastery
@@ -235,6 +236,7 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	p.Accuracy += p.Accuracy * b.ACCPercent / 100
 	p.Mastery += b.Mastery
 	p.CritRate += b.Critical
+	p.BossCritRate += b.BossCritical
 	p.CritDamage += b.CriticalDamage
 	p.DamageRate += b.DamagePercent
 	p.BossDamageRate += b.BossDamagePercent

@@ -334,6 +334,7 @@ type Bonus struct {
 	// AvoidRate is the chance to dodge outright (Java dodgeChance).
 	AvoidRate                int
 	Critical, CriticalDamage int // Rate and maximum critical damage bonus.
+	BossCritical             int // Additional critical chance against boss monsters.
 	CriticalDamageMin        int
 	Mastery                  int
 	DamagePercent            int // damR on every attack.
