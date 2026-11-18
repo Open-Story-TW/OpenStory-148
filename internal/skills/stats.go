@@ -18,6 +18,24 @@ func MovementPassive(c *PassiveContext) Bonus {
 	return Bonus{Speed: c.Values["psdSpeed"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
 }
 
+// BasicMastery returns the prerequisite's mastery when no eligible advanced
+// value replaces it. Other bonuses from the prerequisite still apply.
+func (c *PassiveContext) BasicMastery(advancedID int) int {
+	base := c.Values["mastery"]
+	level := EffectiveLevel(c.Character, advancedID, c.Now)
+	if base == 0 || level < 1 {
+		return base
+	}
+	def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), advancedID)
+	if err != nil || def.Disabled || !def.CanLearnBy(c.Character) {
+		return base
+	}
+	if values, err := def.Values(level); err == nil && values["mastery"] != 0 {
+		return 0
+	}
+	return base
+}
+
 // Bonuses sums the Passive of every learned, unexpired registered skill. The
 // client looks mastery up by job and weapon, so another line's mastery must not
 // raise the damage floor; its other passives, critical rate included, it does count.

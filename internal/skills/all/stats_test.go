@@ -10,6 +10,36 @@ import (
 	"maple-go-server/internal/skills"
 )
 
+func TestV148DemonMasterySelectsAdvancedTier(t *testing.T) {
+	now := time.Unix(100, 0)
+	actor := domain.Character{
+		Job: 3112, Level: 200,
+		Equipment: []domain.Equipment{{Slot: -11, ItemID: 1322005}},
+	}
+	start := skills.Bonuses(actor, now)
+	if start.Mastery != 0 {
+		t.Fatalf("untrained mastery = %d, want 0", start.Mastery)
+	}
+	actor.Skills = []domain.SkillState{{ID: 31100004, Level: 20}}
+	basic := skills.Bonuses(actor, now)
+	if basic.Mastery != 50 || basic.ACC-start.ACC != 120 {
+		t.Fatalf("basic mastery or accuracy differs: %+v", basic)
+	}
+	actor.Skills = append(actor.Skills, domain.SkillState{ID: 31120008, Level: 30})
+	for _, weapon := range []int{1322005, 1312000} {
+		actor.Equipment[0].ItemID = weapon
+		got := skills.Bonuses(actor, now)
+		if got.Mastery != 70 || got.ACC != basic.ACC || got.WATK-basic.WATK != 30 ||
+			got.CriticalDamageMin-basic.CriticalDamageMin != 15 {
+			t.Fatalf("weapon %d: advanced mastery stacked or lost an independent benefit: %+v", weapon, got)
+		}
+	}
+	actor.Skills[1].ExpiresAt = now.Add(-time.Second)
+	if expired := skills.Bonuses(actor, now); expired != basic {
+		t.Fatalf("expired advanced skill did not restore basic mastery: %+v", expired)
+	}
+}
+
 // Buffs feed the attacker stats like Java PlayerStats.
 func TestPlayerStatsAddsBuffsAndMapleWarrior(t *testing.T) {
 	now := time.Now()

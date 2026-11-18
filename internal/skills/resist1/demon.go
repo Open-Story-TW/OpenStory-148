@@ -104,7 +104,7 @@ func init() {
 		if w := weaponType(c.Character); w != oneHandedAxe && w != oneHandedBlunt {
 			return skills.Bonus{}
 		}
-		return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["accX"]}
+		return skills.Bonus{Mastery: c.BasicMastery(31120008), ACC: c.Values["accX"]}
 	})
 	passive(31100005, func(c *skills.PassiveContext) skills.Bonus {
 		return skills.Bonus{STR: c.Values["strX"], DEX: c.Values["dexX"]}
