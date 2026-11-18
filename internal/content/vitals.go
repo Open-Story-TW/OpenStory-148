@@ -33,6 +33,9 @@ func DerivedVitals(c domain.Character, now time.Time) (hp, mp int, err error) {
 		}
 	}
 	hp, mp = c.BaseMaxHP, c.BaseMaxMP
+	// The v148 BasicStat maximum adds Will (0x70F8C6, table 0xC10CB0)
+	// before applying percentage bonuses.
+	hp += 100 * c.Traits.WillTier()
 	hpPercent, mpPercent := 0, 0
 	for _, e := range c.Equipment {
 		if e.Slot < 0 && e.Slot >= -199 {

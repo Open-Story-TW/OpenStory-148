@@ -204,9 +204,11 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	p.STR = scale(str, p.STR+b.STR, b.STRPercent+mw)
 	p.DEX = scale(dex, p.DEX+b.DEX, b.DEXPercent+mw)
 	p.INT = scale(intl, p.INT+b.INT, b.INTPercent+mw)
+	basicINT := p.INT
 	// Java percent_matk also scales pre-MW INT; late flat INT is excluded.
 	p.INT += floorPercent(p.INT-buff.INT-floorPercent(c.INT, mw), infinityMagicPercent(c, now))
 	p.LUK = scale(luk, p.LUK+b.LUK, b.LUKPercent+mw)
+	foldDefense(&p, c, basicINT, Bonus{}, passive, buff)
 	p.WATK += b.WATK
 	p.WATK += p.WATK * b.WATKPercent / 100
 	p.MATK += b.MATK
@@ -223,6 +225,31 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	p.ElementAmp += b.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
 	return p
+}
+
+func foldDefense(p *combat.PlayerStats, c domain.Character, basicINT int, pot, passive, buff Bonus) {
+	for _, e := range c.Equipment {
+		if e.Slot >= 0 || e.Slot <= -100 {
+			continue
+		}
+		p.WDEF += e.WDEF
+		p.MDEF += e.MDEF
+	}
+	p.WDEF += pot.WDEF + passive.WDEF
+	p.MDEF += pot.MDEF + passive.MDEF
+	// v148 BasicStat helpers 0x6F1475 and 0x6F14E0 truncate the combined
+	// weighted primary stats once, with Will included before defense %.
+	will := 5 * c.Traits.WillTier()
+	p.WDEF += (15*p.STR+4*(p.DEX+p.LUK))/10 + will
+	p.MDEF += (15*basicINT+4*(p.DEX+p.LUK))/10 + will
+	physical, magic := p.WDEF, p.MDEF
+	physicalPercent := pot.WDEFPercent + passive.WDEFPercent + buff.WDEFPercent
+	magicPercent := pot.MDEFPercent + passive.MDEFPercent + buff.MDEFPercent
+	// v148 calculates each defense percentage from its own pre-percent total.
+	p.WDEF = physical + min(30000, floorPercent(physical, physicalPercent))
+	p.MDEF = magic + min(30000, floorPercent(magic, magicPercent))
+	p.WDEF += buff.WDEF
+	p.MDEF += buff.MDEF
 }
 
 func foldMovement(p *combat.PlayerStats, c domain.Character, potential, passive, buff Bonus) {

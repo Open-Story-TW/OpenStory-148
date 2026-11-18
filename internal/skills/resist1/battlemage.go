@@ -76,8 +76,11 @@ func init() {
 	passive(32110001, func(c *skills.PassiveContext) skills.Bonus {                                               // 戰鬥精通
 		return skills.Bonus{DamagePercent: c.Values["damR"], BossDamagePercent: c.Values["damR"], CriticalDamageMin: c.Values["criticaldamageMin"]}
 	})
-	passive(32120009, func(c *skills.PassiveContext) skills.Bonus { // 勁能: Java applies only the HP/MP percent
-		return skills.Bonus{MaxHPPercent: c.Values["mhpR"], MaxMPPercent: c.Values["mmpR"]}
+	passive(32120009, func(c *skills.PassiveContext) skills.Bonus { // 勁能 (Energize)
+		return skills.Bonus{
+			MaxHPPercent: c.Values["mhpR"], MaxMPPercent: c.Values["mmpR"],
+			WDEFPercent: c.Values["pddR"], MDEFPercent: c.Values["mddR"],
+		}
 	})
 	combat.ObserveAttacks(reaperSpawn)
 	// 最終攻擊 (linked by 32001008–11) and the PvP-only 少量消弱.

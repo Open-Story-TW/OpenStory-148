@@ -63,13 +63,12 @@ func bulletTime(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{ACC: c.Values["x"], AVOID: c.Values["y"]}
 }
 
-// cannonUpgrade (加農砲升級 5010003): Java adds padX for jobs 501 and 530–532;
-// pddX and mddX are left out like Java.
+// cannonUpgrade adds the skill's weapon attack and both defenses.
 func cannonUpgrade(c *skills.PassiveContext) skills.Bonus {
 	if j := c.Character.Job; j != 501 && j/10 != 53 {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{WATK: c.Values["padX"]}
+	return skills.Bonus{WATK: c.Values["padX"], WDEF: c.Values["pddX"], MDEF: c.Values["mddX"]}
 }
 
 // mastery is Java PlayerStats' weapon mastery: with the matching weapon, the
@@ -92,9 +91,12 @@ func critical(rateKey string) func(*skills.PassiveContext) skills.Bonus {
 	}
 }
 
-// ultimateState (終極狀態 5310007): Java adds mhpR, asrR and pddR percent.
+// ultimateState adds max HP, both defenses, and status resistance.
 func ultimateState(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{MaxHPPercent: c.Values["mhpR"], ASR: c.Values["asrR"], WDEFPercent: c.Values["pddR"]}
+	return skills.Bonus{
+		MaxHPPercent: c.Values["mhpR"], ASR: c.Values["asrR"],
+		WDEFPercent: c.Values["pddR"], MDEFPercent: c.Values["mddR"],
+	}
 }
 
 // skillDamage packs (skill, percent) pairs into Bonus.SkillDamage.

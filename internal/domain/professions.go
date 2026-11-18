@@ -1,5 +1,7 @@
 package domain
 
+import "sort"
+
 // ProfessionState is one learned profession (Skill.wz 9200-9204): its level
 // and the proficiency gathered toward the next one.
 type ProfessionState struct {
@@ -20,6 +22,17 @@ type Traits struct {
 
 // MaxTraitEXP is the experience of a trait at its last level.
 const MaxTraitEXP = 93596
+
+// Cumulative v148 trait EXP for levels 5, 10, ..., 100.
+var willTierEXP = [...]int{
+	181, 851, 2273, 4563, 7562, 11040, 14893, 19044, 23515, 28331,
+	33519, 39110, 45135, 51626, 58371, 65216, 72161, 79206, 86351, MaxTraitEXP,
+}
+
+// WillTier returns the number of five-level Will milestones reached.
+func (t Traits) WillTier() int {
+	return sort.Search(len(willTierEXP), func(i int) bool { return t.Will < willTierEXP[i] })
+}
 
 // Add returns t plus d, each trait kept within 0..MaxTraitEXP.
 func (t Traits) Add(d Traits) Traits {

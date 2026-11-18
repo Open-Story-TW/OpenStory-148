@@ -107,11 +107,11 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.STR = stat(c.STR, p.STR, pot.STR, pot.STRPercent, passive.STR, passive.STRPercent, buff.STR)
 	p.DEX = stat(c.DEX, p.DEX, pot.DEX, pot.DEXPercent, passive.DEX, passive.DEXPercent, buff.DEX)
 	p.INT = stat(c.INT, p.INT, pot.INT, pot.INTPercent, passive.INT, passive.INTPercent, buff.INT)
+	basicINT := p.INT
 	p.LUK = stat(c.LUK, p.LUK, pot.LUK, pot.LUKPercent, passive.LUK, passive.LUKPercent, buff.LUK)
 	preINT := p.INT - buff.INT - floorPercent(c.INT, mw)
 	preDEX := p.DEX - buff.DEX - floorPercent(c.DEX, mw)
 	preLUK := p.LUK - buff.LUK - floorPercent(c.LUK, mw)
-	preSTR := p.STR - buff.STR - floorPercent(c.STR, mw)
 	// Java PlayerStats1500..1502 applies the equipment magic percentage to
 	// local INT too. Do not multiply subsequent flat INT/MW by this source.
 	p.INT += floorPercent(preINT, pot.MATKPercent+infinityMagicPercent(c, now))
@@ -138,21 +138,9 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 		if e.Slot >= 0 || e.Slot <= -100 {
 			continue
 		}
-		p.WDEF += e.WDEF
-		p.MDEF += e.MDEF
 		p.Avoid += e.AVOID
 	}
-	p.WDEF += pot.WDEF + passive.WDEF
-	p.MDEF += pot.MDEF + passive.MDEF
-	p.WDEF += preSTR*12/10 + (preDEX+preLUK)/2 + preINT*4/10
-	p.MDEF += preSTR*4/10 + (preDEX+preLUK)/2 + preINT*12/10
-	p.WDEF += min(30000, floorPercent(p.WDEF, pot.WDEFPercent+passive.WDEFPercent+buff.WDEFPercent))
-	// The legacy PlayerStats1673..1674 uses the updated WDEF as the MDEF%
-	// operand. Preserve that source behavior in this Java-based view, without
-	// claiming native defense parity or a server contact-defense consumer.
-	p.MDEF += min(30000, floorPercent(p.WDEF, pot.MDEFPercent+passive.MDEFPercent+buff.MDEFPercent))
-	p.WDEF += buff.WDEF
-	p.MDEF += buff.MDEF
+	foldDefense(&p, c, basicINT, pot, passive, buff)
 	foldMovement(&p, c, pot, passive, buff)
 	// Native6BE054 adds incEVA into the same flat bucket as physical gear
 	// and flat skill effects. This is a contribution view only: native basic
