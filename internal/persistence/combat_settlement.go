@@ -168,7 +168,7 @@ func validateCombatCommand(q domain.CombatAttackRequest) error {
 		return domain.ErrInvalidInput
 	}
 	if q.Family == domain.CombatThreeSnails {
-		if q.LinesPerTarget != 1 || len(q.Wire) != 0 && len(q.Wire) != 33+30*len(q.Targets) {
+		if q.LinesPerTarget != 1 {
 			return domain.ErrInvalidInput
 		}
 		if len(q.Wire) > 0 {

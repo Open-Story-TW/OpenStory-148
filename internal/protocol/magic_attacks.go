@@ -32,7 +32,7 @@ type MagicAttack struct {
 }
 
 // ReadBeginnerMagicAttack is deliberately limited to the native observed
-// 1000 one-line, zero/one-target family (33/63 bytes). Other magic serializers
+// 1000 one-line, zero/one-target family (33/67 bytes). Other magic serializers
 // and charge/special skill headers are not inferred from this frame.
 func ReadBeginnerMagicAttack(r *Reader) (MagicAttack, error) {
 	var a MagicAttack
