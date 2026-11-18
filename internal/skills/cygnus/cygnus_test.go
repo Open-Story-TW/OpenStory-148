@@ -590,9 +590,13 @@ func TestPassives(t *testing.T) {
 func TestVenomAndDrains(t *testing.T) {
 	stats := combat.PlayerStats{Job: 1411, LUK: 300, DEX: 50, STR: 4, WATK: 80, WeaponID: 1472000}
 	ch := domain.Character{Skills: []domain.SkillState{{ID: 14110004, Level: 20}}}
+	wantVenom := combat.MobStatusApply{
+		Stat: combat.MobPoison, Poison: true, Prop: 30,
+		Value: int(combat.MaxBaseDamage(stats) * 90 / 100), Duration: 6 * time.Second,
+	}
 	for _, id := range []int{14001004, 14111002, 14111005} {
 		ctx := &combat.AttackContext{Kind: combat.Shoot, Character: ch, Stats: stats, Now: now}
-		if err := spec(t, id).Prepare(ctx); err != nil || len(ctx.Effect.MonsterStatus) != 1 || ctx.Effect.MonsterStatus[0].Stat != combat.MobPoison || ctx.Effect.MonsterStatus[0].Prop != 30 || ctx.Effect.MonsterStatus[0].Duration != 8*time.Second {
+		if err := spec(t, id).Prepare(ctx); err != nil || len(ctx.Effect.MonsterStatus) != 1 || ctx.Effect.MonsterStatus[0] != wantVenom {
 			t.Errorf("%d venom %+v %v", id, ctx.Effect.MonsterStatus, err)
 		}
 		ctx = &combat.AttackContext{Kind: combat.Shoot, Now: now}
