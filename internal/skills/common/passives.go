@@ -22,7 +22,7 @@ func beginnerPassives() {
 	each(190, willOfAlliance)
 	for _, id := range []int{
 		8, 10000018, 20000024, 20011024, 20020213, 30001024, 109, 111, 112,
-		20020002, 20030002, 30010002, 20030022, 30010022, 20000194, 20020112, 20031204, 20031206, 30010185,
+		20020002, 20030002, 30010002, 20030022, 30010022, 20031204, 20031206, 30010185,
 	} {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
 	}
@@ -48,10 +48,25 @@ func beginnerPassives() {
 		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],
 			WATK: v["padX"], MATK: v["madX"], IgnoreDefense: v["ignoreMobpdpR"]}
 	}})
-	skills.Register(skills.Handler{ID: 80000136, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus { // S級獵人資格證
+	// 獵人資格證 (見習/B/A/S) and 80000137 add the attributes, vitals,
+	// attack and defense their v148 WZ lists.
+	for _, id := range []int{80000133, 80000134, 80000135, 80000136, 80000137} {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+			v := c.Values
+			return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],
+				WATK: v["padX"], MATK: v["madX"], MaxHP: v["mhpX"], MaxMP: v["mmpX"], WDEF: v["pddX"], MDEF: v["mddX"]}
+		}})
+	}
+	// 找回的記憶 (Aran 20000194): the v148 WZ grants attack, defense, speed,
+	// critical rate and boss damage.
+	skills.Register(skills.Handler{ID: 20000194, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
 		v := c.Values
-		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],
-			WATK: v["padX"], MATK: v["madX"], MaxHP: v["mhpX"], MaxMP: v["mmpX"]}
+		return skills.Bonus{WATK: v["padX"], WDEF: v["pddX"], Speed: v["psdSpeed"], Critical: v["cr"], BossDamagePercent: v["bdR"]}
+	}})
+	// 王的資格 (Mercedes 20020112): movement speed and jump; its action speed
+	// is applied by the client.
+	skills.Register(skills.Handler{ID: 20020112, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		return skills.Bonus{Speed: c.Values["psdSpeed"], Jump: c.Values["psdJump"]}
 	}})
 	// 繼承的意志 grants the v148 permanent bonuses from the Evan quest.
 	skills.Register(skills.Handler{ID: 20010194, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
