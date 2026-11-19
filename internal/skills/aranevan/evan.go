@@ -198,13 +198,15 @@ func dragonSoul(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{MATK: c.Values["mad"]}
 }
 
-// spellMastery (22120002) adds mastery and x magic attack with a wand or
-// staff (Java PlayerStats passive mastery).
+// spellMastery (22120002) adds x magic attack and the v148 cr with a wand or
+// staff. Its mastery is replaced by Magic Mastery (22170001) once learned:
+// v148 0x6D9733 returns the 22170001 mastery when present and only sums the
+// two magic attack values.
 func spellMastery(c *skills.PassiveContext) skills.Bonus {
 	if w := weaponType(c.Character); w != 137 && w != 138 {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], MATK: c.Values["x"]}
+	return skills.Bonus{Mastery: c.BasicMastery(22170001), MATK: c.Values["x"], Critical: c.Values["cr"]}
 }
 
 // criticalMagic (22140000) is Java passive_sharpeye_rate += prop and

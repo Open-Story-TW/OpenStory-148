@@ -190,13 +190,14 @@ func snowChargeDamage(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{DamagePercent: c.Values["damR"]}
 }
 
-// comboCritical (21110000) is Java passive_sharpeye_rate += x*y + cr for 2111
-// and 2112.
+// comboCritical (21110000) is a v148 psd passive: its WZ common row gives a
+// flat cr and criticaldamageMax for 2111 and 2112. x and y only describe the
+// combo counter text and are not part of the passive rate.
 func comboCritical(c *skills.PassiveContext) skills.Bonus {
 	if j := c.Character.Job; j != 2111 && j != 2112 {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Critical: c.Values["x"]*c.Values["y"] + c.Values["cr"]}
+	return skills.Bonus{Critical: c.Values["cr"], CriticalDamage: c.Values["criticaldamageMax"]}
 }
 
 // highMastery (21120001) is Java PlayerStats case 2112: x attack, mastery and

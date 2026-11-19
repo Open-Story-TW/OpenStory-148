@@ -396,9 +396,8 @@ func TestAranPassives(t *testing.T) {
 	if b := passiveBonus(t, 21101006, 10, ch); b.DamagePercent != 35 {
 		t.Fatalf("snow charge damR %+v", b)
 	}
-	_, v := def(t, 21110000, 20)
-	if b := passiveBonus(t, 21110000, 20, ch); b.Critical != v["x"]*v["y"]+v["cr"] || b.Critical < 20 {
-		t.Fatalf("combo critical %+v", b)
+	if b := passiveBonus(t, 21110000, 20, ch); b.Critical != 20 || b.CriticalDamage != 20 {
+		t.Fatalf("v148 combo critical cr/criticaldamageMax %+v", b)
 	}
 	if b := passiveBonus(t, 21110000, 20, aran(2110)); b.Critical != 0 {
 		t.Fatalf("combo critical before 2111 %+v", b)
@@ -568,8 +567,14 @@ func TestEvanPassives(t *testing.T) {
 	}
 	wand := evan(2213)
 	wand.Equipment = []domain.Equipment{{Slot: -11, ItemID: 1372000}}
-	if b := passiveBonus(t, 22120002, 10, wand); b.Mastery != 50 || b.MATK != 10 {
+	if b := passiveBonus(t, 22120002, 10, wand); b.Mastery != 50 || b.MATK != 10 || b.Critical != 10 {
 		t.Fatalf("spell mastery %+v", b)
+	}
+	// v148 0x6D9733: Magic Mastery's mastery replaces Spell Mastery's.
+	wand.Skills = append(wand.Skills, domain.SkillState{ID: 22170001, Level: 30})
+	wand.Job = 2217
+	if b := passiveBonus(t, 22120002, 10, wand); b.Mastery != 0 || b.MATK != 10 || b.Critical != 10 {
+		t.Fatalf("spell mastery with magic mastery %+v", b)
 	}
 	if b := passiveBonus(t, 22140000, 15, evan(2214)); b.Critical != 30 || b.CriticalDamageMin != 15 {
 		t.Fatalf("critical magic %+v", b)
