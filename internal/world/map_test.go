@@ -199,3 +199,33 @@ func TestMapSpaceEnterWhileHidden(t *testing.T) {
 		t.Fatalf("hidden entrant must see the peer: %d packets", len(a.packets))
 	}
 }
+
+// A job change re-spawns the actor for its viewers only: the v148 client
+// takes a remote user's job from the spawn packet, never from CharacterLook.
+func TestMapSpaceRespawnRefreshesViewersJob(t *testing.T) {
+	space := newMapSpace(500)
+	aSink, bSink, farSink := &memSink{}, &memSink{}, &memSink{}
+	a := domain.Character{ID: 1, Name: "A", Job: 400, Level: 200, HP: 50, MaxHP: 50, MP: 50, MaxMP: 50, Revision: 1}
+	b := domain.Character{ID: 2, Name: "B", Level: 1, HP: 50, MaxHP: 50, MP: 50, MaxMP: 50, X: 100, Revision: 1}
+	far := domain.Character{ID: 3, Name: "C", Level: 1, HP: 50, MaxHP: 50, MP: 50, MaxMP: 50, X: 5000, Revision: 1}
+	space.Enter(1, 10000, a, aSink)
+	space.Enter(1, 10000, b, bSink)
+	space.Enter(1, 10000, far, farSink)
+	aSink.pkts, bSink.pkts, farSink.pkts = nil, nil, nil
+	a.Job = 411
+	space.publication.Lock()
+	space.RespawnLocked(1, 10000, 1, a)
+	space.publication.Unlock()
+	if got := bSink.opcodes(); len(got) != 2 || got[0] != protocol.SendRemovePlayer || got[1] != protocol.SendSpawnPlayer {
+		t.Fatalf("viewer packets %v", got)
+	}
+	if want := protocol.SpawnPlayer(a, 4); string(bSink.pkts[1]) != string(want) {
+		t.Fatal("viewer did not receive the spawn with the new job")
+	}
+	if len(aSink.pkts) != 0 || len(farSink.pkts) != 0 {
+		t.Fatalf("actor or out-of-range member was told: %v %v", aSink.opcodes(), farSink.opcodes())
+	}
+	if space.VisibleCount(1, 10000, 1) != 1 || space.VisibleCount(1, 10000, 2) != 1 {
+		t.Fatal("visibility changed")
+	}
+}

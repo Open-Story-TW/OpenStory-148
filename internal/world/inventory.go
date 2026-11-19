@@ -183,6 +183,35 @@ func (s *Server) broadcastInventoryPacket(channel, mapID int, packet []byte) {
 	}
 }
 
+// respawnSceneLocked re-spawns the visit's character for the members who see
+// it, after a job change (see mapSpace.RespawnLocked). The caller holds the
+// actor's scene gate and the skill publication lock.
+func (s *Server) respawnSceneLocked(v *sceneVisit) {
+	if s.maps == nil || v == nil || !s.sceneCurrent(v) {
+		return
+	}
+	v.live.mu.Lock()
+	snapshot := v.live.session
+	v.live.mu.Unlock()
+	s.maps.RespawnLocked(snapshot.ChannelID, snapshot.Character.MapID, snapshot.CharacterID, snapshot.Character)
+}
+
+// respawnAfterJobChange is respawnSceneLocked for callers holding no lock.
+func (s *Server) respawnAfterJobChange(live *liveCharacter) {
+	v := s.sceneFor(live, nil)
+	if v == nil {
+		return
+	}
+	unlock, err := s.lockScenePublication(v.owner.CharacterID)
+	if err != nil {
+		return
+	}
+	defer unlock()
+	unlockSkills := s.lockSkillPublication()
+	defer unlockSkills()
+	s.respawnSceneLocked(v)
+}
+
 func (s *Server) refreshCharacterLook(live *liveCharacter) {
 	v := s.sceneFor(live, nil)
 	if v == nil {

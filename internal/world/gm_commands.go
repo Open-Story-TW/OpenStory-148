@@ -463,6 +463,9 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 				return true, err
 			}
 			s.refreshCharacterLookScene(expectedVisit)
+			if name == "job" {
+				s.respawnSceneLocked(expectedVisit) // skill publication is held
+			}
 		} else {
 			for _, id := range result.SkillIDs { // !maxskills
 				for _, state := range next.Character.Skills {

@@ -292,6 +292,45 @@ func (m *mapSpace) SetHidden(channel, mapID int, characterID int64, hidden bool)
 	}
 }
 
+// RespawnLocked re-sends characterID to every member that currently sees it,
+// with look as its new appearance. The v148 client keeps a remote user's job
+// from the spawn packet only (CharacterLook replaces the look, not the job),
+// and its remote Shadow Partner lookup (0x6F17D9 from 0x8BED7A) terminates
+// the client when that stale job owns no Shadow Partner skill. A job change
+// therefore needs a fresh spawn. The caller holds publication.
+func (m *mapSpace) RespawnLocked(channel, mapID int, characterID int64, look domain.Character) {
+	key := mapKey{channel: channel, mapID: mapID}
+	var spawned []mapSpawnPair
+	m.mu.Lock()
+	defer func() {
+		m.mu.Unlock()
+		if m.spawnState != nil {
+			for _, pair := range spawned {
+				m.spawnState(key, pair.source, pair.target)
+			}
+		}
+	}()
+	room := m.rooms[key]
+	self := room[characterID]
+	if self == nil {
+		return
+	}
+	self.look = look
+	for _, peer := range room {
+		if peer.id == self.id {
+			continue
+		}
+		_, sees := peer.visible[self.id]
+		_, watches := peer.watching[self.id]
+		if !sees && !watches {
+			continue
+		}
+		_ = peer.sink.WritePacket(protocol.RemovePlayer(self.id))
+		writeMemberSpawn(peer.sink, self)
+		spawned = append(spawned, mapSpawnPair{self, peer})
+	}
+}
+
 func within(ax, ay, bx, by, radius int) bool {
 	dx := ax - bx
 	dy := ay - by

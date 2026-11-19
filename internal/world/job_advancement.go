@@ -98,5 +98,8 @@ func (a *worldScript) commitFirstJob(ctx context.Context, command scripting.Comm
 		}
 	}
 	a.server.refreshCharacterLook(a.live)
+	if current.Job != snapshot.Character.Job {
+		a.server.respawnAfterJobChange(a.live)
+	}
 	return scripting.CommandResult{Value: map[string]any{"ok": true}}, nil
 }
