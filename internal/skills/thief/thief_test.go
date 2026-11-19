@@ -292,3 +292,13 @@ func TestAdvancedThiefMasteryReplacesBasicMastery(t *testing.T) {
 		}
 	}
 }
+
+// The v148 book drops Pickpocket's time: the cast toggles a permanent buff.
+func TestV148PickpocketToggles(t *testing.T) {
+	c := context(t, 4211003, 10, domain.Character{})
+	delete(c.Values, "time")
+	p, err := pickpocket(c)
+	if err != nil || !p.Toggle || p.Self == nil || p.Self.Duration != skills.Permanent || !reflect.DeepEqual(p.Self.Stats, buff(stat("PICKPOCKET", 200))) {
+		t.Fatalf("v148 pickpocket %+v %+v %v", p, p.Self, err)
+	}
+}
