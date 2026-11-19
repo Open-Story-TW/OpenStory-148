@@ -243,6 +243,10 @@ func LineBounds(c DamageContext) (floor, ceiling int) {
 		v = mulDiv(v, multiplier, 100)
 		low = mulDiv(low, multiplier, 100)
 	}
+	if !c.Magic && c.Stats.ComboDamagePercent > 0 {
+		// v148 CalcDamage applies the combo orb factor as its own multiplier.
+		v = mulDiv(v, int64(100+c.Stats.ComboDamagePercent), 100)
+	}
 	// Round the fractional upper bound upward and the floor downward once.
 	line := v/1000000 + min(v%1000000, 1)
 	if v == math.MaxInt64 {

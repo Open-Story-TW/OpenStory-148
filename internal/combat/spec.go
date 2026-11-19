@@ -235,6 +235,7 @@ type PlayerStats struct {
 	Mastery                                                  int     // Percent.
 	CritRate, CritDamage                                     int     // Percent chance / extra percent on a critical.
 	BossCritRate, StunnedCritRate                            int     // Target-specific critical chance from learned passives.
+	ComboDamagePercent                                       int     // Physical multiplier of the active combo orbs (v148 0x6DB839).
 	DamageRate, BossDamageRate                               int     // Percent bonus (0 = none).
 	FinalCutPercent                                          int     // Active physical damage multiplier in percent (0 = inactive).
 	IgnoreDefense                                            int     // Percent of monster PDRate/MDRate ignored.

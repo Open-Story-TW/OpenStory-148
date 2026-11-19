@@ -274,6 +274,7 @@ func legacyPlayerStatsForMode(c domain.Character, now time.Time, battleSquare bo
 	p.TER += b.TER
 	p.DamageRate += b.DamagePercent
 	p.BossDamageRate += b.BossDamagePercent
+	p.ComboDamagePercent = ComboDamagePercent(c, now)
 	p.IgnoreDefense += b.IgnoreDefense
 	p.FullDefenseIgnore = b.FullDefenseIgnore
 	p.ElementAmp += b.ElementAmp

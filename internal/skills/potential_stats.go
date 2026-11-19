@@ -145,6 +145,7 @@ func playerStatsCheckedForMode(c domain.Character, now time.Time, battleSquare b
 	p.CritDamage += pot.CriticalDamage + passive.CriticalDamage + buff.CriticalDamage
 	p.DamageRate += passive.DamagePercent + buff.DamagePercent
 	p.BossDamageRate += passive.BossDamagePercent + buff.BossDamagePercent
+	p.ComboDamagePercent = ComboDamagePercent(c, now)
 	p.IgnoreDefense += pot.IgnoreDefense + passive.IgnoreDefense + buff.IgnoreDefense
 	p.FullDefenseIgnore = passive.FullDefenseIgnore
 	p.ElementAmp += passive.ElementAmp + buff.ElementAmp
