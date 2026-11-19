@@ -59,8 +59,8 @@ type rule struct {
 	kind  combat.AttackKind
 	onHit []combat.MobStatusApply
 	// boost names the passives whose damR adds to this attack's damage
-	// percent (Java PlayerStats.damageIncrease); the first learned wins,
-	// like Java's later put replacing the earlier one.
+	// percent. Every learned one adds: the v148 client sums Aerial Barrage
+	// and Rolling Moonsault on Rising Rush (Java replaced the first).
 	boost []int
 	// mobCount overrides the WZ target limit (Java final attacks use 6).
 	mobCount  int
@@ -82,7 +82,6 @@ func attack(r rule) *combat.AttackSpec {
 			for _, id := range r.boost {
 				if v := values(ctx.Character, ctx.Now, id); v != nil {
 					ctx.Effect.Damage += v["damR"]
-					break
 				}
 			}
 			return nil

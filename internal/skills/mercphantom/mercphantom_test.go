@@ -336,7 +336,7 @@ func TestAttackRules(t *testing.T) {
 			t.Errorf("final attack %d mobCount %d", id, e.MobCount)
 		}
 	}
-	// Rising Rush: 23120011 replaces 23110006's damR (Java damageIncrease.put).
+	// Rising Rush: 23110006 and 23120011 both add their damR (v148 client).
 	configuredBonus := func(id, rank int) int {
 		def, err := content.ConfiguredSkillDefinition(id)
 		if err != nil {
@@ -354,7 +354,7 @@ func TestAttackRules(t *testing.T) {
 	base := prepared(t, 23101001, 15, merc).Damage
 	with3rd := prepared(t, 23101001, 15, character(2311, 0, domain.SkillState{ID: 23110006, Level: 15})).Damage
 	with4th := prepared(t, 23101001, 15, character(2312, 0, domain.SkillState{ID: 23110006, Level: 15}, domain.SkillState{ID: 23120011, Level: 20})).Damage
-	if base != rush["damage"] || with3rd != base+aerialBarrage || with4th != base+advanced {
+	if base != rush["damage"] || with3rd != base+aerialBarrage || with4th != base+aerialBarrage+advanced {
 		t.Errorf("rising rush damage %d %d %d", base, with3rd, with4th)
 	}
 	_, kick := values(t, 23101007, 20)

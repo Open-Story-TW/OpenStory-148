@@ -16,8 +16,9 @@ import (
 // each skill really sends.
 const either = combat.Melee | combat.Shoot
 
-// rising is the damR passive of Rising Rush and its follow-up (23120011
-// replaces 23110006, like Java's second damageIncrease.put).
+// rising is the damR passive of Rising Rush and its follow-up. The v148
+// client adds both: live crit lines of 23101001 with 23110006 and 23120011
+// learned exceeded the 130+50% bound by the 23110006 share.
 var rising = []int{23120011, 23110006}
 
 var mercedesAttacks = map[int]rule{
