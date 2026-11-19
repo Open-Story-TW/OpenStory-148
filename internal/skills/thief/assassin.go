@@ -46,7 +46,8 @@ func clawMastery(c *skills.PassiveContext) skills.Bonus {
 	return basicWeaponMastery(c, 4120012)
 }
 
-// criticalThrow (4100001) adds prop critical rate and criticaldamageMin.
+// criticalThrow (4100001, 4340010) adds prop critical rate and raises the
+// minimum critical damage by criticaldamageMin; the maximum is unchanged.
 func criticalThrow(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{Critical: c.Values["prop"], CriticalDamageMin: c.Values["criticaldamageMin"]}
 }

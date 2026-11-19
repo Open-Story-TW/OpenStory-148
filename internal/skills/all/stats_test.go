@@ -358,3 +358,42 @@ func TestV148RangedMasterySelectsAdvancedTier(t *testing.T) {
 		}
 	}
 }
+
+// The v148 client mastery lookup (sub_6D8DDE) returns the fourth job expert
+// mastery in place of the second job one for claws, daggers and Dual Blade.
+func TestV148ThiefExpertMasteryReplacesBasic(t *testing.T) {
+	now := time.Unix(100, 0)
+	for _, tc := range []struct {
+		job, weapon, basic, expert int
+	}{
+		{412, 1472000, 4100000, 4120012},
+		{422, 1332000, 4200000, 4220012},
+		{434, 1332000, 4300000, 4340013},
+	} {
+		actor := domain.Character{Job: tc.job, Level: 200, Equipment: []domain.Equipment{{Slot: -11, ItemID: tc.weapon}}}
+		actor.Skills = []domain.SkillState{{ID: tc.basic, Level: 20}}
+		basic := skills.Bonuses(actor, now)
+		if basic.Mastery == 0 {
+			t.Fatalf("job %d: basic mastery missing: %+v", tc.job, basic)
+		}
+		actor.Skills = append(actor.Skills, domain.SkillState{ID: tc.expert, Level: 30})
+		got := skills.Bonuses(actor, now)
+		if got.Mastery != 70 || got.ACC != basic.ACC || got.WATK-basic.WATK != 30 {
+			t.Fatalf("job %d: expert mastery stacked or lost a benefit: basic %+v got %+v", tc.job, basic, got)
+		}
+	}
+}
+
+// Bullet Time's v148 book uses accX, psdJump and speedMax (level 10: 220, 10, 20).
+func TestV148BulletTimeKeys(t *testing.T) {
+	root := t.TempDir() // no stock book in the root: the built-in v148 book is served
+	if err := os.MkdirAll(root+"/Skill.wz", 0755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("MAPLEGO_WZ_ROOT", root)
+	actor := domain.Character{Job: 500, Level: 200, Skills: []domain.SkillState{{ID: 5000000, Level: 10}}}
+	got := skills.Bonuses(actor, time.Unix(100, 0))
+	if got.ACC != 220 || got.Jump != 10 || got.SpeedLimitBonus != 20 || got.AVOID != 0 {
+		t.Fatalf("bullet time %+v", got)
+	}
+}

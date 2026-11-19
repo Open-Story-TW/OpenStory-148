@@ -220,7 +220,7 @@ func TestBulletTimeUsesNativeV148AccuracyAndJump(t *testing.T) {
 	b := bulletTime(&skills.PassiveContext{Values: map[string]int{
 		"accX": 220, "psdJump": 10, "speedMax": 20,
 	}})
-	if b != (skills.Bonus{ACC: 220, Jump: 10}) {
+	if b != (skills.Bonus{ACC: 220, Jump: 10, SpeedLimitBonus: 20}) {
 		t.Fatalf("v148 Bullet Time ignored its WZ values: %+v", b)
 	}
 }

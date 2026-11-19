@@ -57,11 +57,12 @@ func weaponType(c domain.Character) int {
 	return 0
 }
 
-// v148 replaced the old x/y accuracy and avoidability with flat accuracy
-// and jump. The separate WZ speedMax is a native cap, not a speed bonus.
+// bulletTime (極限迴避 5000000): the v148 book gives accX accuracy, psdJump
+// and speedMax; the stock book's x accuracy and y avoidability remain the
+// fallback when it is served instead.
 func bulletTime(c *skills.PassiveContext) skills.Bonus {
 	if _, ok := c.Values["accX"]; ok {
-		return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"]}
+		return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
 	}
 	return skills.Bonus{ACC: c.Values["x"], AVOID: c.Values["y"]}
 }
