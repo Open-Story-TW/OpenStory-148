@@ -57,7 +57,8 @@ func mihileSwordMastery(c *skills.PassiveContext) skills.Bonus {
 	if weaponType(c.Character) != oneHandedSword {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["accX"]}
+	// v148 0x6D90DD: Advanced Sword Mastery (51120001) replaces this mastery for 5112.
+	return skills.Bonus{Mastery: c.BasicMastery(51120001), ACC: c.Values["accX"]}
 }
 
 func mihileStrength(c *skills.PassiveContext) skills.Bonus {

@@ -220,6 +220,13 @@ func TestMihileSoulBladeAndSwordMastery(t *testing.T) {
 			t.Errorf("weapon %d gives %+v, want %+v", tc.item, got, tc.want)
 		}
 	}
+	advanced := wielding(1302000)
+	advanced.Job = 5112
+	advanced.Skills = append(advanced.Skills, domain.SkillState{ID: 51120001, Level: 30})
+	c := skills.PassiveContext{Character: advanced, Values: map[string]int{"mastery": 50, "accX": 120}}
+	if got := mihileSwordMastery(&c); got.Mastery != 0 || got.ACC != 120 {
+		t.Errorf("Advanced Sword Mastery did not replace the basic mastery: %+v", got)
+	}
 }
 
 func TestMihileV148AttackFamilies(t *testing.T) {
