@@ -279,6 +279,10 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 				normal = normal * min(ctx.Stats.ShadowPartner, 100) / 100
 			}
 			claimed := l.Claimed()
+			if InstantKillLine(e.SkillID, j, t.Mob, int64(claimed)) {
+				// The client's instant kill is the target's maximum HP, not a roll.
+				f, c, normal = claimed, claimed, claimed
+			}
 			v := min(claimed, c)
 			tp.Critical = append(tp.Critical, !ownCeiling && !l.Critical() && UnmarkedMayBeCritical(dc, ctx.Kind) && claimed > normal)
 			tp.Normal = append(tp.Normal, normal)

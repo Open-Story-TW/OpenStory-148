@@ -238,8 +238,9 @@ func validateCombatTarget(c domain.Character, q domain.CombatAttackRequest, t do
 			return domain.ErrForbidden
 		}
 		sum := 0
-		for _, l := range t.Lines {
-			if l.Applied < 0 || int64(l.Applied) > l.Claimed() || l.Applied > combat.MaxLineDamage() {
+		for i, l := range t.Lines {
+			instantKill := combat.InstantKillLine(q.SkillID, i, mob, l.Claimed())
+			if l.Applied < 0 || int64(l.Applied) > l.Claimed() || l.Applied > combat.MaxLineDamage() && !instantKill {
 				return domain.ErrInvalidInput
 			}
 			if combat.ReviewedWireCriticality(combat.Melee, q.SkillID, l.Raw) != "" {
