@@ -197,9 +197,12 @@ func (s *Store) BeginCashReturn(ctx context.Context, c domain.CashSession, ip st
 	return transfer, tx.Commit()
 }
 
+// ConsumeCashReturn claims a live cashshop return ticket. An expired ticket
+// that was never used does not match, so the next fresh login of the same
+// native handle to that channel goes through its own login transfer.
 func (s *Store) ConsumeCashReturn(ctx context.Context, handle int64, world, channel int, ip string, l domain.WorldLease) (domain.CharacterSession, bool, error) {
 	var exists bool
-	if err := s.db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM ops_service_transfers WHERE native_handle=$1 AND target_service='world' AND world_id=$2 AND channel_id=$3 AND consumed_at IS NULL)`, handle, world, channel).Scan(&exists); err != nil {
+	if err := s.db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM ops_service_transfers WHERE native_handle=$1 AND target_service='world' AND world_id=$2 AND channel_id=$3 AND consumed_at IS NULL AND expires_at>clock_timestamp())`, handle, world, channel).Scan(&exists); err != nil {
 		return domain.CharacterSession{}, false, err
 	}
 	if !exists {

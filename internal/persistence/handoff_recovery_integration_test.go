@@ -411,3 +411,34 @@ func TestCashshopHandoffResendTimeoutAndOrphan(t *testing.T) {
 		t.Fatalf("cash round trip mesos=%d want %d", back.Character.Mesos, value.Mesos)
 	}
 }
+
+func TestExpiredCashReturnTicketDoesNotBlockLaterLogin(t *testing.T) {
+	f := newHandoffFixture(t)
+	ctx, store := f.ctx, f.store
+	lease := f.worldLease("world-a")
+	cash, err := store.AcquireCashLease(ctx, "cash-a-"+f.suffix)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const handle = 1450031
+	session := f.enter(lease)
+	if _, err = store.BeginCashTransfer(ctx, session, handle, "127.0.0.1"); err != nil {
+		t.Fatal(err)
+	}
+	claimed, err := store.ConsumeCashTransfer(ctx, handle, "127.0.0.1", cash)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = store.BeginCashReturn(ctx, claimed, "127.0.0.1"); err != nil {
+		t.Fatal(err)
+	}
+	// The client never came back: the return ticket and the session expire unused.
+	f.exec(`UPDATE ops_service_transfers SET expires_at=clock_timestamp()-interval '1 second' WHERE account_id=$1`, f.account)
+	f.exec(`UPDATE ops_account_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE account_id=$1`, f.account)
+	if _, matched, e := store.ConsumeCashReturn(ctx, handle, handoffWorld, claimed.ReturnChannel, "127.0.0.1", lease); matched || e != nil {
+		t.Fatalf("expired return ticket matched=%v err=%v; it would shadow every later login", matched, e)
+	}
+	if back := f.enter(lease); back.CharacterID != f.char {
+		t.Fatalf("later login entered %d", back.CharacterID)
+	}
+}
