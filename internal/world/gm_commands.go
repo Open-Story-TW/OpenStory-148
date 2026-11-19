@@ -703,8 +703,9 @@ func (s *Server) publishQADebuff(session domain.CharacterSession, live *liveChar
 // parses these exact "key value" lines.
 func effectiveStatsLines(c domain.Character, now time.Time) []string {
 	fields := func(p combat.PlayerStats) string {
-		return fmt.Sprintf("str %d dex %d int %d luk %d watk %d matk %d acc %d mastery %d crit %d critdmg %d damr %d bossr %d ignoredef %d elemamp %d shadowpartner %d critdmgmin %d asr %d ter %d",
-			p.STR, p.DEX, p.INT, p.LUK, p.WATK, p.MATK, p.Accuracy, p.Mastery, p.CritRate, p.CritDamage, p.DamageRate, p.BossDamageRate, p.IgnoreDefense, p.ElementAmp, p.ShadowPartner, p.CritDamageMin, p.ASR, p.TER)
+		return fmt.Sprintf("str %d dex %d int %d luk %d watk %d matk %d acc %d mastery %d crit %d critdmg %d damr %d bossr %d ignoredef %d elemamp %d shadowpartner %d critdmgmin %d asr %d ter %d avoid %d wdef %d mdef %d speed %d jump %d dodge %d",
+			p.STR, p.DEX, p.INT, p.LUK, p.WATK, p.MATK, p.Accuracy, p.Mastery, p.CritRate, p.CritDamage, p.DamageRate, p.BossDamageRate, p.IgnoreDefense, p.ElementAmp, p.ShadowPartner, p.CritDamageMin, p.ASR, p.TER,
+			p.Avoid, p.WDEF, p.MDEF, p.Speed, p.Jump, p.DodgeRate)
 	}
 	total, err := combat.AttackStats(c, now)
 	if err != nil {
