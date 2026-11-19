@@ -397,3 +397,17 @@ func TestV148BulletTimeKeys(t *testing.T) {
 		t.Fatalf("bullet time %+v", got)
 	}
 }
+
+// Without potential lines the legacy fold must still report the effective-only
+// fields a passive changes (5000007: criticaldamageMin; 4000012: er).
+func TestLegacyStatsKeepCriticalMinimumAndDodge(t *testing.T) {
+	now := time.Unix(100, 0)
+	c := domain.Character{Job: 500, Level: 200, Skills: []domain.SkillState{{ID: 5000007, Level: 10}}}
+	if p := skills.PlayerStats(c, now); p.CritDamageMin != 10 || p.CritRate != 20 {
+		t.Fatalf("critical passive %+v", p)
+	}
+	c = domain.Character{Job: 400, Level: 200, Skills: []domain.SkillState{{ID: 4000012, Level: 5}}}
+	if p := skills.PlayerStats(c, now); p.DodgeRate == 0 {
+		t.Fatalf("evasion passive %+v", p)
+	}
+}
