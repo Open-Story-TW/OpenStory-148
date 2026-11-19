@@ -393,6 +393,12 @@ func TestAranPassives(t *testing.T) {
 	if b := passiveBonus(t, 21100000, 20, ch); b.Mastery != 50 || b.ACC != 120 {
 		t.Fatalf("polearm mastery %+v", b)
 	}
+	high := ch
+	high.Job = 2112
+	high.Skills = append(append([]domain.SkillState(nil), ch.Skills...), domain.SkillState{ID: 21120001, Level: 20})
+	if b := passiveBonus(t, 21100000, 20, high); b.Mastery != 0 || b.ACC != 120 {
+		t.Fatalf("polearm mastery with High Mastery %+v", b)
+	}
 	if b := passiveBonus(t, 21101006, 10, ch); b.DamagePercent != 35 {
 		t.Fatalf("snow charge damR %+v", b)
 	}

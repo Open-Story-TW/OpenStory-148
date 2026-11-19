@@ -178,7 +178,8 @@ func mastery(c *skills.PassiveContext) skills.Bonus {
 	if weaponType(c.Character) != polearm {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["x"]}
+	// v148 0x6D922A..0x6D9280: High Mastery (21120001) replaces this mastery.
+	return skills.Bonus{Mastery: c.BasicMastery(21120001), ACC: c.Values["x"]}
 }
 
 // snowChargeDamage is Java PlayerStats for 2110-2112: damR of 21101006
