@@ -241,12 +241,17 @@ func wandOrStaff(c *skills.PassiveContext) bool {
 }
 
 // spellMastery (2100006, 2200006, 2300006) adds mastery and x magic attack
-// with a wand or staff (Java PlayerStats passive mastery).
+// with a wand or staff (Java PlayerStats passive mastery). A cleric's learned
+// Holy Focus (2310008) supplies the mastery instead; the x attack stays.
 func spellMastery(c *skills.PassiveContext) skills.Bonus {
 	if !wandOrStaff(c) {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], MATK: c.Values["x"]}
+	mastery := c.Values["mastery"]
+	if c.Skill.ID == 2300006 {
+		mastery = c.BasicMastery(2310008)
+	}
+	return skills.Bonus{Mastery: mastery, MATK: c.Values["x"]}
 }
 
 // criticalPassive (2110009, 2210009, 2310010) adds cr critical rate and

@@ -35,10 +35,15 @@ func init() {
 	passive(2321010, buffMastery)                                                                                     // Buff Mastery
 }
 
-// holyFocus (2310008) adds cr critical rate; Java PlayerStats uses nothing
-// else of it.
+// holyFocus (2310008) adds cr critical rate. With a wand or staff its mastery
+// replaces Spell Mastery's: the original v148 cleric mastery lookup
+// (sub_6D9733) returns Holy Focus's mastery whenever it is learned.
 func holyFocus(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{Critical: c.Values["cr"]}
+	b := skills.Bonus{Critical: c.Values["cr"]}
+	if wandOrStaff(c) {
+		b.Mastery = c.Values["mastery"]
+	}
+	return b
 }
 
 // holyMagicShell (2311009) is HOLY_MAGIC_SHELL x with a y second cooldown

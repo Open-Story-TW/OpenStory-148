@@ -217,6 +217,20 @@ func TestPassiveBonuses(t *testing.T) {
 	if b := bonus(2310008, 20, 0); b != (skills.Bonus{Critical: 40}) {
 		t.Errorf("holy focus: %+v", b)
 	}
+	if b := bonus(2310008, 20, 1372000); b != (skills.Bonus{Critical: 40, Mastery: 65}) {
+		t.Errorf("holy focus with a wand: %+v", b)
+	}
+	// The original cleric mastery lookup prefers a learned Holy Focus.
+	def, v := level(t, 2300006, 20)
+	priest := domain.Character{Job: 231, Level: 200, Equipment: []domain.Equipment{{ItemID: 1372000, Slot: -11}},
+		Skills: []domain.SkillState{{ID: 2300006, Level: 20}, {ID: 2310008, Level: 20}}}
+	h, _ := skills.Lookup(2300006)
+	if b := h.Passive(&skills.PassiveContext{Skill: def, Level: 20, Values: v, Character: priest}); b != (skills.Bonus{MATK: 10}) {
+		t.Errorf("spell mastery beside holy focus: %+v", b)
+	}
+	if b := skills.Bonuses(priest, time.Unix(100, 0)); b.Mastery != 65 {
+		t.Errorf("priest mastery: %d", b.Mastery)
+	}
 	for _, id := range []int{2100007, 2200007, 2300007} {
 		if b := bonus(id, 10, 0); b != (skills.Bonus{INT: 40}) {
 			t.Errorf("high wisdom %d: %+v", id, b)
