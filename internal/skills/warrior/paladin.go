@@ -13,14 +13,14 @@ import (
 // Page 120, White Knight 121, Paladin 122.
 func init() {
 	// Page
-	skills.Register(skills.Handler{ID: 1200000, Kind: skills.KindPassive, Passive: mastery(oneHandedSword, oneHandedAxe, oneHandedBlunt, twoHandedSword, twoHandedAxe, twoHandedBlunt)}) // Weapon Mastery
-	skills.Register(skills.Handler{ID: 1200002, Kind: skills.KindAttack, Attack: melee(nil, charged)})                                                                                   // Final Attack
-	skills.Register(skills.Handler{ID: 1200009, Kind: skills.KindPassive, Passive: physicalTraining})                                                                                    // Physical Training
-	skills.Register(skills.Handler{ID: 1201004, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                                                                                     // Weapon Booster
-	skills.Register(skills.Handler{ID: 1201006, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: threaten})                                                                    // Threaten
-	skills.Register(skills.Handler{ID: 1201007, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x")})                                                                                  // Power Guard
-	skills.Register(skills.Handler{ID: 1201008, Kind: skills.KindAttack, Attack: melee(nil, charged)})                                                                                   // Ground Smash
-	skills.Register(skills.Handler{ID: 1201010, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                                        // Rush (movement)
+	skills.Register(skills.Handler{ID: 1200000, Kind: skills.KindPassive, Passive: pageMastery})                      // Weapon Mastery
+	skills.Register(skills.Handler{ID: 1200002, Kind: skills.KindAttack, Attack: melee(nil, charged)})                // Final Attack
+	skills.Register(skills.Handler{ID: 1200009, Kind: skills.KindPassive, Passive: physicalTraining})                 // Physical Training
+	skills.Register(skills.Handler{ID: 1201004, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                  // Weapon Booster
+	skills.Register(skills.Handler{ID: 1201006, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: threaten}) // Threaten
+	skills.Register(skills.Handler{ID: 1201007, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x")})               // Power Guard
+	skills.Register(skills.Handler{ID: 1201008, Kind: skills.KindAttack, Attack: melee(nil, charged)})                // Ground Smash
+	skills.Register(skills.Handler{ID: 1201010, Kind: skills.KindSpecial, Cast: skills.CostOnly})                     // Rush (movement)
 
 	// White Knight
 	skills.Register(skills.Handler{ID: 1210001, Kind: skills.KindPassive, Passive: shieldMastery}) // Shield Mastery
@@ -113,9 +113,36 @@ func restoration(c *skills.CastContext) (skills.CastPlan, error) {
 	return p, nil
 }
 
-// elementalForce (1220010) is Java trueMastery += mastery.
+// pageWeapons are the weapons Page Weapon Mastery (1200000) counts.
+var pageWeapons = mastery(oneHandedSword, oneHandedAxe, oneHandedBlunt, twoHandedSword, twoHandedAxe, twoHandedBlunt)
+
+// pageMastery is Weapon Mastery (1200000). While an element charge is up a
+// learned Elemental Force supplies the mastery instead (original v148
+// sub_6D8DDE); the accuracy stays.
+func pageMastery(c *skills.PassiveContext) skills.Bonus {
+	b := pageWeapons(c)
+	if b.Mastery > 0 && elementCharged(c) {
+		b.Mastery = c.BasicMastery(1220010)
+	}
+	return b
+}
+
+// elementalForce (1220010): the original v148 mastery lookup (sub_6D8DDE)
+// returns its mastery in place of Weapon Mastery's, only while Weapon
+// Mastery applies to the wielded weapon and a WK_CHARGE is active.
 func elementalForce(c *skills.PassiveContext) skills.Bonus {
+	if !elementCharged(c) || skills.EffectiveLevel(c.Character, 1200000, c.Now) < 1 {
+		return skills.Bonus{}
+	}
+	if pageWeapons(c) == (skills.Bonus{}) {
+		return skills.Bonus{}
+	}
 	return skills.Bonus{Mastery: c.Values["mastery"]}
+}
+
+func elementCharged(c *skills.PassiveContext) bool {
+	_, ok := skills.ActiveStat(c.Character, "WK_CHARGE", c.Now)
+	return ok
 }
 
 // divineShieldHit is Java MapleCharacter damage handling for 1220013: a

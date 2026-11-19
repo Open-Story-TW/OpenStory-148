@@ -571,6 +571,23 @@ func TestV148PaladinChargeUpgradeUsesLearnedLevel(t *testing.T) {
 	}
 }
 
+// learnedPaladin gives a Paladin the listed skills at level 10.
+func learnedPaladin(ch domain.Character, ids ...int) domain.Character {
+	ch.Job = 122
+	ch.Level = 200
+	for _, id := range ids {
+		ch.Skills = append(ch.Skills, domain.SkillState{ID: id, Level: 10})
+	}
+	return ch
+}
+
+// chargedPaladin adds a live element charge to learnedPaladin.
+func chargedPaladin(ch domain.Character, ids ...int) domain.Character {
+	ch = learnedPaladin(ch, ids...)
+	ch.SkillBuffs = append(ch.SkillBuffs, domain.SkillBuff{ID: 1211004, Level: 1, Stat: "WK_CHARGE", Value: 1, ExpiresAt: time.Now().Add(time.Hour)})
+	return ch
+}
+
 func TestPassives(t *testing.T) {
 	cases := []struct {
 		id, level int
@@ -586,7 +603,13 @@ func TestPassives(t *testing.T) {
 		{1300000, 20, wielding(1442000), skills.Bonus{Mastery: 50, ACC: 120}},
 		{1300000, 20, wielding(1302000), skills.Bonus{}},
 		{1120013, 30, domain.Character{}, skills.Bonus{WATK: 30}},
-		{1220010, 10, domain.Character{}, skills.Bonus{Mastery: 70}},
+		{1220010, 10, domain.Character{}, skills.Bonus{}},
+		{1220010, 10, chargedPaladin(wielding(1302000), 1200000), skills.Bonus{Mastery: 70}},
+		{1220010, 10, chargedPaladin(wielding(1432000), 1200000), skills.Bonus{}},
+		{1220010, 10, chargedPaladin(wielding(1302000)), skills.Bonus{}},
+		{1200000, 20, chargedPaladin(wielding(1302000), 1200000, 1220010), skills.Bonus{ACC: 120}},
+		{1200000, 20, chargedPaladin(wielding(1302000), 1200000), skills.Bonus{Mastery: 50, ACC: 120}},
+		{1200000, 20, learnedPaladin(wielding(1302000), 1200000, 1220010), skills.Bonus{Mastery: 50, ACC: 120}},
 		{1310009, 10, domain.Character{}, skills.Bonus{Critical: 30, CriticalDamageMin: 15}},
 		{1100009, 10, domain.Character{}, skills.Bonus{STR: 30, DEX: 30}},
 		{1200009, 1, domain.Character{}, skills.Bonus{STR: 3, DEX: 3}},
