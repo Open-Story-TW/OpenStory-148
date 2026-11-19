@@ -59,8 +59,11 @@ func TestFirstJobHostGenericHasNoCapacityPacketsAndRefreshesPeerLook(t *testing.
 		if result.Value.(map[string]any)["ok"] != true || live.session.Character.Job != 400 || len(self.pkts) != 1 || self.opcodes()[0] != protocol.SendUpdateStats {
 			t.Fatalf("generic source emitted fictitious reward/capacity: %+v %+v", result, self.opcodes())
 		}
-		if len(peer.pkts) != 1 || !bytes.Equal(peer.pkts[0], protocol.CharacterLook(live.session.Character)) || s.maps.rooms[key][1].look.Job != 400 {
-			t.Fatal("visible peer or tracked look retained beginner job")
+		// The look update, then a fresh spawn: the v148 client takes a remote job from the spawn only.
+		if len(peer.pkts) != 3 || !bytes.Equal(peer.pkts[0], protocol.CharacterLook(live.session.Character)) ||
+			!bytes.Equal(peer.pkts[1], protocol.RemovePlayer(1)) || !bytes.Equal(peer.pkts[2], protocol.SpawnPlayer(live.session.Character, 4)) ||
+			s.maps.rooms[key][1].look.Job != 400 {
+			t.Fatalf("visible peer or tracked look retained beginner job: %v", peer.opcodes())
 		}
 		live.session.Character.X += 5000 // beyond npcReach
 		if _, err = h.Execute(context.Background(), identity, scripting.Command{Kind: "advance_first_job", Script: "npc/1052001.lua", ID: "first-job-walked-away", Ints: []int64{400}}); !errors.Is(err, domain.ErrForbidden) || r.calls != 1 {
