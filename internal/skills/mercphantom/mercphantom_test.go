@@ -342,6 +342,14 @@ func TestAttackRules(t *testing.T) {
 			t.Errorf("final attack %d mobCount %d", id, e.MobCount)
 		}
 	}
+	// Final attacks: the second line is x% (v148 0x71160B, a27 == 1).
+	for _, id := range []int{23100006, 23120012} {
+		h, _ := skills.Lookup(id)
+		e := combat.Effect{Damage: 95, X: 62}
+		if f := h.Attack.LineDamage; f == nil || f(e, 0, 2) != 0 || f(e, 1, 2) != 62 {
+			t.Errorf("final attack %d second line", id)
+		}
+	}
 	// Rising Rush: 23110006 and 23120011 both add their damR (v148 client).
 	configuredBonus := func(id, rank int) int {
 		def, err := content.ConfiguredSkillDefinition(id)

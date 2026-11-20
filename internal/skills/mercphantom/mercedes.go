@@ -26,7 +26,7 @@ var mercedesAttacks = map[int]rule{
 	23001000: {kind: either}, // 急速雙擊 Swift Dual Shot
 	// 2310
 	23100004: {kind: either},                                      // 最終一擊 Stunning Strikes (after Rising Rush)
-	23100006: {kind: either, mobCount: 6},                         // 終極攻擊：雙弩槍 Final Attack (Java mobCount 6)
+	23100006: {kind: either, mobCount: 6, secondX: true},          // 終極攻擊：雙弩槍 Final Attack (Java mobCount 6)
 	23101000: {kind: either},                                      // 精准光速神弩 Piercing Storm
 	23101001: {kind: either, boost: rising},                       // 昇龍刺擊 Rising Rush
 	23101007: {kind: either, boost: rising, levelFrom: 23101001},  // (invisible) Rising Rush kick, linked to 23101001
@@ -68,15 +68,15 @@ func init() {
 	passive(23120009, expertMastery(dualBowgun))                                                                         // 進階雙弩槍精通 Dual Bowguns Expert
 	passive(23120010, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{IgnoreDefense: c.Values["x"]} }) // 破防射擊 Defense Break (Java ignoreTargetDEF += x)
 
-	skills.Register(skills.Handler{ID: 23120012, Kind: skills.KindAttack | skills.KindPassive, Attack: attack(rule{kind: either, mobCount: 6}), Passive: advancedFinalAttack})         // 進階終極攻擊 Advanced Final Attack
-	skills.Register(skills.Handler{ID: 23001002, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                                     // 藝術跳躍 Glide Blast
-	skills.Register(skills.Handler{ID: 23101002, Kind: skills.KindBuff, Cast: buff(dualBowgun, key("BOOSTER", "x"))})                                                                  // 雙弩槍推進器 Dual Bowguns Boost
-	skills.Register(skills.Handler{ID: 23101003, Kind: skills.KindBuff, Cast: buff(0, key("SPIRIT_SURGE", "x")), Passive: spiritSurge})                                                // 靈魂灌注 Spirit Surge
-	skills.Register(skills.Handler{ID: 23111004, Kind: skills.KindBuff, Cast: buff(0, key("ANGEL_ATK", "indiePad")), Passive: dodge})                                                  // 依古尼斯咆哮 Ignis Roar
-	skills.Register(skills.Handler{ID: 23111005, Kind: skills.KindBuff, Cast: buff(0, key("ABNORMAL_STATUS_R", "terR"), key("ELEMENTAL_STATUS_R", "terR"), key("WATER_SHIELD", "x"))}) // 水之盾 Water Shield
-	skills.Register(skills.Handler{ID: 23121004, Kind: skills.KindBuff, Cast: buff(0, key("PIRATES_REVENGE", "damR"), key("ENHANCED_MAXHP", "emhp")), Passive: ancientWarding})        // 遠古意志 Ancient Warding
-	skills.Register(skills.Handler{ID: 23121005, Kind: skills.KindPartyBuff, Cast: partyBuff(key("MAPLE_WARRIOR", "x"))})                                                              // 楓葉祝福 Maple Warrior
-	skills.Register(skills.Handler{ID: 23121008, Kind: skills.KindSpecial, Cast: skills.HerosWill})                                                                                    // 勇士的意志 Hero's Will
+	skills.Register(skills.Handler{ID: 23120012, Kind: skills.KindAttack | skills.KindPassive, Attack: attack(rule{kind: either, mobCount: 6, secondX: true}), Passive: advancedFinalAttack}) // 進階終極攻擊 Advanced Final Attack
+	skills.Register(skills.Handler{ID: 23001002, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                                            // 藝術跳躍 Glide Blast
+	skills.Register(skills.Handler{ID: 23101002, Kind: skills.KindBuff, Cast: buff(dualBowgun, key("BOOSTER", "x"))})                                                                         // 雙弩槍推進器 Dual Bowguns Boost
+	skills.Register(skills.Handler{ID: 23101003, Kind: skills.KindBuff, Cast: buff(0, key("SPIRIT_SURGE", "x")), Passive: spiritSurge})                                                       // 靈魂灌注 Spirit Surge
+	skills.Register(skills.Handler{ID: 23111004, Kind: skills.KindBuff, Cast: buff(0, key("ANGEL_ATK", "indiePad")), Passive: dodge})                                                         // 依古尼斯咆哮 Ignis Roar
+	skills.Register(skills.Handler{ID: 23111005, Kind: skills.KindBuff, Cast: buff(0, key("ABNORMAL_STATUS_R", "terR"), key("ELEMENTAL_STATUS_R", "terR"), key("WATER_SHIELD", "x"))})        // 水之盾 Water Shield
+	skills.Register(skills.Handler{ID: 23121004, Kind: skills.KindBuff, Cast: buff(0, key("PIRATES_REVENGE", "damR"), key("ENHANCED_MAXHP", "emhp")), Passive: ancientWarding})               // 遠古意志 Ancient Warding
+	skills.Register(skills.Handler{ID: 23121005, Kind: skills.KindPartyBuff, Cast: partyBuff(key("MAPLE_WARRIOR", "x"))})                                                                     // 楓葉祝福 Maple Warrior
+	skills.Register(skills.Handler{ID: 23121008, Kind: skills.KindSpecial, Cast: skills.HerosWill})                                                                                           // 勇士的意志 Hero's Will
 
 	skills.Register(skills.Handler{ID: 23111008, Kind: skills.KindSummon | skills.KindMobStatus, Cast: knightCast, Attack: knightSpec(knightVariants)}) // 元素騎士 Elemental Knights
 	for _, id := range knightVariants[1:] {                                                                                                             // shown variants, never cast

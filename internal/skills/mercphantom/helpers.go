@@ -68,12 +68,23 @@ type rule struct {
 	// levelFrom is the learned skill whose level authorizes a hidden linked
 	// attack (Java GameConstants.getLinkedAttackSkill).
 	levelFrom int
+	// secondX: the second line of each target is x%, not damage%. The v148
+	// physical calc 0x71160B swaps it for 23100006 and 23120012 (a27 == 1).
+	secondX bool
 }
 
 // attack builds the spec. Dual bowguns and canes fire no projectiles, so a
 // Shoot attack never consumes ammo.
 func attack(r rule) *combat.AttackSpec {
 	s := &combat.AttackSpec{Kind: r.kind, OnHit: r.onHit, MaxDamage: r.maxDamage, Ammo: combat.AmmoNone, LevelFrom: r.levelFrom}
+	if r.secondX {
+		s.LineDamage = func(e combat.Effect, line, _ int) int {
+			if line == 1 {
+				return e.X
+			}
+			return 0
+		}
+	}
 	if len(r.boost) > 0 || r.mobCount > 0 {
 		s.Prepare = func(ctx *combat.AttackContext) error {
 			if r.mobCount > 0 {
