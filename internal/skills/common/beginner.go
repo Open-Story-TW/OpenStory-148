@@ -28,20 +28,18 @@ func init() {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
 	}
 
-	// 金剛不壞 Invincible Barrier: DIVINE_BODY 1 for time (Java broadcasts it
-	// too). Legacy bans a non-GM casting the Explorer 1010.
-	for _, f := range families {
-		if id := f*10000 + 1010; enabled(id) {
-			cast := buff(0, fixed("DIVINE_BODY", 1))
-			if id == 1010 {
-				cast = gmOnly(cast)
-			}
-			skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: cast})
-		}
-	}
-	// 地火天爆 Power Explosion: Legacy commented the local statup out and only
-	// broadcasts BERSERK_FURY 1; the same value is sent locally here.
-	each(1011, skills.Handler{Kind: skills.KindBuff, Cast: buff(0, fixed("BERSERK_FURY", 1))})
+	// Mu Lung Dojo energy skills. The v148 client offers them only on a
+	// CField_Dojang floor with a full energy gauge (0x4FE6EC, 0x8F3165) and
+	// refuses 1010/1011 elsewhere; the world checks and spends the energy.
+	// 竹竿千擊 Bamboo Rain (x1009): a melee attack whose every line the client
+	// sets to the target's maximum HP, or 30% of it on a boss (0x71160B).
+	each(1009, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee, Ammo: combat.AmmoNone,
+		MaxDamage: bambooDamage, Prepare: dojangAttack}})
+	// 金剛不壞 Invincible Barrier: DIVINE_BODY 1 for time.
+	each(1010, skills.Handler{Kind: skills.KindBuff, Cast: dojangOnly(buff(0, fixed("DIVINE_BODY", 1)))})
+	// 地火天爆 Power Explosion: BERSERK_FURY 1 for time; skills.BuffBonus reads
+	// the damage percent x from the skill.
+	each(1011, skills.Handler{Kind: skills.KindBuff, Cast: dojangOnly(buff(0, fixed("BERSERK_FURY", 1)))})
 
 	// 低等級怪物騎乘 Low-level mount: Java getMountItem returns 1932235, which
 	// v145's WZ does not have, and the native client refuses the cast without
@@ -214,4 +212,33 @@ func cancelSoaringOnEnter(c domain.Character) bool {
 	}
 	canSoar, err := skills.CanSoar(c.MapID)
 	return err != nil || !canSoar
+}
+
+// dojangOnly refuses a dojo energy buff outside a CField_Dojang floor, as the
+// client does. The world gates the energy gauge before the cast.
+func dojangOnly(cast func(*skills.CastContext) (skills.CastPlan, error)) func(*skills.CastContext) (skills.CastPlan, error) {
+	return func(c *skills.CastContext) (skills.CastPlan, error) {
+		if !content.DojangField(c.Caster.MapID) {
+			return skills.CastPlan{}, fmt.Errorf("skill%d: Mu Lung Dojo floors only", c.Skill.ID)
+		}
+		return cast(c)
+	}
+}
+
+func dojangAttack(ctx *combat.AttackContext) error {
+	if !content.DojangField(ctx.Character.MapID) {
+		return fmt.Errorf("skill%d: Mu Lung Dojo floors only", ctx.Effect.SkillID)
+	}
+	return nil
+}
+
+// bambooDamage is the v148 line value of x1009 (0x71160B): the target's
+// template maximum HP (0x5F736D), or (int)(maxHP * 0.3) when it is a boss.
+// Integer tenths are never below the client's floating-point product.
+func bambooDamage(dc combat.DamageContext) int {
+	hp := dc.Mob.HP
+	if dc.Mob.Boss {
+		hp = hp * 3 / 10
+	}
+	return int(min(max(hp, 0), int64(1<<31-1)))
 }

@@ -29,24 +29,24 @@ func beginnerIDs(suffixes ...int) []int {
 // Open-Maple docs/server/skills/Z.md explains each group. IDs that are not enabled in the WZ
 // are ignored.
 var pendingGroups = map[string][]int{
-	"潛能開放: Java HIDDEN_POTENTIAL 1 without a duration, use unknown":   beginnerIDs(93),
-	"冰衝擊: type 32 without damage, needs MCP observation":              beginnerIDs(104),
-	"竹竿天擊／法老的憤怒: Mu Lung dojo energy / Pyramid PQ (Java DamageParse)": beginnerIDs(1009, 1020),
-	"unnamed beginner attacks with no Java handling":                  beginnerIDs(1092, 1094, 1095),
-	"助手 (x013): no Java handling":                                     beginnerIDs(1013),
-	"捕獲／獵殺殭屍: monster capture system":                                 append(beginnerIDs(1061), 80001132),
-	"Mercedes morph skill, use unknown":                               {20020111},
-	"Legacy removes these on job advance":                             {20000014, 20000015, 20000016, 20021166, 20021181, 30010166, 30011167, 30011168, 30011169, 30011170},
-	"Aran tutorial passives, use unknown":                             {20000017, 20000018},
-	"Phantom hidden skills with no Java handling":                     {20031166, 20031181},
-	"Phantom skill steal (MP thread)":                                 {20031207, 20031208},
-	"flying mounts":                                                   {20010022, 30011109, 30011159},
-	"神龍擺尾: Legacy custom pet summon":                                  {80001130},
-	"測謊機 lie detector":                                                {8001000, 9001009},
-	"復活: no lt/rb, Legacy resurrects nobody":                          {9001005},
-	"monster-status skills 9000xxxx, entry point unknown":             {90000000, 90001001, 90001002, 90001003, 90001004, 90001005, 90001006},
-	"guild skills: guild system (content/guild_skills.go)":            {91000000, 91000001, 91000002, 91000003, 91000004, 91000005, 91000006},
-	"professions: crafting system (deferred by the plan)":             {92000000, 92010000, 92020000, 92030000, 92040000},
+	"潛能開放: Java HIDDEN_POTENTIAL 1 without a duration, use unknown": beginnerIDs(93),
+	"冰衝擊: type 32 without damage, needs MCP observation":            beginnerIDs(104),
+	"法老的憤怒: Pyramid PQ (Java DamageParse)":                          beginnerIDs(1020),
+	"unnamed beginner attacks with no Java handling":                beginnerIDs(1092, 1094, 1095),
+	"助手 (x013): no Java handling":                                   beginnerIDs(1013),
+	"捕獲／獵殺殭屍: monster capture system":                               append(beginnerIDs(1061), 80001132),
+	"Mercedes morph skill, use unknown":                             {20020111},
+	"Legacy removes these on job advance":                           {20000014, 20000015, 20000016, 20021166, 20021181, 30010166, 30011167, 30011168, 30011169, 30011170},
+	"Aran tutorial passives, use unknown":                           {20000017, 20000018},
+	"Phantom hidden skills with no Java handling":                   {20031166, 20031181},
+	"Phantom skill steal (MP thread)":                               {20031207, 20031208},
+	"flying mounts":                                                 {20010022, 30011109, 30011159},
+	"神龍擺尾: Legacy custom pet summon":                                {80001130},
+	"測謊機 lie detector":                                              {8001000, 9001009},
+	"復活: no lt/rb, Legacy resurrects nobody":                        {9001005},
+	"monster-status skills 9000xxxx, entry point unknown":           {90000000, 90001001, 90001002, 90001003, 90001004, 90001005, 90001006},
+	"guild skills: guild system (content/guild_skills.go)":          {91000000, 91000001, 91000002, 91000003, 91000004, 91000005, 91000006},
+	"professions: crafting system (deferred by the plan)":           {92000000, 92010000, 92020000, 92030000, 92040000},
 }
 
 func pending() map[int]string {
@@ -165,6 +165,9 @@ func TestBuffStatsAreSendable(t *testing.T) {
 			t.Fatal(err)
 		}
 		character := gm
+		if skills.DojoSkill(id) {
+			character.MapID = content.DojoFloorMap(1, 0)
+		}
 		if id == 80001065 || id == 80001089 {
 			character.MapID = content.EscapeTower
 			character.SkillBuffs = []domain.SkillBuff{{ID: 80001065, Stat: "MONSTER_RIDING", Value: 1992002, ExpiresAt: time.Unix(1, 0)}}
@@ -216,18 +219,53 @@ func TestBeginnerFamilies(t *testing.T) {
 	}
 }
 
-func TestInvincibleBarrierExplorerNeedsGM(t *testing.T) {
-	if _, err := cast(t, 1010, 1, domain.Character{}); err == nil {
-		t.Fatal("non-GM explorer 1010 accepted")
+func TestDojoEnergySkillsOnlyOnDojangFloors(t *testing.T) {
+	floor := domain.Character{MapID: 925020100}
+	for _, id := range []int{1010, 10001010, 20011010, 30011010, 50001010} {
+		if _, err := cast(t, id, 1, domain.Character{GM: 1, MapID: 100000000}); err == nil {
+			t.Fatalf("%d accepted outside the dojo", id)
+		}
+		if _, err := cast(t, id, 1, domain.Character{MapID: 925020600}); err == nil {
+			t.Fatalf("%d accepted on rest floor 6", id)
+		}
+		if p := mustCast(t, id, 1, floor); stats(p.Self)["DIVINE_BODY"] != 1 || p.Self.Duration != 30*time.Second {
+			t.Fatalf("%d %+v", id, p.Self)
+		}
 	}
-	if p := mustCast(t, 1010, 1, domain.Character{GM: 1}); stats(p.Self)["DIVINE_BODY"] != 1 || p.Self.Duration != 30*time.Second {
-		t.Fatalf("1010 %+v", p.Self)
+	for _, id := range []int{1011, 20001011, 50001011} {
+		if _, err := cast(t, id, 1, domain.Character{MapID: 925020002}); err == nil {
+			t.Fatalf("%d accepted in the exit room", id)
+		}
+		if p := mustCast(t, id, 1, domain.Character{MapID: 925024709}); stats(p.Self)["BERSERK_FURY"] != 1 || p.Self.Duration != 30*time.Second {
+			t.Fatalf("%d %+v", id, p.Self)
+		}
 	}
-	if p := mustCast(t, 10001010, 1, domain.Character{}); stats(p.Self)["DIVINE_BODY"] != 1 {
-		t.Fatal("cygnus 10001010")
+}
+
+func TestBambooRainIsTheClientLineValue(t *testing.T) {
+	for _, id := range []int{1009, 10001009, 20001009, 20011009, 20021009, 20031009, 30001009, 30011009, 50001009} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Attack == nil || !h.Attack.Allows(combat.Melee) || h.Attack.Allows(combat.Magic) || h.Attack.MaxDamage == nil {
+			t.Fatalf("%d attack %+v", id, h.Attack)
+		}
+		ctx := &combat.AttackContext{Character: domain.Character{MapID: 925020100}, Effect: combat.Effect{SkillID: id}}
+		if err := h.Attack.Prepare(ctx); err != nil {
+			t.Fatalf("%d on floor 1: %v", id, err)
+		}
+		ctx.Character.MapID = 925020600
+		if err := h.Attack.Prepare(ctx); err == nil {
+			t.Fatalf("%d accepted on a rest floor", id)
+		}
 	}
-	if p := mustCast(t, 20001011, 1, domain.Character{}); stats(p.Self)["BERSERK_FURY"] != 1 {
-		t.Fatal("power explosion")
+	h, _ := skills.Lookup(1009)
+	for _, c := range []struct {
+		hp   int64
+		boss bool
+		want int
+	}{{52500, true, 15750}, {23500000, true, 7050000}, {7, true, 2}, {1234, false, 1234}} {
+		if got := h.Attack.MaxDamage(combat.DamageContext{Mob: content.Mob{HP: c.hp, Boss: c.boss}}); got != c.want {
+			t.Fatalf("hp %d boss %v: %d, want %d", c.hp, c.boss, got, c.want)
+		}
 	}
 }
 

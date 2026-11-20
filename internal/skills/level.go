@@ -84,7 +84,24 @@ func learnedLevel(c domain.Character, id int, now time.Time) int {
 			return s.Level
 		}
 	}
+	if DojoSkill(id) && id/10000 == domain.BeginnerBook(c.Job) {
+		// The v148 skill level getter (0x6D447A) gives suffixes 1009-1011
+		// of the character's own beginner book their maximum level, 1,
+		// without a learned record.
+		return 1
+	}
 	return 0
+}
+
+// DojoSkill reports the Mu Lung Dojo energy skills of every beginner book:
+// x1009 竹竿千擊, x1010 金剛不壞 and x1011 地火天爆.
+func DojoSkill(id int) bool {
+	switch id % 10000 {
+	case 1009, 1010, 1011:
+		book := id / 10000
+		return domain.IsBeginnerJob(book) && domain.BeginnerBook(book) == book
+	}
+	return false
 }
 
 func levelFor(c domain.Character, learnedID, id int, now time.Time) int {

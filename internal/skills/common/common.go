@@ -29,7 +29,7 @@ func each(suffix int, h skills.Handler) {
 func enabled(id int) bool {
 	if id/10000 == 5000 {
 		switch id % 10000 {
-		case 86, 88, 91, 180, 190, 1000, 1001, 1002, 1003, 1005, 1006, 1010, 1011, 1026, 1085, 1087, 1090, 1098, 1179:
+		case 86, 88, 91, 180, 190, 1000, 1001, 1002, 1003, 1005, 1006, 1009, 1010, 1011, 1026, 1085, 1087, 1090, 1098, 1179:
 			return true
 		default:
 			return false

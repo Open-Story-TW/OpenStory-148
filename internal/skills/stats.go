@@ -213,6 +213,17 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			b.TER += v
 		case "INDIE_DAMAGE":
 			b.DamagePercent += v
+		case "BERSERK_FURY":
+			// 地火天爆 x1011 (String.wz: damage +100% for 30 s): its WZ x is
+			// the total damage percent, 200. The buff row only carries a flag.
+			if !DojoSkill(row.ID) {
+				continue
+			}
+			if def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), row.ID); err == nil {
+				if values, err := def.Values(min(max(row.Level, 1), def.MaxLevel)); err == nil && values["x"] > 100 {
+					b.DamagePercent += values["x"] - 100
+				}
+			}
 		case "BLUE_AURA":
 			// v148 uses z of the active advanced source and its actual rank.
 			if row.ID != AdvancedBlueAuraSkill && row.ID != 32110008 {

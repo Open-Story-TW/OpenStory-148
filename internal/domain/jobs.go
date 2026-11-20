@@ -106,6 +106,25 @@ func IsBeginnerJob(job int) bool {
 	return false
 }
 
+// BeginnerBook is the beginner skill book of a job, as the v148 client picks
+// it for the dojo energy skills (0x69B799): Evan, Mercedes, Phantom, Demon
+// and Mihile have their own books, every other job uses 1000*(job/1000).
+func BeginnerBook(job int) int {
+	switch {
+	case IsEvanJob(job):
+		return 2001
+	case IsMercedesJob(job):
+		return 2002
+	case IsPhantomJob(job):
+		return 2003
+	case IsDemonJob(job):
+		return 3001
+	case IsMihileJob(job):
+		return 5000
+	}
+	return 1000 * (job / 1000)
+}
+
 // ExtendedSPJob is the client's per-book SP predicate (v148 0x4C76BA):
 // Resistance/Demon (job/1000==3), Evan (2001, 22xx), Mercedes (2002, 23xx),
 // Phantom (2003, 24xx) and the 5000/51xx family the v148 client added.

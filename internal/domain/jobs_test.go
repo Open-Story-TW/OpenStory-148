@@ -120,3 +120,15 @@ func TestSharedSkillsAreLearnableByEveryJob(t *testing.T) {
 		t.Error("nonexistent/GM job learned a shared skill")
 	}
 }
+
+func TestBeginnerBookMatchesTheDojoSkillBook(t *testing.T) {
+	for job, book := range map[int]int{
+		0: 0, 112: 0, 1: 0, 532: 0, 1000: 1000, 1512: 1000, 2000: 2000, 2112: 2000,
+		2001: 2001, 2218: 2001, 2002: 2002, 2312: 2002, 2003: 2003, 2412: 2003,
+		3000: 3000, 3512: 3000, 3001: 3001, 3112: 3001, 5000: 5000, 5112: 5000,
+	} {
+		if got := BeginnerBook(job); got != book {
+			t.Errorf("job %d book %d, want %d", job, got, book)
+		}
+	}
+}
