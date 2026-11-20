@@ -122,12 +122,11 @@ func sg88Cast(c *skills.CastContext) (skills.CastPlan, error) {
 	return p, nil
 }
 
-// metalFistBoost adds Metal Fist Mastery's damR to 35001003 and 35101003
-// (Java PlayerStats damageIncrease for 3511/3512).
+// metalFistBoost adds Metal Fist Mastery's damR to 35001003 and 35101003.
+// In v148 CUserLocal::UpdatePassiveSkillData (0x91667E), 35110014 has psd=1
+// with psdSkill={35001003, 35101003} and applies whenever learned without a
+// job gate; PDamage (0x71160B at 0x71181a/0x7127b6) multiplies by (100+damR)%.
 func metalFistBoost(ctx *combat.AttackContext) error {
-	if j := ctx.Character.Job; j != 3511 && j != 3512 {
-		return nil
-	}
 	if v := skillValues(metalFist, learned(ctx.Character, metalFist)); v != nil {
 		ctx.Effect.Damage = ctx.Effect.Damage * (100 + v["damR"]) / 100
 	}
@@ -194,8 +193,8 @@ func init() {
 	passive(35100000, mechanicMastery)                                                        // 機甲戰神精通 Mechanic Mastery
 	passive(heavyWeapon, func(*skills.PassiveContext) skills.Bonus { return skills.Bonus{} }) // 重裝武器精通: level source of 35101009/35101010
 	passive(35100011, physicalTraining)                                                       // 體能訓練 Physical Training
-	passive(extremeMech, func(c *skills.PassiveContext) skills.Bonus {                        // 合金盔甲終極: Java trueMastery for 3510–3512; its stats ride 35001002
-		if c.Character.Job/10 != 351 {
+	passive(extremeMech, func(c *skills.PassiveContext) skills.Bonus { // 合金盔甲終極: v148 0x6D9490 applies gun mastery for all 35xx jobs; its enhanced stats ride 35001002
+		if c.Character.Job/100 != 35 || weaponType(c.Character) != gun {
 			return skills.Bonus{}
 		}
 		return skills.Bonus{Mastery: c.Values["mastery"]}
@@ -301,19 +300,14 @@ func mechCritical(id int) func(*skills.PassiveContext) skills.Bonus {
 	}
 }
 
-// mechanicMastery (35100000): Java adds padX attack for 3510–3512 and, with
-// a gun, the CalcPassive_Mastery mastery, x accuracy and cr critical rate.
-// The v148 gun mastery getter (0x6D8DDE) takes Extreme Mech's mastery when
-// 35120000 is learned and this one only otherwise, so it gives none then.
-// Java also adds x to attack there (watk += x for 35100000), which reads like
-// a slip and is left out.
+// mechanicMastery (35100000): v148 UpdatePassiveSkillData (0x91667E) applies
+// its psd=1 padX and cr unconditionally whenever learned, while the gun
+// mastery getter (0x6D8DDE) adds mastery (when 35120000 is not learned) and
+// x accuracy when a gun is equipped.
 func mechanicMastery(c *skills.PassiveContext) skills.Bonus {
-	var b skills.Bonus
-	if c.Character.Job/10 == 351 {
-		b.WATK = c.Values["padX"]
-	}
+	b := skills.Bonus{WATK: c.Values["padX"], Critical: c.Values["cr"]}
 	if weaponType(c.Character) == gun {
-		b.Mastery, b.ACC, b.Critical = c.Values["mastery"], c.Values["x"], c.Values["cr"]
+		b.Mastery, b.ACC = c.Values["mastery"], c.Values["x"]
 		if learned(c.Character, extremeMech) > 0 {
 			b.Mastery = 0
 		}

@@ -146,13 +146,16 @@ func jaguarRiding(c *skills.CastContext) (skills.CastPlan, error) {
 	return mount(c, jaguarMount, nil), nil
 }
 
-// jaguarBonus is Java PlayerStats while riding the jaguar: w critical rate
-// and z percent MaxHP.
+// jaguarBonus combines 33001001's unconditional v148 psd=1 criticaldamageMin
+// (0x91667E -> 0x909692) with the riding-only w critical rate (PDamage
+// 0x711D60) and z percent MaxHP while MONSTER_RIDING is active.
 func jaguarBonus(c *skills.PassiveContext) skills.Bonus {
-	if buffSource(c.Character, "MONSTER_RIDING", c.Now) != 33001001 {
-		return skills.Bonus{}
+	b := skills.Bonus{CriticalDamageMin: c.Values["criticaldamageMin"]}
+	if buffSource(c.Character, "MONSTER_RIDING", c.Now) == 33001001 {
+		b.Critical = c.Values["w"]
+		b.MaxHPPercent = c.Values["z"]
 	}
-	return skills.Bonus{Critical: c.Values["w"], MaxHPPercent: c.Values["z"]}
+	return b
 }
 
 // felineBerserk (33111007): SPEED z, DAMAGE_BUFF y and ATTACK_BUFF x (Java

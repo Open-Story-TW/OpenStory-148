@@ -215,11 +215,11 @@ func TestJaguarRiding(t *testing.T) {
 	def, v := values(t, 33001001, 15)
 	c := caster()
 	ctx := &skills.PassiveContext{Skill: def, Level: 15, Values: v, Character: c, Now: now}
-	if b := h.Passive(ctx); b != (skills.Bonus{}) {
+	if b := h.Passive(ctx); b != (skills.Bonus{CriticalDamageMin: 8}) {
 		t.Fatalf("bonus without riding: %+v", b)
 	}
 	ctx.Character.SkillBuffs = []domain.SkillBuff{row(33001001, "MONSTER_RIDING", jaguarMount)}
-	if b := h.Passive(ctx); b.Critical != 40 || b.MaxHPPercent != 40 {
+	if b := h.Passive(ctx); b.Critical != 40 || b.MaxHPPercent != 40 || b.CriticalDamageMin != 8 {
 		t.Fatalf("riding bonus %+v", b)
 	}
 }
@@ -331,8 +331,16 @@ func TestPassives(t *testing.T) {
 		return h.Passive(&skills.PassiveContext{Skill: def, Level: level, Values: v, Character: c, Now: now})
 	}
 	c := caster()
-	if b := bonus(c, 35100000, 20); b.WATK != 20 || b.Mastery != 0 {
+	if b := bonus(c, 35100000, 20); b.WATK != 20 || b.Critical != 10 || b.Mastery != 0 {
 		t.Errorf("mechanic mastery without gun %+v", b)
+	}
+	mech1 := c
+	mech1.Job = 3500
+	if b := bonus(mech1, 35100000, 20); b.WATK != 20 || b.Critical != 10 || b.Mastery != 0 {
+		t.Errorf("mechanic mastery on job 3500 %+v", b)
+	}
+	if b := bonus(c, extremeMech, 30); b.Mastery != 0 {
+		t.Errorf("extreme mech without gun %+v", b)
 	}
 	c.Equipment = []domain.Equipment{{Slot: -11, ItemID: 1492000}}
 	if b := bonus(c, 35100000, 20); b.WATK != 20 || b.Mastery != 50 || b.ACC != 120 || b.Critical != 10 {
@@ -345,6 +353,11 @@ func TestPassives(t *testing.T) {
 	}
 	if b := bonus(extreme, extremeMech, 30); b.Mastery != 70 {
 		t.Errorf("extreme mech mastery %+v", b)
+	}
+	extreme3500 := extreme
+	extreme3500.Job = 3500
+	if b := bonus(extreme3500, extremeMech, 30); b.Mastery != 70 {
+		t.Errorf("extreme mech mastery on job 3500 %+v", b)
 	}
 	c.Equipment = []domain.Equipment{{Slot: -11, ItemID: 1462000}}
 	if b := bonus(c, 33100000, 20); b.Mastery != 50 || b.ACC != 120 {
@@ -392,16 +405,25 @@ func TestAttackPrepare(t *testing.T) {
 	if h.Attack.Ammo != combat.AmmoNone {
 		t.Fatal("mechanic attacks consume no bullets")
 	}
-	h, _ = skills.Lookup(35001003)
-	c := caster()
-	c.Job = 3511
-	c.Skills = []domain.SkillState{{ID: metalFist, Level: 20}}
-	ctx = &combat.AttackContext{Character: c, Effect: combat.Effect{Damage: 180}, Now: now}
-	if err := h.Attack.Prepare(ctx); err != nil || ctx.Effect.Damage != 270 {
-		t.Fatalf("metal fist %+v %v", ctx.Effect, err)
+	for _, tc := range []struct {
+		skill, job, base, want int
+	}{
+		{35001003, 3500, 180, 270},
+		{35001003, 3511, 180, 270},
+		{35101003, 3510, 460, 690},
+		{35101003, 3512, 460, 690},
+	} {
+		h, _ = skills.Lookup(tc.skill)
+		c := caster()
+		c.Job = tc.job
+		c.Skills = []domain.SkillState{{ID: metalFist, Level: 20}}
+		ctx = &combat.AttackContext{Character: c, Effect: combat.Effect{Damage: tc.base}, Now: now}
+		if err := h.Attack.Prepare(ctx); err != nil || ctx.Effect.Damage != tc.want {
+			t.Fatalf("metal fist %d job %d: %+v %v (want %d)", tc.skill, tc.job, ctx.Effect, err, tc.want)
+		}
 	}
 	h, _ = skills.Lookup(33111001)
-	c = caster()
+	c := caster()
 	c.SkillBuffs = []domain.SkillBuff{row(33101003, "SOULARROW", 1)}
 	ctx = &combat.AttackContext{Character: c, Now: now}
 	if err := h.Attack.Prepare(ctx); err != nil || !ctx.NoAmmo {
