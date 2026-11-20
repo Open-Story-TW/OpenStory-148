@@ -189,7 +189,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 226 { // Includes the regional v148 pirate books and the nine regional 57xx skills added for lane D.
+	if count != 227 { // Includes the regional v148 pirate books and the ten regional 57xx skills added for lane D.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }
@@ -893,7 +893,7 @@ func TestMonkeyMilitiaSpawnsBothMonkeys(t *testing.T) {
 // Strike's non-boss line is the native near-999999 roll.
 func TestV148ZenAttacks(t *testing.T) {
 	for id, kind := range map[int]combat.AttackKind{5701001: combat.Melee, 5711006: combat.Melee, 5711002: combat.Shoot,
-		5710012: combat.Melee | combat.Shoot, 5721004: combat.Shoot, 5721006: combat.Shoot} {
+		5710012: combat.Melee | combat.Shoot, 5721004: combat.Shoot, 5721006: combat.Shoot, 5721003: combat.Shoot} {
 		h, ok := skills.Lookup(id)
 		if !ok || h.Attack == nil || h.Attack.Kind != kind {
 			t.Errorf("%d: %+v", id, h.Attack)
