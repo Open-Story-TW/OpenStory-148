@@ -16,7 +16,7 @@ func init() {
 		{id: 5721001, kind: combat.Shoot},
 		// The native area shot uses slot 0 even when normal bullets are held.
 		{id: 5721007, kind: combat.Shoot, noAmmo: true},
-		{id: 5901006, kind: combat.Shoot},
+		{id: 5901006, kind: combat.Shoot, noAmmo: true}, // the native frame names bullet slot 0
 		{id: 5910000, kind: combat.Shoot},
 		{id: 5911005, kind: combat.Shoot, onHit: []combat.MobStatusApply{{Stat: combat.MobFreeze}}, prepare: regionalIceElement},
 		{id: 5911006, kind: combat.Shoot, onAttack: homingBeacon},

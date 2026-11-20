@@ -23,11 +23,11 @@ func init() {
 		// 閃．索命 (0x939B1D → 0x938BFF): WZ requireSkill 5821003 and mes stun, as 5121005.
 		{id: 5821005, kind: combat.Melee, onHit: stun, prepare: requiresAttackBuff(5821003, "MORPH", 1001)},
 		{id: 5821007, kind: combat.Melee},                                // 閃．連殺 (0x939B1D → 0x938BFF), as 5121007
-		{id: 5901001, kind: combat.Shoot},                                // 散射 (0x93995F → 0x93920F), bulletConsume 1, as 5201001
+		{id: 5901001, kind: combat.Shoot, noAmmo: true},                  // 散射 (0x93995F → 0x93920F); the native frame names bullet slot 0 despite WZ bulletConsume 1
 		{id: 5911004, kind: combat.Shoot, prepare: regionalFlamethrower}, // 火焰噴射 (0x939BAD → 0x93920F), as 5211004
 		{id: 5920011, kind: combat.Shoot, onAttack: homingBeacon},        // 精準砲擊 (0x939B7D → 0x93920F), as 5220011
 		{id: 5921003, kind: combat.Melee},                                // 海鷗特戰隊 (0x939BE0 → 0x938BFF)
-		{id: 5921004, kind: combat.Shoot},                                // 瞬‧迅雷 (0x93A6FD → 0x93AEE1, key-down), as 5221004
+		{id: 5921004, kind: combat.Shoot, noAmmo: true},                  // 瞬‧迅雷 (0x93A6FD → 0x93AEE1, key-down); its native frames name bullet slot 0
 	} {
 		kind := skills.KindAttack
 		if a.onHit != nil {

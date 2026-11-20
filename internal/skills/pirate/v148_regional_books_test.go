@@ -23,11 +23,11 @@ func TestV148RegionalBookAttacksFollowTheNativeSender(t *testing.T) {
 		{5821002, combat.Shoot, true, false},
 		{5821005, combat.Melee, false, true},
 		{5821007, combat.Melee, false, false},
-		{5901001, combat.Shoot, false, false},
+		{5901001, combat.Shoot, true, false},
 		{5911004, combat.Shoot, false, false},
 		{5920011, combat.Shoot, false, false},
 		{5921003, combat.Melee, false, false},
-		{5921004, combat.Shoot, false, false},
+		{5921004, combat.Shoot, true, false},
 	} {
 		h, ok := skills.Lookup(row.id)
 		if !ok || h.Attack == nil || h.Attack.Kind != row.kind || (h.Attack.Ammo == combat.AmmoNone) != row.noAmmo {
