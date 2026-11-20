@@ -108,6 +108,30 @@ func TestV148FinalCutMultipliesOtherPhysicalAttacks(t *testing.T) {
 	}
 }
 
+func TestV148BerserkFuryMultipliesPhysicalAndMagicAttacks(t *testing.T) {
+	phys := DamageContext{
+		Stats:  PlayerStats{Job: 522, Level: 200, STR: 100, DEX: 100, WATK: 41, WeaponID: 1492004, DamageRate: 20},
+		Effect: Effect{SkillID: 5221004, Damage: 330},
+		Mob:    content.Mob{HP: 1000000, Level: 10},
+	}
+	basePhys := LineCeiling(phys)
+	phys.Stats.BerserkFuryPercent = 200
+	if got := LineCeiling(phys); got != basePhys*2 {
+		t.Fatalf("Berserk Fury physical ceiling = %d, want %d", got, basePhys*2)
+	}
+	magic := DamageContext{
+		Stats:  PlayerStats{Job: 212, Level: 200, INT: 500, LUK: 100, MATK: 300, WeaponID: 1382000, DamageRate: 20},
+		Effect: Effect{SkillID: 2121007, Damage: 200},
+		Mob:    content.Mob{HP: 1000000, Level: 10},
+		Magic:  true,
+	}
+	baseMagic := LineCeiling(magic)
+	magic.Stats.BerserkFuryPercent = 200
+	if got := LineCeiling(magic); got != baseMagic*2 {
+		t.Fatalf("Berserk Fury magic ceiling = %d, want %d", got, baseMagic*2)
+	}
+}
+
 func TestProjectileReachesRangePlusBlast(t *testing.T) {
 	c := warrior()
 	c.Job = 300

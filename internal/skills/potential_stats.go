@@ -151,6 +151,7 @@ func playerStatsCheckedForMode(c domain.Character, now time.Time, battleSquare b
 	p.ElementAmp += passive.ElementAmp + buff.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
 	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
+	p.BerserkFuryPercent, _ = ActiveStat(c, "BERSERK_FURY", now)
 	p.SkillDamage = passive.Add(buff).SkillDamagePercents()
 	factor := func(values []int) (float64, error) {
 		if len(values) == 0 {

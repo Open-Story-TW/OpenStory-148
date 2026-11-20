@@ -233,6 +233,15 @@ func LineBounds(c DamageContext) (floor, ceiling int) {
 		v = defended
 	}
 	v = mulDiv(v, int64(100+max(bonus, 0)), 100)
+	// TWMS v148 CalcDamage (0x713329 / 0x708109) multiplies physical lines by
+	// nBerserkFury/100 and doubles magic lines whenever nBerserkFury is non-zero.
+	if stats.BerserkFuryPercent > 0 {
+		if c.Magic {
+			v = mulDiv(v, 2, 1)
+		} else {
+			v = mulDiv(v, int64(stats.BerserkFuryPercent), 100)
+		}
+	}
 	// TWMS v148 CalcDamage (0x71337A) multiplies physical damage by the
 	// active Final Cut value, except for Final Cut's own attack.
 	if !c.Magic && c.Effect.SkillID != 4341002 && stats.FinalCutPercent > 0 {

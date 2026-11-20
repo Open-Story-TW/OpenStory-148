@@ -40,11 +40,12 @@ func TestDojoSkillsHaveTheirImplicitLevelInTheOwnBook(t *testing.T) {
 
 func TestPowerExplosionRaisesTheDamageBound(t *testing.T) {
 	now := time.Unix(100, 0)
-	active := domain.Character{SkillBuffs: []domain.SkillBuff{{ID: 1011, Level: 1, Stat: "BERSERK_FURY", Value: 1, ExpiresAt: now.Add(time.Second)}}}
-	if b, _ := BuffBonus(active, now); b.DamagePercent != 100 {
-		t.Fatalf("damage percent %d", b.DamagePercent)
+	active := domain.Character{Job: 112, Level: 200, STR: 100, DEX: 100,
+		SkillBuffs: []domain.SkillBuff{{ID: 1011, Level: 1, Stat: "BERSERK_FURY", Value: 200, ExpiresAt: now.Add(time.Second)}}}
+	if got := PlayerStats(active, now).BerserkFuryPercent; got != 200 {
+		t.Fatalf("berserk fury percent = %d, want 200", got)
 	}
-	if b, _ := BuffBonus(active, now.Add(time.Second)); b.DamagePercent != 0 {
-		t.Fatalf("expired: %d", b.DamagePercent)
+	if got := PlayerStats(active, now.Add(time.Second)).BerserkFuryPercent; got != 0 {
+		t.Fatalf("expired berserk fury percent = %d, want 0", got)
 	}
 }

@@ -37,9 +37,10 @@ func init() {
 		MaxDamage: bambooDamage, Prepare: dojangAttack}})
 	// 金剛不壞 Invincible Barrier: DIVINE_BODY 1 for time.
 	each(1010, skills.Handler{Kind: skills.KindBuff, Cast: dojangOnly(buff(0, fixed("DIVINE_BODY", 1)))})
-	// 地火天爆 Power Explosion: BERSERK_FURY 1 for time; skills.BuffBonus reads
-	// the damage percent x from the skill.
-	each(1011, skills.Handler{Kind: skills.KindBuff, Cast: dojangOnly(buff(0, fixed("BERSERK_FURY", 1)))})
+	// 地火天爆 Power Explosion: BERSERK_FURY x (200) for time; v148 CalcDamage
+	// multiplies physical lines by nBerserkFury/100 (0x713329) and doubles magic
+	// lines when non-zero (0x708109).
+	each(1011, skills.Handler{Kind: skills.KindBuff, Cast: dojangOnly(buff(0, key("BERSERK_FURY", "x")))})
 
 	// 低等級怪物騎乘 Low-level mount: Java getMountItem returns 1932235, which
 	// v145's WZ does not have, and the native client refuses the cast without

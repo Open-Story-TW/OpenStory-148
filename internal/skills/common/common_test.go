@@ -237,7 +237,7 @@ func TestDojoEnergySkillsOnlyOnDojangFloors(t *testing.T) {
 		if _, err := cast(t, id, 1, domain.Character{MapID: 925020002}); err == nil {
 			t.Fatalf("%d accepted in the exit room", id)
 		}
-		if p := mustCast(t, id, 1, domain.Character{MapID: 925024709}); stats(p.Self)["BERSERK_FURY"] != 1 || p.Self.Duration != 30*time.Second {
+		if p := mustCast(t, id, 1, domain.Character{MapID: 925024709}); stats(p.Self)["BERSERK_FURY"] != 200 || p.Self.Duration != 30*time.Second {
 			t.Fatalf("%d %+v", id, p.Self)
 		}
 	}
