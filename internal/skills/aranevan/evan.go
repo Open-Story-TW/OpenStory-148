@@ -65,7 +65,10 @@ func init() {
 	skills.Register(skills.Handler{ID: 22181003, Kind: skills.KindPartyBuff, Cast: party(soulStone), OnLethal: soulStoneRevive})                                                                                                                                                                                // Soul Stone
 	cast(22181004, skills.KindBuff, onyxWill)                                                                                                                                                                                                                                                                   // Onyx Will
 
-	combat.ModifyCeiling(imprintCeiling)
+	// A percent every line gets: it scales the normal bound and keeps the
+	// critical envelope (ModifyCeiling made it the exact bound, so an imprinted
+	// critical line was clipped to the normal ceiling).
+	combat.ScaleCeiling(imprintCeiling)
 }
 
 // onHit is a magic attack's monster status beyond the WZ DoT.
