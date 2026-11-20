@@ -70,7 +70,8 @@ func init() {
 	// 5101004 had four bytes before its targets in v145; the v148 melee sender
 	// (0x91A08F) writes none for it, and it is not in the charge list 0x4E5740.
 	RegisterAttackQuirk(4211006, AttackQuirk{MesoExplode: true})
-	for _, id := range []int{3121004, 3221001, 5221004, 5721001, 13111002, 33121009, 35001001, 5711002, 35101009, 23121000, 5311002} {
+	// 5711002 is excluded by v148 0x4E5740; 5921004 (v148 Rapid Fire) is included.
+	for _, id := range []int{3121004, 3221001, 5221004, 5721001, 5921004, 13111002, 33121009, 35001001, 35101009, 23121000, 5311002} {
 		RegisterAttackQuirk(id, AttackQuirk{KeyDown: true})
 	}
 	RegisterAttackQuirk(23111001, AttackQuirk{PreSpeed: 3})
