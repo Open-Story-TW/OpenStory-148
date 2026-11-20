@@ -382,7 +382,11 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 		q := domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage)}
 		for j, l := range a.Targets[i].Lines {
 			q.Lines = append(q.Lines, domain.CombatDamageLine{Raw: l.Raw, Applied: lines[j], Criticality: tp.Criticality[j], Long: l.Long})
-			gen.attack.Targets[i].Lines[j].Damage = lines[j]
+			// Observers see the validated line, not the HP-clipped one: the v148
+			// CUserRemote::OnAttack decoder (0x94C427) keeps each Decode4 as
+			// value&0x7FFFFFFF with bit31 as the critical flag, like the
+			// attacker's own display. Only the HP subtraction is clipped.
+			gen.attack.Targets[i].Lines[j].Damage = tp.Lines[j]
 			if tp.Critical[j] {
 				gen.attack.Targets[i].Lines[j].InferCriticalDisplay()
 			}

@@ -49,15 +49,17 @@ func TestReviewedLegacyCriticalNativeFramesUseGenericSettlementAndForeignRaw(t *
 			c := &lives[0].session.Character
 			c.Skills = []domain.SkillState{{ID: 1001004, Level: 1}, {ID: 1001005, Level: 1}}
 			c.SkillBuffs = []domain.SkillBuff{{ID: 3121002, Stat: "SHARP_EYES", Value: 10<<8 | 20, ExpiresAt: time.Now().Add(time.Minute)}}
+			// A critical 50 claim: inside every case's ceiling, above the mob's 15 HP.
+			const criticalRaw = 0x80000032
 			// An existing Sharp Eyes source also takes this path, without any
 			// potential metadata. The same raw critical flag is never sent to the
 			// compatibility signed-I32 decoder.
-			body := nativePotentialMeleeBody(skill, mob.objectID, 0x800003e8)
+			body := nativePotentialMeleeBody(skill, mob.objectID, criticalRaw)
 			if _, err := protocol.ReadMeleeAttack(protocol.NewReader(body)); err == nil {
 				t.Fatal("fixture failed to exercise the old critical rejection")
 			}
 			parsed, err := protocol.ReadAttack(protocol.RecvMeleeAttack, protocol.NewReader(body))
-			if err != nil || parsed.Targets[0].Lines[0].Raw != 0x800003e8 || !bytes.Equal(parsed.Wire, body) {
+			if err != nil || parsed.Targets[0].Lines[0].Raw != criticalRaw || !bytes.Equal(parsed.Wire, body) {
 				t.Fatal("generic native shape mismatch", parsed, err)
 			}
 			calls := 0
@@ -74,7 +76,7 @@ func TestReviewedLegacyCriticalNativeFramesUseGenericSettlementAndForeignRaw(t *
 				return r, nil
 			}}
 			handled, err := s.genericAttackRoute(context.Background(), 1, lives[0], sinks[0], protocol.RecvMeleeAttack, body)
-			if err != nil || !handled || calls != 1 || request.Family != domain.CombatSkill || len(request.Targets) != 1 || request.Targets[0].Lines[0].Raw != 0x800003e8 || mob.hp != 0 {
+			if err != nil || !handled || calls != 1 || request.Family != domain.CombatSkill || len(request.Targets) != 1 || request.Targets[0].Lines[0].Raw != criticalRaw || mob.hp != 0 {
 				t.Fatalf("critical frame lost %v %v calls%d req%+v mobHP%d", handled, err, calls, request, mob.hp)
 			}
 			cost := 0
@@ -110,7 +112,10 @@ func TestReviewedLegacyCriticalNativeFramesUseGenericSettlementAndForeignRaw(t *
 				}
 				r.U8()
 				line := r.U32()
-				if r.Err() != nil || line&0x80000000 == 0 || int(line&0x7fffffff) != request.Targets[0].Lines[0].Applied {
+				// The v148 remote decoder CUserRemote::OnAttack (0x94C427) shows
+				// each line as sent, so the relay carries the validated claim
+				// (1000) while the mob loses only its remaining HP (Applied).
+				if r.Err() != nil || line&0x80000000 == 0 || int64(line&0x7fffffff) != request.Targets[0].Lines[0].Claimed() || request.Targets[0].Lines[0].Applied >= int(request.Targets[0].Lines[0].Claimed()) {
 					t.Fatal("foreign critical/applied value lost", line, request.Targets[0].Lines)
 				}
 				found = true
