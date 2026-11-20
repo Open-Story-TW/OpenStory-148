@@ -7,6 +7,7 @@ type FieldKind uint8
 const (
 	FieldArea       FieldKind = iota + 1 // Mist, smoke screen, aura area.
 	FieldTownPortal                      // Mystic Door style pair (field + town).
+	FieldOpenGate                        // Mechanic Open Gate pair on one map.
 )
 
 // FieldSpec describes a field object a skill places on cast. Registered as

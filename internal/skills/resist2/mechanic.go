@@ -8,9 +8,8 @@ import (
 	"time"
 )
 
-// 機甲戰神 3500／3510／3511／3512. Open Portal GX-9 (35101005) and Tesla
-// Coil (35111002) need core support (mech door object, the three-coil
-// triangle) and are not registered yet.
+// 機甲戰神 3500／3510／3511／3512. Open Portal GX-9 (35101005) is a world
+// field object (FieldOpenGate, COpenGatePool in the v148 client).
 
 const (
 	mechMount = 1932016 // Java getMountItem(35001002/35120000)
@@ -179,9 +178,12 @@ func init() {
 
 	// Buffs.
 	skills.Register(skills.Handler{ID: 35001002, Kind: skills.KindBuff | skills.KindMorph, Cast: mechRiding, OnTick: missileUpkeep, TickEvery: recoveryTick}) // 合金盔甲: 原型 Mech: Prototype
-	skills.Register(skills.Handler{ID: 35101006, Kind: skills.KindBuff, Cast: buff(stat{"BOOSTER", "x"})})                                                    // 機甲戰神極速 Mechanic Rage
-	skills.Register(skills.Handler{ID: 35101007, Kind: skills.KindBuff, Cast: permanent(stat{"PERFECT_ARMOR", "x"}), OnDamaged: perfectArmor})                // 全備型盔甲 Perfect Armor
-	skills.Register(skills.Handler{ID: 35111013, Kind: skills.KindBuff, Cast: dice})                                                                          // 幸運骰子 Lucky Dice
+	// 開放通道：GX-9 Open Portal: a pair of gates on the map (FieldOpenGate).
+	skills.Register(skills.Handler{ID: 35101005, Kind: skills.KindFieldObject, Cast: skills.CostOnly,
+		Attack: &combat.AttackSpec{Field: &combat.FieldSpec{Kind: combat.FieldOpenGate}}})
+	skills.Register(skills.Handler{ID: 35101006, Kind: skills.KindBuff, Cast: buff(stat{"BOOSTER", "x"})})                                     // 機甲戰神極速 Mechanic Rage
+	skills.Register(skills.Handler{ID: 35101007, Kind: skills.KindBuff, Cast: permanent(stat{"PERFECT_ARMOR", "x"}), OnDamaged: perfectArmor}) // 全備型盔甲 Perfect Armor
+	skills.Register(skills.Handler{ID: 35111013, Kind: skills.KindBuff, Cast: dice})                                                           // 幸運骰子 Lucky Dice
 	skills.Register(skills.Handler{ID: satelliteSafe, Kind: skills.KindBuff, Cast: permanent(stat{"SATELLITESAFE_PROC", "x"}, stat{"SATELLITESAFE_ABSORB", "y"})})
 	skills.Register(skills.Handler{ID: 35121007, Kind: skills.KindPartyBuff, Cast: party(buff(stat{"MAPLE_WARRIOR", "x"}))}) // 楓葉祝福 Maple Warrior
 	skills.Register(skills.Handler{ID: 35121008, Kind: skills.KindBuff, Cast: skills.HerosWill})                             // 楓葉淨化 Hero's Will

@@ -108,6 +108,9 @@ func (s *Server) SpawnFieldObject(channel int, live *liveCharacter, skillID, lev
 	if spec.Field.Kind == combat.FieldTownPortal {
 		return 0, s.spawnTownPortal(channel, live, skillID, level, spec, now)
 	}
+	if spec.Field.Kind == combat.FieldOpenGate {
+		return 0, s.spawnOpenGate(channel, live, skillID, level, spec, now)
+	}
 	effect, d, err := fieldSkillEffect(skillID, level, spec)
 	if err != nil {
 		return 0, err

@@ -126,6 +126,7 @@ type gameplaySpace struct {
 	bootID        string
 	pendingCombat map[string]*combatTicket
 	doors         map[doorKey]*townPortal
+	gates         map[gateKey]*openGate
 	qaMobOutcomes map[string]qaMobOutcome
 	judgement     *judgementSchedule
 	carnival      *carnivalState
@@ -272,6 +273,7 @@ func (s *Server) enterGameplay(channel int, live *liveCharacter, sink packetSink
 	packets = append(packets, areaEnterPacketsLocked(r)...)
 	packets = append(packets, reactorEnterPacketsLocked(r, now)...)
 	packets = append(packets, g.doorEnterPacketsLocked(channel, c.MapID, c.ID, party)...)
+	packets = append(packets, g.gateEnterPacketsLocked(channel, c.MapID)...)
 	g.mu.Unlock()
 	for _, p := range packets {
 		if err := sink.WritePacket(p); err != nil {
@@ -362,6 +364,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.gameplay.tickSummons(now)
 			s.gameplay.tickAreas(now)
 			s.tickDoors(now)
+			s.gameplay.tickGates(now)
 			s.gameplay.tickReactors(now)
 			s.tickEvents(now)
 			s.tickHenesysPQ(ctx, now)
@@ -491,6 +494,12 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 	case protocol.RecvMoveDragon:
 		s.dragonMove(channel, live, sink, r.Bytes(r.Remaining()))
 		return true, nil
+	case protocol.RecvUseOpenGate:
+		u, err := protocol.ReadUseOpenGate(protocol.NewReader(r.Bytes(r.Remaining())))
+		if err != nil {
+			return true, sink.WritePacket(protocol.EnableActions())
+		}
+		return true, s.useOpenGate(live, sink, channel, u)
 	case protocol.RecvUseTownPortal, protocol.RecvMoveSummon, protocol.RecvSummonAttack, protocol.RecvDamageSummon, protocol.RecvSubSummon, protocol.RecvRemoveSummon:
 		// Parse a detached copy: the connection loop closes the socket when
 		// its reader is in error, and these layouts are Java-derived until
