@@ -57,7 +57,7 @@ func TestDojoInstanceEvents(t *testing.T) {
 		if got, known := DojoEventRoom(name); !ok || !known || got != room || !DojoEvent(name) {
 			t.Fatalf("room %d event %q missing", room, name)
 		}
-		if e.LobbyMap != DojoHall || e.ExitMap != DojoExit || e.Seconds != DojoFloorSeconds || len(e.Maps) != DojoFloors ||
+		if e.LobbyMap != DojoHall || e.ExitMap != DojoExit || e.Seconds != DojoFloorSeconds(1) || len(e.Maps) != DojoFloors ||
 			len(e.Spawns) != DojoStages || !e.AllowSolo || e.PartyMin != 1 || e.Keep != 1 {
 			t.Fatalf("room %d event %+v", room, e)
 		}
@@ -172,5 +172,14 @@ func TestDojoMatchesV148Maps(t *testing.T) {
 	}
 	if seven == nil || child(seven, "x1").Value != "235" || child(seven, "x2").Value != "502" || child(seven, "y1").Value != "7" {
 		t.Fatalf("foothold 7 moved: %+v", seven)
+	}
+}
+
+func TestDojoFloorTimesFollowTheTierTable(t *testing.T) {
+	for floor, want := range map[int]int{1: 300, 5: 300, 7: 360, 11: 360, 13: 420, 19: 480, 25: 540, 31: 600, 35: 600,
+		37: 900, 38: 900, 47: 900, 6: DojoRestFloorSeconds, 42: DojoRestFloorSeconds, 0: 0, 48: 0} {
+		if got := DojoFloorSeconds(floor); got != want {
+			t.Errorf("floor %d: %d s, want %d", floor, got, want)
+		}
 	}
 }

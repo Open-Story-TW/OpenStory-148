@@ -39,8 +39,8 @@ func newDojoRun(now time.Time) *dojoRun {
 	return &dojoRun{floor: 1, floorStart: now, energy: map[int64]int{}}
 }
 
-func dojoFloorDeadline(start time.Time) time.Time {
-	return start.Add(content.DojoFloorSeconds*time.Second + dojoTimeOverGrace)
+func dojoFloorDeadline(start time.Time, floor int) time.Time {
+	return start.Add(time.Duration(content.DojoFloorSeconds(floor))*time.Second + dojoTimeOverGrace)
 }
 
 // dojoStart moves the character (and the party members on the hall map when
@@ -85,7 +85,7 @@ func (s *Server) dojoEntered(inst *eventInstance, c domain.Character, sink packe
 		return
 	}
 	elapsed, energy, bamboo := run.elapsed, run.energy[c.ID], run.bamboo
-	left := content.DojoFloorSeconds - int(time.Since(run.floorStart)/time.Second)
+	left := content.DojoFloorSeconds(floor) - int(time.Since(run.floorStart)/time.Second)
 	run.mu.Unlock()
 	packets := [][]byte{protocol.QuestRecord(content.DojoElapsedRecord, strconv.Itoa(elapsed))}
 	if stage := content.DojoStage(floor); stage > 0 {
@@ -94,7 +94,10 @@ func (s *Server) dojoEntered(inst *eventInstance, c domain.Character, sink packe
 			protocol.FieldScreenEffect("dojang/start/number/"+strconv.Itoa(stage)),
 			protocol.FieldSoundEffect("Dojang/start"))
 	}
-	packets = append(packets, protocol.Clock(max(left, 0)), protocol.SessionValue("energy", strconv.Itoa(energy)))
+	if !content.DojoRestFloor(floor) { // rest floors run no dojang_Eff and show no clock
+		packets = append(packets, protocol.Clock(max(left, 0)))
+	}
+	packets = append(packets, protocol.SessionValue("energy", strconv.Itoa(energy)))
 	if content.DojangField(c.MapID) {
 		packets = append(packets, protocol.MapValue("Bamboo_Used", dojoFlag(bamboo)))
 	}
@@ -165,7 +168,7 @@ func (s *Server) dojoPortal(ctx context.Context, channel int, live *liveCharacte
 	run.mu.Unlock()
 	s.events.mu.Lock()
 	previousDeadline := inst.deadline
-	inst.deadline = dojoFloorDeadline(now)
+	inst.deadline = dojoFloorDeadline(now, floor+1)
 	s.events.mu.Unlock()
 	err = s.moveEventRoom(ctx, inst, from, eventOccupant{live, sink}, to, entry)
 	if err != nil && partySession(live).Character.MapID == from && len(s.activeEventMembers(inst, to)) == 0 {
@@ -230,11 +233,13 @@ func (s *Server) dojoAttackSettled(t *combatTicket) {
 	if t.monsterContact != nil || !content.DojangField(t.key.mapID) || skills.DojoSkill(t.request.SkillID) {
 		return
 	}
-	damaged := false
+	damaged := 0
 	for _, q := range t.request.Targets {
-		damaged = damaged || q.Damage > 0
+		if q.Damage > 0 {
+			damaged++
+		}
 	}
-	if !damaged {
+	if damaged == 0 {
 		return
 	}
 	id := t.actorSession.CharacterID
@@ -242,7 +247,7 @@ func (s *Server) dojoAttackSettled(t *combatTicket) {
 	if inst == nil || s.eventOf(id) != inst {
 		return
 	}
-	energy, changed := inst.dojo.gainEnergy(id, content.DojoEnergyPerHit)
+	energy, changed := inst.dojo.gainEnergy(id, damaged*content.DojoEnergyPerHit)
 	if changed {
 		_ = t.sink.WritePacket(protocol.SessionValue("energy", strconv.Itoa(energy)))
 	}

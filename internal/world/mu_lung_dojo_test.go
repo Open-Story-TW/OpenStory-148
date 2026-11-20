@@ -161,7 +161,7 @@ func TestDojoStartShowsTheFirstFloor(t *testing.T) {
 		protocol.QuestRecord(7214, "0"),
 		protocol.FieldScreenEffect("dojang/start/stage"),
 		protocol.FieldScreenEffect("dojang/start/number/1"),
-		protocol.Clock(content.DojoFloorSeconds),
+		protocol.Clock(content.DojoFloorSeconds(1)),
 		protocol.SessionValue("energy", "0"),
 		protocol.MapValue("Bamboo_Used", "0"),
 	} {
@@ -220,10 +220,14 @@ func TestDojoClimbsEveryFloorAndFinishes(t *testing.T) {
 		f.usePortal(t, 1, "out001")
 		if floor < content.DojoFloors {
 			elapsed += 30
-			if f.sent(1, protocol.QuestRecord(7214, strconv.Itoa(elapsed))) != 1 || f.sent(1, protocol.Clock(content.DojoFloorSeconds)) != 1 {
+			clocks := 1
+			if content.DojoRestFloor(floor + 1) {
+				clocks = 0 // a rest floor shows no clock
+			}
+			if f.sent(1, protocol.QuestRecord(7214, strconv.Itoa(elapsed))) != 1 || f.sent(1, protocol.Clock(content.DojoFloorSeconds(floor+1))) != clocks {
 				t.Fatalf("floor %d: elapsed record %d or clock missing", floor+1, elapsed)
 			}
-			if left := time.Until(inst.currentDeadline()); left < content.DojoFloorSeconds*time.Second {
+			if left := time.Until(inst.currentDeadline()); left < time.Duration(content.DojoFloorSeconds(floor+1))*time.Second {
 				t.Fatalf("floor %d deadline %v", floor+1, left)
 			}
 		}
@@ -235,7 +239,7 @@ func TestDojoTimeOutAndLeaving(t *testing.T) {
 	f := dojoTestFixture(t, 1, 2)
 	s := f.server
 	inst := f.dojoStarted(t, 1)
-	s.tickEvents(time.Now().Add(content.DojoFloorSeconds * time.Second))
+	s.tickEvents(time.Now().Add(time.Duration(content.DojoFloorSeconds(1)) * time.Second))
 	if f.mapOf(1) != 925020100 {
 		t.Fatal("the time-over grace was not kept")
 	}

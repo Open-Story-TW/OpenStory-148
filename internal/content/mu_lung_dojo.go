@@ -23,10 +23,6 @@ const (
 	DojoFirstBoss   = 9305100
 	DojoDoorReactor = 2508000 // "door" on every boss floor; state 1 is open.
 
-	// DojoFloorSeconds is the clock each floor gets. The v148 client has no
-	// default: CField_Dojang (0x52C609) shows the seconds of the 0xE5 clock
-	// the server sends, and Map.wz has no timeLimit on these floors.
-	DojoFloorSeconds = 600
 	// DojoElapsedRecord is the quest record whose integer value the client
 	// adds to the elapsed time of the running floor (0x52C609, 0x52B3B7).
 	DojoElapsedRecord = 7214
@@ -34,13 +30,50 @@ const (
 	// Energy: CWvsContext keeps the "energy" session value (0x9C2CAC) and the
 	// key handler (0x4FE6EC) offers the three dojo skills at 10000.
 	DojoEnergyFull = 10000
-	// DojoEnergyPerHit is the server's own rule: the client only displays the
-	// value. Every attack that damages a monster on a dojo floor adds this
-	// much, so a full gauge takes 100 damaging attacks.
+	// DojoEnergyPerHit is a server rule (the client only displays the gauge):
+	// each damaging attack adds this much per dojo monster it hit, capped at
+	// DojoEnergyFull. The v14x-era Legacy Java server (MapleCharacter
+	// mulung_EnergyModify, called from MapleMonster.damage for HP display
+	// type 2 dojo bosses) uses the same +100 per damaged boss and a reset to 0
+	// on use.
 	DojoEnergyPerHit = 100
+
+	// DojoRestFloorSeconds only bounds an idle rest floor on the server: rest
+	// floors have no dojang_Eff entry script in Map.wz, so they show no clock.
+	DojoRestFloorSeconds = 600
 
 	dojoEventPrefix = "MuLungDojo"
 )
+
+// DojoFloorSeconds is the clock of a boss floor. The v148 client has no
+// default (CField_Dojang 0x52C609 shows the seconds of the server's 0xE5
+// clock) and Map.wz has no timeLimit, so the time comes from the v14x-era
+// Legacy Java server (MapScriptMethods getTiming, minutes by floor for its
+// 38-floor tower): 5 for floors 1-5, 6 for 7-11, 7 for 13-17, 8 for 19-23,
+// 9 for 25-29, 10 for 31-35 and 15 for 37-38. v148 adds floors 39-47; they
+// keep the last tier's 15 minutes (not covered by that source).
+func DojoFloorSeconds(floor int) int {
+	minutes := 15
+	switch {
+	case floor < 1 || floor > DojoFloors:
+		return 0
+	case DojoRestFloor(floor):
+		return DojoRestFloorSeconds
+	case floor <= 5:
+		minutes = 5
+	case floor <= 11:
+		minutes = 6
+	case floor <= 17:
+		minutes = 7
+	case floor <= 23:
+		minutes = 8
+	case floor <= 29:
+		minutes = 9
+	case floor <= 35:
+		minutes = 10
+	}
+	return minutes * 60
+}
 
 // DojoEventName is the event that holds instance room index room.
 func DojoEventName(room int) string { return dojoEventPrefix + strconv.Itoa(room) }
@@ -110,16 +143,17 @@ func DojangField(mapID int) bool {
 // DojoReactor is the boss floor door the server opens on a clear.
 func DojoReactor(mapID, template int) bool { return template == DojoDoorReactor && DojangField(mapID) }
 
-// dojoBossSpawn stands the boss on the right half of the floor's lower
-// ground (Map.wz foothold 7 runs from x 235 to 502 at y 7 on every floor),
-// away from the six sp portals on the left.
+// dojoBossSpawn stands the boss at x 140 on the floor's lower ground
+// (foothold 6 runs from x -1 to 235 at y 7 on every floor): the spawn point
+// the Legacy Java server (Event_DojoAgent point1) and a later TMS server
+// (MapleDojoAgent point1) both use.
 func dojoBossSpawn(floor, room int) (EventSpawn, bool) {
 	boss, ok := DojoBoss(floor)
 	if !ok {
 		return EventSpawn{}, false
 	}
 	return EventSpawn{MapID: DojoFloorMap(floor, room), Life: Life{Kind: "m", TemplateID: boss,
-		X: 300, Y: 7, Foothold: 7, RX0: 250, RX1: 450, RespawnSeconds: -1}}, true
+		X: 140, Y: 7, Foothold: 6, RX0: 90, RX1: 190, RespawnSeconds: -1}}, true
 }
 
 // dojoEvent is one instance room: every floor of that room index. A solo
@@ -127,7 +161,7 @@ func dojoBossSpawn(floor, room int) (EventSpawn, bool) {
 // The deadline is per floor (the world resets it on each floor).
 func dojoEvent(room int) Event {
 	e := Event{
-		Name: DojoEventName(room), LobbyMap: DojoHall, ExitMap: DojoExit, Seconds: DojoFloorSeconds,
+		Name: DojoEventName(room), LobbyMap: DojoHall, ExitMap: DojoExit, Seconds: DojoFloorSeconds(1),
 		PartyMin: 1, PartyMax: 6, Keep: 1, LevelMin: 1, LevelMax: 255, AllowSolo: true,
 	}
 	for floor := 1; floor <= DojoFloors; floor++ {

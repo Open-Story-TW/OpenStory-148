@@ -513,7 +513,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if content.DojoEvent(e.Name) {
 		now := time.Now()
 		inst.dojo = newDojoRun(now)
-		inst.deadline = dojoFloorDeadline(now)
+		inst.deadline = dojoFloorDeadline(now, 1)
 	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
