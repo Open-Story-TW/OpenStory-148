@@ -861,3 +861,11 @@ func TestMonkeySuperBombAttacksAndKeepsPassive(t *testing.T) {
 		t.Fatalf("5311001 handler %+v", h)
 	}
 }
+
+// Gun Expert's burst shot arrives as its own ranged attack (skill 5220020).
+func TestGunExpertBurstShotAttacks(t *testing.T) {
+	h, ok := skills.Lookup(5220020)
+	if !ok || h.Attack == nil || h.Attack.Kind != combat.Shoot || h.Passive == nil {
+		t.Fatalf("5220020 handler %+v", h)
+	}
+}
