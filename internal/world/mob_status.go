@@ -31,7 +31,7 @@ func (m *gameplayMob) spawnPacket(controller bool, now time.Time) []byte {
 		}
 		return protocol.SpawnMonsterProjection(m.objectID, m.life)
 	}
-	return protocol.SpawnMonsterWithStats(m.objectID, m.life, controller, m.statusValues(), now)
+	return protocol.SpawnMonsterWithStats(m.objectID, m.life, controller, m.statusValues(), now, m.burns.Values()...)
 }
 
 // applyMobStatusesLocked stores resolved statuses and returns the packet for
@@ -44,15 +44,25 @@ func applyMobStatusesLocked(m *gameplayMob, add []combat.ActiveStatus, owner dom
 		m.statuses = combat.MobStatuses{}
 	}
 	var applied []protocol.MobStatValue
+	var burnsChanged bool
 	for _, st := range add {
 		st.OwnerID, st.OwnerSession, st.OwnerGeneration = owner.CharacterID, owner.SessionID, owner.Generation
+		if st.Stat == combat.MobBurned {
+			if m.burns == nil {
+				m.burns = combat.MobBurns{}
+			}
+			if m.burns.Apply(st, now) {
+				burnsChanged = true
+			}
+			continue
+		}
 		if m.statuses.Apply(st, now) {
 			st = *m.statuses[st.Stat]
 			applied = append(applied, protocol.MobStatValue{Stat: st.Stat, Value: st.Value, Reason: st.SkillID, ExpiresAt: st.ExpiresAt})
 		}
 	}
-	if len(applied) == 0 {
-		return nil
+	if burnsChanged {
+		return protocol.ApplyMonsterStatus(m.objectID, applied, 0, now, m.burns.Values()...)
 	}
 	return protocol.ApplyMonsterStatus(m.objectID, applied, 0, now)
 }
@@ -70,18 +80,20 @@ func (g *gameplaySpace) tickMobStatuses(now time.Time) {
 			continue
 		}
 		for _, mob := range r.mobs {
-			if len(mob.statuses) == 0 || mob.hp <= 0 {
+			if packet := mob.applyPowerUpLocked(now); packet != nil {
+				for _, member := range r.members {
+					out = append(out, delivery{member.sink, packet})
+				}
+			}
+			if len(mob.statuses)+len(mob.burns) == 0 || mob.hp <= 0 {
 				continue
 			}
 			if !mob.claiming {
 				hp, hits := mob.statuses.Tick(now, mob.hp)
+				hp, burnHits := mob.burns.Tick(now, hp)
+				hits = append(hits, burnHits...)
 				for _, h := range hits {
-					owner := domain.CharacterSession{CharacterID: h.OwnerID}
-					for _, st := range mob.statuses {
-						if st.OwnerID == h.OwnerID && st.SkillID == h.SkillID {
-							owner.SessionID, owner.Generation = st.OwnerSession, st.OwnerGeneration
-						}
-					}
+					owner := domain.CharacterSession{CharacterID: h.OwnerID, SessionID: h.OwnerSession, Generation: h.OwnerGeneration}
 					mob.contributions = addCombatDamage(mob.contributions, owner, int(h.Damage))
 				}
 				if hp != mob.hp {
@@ -98,6 +110,12 @@ func (g *gameplaySpace) tickMobStatuses(now time.Time) {
 			}
 			if ended := mob.statuses.Expire(now); len(ended) > 0 {
 				p := protocol.CancelMonsterStatus(mob.objectID, ended)
+				for _, m := range r.members {
+					out = append(out, delivery{m.sink, p})
+				}
+			}
+			if ended := mob.burns.Expire(now); len(ended) > 0 {
+				p := protocol.CancelMonsterBurns(mob.objectID, len(mob.burns), ended)
 				for _, m := range r.members {
 					out = append(out, delivery{m.sink, p})
 				}

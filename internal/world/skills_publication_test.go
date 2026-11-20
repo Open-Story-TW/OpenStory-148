@@ -12,6 +12,19 @@ import (
 	"maple-go-server/internal/protocol"
 )
 
+func TestExpiredSpiritLinkDoesNotResetTheActiveSpiritSurgeSlot(t *testing.T) {
+	now := time.Unix(200, 0)
+	expired := []domain.SkillBuff{{ID: 3111005, Stat: "SPIRIT_LINK", ExpiresAt: now}}
+	c := domain.Character{HP: 1, SkillBuffs: []domain.SkillBuff{{ID: 23101003, Stat: "SPIRIT_SURGE", ExpiresAt: now.Add(time.Minute)}}}
+	if got := cancelledSkillBuffs(c, expired, now); len(got) != 0 {
+		t.Fatalf("bit169 still has an active source: %+v", got)
+	}
+	c.SkillBuffs = nil
+	if got := cancelledSkillBuffs(c, expired, now); len(got) != 1 || got[0] != expired[0] {
+		t.Fatalf("empty bit169 slot should reset: %+v", got)
+	}
+}
+
 func buffScopePlayer(id int64, x int, buffs ...domain.SkillBuff) *liveCharacter {
 	return &liveCharacter{session: domain.CharacterSession{CharacterID: id, AccountID: id, SessionID: fmt.Sprintf("buff-%d", id), Generation: 1, ChannelID: 1,
 		Character: domain.Character{ID: id, Name: fmt.Sprintf("Buff%d", id), Level: 10, MapID: 40000, X: x, HP: 50, MaxHP: 50, MP: 30, MaxMP: 30, Revision: 1, SkillBuffs: buffs}}}
@@ -181,7 +194,7 @@ func TestOldSkillCancellationCannotClearRecastStat(t *testing.T) {
 	a.session.Character.SkillBuffs[0].ExpiresAt = old.ExpiresAt.Add(time.Minute)
 	a.session.Character.Revision++
 	a.mu.Unlock()
-	s.publishSkillTick(snapshot, first, domain.SkillResult{Expired: []domain.SkillBuff{old}}, 50)
+	s.publishSkillTick(snapshot, first, domain.SkillResult{Expired: []domain.SkillBuff{old}}, 50, snapshot.Character.MP)
 	if first.count(0x2e) != 0 || second.count(0x146) != 0 {
 		t.Fatal("old cancellation removed newer active stat")
 	}

@@ -89,6 +89,8 @@ type ScriptExchange struct {
 	Growth      *ScriptGrowth       `json:"growth,omitempty"`       // Generated Legacy NPC sources only.
 	// Profession host only; never a raw Lua table field.
 	Profession *ProfessionChange `json:"profession,omitempty"`
+	// Only the reviewed guild support conversation can request this authority.
+	GuildWeeklySupport bool `json:"guild_weekly_support,omitempty"`
 	// Drops are items left on the character's map for it to pick up (what a
 	// gathering node gives). Profession host only.
 	Drops []ScriptDrop `json:"drops,omitempty"`

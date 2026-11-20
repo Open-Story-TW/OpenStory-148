@@ -13,6 +13,32 @@ import (
 
 const testPoisonSkill = 9990001
 
+func TestGunExpertRequiresOneMatchingGunAttackInThisVisit(t *testing.T) {
+	now := time.Unix(30, 0)
+	parent := gameplayMember{attacked: true, lastTick: 111, lastAttack: now.Add(-20 * time.Millisecond),
+		lastSkill: 5201001, lastAttackWasGunShot: true}
+	followup := protocol.Attack{Opcode: protocol.RecvShootAttack, SkillID: gunExpertAttack, Tick: 111}
+	if !parent.admitsGunExpert(followup, now) {
+		t.Fatal("rejected the native same-tick gun follow-up")
+	}
+	unguided := gameplayMember{}
+	notGun := parent
+	notGun.lastAttackWasGunShot = false
+	older := parent
+	older.lastAttack = now.Add(-2 * time.Second)
+	replayed := parent
+	replayed.lastGunExpertTick, replayed.hasGunExpertTick = followup.Tick, true
+	for _, m := range []*gameplayMember{&unguided, &notGun, &older, &replayed} {
+		if m.admitsGunExpert(followup, now) {
+			t.Fatalf("accepted an unpaired or reused follow-up from %+v", m)
+		}
+	}
+	followup.Tick++
+	if parent.admitsGunExpert(followup, now) {
+		t.Fatal("accepted a mismatched client tick")
+	}
+}
+
 func init() {
 	skills.Register(skills.Handler{ID: testPoisonSkill, Kind: skills.KindAttack | skills.KindMobStatus, Attack: &combat.AttackSpec{Kind: combat.Melee, IgnoreRange: true, Effect: combat.Effect{
 		SkillID: testPoisonSkill, Damage: 100, MobCount: 1, AttackCount: 2, MPCon: 5,

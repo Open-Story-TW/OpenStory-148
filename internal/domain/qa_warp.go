@@ -6,6 +6,7 @@ package domain
 // in the Legacy WZ.
 var QAWarpMaps = map[int]string{
 	QAMobMap:  "empty QA monster field",
+	915000300: "Phantom native guard-lure skill tutorial",
 	100000000: "Henesys", 101000000: "Ellinia", 102000000: "Perion", 103000000: "Kerning City",
 	104000000: "Lith Harbor", 211000000: "El Nath", 220000000: "Ludibrium", 240000000: "Leafre",
 	104010000: "mobs 1-2", 101010100: "mobs 5-10", 102020400: "mobs 12-14", 102030000: "mobs 19-20",

@@ -51,7 +51,7 @@ func skillValues(id, level int) map[string]int {
 	if level < 1 {
 		return nil
 	}
-	def, err := content.SkillDefinition("", id)
+	def, err := content.ConfiguredSkillDefinition(id)
 	if err != nil {
 		return nil
 	}
@@ -166,15 +166,7 @@ var rollDie = func(faces int) int { return rand.IntN(faces) + 1 }
 // cooldown are still spent. Java Legacy hard-codes the roll to 5 (a debug
 // override, same as the pirate dice).
 func dice(c *skills.CastContext) (skills.CastPlan, error) {
-	p := skills.StandardCost(c)
-	d, e := buffTime(c)
-	if e != nil {
-		return p, e
-	}
-	if roll := rollDie(6); roll > 1 {
-		p.Self = &skills.Buff{Duration: d, Stats: []skills.StatValue{{Stat: "DICE_ROLL", Value: roll}}}
-	}
-	return p, nil
+	return skills.DiceCast(c, rollDie(6), 0, false)
 }
 
 // summonBuff is the summon's buff: stat 1 for the WZ time, or for
@@ -217,14 +209,13 @@ func passive(id int, f func(*skills.PassiveContext) skills.Bonus) {
 	skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: f})
 }
 
-// mastery is Java CalcPassive_Mastery: with the matching weapon, the skill's
-// mastery, x accuracy and cr critical rate.
-func mastery(weapon int) func(*skills.PassiveContext) skills.Bonus {
+// mastery uses the native weapon's basic mastery until its advanced tier applies.
+func mastery(weapon, advancedID int) func(*skills.PassiveContext) skills.Bonus {
 	return func(c *skills.PassiveContext) skills.Bonus {
 		if weaponType(c.Character) != weapon {
 			return skills.Bonus{}
 		}
-		return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["x"], Critical: c.Values["cr"]}
+		return skills.Bonus{Mastery: c.BasicMastery(advancedID), ACC: c.Values["x"], Critical: c.Values["cr"]}
 	}
 }
 

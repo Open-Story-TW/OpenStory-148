@@ -60,6 +60,26 @@ func potentialStatsFixture(t *testing.T) (domain.Character, time.Time) {
 	return c, now
 }
 
+func TestV148FinalCutCombatStatsUseOnlyTheActiveBuff(t *testing.T) {
+	c, now := potentialStatsFixture(t)
+	c.SkillBuffs = []domain.SkillBuff{{ID: 4341002, Level: 30, Stat: "FINAL_CUT", Value: 160, ExpiresAt: now.Add(time.Second)}}
+	legacy := c
+	legacy.Equipment = []domain.Equipment{c.Equipment[0]}
+	legacy.Equipment[0].Potential = domain.EquipmentPotential{}
+	for _, sample := range []struct {
+		at   time.Time
+		want int
+	}{{now, 160}, {now.Add(time.Second), 0}} {
+		potential, err := PlayerStatsChecked(c, sample.at)
+		if err != nil || potential.FinalCutPercent != sample.want {
+			t.Fatalf("checked Final Cut percent = %d, want %d, error %v", potential.FinalCutPercent, sample.want, err)
+		}
+		if got := legacyPlayerStats(legacy, sample.at); got.FinalCutPercent != sample.want {
+			t.Fatalf("legacy Final Cut percent = %d, want %d", got.FinalCutPercent, sample.want)
+		}
+	}
+}
+
 func TestNativeContactPotentialKeepsCheckedCombatStatsAndDoesNotReduceTwice(t *testing.T) {
 	c, now := potentialStatsFixture(t)
 	root := os.Getenv("MAPLEGO_WZ_ROOT")
@@ -213,7 +233,7 @@ func TestPotentialMagicINTAndMultipliersReachCombatCeilings(t *testing.T) {
 	c.Equipment[0].MATK = 10
 	c.Equipment[0].Potential.Options = [5]uint16{10003}
 	p, err := PlayerStatsChecked(c, now)
-	if err != nil || p.INT != 165 || p.MATK != 11 || p.Accuracy != 159 {
+	if err != nil || p.INT != 165 || p.MATK != 11 || p.Accuracy != 72 || p.MagicAccuracy != 276 {
 		t.Fatal("INT potential% then magic% ordering", p, err)
 	} // (100+20+5)*1.2=150 then+15
 	c.Equipment[0].Potential.Options = [5]uint16{10002, 10002, 30001}

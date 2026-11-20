@@ -72,19 +72,25 @@ func readGuildSnapshot(ctx context.Context, q sqlQuerier, id int64) (domain.Guil
 		return g, err
 	}
 	rows.Close()
-	skills, err := q.QueryContext(ctx, `SELECT skill_id,level,expires_at,purchaser,activator FROM game_guild_skills WHERE guild_id=$1 ORDER BY skill_id`, id)
+	g.Skills, err = readGuildSkills(ctx, q, id)
+	return g, err
+}
+
+func readGuildSkills(ctx context.Context, q txQuery, guildID int64) ([]domain.GuildSkillState, error) {
+	rows, err := q.QueryContext(ctx, `SELECT skill_id,level,expires_at,purchaser,activator FROM game_guild_skills WHERE guild_id=$1 ORDER BY skill_id`, guildID)
 	if err != nil {
-		return g, err
+		return nil, err
 	}
-	defer skills.Close()
-	for skills.Next() {
+	defer rows.Close()
+	var skills []domain.GuildSkillState
+	for rows.Next() {
 		var k domain.GuildSkillState
-		if err = skills.Scan(&k.SkillID, &k.Level, &k.ExpiresAt, &k.Purchaser, &k.Activator); err != nil {
-			return g, err
+		if err = rows.Scan(&k.SkillID, &k.Level, &k.ExpiresAt, &k.Purchaser, &k.Activator); err != nil {
+			return nil, err
 		}
-		g.Skills = append(g.Skills, k)
+		skills = append(skills, k)
 	}
-	return g, skills.Err()
+	return skills, rows.Err()
 }
 
 func guildSkillLevel(g domain.GuildSnapshot, id int) domain.GuildSkillState {
@@ -113,7 +119,7 @@ func gainGuildGP(ctx context.Context, tx *sql.Tx, gid, characterID int64, amount
 	return nil
 }
 
-// readGuildTag attaches the character's guild identity for field publication.
+// readGuildTag attaches membership for field publication and combat stats.
 func readGuildTag(ctx context.Context, q txQuery, c *domain.Character) error {
 	rows, err := q.QueryContext(ctx, `SELECT g.id,g.name,m.rank,g.logo_bg,g.logo_bg_color,g.logo,g.logo_color FROM game_guild_members m JOIN game_guilds g ON g.id=m.guild_id WHERE m.character_id=$1`, c.ID)
 	if err != nil {
@@ -121,12 +127,18 @@ func readGuildTag(ctx context.Context, q txQuery, c *domain.Character) error {
 	}
 	defer rows.Close()
 	c.Guild = domain.GuildTag{}
+	c.GuildSkills = nil
 	for rows.Next() {
 		if err = rows.Scan(&c.Guild.ID, &c.Guild.Name, &c.Guild.Rank, &c.Guild.Emblem.BG, &c.Guild.Emblem.BGColor, &c.Guild.Emblem.Logo, &c.Guild.Emblem.Color); err != nil {
 			return err
 		}
 	}
-	return rows.Err()
+	if err = rows.Err(); err != nil || c.Guild.ID == 0 {
+		return err
+	}
+	rows.Close()
+	c.GuildSkills, err = readGuildSkills(ctx, q, c.Guild.ID)
+	return err
 }
 
 func big5Len(v string) (int, bool) {

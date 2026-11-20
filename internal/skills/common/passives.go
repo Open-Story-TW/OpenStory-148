@@ -7,17 +7,19 @@ import (
 	"time"
 )
 
-// beginnerPassives registers the always-on beginner skills. Java PlayerStats
-// only reads some of them; the rest are markers (KindPassive without a
-// Passive) so they can be learned and kept but add nothing, as in Legacy.
+// beginnerPassives registers beginner skills and their permanent bonuses.
 func beginnerPassives() {
 	// No Java PlayerStats effect: 寵物達人, 游泳達人, 收納達人, 神匠之魂 (read by
-	// the scroll path), 聯盟的意志, 效能 outside Resistance, 一擊 outside
+	// the scroll path), 效能 outside Resistance, 一擊 outside
 	// Mercedes/Resistance, 找回的記憶, 王的資格 (charm trait only), Phantom's
 	// 20031204/20031206 and 魔族之血 (will/charisma traits).
-	for _, suffix := range []int{1003, 190} {
-		each(suffix, skills.Handler{Kind: skills.KindPassive})
-	}
+	each(1003, skills.Handler{Kind: skills.KindPassive})
+	// 聯盟的意志 grants four base attributes and both attack stats in v148.
+	willOfAlliance := skills.Handler{Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		v := c.Values
+		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"], WATK: v["padX"], MATK: v["madX"]}
+	}}
+	each(190, willOfAlliance)
 	for _, id := range []int{
 		8, 10000018, 20000024, 20011024, 20020213, 30001024, 109, 111, 112,
 		20020002, 20030002, 30010002, 20030022, 30010022, 20000194, 20020112, 20031204, 20031206, 30010185,
@@ -25,30 +27,43 @@ func beginnerPassives() {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
 	}
 
-	// 百烈祝福 (110): all stats strX.. and MaxHP/MP mhpR/mmpR (Java adds the
-	// stats for Explorers and the percentages for everyone; only Explorers
-	// learn 110).
-	skills.Register(skills.Handler{ID: 110, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
-		v := c.Values
-		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"], MaxHPPercent: v["mhpR"], MaxMPPercent: v["mmpR"]}
-	}})
-	// 百烈祝福 (80000000): Java adds only the stats (its HP/MP part is
-	// commented out).
-	skills.Register(skills.Handler{ID: 80000000, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
-		v := c.Values
-		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"]}
-	}})
+	// Both v148 百烈祝福 forms grant all four attributes and WZ HP/MP percentages.
+	for _, id := range []int{110, 80000000} {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+			v := c.Values
+			return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"], MaxHPPercent: v["mhpR"], MaxMPPercent: v["mmpR"]}
+		}})
+	}
 	skills.Register(skills.Handler{ID: 80000001, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus { // 後續待發
 		return skills.Bonus{BossDamagePercent: c.Values["bdR"]}
 	}})
-	// 繼承的意志 (20010194) and 女皇的傲氣 (10000074): Legacy hard-codes
-	// MaxHP +25% and MaxHP/MP +20% instead of the WZ values.
-	skills.Register(skills.Handler{ID: 20010194, Kind: skills.KindPassive, Passive: func(*skills.PassiveContext) skills.Bonus {
-		return skills.Bonus{MaxHPPercent: 25}
+	// v148 maps Phantom's 致命本能 to the linked form with the same critical bonus.
+	for _, id := range []int{20030204, 80000002} {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+			return skills.Bonus{Critical: c.Values["cr"]}
+		}})
+	}
+	skills.Register(skills.Handler{ID: 80000016, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		v := c.Values
+		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],
+			WATK: v["padX"], MATK: v["madX"], IgnoreDefense: v["ignoreMobpdpR"]}
 	}})
-	skills.Register(skills.Handler{ID: 10000074, Kind: skills.KindPassive, Passive: func(*skills.PassiveContext) skills.Bonus {
-		return skills.Bonus{MaxHPPercent: 20, MaxMPPercent: 20}
+	skills.Register(skills.Handler{ID: 80000136, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus { // S級獵人資格證
+		v := c.Values
+		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],
+			WATK: v["padX"], MATK: v["madX"], MaxHP: v["mhpX"], MaxMP: v["mmpX"]}
 	}})
+	// 繼承的意志 grants the v148 permanent bonuses from the Evan quest.
+	skills.Register(skills.Handler{ID: 20010194, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		v := c.Values
+		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],
+			MATK: v["madX"], MDEF: v["mddX"], MaxHPPercent: v["mhpR"], BossDamagePercent: v["bdR"]}
+	}})
+	for _, id := range []int{10000074, 50000074} { // v148 Cygnus/Mihile Empress vitals passives
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+			return skills.Bonus{MaxHPPercent: c.Values["x"], MaxMPPercent: c.Values["x"]}
+		}})
+	}
 	// 惡魔之怒 (30010112): boss damage bdR; Java's Demon Force regeneration
 	// part (mpRecover x) waits for the Demon Force resource.
 	skills.Register(skills.Handler{ID: 30010112, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {

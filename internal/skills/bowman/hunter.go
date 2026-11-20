@@ -9,7 +9,7 @@ import (
 // in triggers.go.
 func init() {
 	// Hunter.
-	skills.Register(skills.Handler{ID: 3100000, Kind: skills.KindPassive, Passive: weaponMastery(bow)})
+	skills.Register(skills.Handler{ID: 3100000, Kind: skills.KindPassive, Passive: weaponMastery(bow, 3120005)})
 	skills.Register(skills.Handler{ID: 3100001, Kind: skills.KindAttack, Attack: shoot(rule{})}) // Final Attack: Java mobCount 6
 	skills.Register(skills.Handler{ID: 3100006, Kind: skills.KindPassive, Passive: physicalTraining})
 	skills.Register(skills.Handler{ID: 3101002, Kind: skills.KindBuff, Cast: buff(0, key("BOOSTER", "x"))})
@@ -26,7 +26,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 3111008, Kind: skills.KindAttack | skills.KindHeal, Attack: shoot(rule{drain: drainArrow})})
 
 	// Bowmaster.
-	skills.Register(skills.Handler{ID: 3120005, Kind: skills.KindPassive, Passive: expert})
+	skills.Register(skills.Handler{ID: 3120005, Kind: skills.KindPassive, Passive: expert(bow)})
 	skills.Register(skills.Handler{ID: 3120006, Kind: skills.KindPassive, Passive: spiritLink(3111005)}) // buff stats ride the Phoenix cast (summons.go)
 	skills.Register(skills.Handler{ID: 3120008, Kind: skills.KindAttack, Attack: shoot(rule{})})         // Advanced Final Attack: Java mobCount 6
 	// 終極烈焰箭 (String.wz: Inferno upgraded): once learned the v145 client
@@ -68,19 +68,24 @@ func drainArrow(ctx *combat.AttackContext, dealt int64) (int, int) {
 
 // weaponMastery (3100000, 3200000) adds mastery and x accuracy while the
 // family weapon is equipped (Java CalcPassive_Mastery).
-func weaponMastery(family int) func(*skills.PassiveContext) skills.Bonus {
+func weaponMastery(family, advancedID int) func(*skills.PassiveContext) skills.Bonus {
 	return func(c *skills.PassiveContext) skills.Bonus {
 		if weapon(c.Character) != family {
 			return skills.Bonus{}
 		}
-		return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["x"]}
+		return skills.Bonus{Mastery: c.BasicMastery(advancedID), ACC: c.Values["x"]}
 	}
 }
 
-// expert (3120005 弓術精通, 3220004 弩術精通) adds mastery, x attack
-// // and criticaldamageMin regardless of the weapon, like Java PlayerStats.
-func expert(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{Mastery: c.Values["mastery"], WATK: c.Values["x"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+// expert adds mastery when wielding the ranged weapon type selected at native 0x6D8DDE.
+func expert(family int) func(*skills.PassiveContext) skills.Bonus {
+	return func(c *skills.PassiveContext) skills.Bonus {
+		b := skills.Bonus{WATK: c.Values["x"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+		if weapon(c.Character) == family {
+			b.Mastery = c.Values["mastery"]
+		}
+		return b
+	}
 }
 
 // physicalTraining (3100006, 3200006) adds strX STR and dexX DEX.

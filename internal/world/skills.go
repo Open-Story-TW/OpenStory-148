@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
@@ -92,6 +93,9 @@ func (s *Server) enterSkills(ctx context.Context, channel int, live *liveCharact
 		return err
 	}
 	for _, group := range protocol.GroupSkillBuffs(activeSkillBuffs(c, now)) {
+		if group[0].ID == sceneLocalSG88 {
+			continue // dropOnEnter removes this visit-local marker from storage.
+		}
 		if e := sink.WritePacket(protocol.SkillBuffsFor(c, group, now)); e != nil {
 			return e
 		}
@@ -187,6 +191,9 @@ func (s *Server) allocateSkill(ctx context.Context, live *liveCharacter, sink pa
 	return sink.WritePacket(protocol.SkillPointUpdate(r.Character.SP))
 }
 func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packetSink, q protocol.SkillCast) error {
+	if content.SubwaySurvivalStage(partySession(live).Character.MapID) {
+		return sink.WritePacket(protocol.EnableActions())
+	}
 	if h, registered := skills.Lookup(q.SkillID); registered && h.Kind&skills.KindPartyBuff != 0 {
 		return s.castPartySkill(ctx, live, sink, q)
 	}
@@ -330,7 +337,7 @@ func (s *Server) cancelSkillLocked(ctx context.Context, live *liveCharacter, sin
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	snap := s.mergeSkillResult(live, r)
-	s.publishSkillTick(snap, sink, r, session.Character.HP)
+	s.publishSkillTick(snap, sink, r, session.Character.HP, session.Character.MP)
 	s.syncGMHide(live)
 	if spec, ok := attackSpecFor(id); ok && spec.Summon != nil {
 		s.RemoveSummons(snap.ChannelID, snap.Character.MapID, snap.CharacterID, id, snap)
@@ -367,7 +374,8 @@ func (s *Server) runSkills(ctx context.Context) {
 				m.live.mu.Lock()
 				due := false
 				for _, b := range m.live.session.Character.SkillBuffs {
-					if !b.ExpiresAt.After(now) || m.live.session.Character.HP == 0 || (b.Stat == "RECOVERY" || b.Stat == "INFINITY") && !b.NextTick.After(now) {
+					periodic := b.Stat == "RECOVERY" || b.Stat == "INFINITY" || b.Stat == "SOARING" && b.ID == skills.MihileSoaringID
+					if !b.ExpiresAt.After(now) || m.live.session.Character.HP == 0 || periodic && !b.NextTick.After(now) {
 						due = true
 					}
 				}
@@ -396,7 +404,7 @@ func (s *Server) tickSkillMember(ctx context.Context, repo domain.SkillRepositor
 	r, e := repo.TickSkillBuffs(step, session)
 	if e == nil {
 		snap := s.mergeSkillResult(m.live, r)
-		s.publishSkillTick(snap, m.sink, r, session.Character.HP)
+		s.publishSkillTick(snap, m.sink, r, session.Character.HP, session.Character.MP)
 		s.syncGMHide(m.live)
 	}
 }

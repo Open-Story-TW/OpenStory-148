@@ -41,11 +41,35 @@ type townPortal struct {
 	ownerSession      string
 	ownerGeneration   int64
 	partyID           int64
+	partySlot         int
 	skillID           int
 	fieldMap, townMap int
 	fieldX, fieldY    int
 	town              content.Portal
 	expiresAt         time.Time
+}
+
+func (d *townPortal) partyRecord() domain.PartyTownPortal {
+	return domain.PartyTownPortal{
+		TownMap: d.townMap, FieldMap: d.fieldMap, SkillID: d.skillID,
+		X: int16(d.fieldX), Y: int16(d.fieldY),
+	}
+}
+
+// Called with partySpace.mu held. Field-object paths release gameplay.mu before
+// publishing party updates, so a full snapshot never observes a stale cached door.
+func (g *gameplaySpace) partyTownPortal(owner domain.CharacterSession, partyID int64, slot int) domain.PartyTownPortal {
+	if g == nil {
+		return domain.PartyTownPortal{}
+	}
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	d := g.doors[doorKey{owner.ChannelID, owner.CharacterID}]
+	if d == nil || d.partyID != partyID || d.partySlot != slot || d.ownerSession != owner.SessionID ||
+		d.ownerGeneration != owner.Generation || !time.Now().Before(d.expiresAt) {
+		return domain.PartyTownPortal{}
+	}
+	return d.partyRecord()
 }
 
 type doorKey struct {
@@ -285,29 +309,26 @@ func (s *Server) spawnTownPortal(channel int, live *liveCharacter, skillID, leve
 	if err != nil {
 		return err
 	}
-	var exit content.Portal
-	found := false
-	for _, p := range town.Portals {
-		if p.Type == 6 {
-			exit, found = p, true
-			break
-		}
-	}
-	if !found {
-		if exit, found = town.Spawn(); !found {
-			return fmt.Errorf("town%d has no door portal", town.ID)
-		}
-	}
-	party := s.partyOf(c.ID)
+	var party int64
+	var slot int
 	members := map[int64]int64{}
-	if party != 0 {
+	if s.parties != nil {
 		s.parties.mu.Lock()
-		for id, p := range s.parties.peers {
-			members[id] = p.party.ID
+		if peer := s.parties.peers[c.ID]; peer != nil && peer.live == live {
+			if owner, ok := peer.party.Member(c.ID); ok {
+				party, slot = peer.party.ID, owner.Slot
+				for id, m := range s.parties.peers {
+					members[id] = m.party.ID
+				}
+			}
 		}
 		s.parties.mu.Unlock()
 	}
-	door := &townPortal{ownerID: c.ID, ownerSession: session.SessionID, ownerGeneration: session.Generation, partyID: party, skillID: skillID, fieldMap: c.MapID, townMap: town.ID, fieldX: c.X, fieldY: c.Y, town: exit, expiresAt: now.Add(d)}
+	exit, found := townPortalExit(town, slot)
+	if !found {
+		return fmt.Errorf("town%d has no door portal for slot%d", town.ID, slot)
+	}
+	door := &townPortal{ownerID: c.ID, ownerSession: session.SessionID, ownerGeneration: session.Generation, partyID: party, partySlot: slot, skillID: skillID, fieldMap: c.MapID, townMap: town.ID, fieldX: c.X, fieldY: c.Y, town: exit, expiresAt: now.Add(d)}
 	g.mu.Lock()
 	fieldRoom := g.rooms[mapKey{channel: channel, mapID: c.MapID}]
 	if fieldRoom == nil || fieldRoom.members[c.ID] == nil || fieldRoom.members[c.ID].live != live {
@@ -326,7 +347,23 @@ func (s *Server) spawnTownPortal(channel int, live *liveCharacter, skillID, leve
 	out = append(out, g.doorPacketsLocked(channel, door, members, true)...)
 	g.mu.Unlock()
 	deliver(out)
+	s.publishPartyTownPortal(door, channel)
 	return nil
+}
+
+// CField stores the town's type-6 portals in WZ order, then indexes that
+// list with the party member slot (0x503FD4). Solo use always checks slot zero.
+func townPortalExit(town content.Map, slot int) (content.Portal, bool) {
+	for _, portal := range town.Portals {
+		if portal.Type != doorEntryType {
+			continue
+		}
+		if slot == 0 {
+			return portal, true
+		}
+		slot--
+	}
+	return content.Portal{}, false
 }
 
 // doorPacketsLocked creates (or removes) both portal halves for the owner and
@@ -341,13 +378,11 @@ func (g *gameplaySpace) doorPacketsLocked(channel int, d *townPortal, members ma
 		if room == nil {
 			continue
 		}
-		// Java MapleDoor.sendSpawnData: the info carries the door position of
-		// the map the member is in; the client only enters a door there.
 		info := protocol.TownPortalInfo(protocol.NoTownPortal, protocol.NoTownPortal, 0, 0, 0)
 		p := protocol.TownPortalRemoved(d.ownerID, true)
 		if create {
 			p = protocol.TownPortalCreated(d.ownerID, int16(half.x), int16(half.y), true)
-			info = protocol.TownPortalInfo(d.townMap, d.fieldMap, d.skillID, int16(half.x), int16(half.y))
+			info = protocol.TownPortalInfo(d.townMap, d.fieldMap, d.skillID, int16(d.fieldX), int16(d.fieldY))
 		}
 		for id, m := range room.members {
 			if d.visibleTo(id, members[id]) {
@@ -369,23 +404,33 @@ func (g *gameplaySpace) doorEnterPacketsLocked(channel, mapID int, id, party int
 		case d.fieldMap:
 			out = append(out, protocol.TownPortalCreated(d.ownerID, int16(d.fieldX), int16(d.fieldY), false), protocol.TownPortalInfo(d.townMap, d.fieldMap, d.skillID, int16(d.fieldX), int16(d.fieldY)))
 		case d.townMap:
-			out = append(out, protocol.TownPortalCreated(d.ownerID, int16(d.town.X), int16(d.town.Y), false), protocol.TownPortalInfo(d.townMap, d.fieldMap, d.skillID, int16(d.town.X), int16(d.town.Y)))
+			out = append(out, protocol.TownPortalCreated(d.ownerID, int16(d.town.X), int16(d.town.Y), false), protocol.TownPortalInfo(d.townMap, d.fieldMap, d.skillID, int16(d.fieldX), int16(d.fieldY)))
 		}
 	}
 	return out
 }
 
-func (g *gameplaySpace) tickDoors(now time.Time, members map[int64]int64) {
+func (s *Server) tickDoors(now time.Time) {
+	g := s.gameplay
+	members := s.partySnapshot()
 	var out []roomDelivery
+	var expired map[doorKey]*townPortal
 	g.mu.Lock()
 	for k, d := range g.doors {
 		if !now.Before(d.expiresAt) {
 			delete(g.doors, k)
+			if expired == nil {
+				expired = make(map[doorKey]*townPortal)
+			}
+			expired[k] = d
 			out = append(out, g.doorPacketsLocked(k.channel, d, members, false)...)
 		}
 	}
 	g.mu.Unlock()
 	deliver(out)
+	for k, d := range expired {
+		s.publishPartyTownPortal(d, k.channel)
+	}
 }
 
 // RemoveTownPortal drops an owner's door (logout, channel change, recast).
@@ -397,12 +442,43 @@ func (s *Server) RemoveTownPortal(channel int, ownerID int64) {
 	g := s.gameplay
 	g.mu.Lock()
 	var out []roomDelivery
-	if d := g.doors[doorKey{channel, ownerID}]; d != nil {
+	d := g.doors[doorKey{channel, ownerID}]
+	if d != nil {
 		delete(g.doors, doorKey{channel, ownerID})
 		out = g.doorPacketsLocked(channel, d, members, false)
 	}
 	g.mu.Unlock()
 	deliver(out)
+	if d != nil {
+		s.publishPartyTownPortal(d, channel)
+	}
+}
+
+func (s *Server) publishPartyTownPortal(d *townPortal, channel int) {
+	if d.partyID == 0 || s.parties == nil {
+		return
+	}
+	b := s.parties
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	owner := b.peers[d.ownerID]
+	if owner == nil || owner.party.ID != d.partyID {
+		return
+	}
+	session := partySession(owner.live)
+	if session.ChannelID != channel {
+		return
+	}
+	current := s.gameplay.partyTownPortal(session, d.partyID, d.partySlot)
+	packet := protocol.PartyTownPortalUpdate(d.partySlot, current)
+	var out []partyDelivery
+	for _, member := range owner.party.Members {
+		recipient := b.peers[member.CharacterID]
+		if recipient != nil && recipient.party.ID == d.partyID && partySession(recipient.live).ChannelID == channel {
+			out = append(out, partyDelivery{peer: recipient, packets: [][]byte{packet}})
+		}
+	}
+	queueParty(out)
 }
 
 func (s *Server) partySnapshot() map[int64]int64 {
@@ -430,11 +506,11 @@ func (s *Server) useTownPortal(ctx context.Context, channel int, live *liveChara
 	d := g.doors[doorKey{channel, u.OwnerID}]
 	var target int
 	var entry content.Portal
-	if d != nil && d.visibleTo(c.ID, party) {
+	if d != nil && d.visibleTo(c.ID, party) && time.Now().Before(d.expiresAt) {
 		switch {
-		case c.MapID == d.fieldMap && u.ToTown:
+		case c.MapID == d.fieldMap && u.ToTown && nearTownPortal(c, d.fieldX, d.fieldY):
 			target, entry = d.townMap, d.town
-		case c.MapID == d.townMap && !u.ToTown:
+		case c.MapID == d.townMap && !u.ToTown && nearTownPortal(c, d.town.X, d.town.Y):
 			target, entry = d.fieldMap, content.Portal{X: d.fieldX, Y: d.fieldY}
 		}
 	}
@@ -463,6 +539,11 @@ func (s *Server) useTownPortal(ctx context.Context, channel int, live *liveChara
 	// USE_DOOR set the client's exclusive-request flag (SetExclRequestSent,
 	// 0x4F3154); the return door is ignored until enableActions clears it.
 	return sink.WritePacket(protocol.EnableActions())
+}
+
+// Both original E7 senders use PtInRect at ±20 x and ±50 y.
+func nearTownPortal(c domain.Character, x, y int) bool {
+	return c.X >= x-20 && c.X < x+20 && c.Y >= y-50 && c.Y < y+50
 }
 
 // doorEntryType marks a warp entry as a Mystic Door exit (the WZ tp portal

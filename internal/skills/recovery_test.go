@@ -13,7 +13,11 @@ func TestReviewedPeriodicRecoverySourcePolicy(t *testing.T) {
 		t.Skip("original WZ required")
 	}
 	now := time.Now()
-	for _, tc := range []struct{ id, job, hp, mp int }{{1110000, 111, 110, 71}, {1110000, 112, 110, 71}, {11110000, 1111, 110, 71}, {11110000, 1112, 110, 71}} {
+	for _, tc := range []struct{ id, job, hp, mp int }{
+		{1110000, 111, 110, 71}, {1110000, 112, 110, 71},
+		{11110000, 1111, 110, 71}, {11110000, 1112, 110, 71},
+		{51110000, 5111, 210, 71}, {51110000, 5112, 210, 71},
+	} {
 		c := domain.Character{MapID: 40000, Job: tc.job, Level: 120, HP: 1, MP: 1, MaxHP: 1000, MaxMP: 1000, INT: 80, Skills: []domain.SkillState{{ID: tc.id, Level: 20}}}
 		plans, err := ReviewedRecoveryPlans(c, now)
 		if err != nil || len(plans) != 1 || plans[0].HP != tc.hp || plans[0].MP != tc.mp || plans[0].Interval != 4*time.Second {

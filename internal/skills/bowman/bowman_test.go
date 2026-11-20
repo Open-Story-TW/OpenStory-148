@@ -165,10 +165,10 @@ func TestPassives(t *testing.T) {
 	if b := passive(t, 3200000, 20, archer(1462000)); b != (skills.Bonus{Mastery: 50, ACC: 120}) {
 		t.Errorf("crossbow mastery %+v", b)
 	}
-	if b := passive(t, 3120005, 30, archer(0)); b != (skills.Bonus{Mastery: 70, WATK: 30, CriticalDamageMin: 15}) {
+	if b := passive(t, 3120005, 30, archer(1452000)); b != (skills.Bonus{Mastery: 70, WATK: 30, CriticalDamageMin: 15}) {
 		t.Errorf("bow expert %+v", b)
 	}
-	if b := passive(t, 3220004, 30, archer(0)); b != (skills.Bonus{Mastery: 70, WATK: 30, CriticalDamageMin: 15}) {
+	if b := passive(t, 3220004, 30, archer(1462000)); b != (skills.Bonus{Mastery: 70, WATK: 30, CriticalDamageMin: 15}) {
 		t.Errorf("crossbow expert %+v", b)
 	}
 	for _, id := range []int{3100006, 3200006} {

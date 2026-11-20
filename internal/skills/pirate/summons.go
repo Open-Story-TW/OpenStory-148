@@ -47,7 +47,7 @@ func init() {
 	// rangedAttack; Legacy then refuses it because it disconnected players with
 	// error 38). Java HYPNOTIZE is native monster stat index 28, applied with
 	// the WZ prop and time.
-	skills.Register(skills.Handler{ID: 5221009, Kind: skills.KindAttack | skills.KindMobStatus, Attack: &combat.AttackSpec{Kind: combat.Shoot, Ammo: combat.AmmoNone, OnHit: []combat.MobStatusApply{{Stat: combat.MobDazzle, Value: 1}}}})
+	skills.Register(skills.Handler{ID: 5221009, Kind: skills.KindAttack | skills.KindMobStatus, Attack: &combat.AttackSpec{Kind: combat.Shoot, Ammo: combat.AmmoNone, OnHit: []combat.MobStatusApply{{Stat: combat.MobDazzle}}}})
 }
 
 // summonTargets raises the target limit of a summon attack to the WZ summon
@@ -78,7 +78,7 @@ func valueOne(stat buffstat.Stat) func(*skills.CastContext) (skills.CastPlan, er
 // anchorCeiling is Java SummonHandler's bound with selfDestruction added to
 // damage: maxBase × 5 × (selfDestruction + damage) / 100.
 func anchorCeiling(c combat.DamageContext) int {
-	def, err := content.SkillDefinition("", c.Effect.SkillID)
+	def, err := content.ConfiguredSkillDefinition(c.Effect.SkillID)
 	if err != nil {
 		return 0
 	}

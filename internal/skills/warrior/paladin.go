@@ -3,6 +3,8 @@ package warrior
 import (
 	"maple-go-server/internal/buffstat"
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/content"
+	"maple-go-server/internal/domain"
 	"maple-go-server/internal/skills"
 	"math/rand/v2"
 	"time"
@@ -21,13 +23,15 @@ func init() {
 	skills.Register(skills.Handler{ID: 1201010, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                                        // Rush (movement)
 
 	// White Knight
-	skills.Register(skills.Handler{ID: 1210001, Kind: skills.KindPassive, Passive: shieldMastery})                             // Shield Mastery
-	skills.Register(skills.Handler{ID: 1211002, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(stun, charged)}) // Charged Blow: STUN, element from the active charge
-	skills.Register(skills.Handler{ID: 1211004, Kind: skills.KindBuff, Cast: charge})                                          // Flame Charge
-	skills.Register(skills.Handler{ID: 1211006, Kind: skills.KindBuff, Cast: charge})                                          // Blizzard Charge
-	skills.Register(skills.Handler{ID: 1211008, Kind: skills.KindBuff, Cast: charge})                                          // Lightning Charge
-	skills.Register(skills.Handler{ID: 1211009, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: magicCrash()})      // Magic Crash
-	skills.Register(skills.Handler{ID: 1211010, Kind: skills.KindHeal, Cast: restoration})                                     // Restoration
+	skills.Register(skills.Handler{ID: 1210001, Kind: skills.KindPassive, Passive: shieldMastery}) // Shield Mastery
+	chargedBlow := melee(stun, charged)
+	chargedBlow.LearnedEffect = chargedBlowUpgrade
+	skills.Register(skills.Handler{ID: 1211002, Kind: skills.KindAttack | skills.KindMobStatus, Attack: chargedBlow})
+	skills.Register(skills.Handler{ID: 1211004, Kind: skills.KindBuff, Cast: charge})                                     // Flame Charge
+	skills.Register(skills.Handler{ID: 1211006, Kind: skills.KindBuff, Cast: charge})                                     // Blizzard Charge
+	skills.Register(skills.Handler{ID: 1211008, Kind: skills.KindBuff, Cast: charge})                                     // Lightning Charge
+	skills.Register(skills.Handler{ID: 1211009, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: magicCrash()}) // Magic Crash
+	skills.Register(skills.Handler{ID: 1211010, Kind: skills.KindHeal, Cast: restoration})                                // Restoration
 	skills.Register(skills.Handler{ID: 1211011, Kind: skills.KindPartyBuff, Cast: func(c *skills.CastContext) (skills.CastPlan, error) {
 		return partyBuff(c, stat("COMBAT_ORDERS", c.Value("x")))
 	}}) // Combat Orders
@@ -59,6 +63,30 @@ func charge(c *skills.CastContext) (skills.CastPlan, error) {
 		}
 	}
 	return buff(c, stat("WK_CHARGE", c.Value("x")))
+}
+
+// The v148 melee path at 0x91D156 looks up a Paladin's learned Elemental
+// Force. Its WZ affectedSkill=1211002 replaces Charged Blow's damage and counts.
+func chargedBlowUpgrade(character domain.Character, now time.Time, effect *combat.Effect) error {
+	if character.Job != 122 {
+		return nil
+	}
+	level := skills.EffectiveLevel(character, 1220010, now)
+	if level == 0 {
+		return nil
+	}
+	def, err := content.ConfiguredSkillDefinition(1220010)
+	if err != nil {
+		return err
+	}
+	values, err := def.Values(level)
+	if err != nil {
+		return err
+	}
+	effect.Damage = values["damage"]
+	effect.MobCount = values["mobCount"]
+	effect.AttackCount = values["attackCount"]
+	return nil
 }
 
 // shieldMastery (1210001) is Java percent_wdef/percent_mdef += x (Legacy

@@ -18,6 +18,11 @@ func TestV148PirateJobBooks(t *testing.T) {
 		{512, 5821010, false}, {582, 5121010, false}, {572, 5001003, false},
 		{572, 5081002, true}, {582, 5091003, true}, {592, 5091003, true},
 		{582, 5081002, false}, {572, 5091003, false}, {512, 5091003, false},
+		{508, 5081002, true}, {572, 5081002, true}, {572, 5700004, true}, {572, 5721001, true},
+		{570, 5721001, false}, {572, 5091003, false}, {572, 5001003, false}, {522, 5081002, false},
+		{582, 5091003, true}, {592, 5091003, true}, {591, 5901001, true}, {592, 5910000, true},
+		{582, 5910000, false}, {592, 5801006, false}, {590, 5910000, false}, {509, 5801006, false},
+		{532, 5091003, false}, {592, 5010002, false},
 	} {
 		if got := CanLearnSkill(tc.job, tc.skill); got != tc.allowed {
 			t.Errorf("job %d, skill %d: learned=%v want %v", tc.job, tc.skill, got, tc.allowed)

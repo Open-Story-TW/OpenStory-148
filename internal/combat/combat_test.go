@@ -58,6 +58,38 @@ func TestElementAndWeaponFamilies(t *testing.T) {
 	}
 }
 
+func TestAF11UsesIndependentPhysicalAndMagicFieldDamageMultipliers(t *testing.T) {
+	for _, tc := range []struct {
+		kind  AttackKind
+		stats PlayerStats
+		want  int
+	}{
+		{Melee, PlayerStats{Job: 100, Level: 30, STR: 200, WATK: 75, WeaponID: 1302000, DamageRate: 20}, 20},
+		{Magic, PlayerStats{Job: 200, Level: 30, INT: 200, MATK: 75, WeaponID: 1372000, DamageRate: 20}, 25},
+	} {
+		effect := Effect{Damage: 100, AttackCount: 1, MobCount: 1}
+		mob := content.Mob{HP: 10000}
+		ctx := AttackContext{Kind: tc.kind, Stats: tc.stats, Effect: effect, Character: domain.Character{HP: 10},
+			Targets: []TargetInfo{{ObjectID: 1, HP: 10000, Mob: mob}},
+			Attack:  protocol.Attack{TByte: 0x11, Targets: []protocol.AttackTarget{{ObjectID: 1, Lines: []protocol.AttackLine{{Raw: 10000, Damage: 10000}}}}}}
+		spec := &AttackSpec{Kind: tc.kind, IgnoreRange: true}
+		without, err := PlanAttack(spec, ctx, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		ctx.FieldPhysicalAmp, ctx.FieldMagicAmp = 20, 25
+		with, err := PlanAttack(spec, ctx, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		plain, amplified := without.Targets[0].Lines[0], with.Targets[0].Lines[0]
+		minimum, maximum := (plain-1)*(100+tc.want)/100, (plain*(100+tc.want)+99)/100
+		if plain < 100 || amplified < minimum || amplified > maximum {
+			t.Fatalf("kind %d AF-11 scaled %d to %d, expected %d–%d", tc.kind, plain, amplified, minimum, maximum)
+		}
+	}
+}
+
 func TestBoxMirrorsForFacingRight(t *testing.T) {
 	b := Box{LT: Point{-200, -50}, RB: Point{-10, 10}, Set: true}
 	lt, rb := b.At(Point{100, 0}, true)

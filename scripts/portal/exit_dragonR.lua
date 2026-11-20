@@ -11,6 +11,8 @@ function enter(pi)
         returnMap = 240030102
     end
     pi.clearSavedLocation("MULUNG_TC")
-    pi.warp(returnMap, "unityPortal2")
+    -- v148's Dragon Rider Approach links its right00 back to this lobby.
+    local returnPortal = returnMap == 240030102 and "right00" or "unityPortal2"
+    pi.warp(returnMap, returnPortal)
     do return true end
 end

@@ -31,10 +31,12 @@ type combatTicket struct {
 	targets            []*gameplayMob
 	peers              []combatLivePeer
 	observers          []combatLivePeer
+	subwayMisses       []int32
 	attack             protocol.MeleeAttack
 	magic              *protocol.MagicAttack
 	magicLevel         int
 	generic            *genericAttack
+	monsterContact     []byte
 	resolving          bool
 	damageEvidence     []appliedDamageEvidence
 	expectedActorEntry *gameplayMember
@@ -380,7 +382,9 @@ func (s *Server) commitCombatTicket(t *combatTicket, result domain.CombatAttackR
 	g := s.gameplay
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	t.observers = combatRoomPeers(g.rooms[t.key])
+	room := g.rooms[t.key]
+	t.observers = combatRoomPeers(room)
+	now := time.Now()
 	for i, mob := range t.targets {
 		if mob.reservation != t {
 			continue
@@ -391,10 +395,16 @@ func (s *Server) commitCombatTicket(t *combatTicket, result domain.CombatAttackR
 		mob.contributions = append([]domain.CombatContribution(nil), q.Contributions...)
 		mob.claiming = false
 		mob.reservation = nil
+		if subwayCombatLocked(room, t.actorSession.CharacterID, mob, q, now) {
+			mob.hp = 0
+			mob.respawnAt = mob.respawnTime(t.key.mapID, now)
+			t.subwayMisses = append(t.subwayMisses, q.ObjectID)
+		}
 		if q.Defeated {
-			mob.respawnAt = mob.respawnTime(t.key.mapID, time.Now())
+			mob.respawnAt = mob.respawnTime(t.key.mapID, now)
 			mob.statuses = nil
-			if room := g.rooms[t.key]; room != nil && room.judgement != nil {
+			mob.burns = nil
+			if room != nil && room.judgement != nil {
 				room.judgement.scores[t.actorSession.CharacterID] += judgementMobPoints(q.MobID)
 			}
 			g.carnivalScoreLocked(g.rooms[t.key], t, mob.stats.CarnivalPoints)
@@ -484,7 +494,7 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 		attack = t.generic.remotePacket(t.request.Session.Character, long)
 	case t.magic != nil:
 		attack = protocol.MagicAttackPacket(t.request.Session.Character, t.magicLevel, *t.magic)
-	default:
+	case t.monsterContact == nil:
 		attack = protocol.MeleeAttackPacket(t.request.Session.Character, t.attack)
 	}
 	if result.Ammo != nil {
@@ -495,7 +505,9 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 	}
 	damageFrames := make([][]byte, len(t.request.Targets))
 	for i, q := range t.request.Targets {
-		damageFrames[i] = protocol.DamageMonsterLong(q.ObjectID, q.Damage, long)
+		if t.monsterContact == nil {
+			damageFrames[i] = protocol.DamageMonsterLong(q.ObjectID, q.Damage, long)
+		}
 	}
 	longFrame := long.Packet()
 	for _, receiver := range t.observers {
@@ -520,8 +532,14 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 		if attack != nil && (t.request.Family == domain.CombatNormal || receiver.id != t.request.Session.CharacterID) {
 			_ = sink.WritePacket(attack)
 		}
+		if t.monsterContact != nil && receiver.id != t.request.Session.CharacterID {
+			// The controller already rendered this hit before its native send.
+			_ = sink.WritePacket(t.monsterContact)
+		}
 		for i, q := range t.request.Targets {
-			_ = sink.WritePacket(damageFrames[i])
+			if damageFrames[i] != nil {
+				_ = sink.WritePacket(damageFrames[i])
+			}
 			hp := q.BeforeHP - int64(q.Damage)
 			var maximum int64
 			if i < len(t.targets) {
@@ -543,11 +561,14 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 				_ = sink.WritePacket(p)
 			}
 		}
+		for _, oid := range t.subwayMisses {
+			_ = sink.WritePacket(protocol.RemoveMonster(oid))
+		}
 		receiver.live.persistMu.Unlock()
 	}
 	for _, q := range t.request.Targets {
 		if q.Defeated {
-			if !content.JudgementRoom(t.key.mapID) {
+			if !content.JudgementRoom(t.key.mapID) && !content.SubwaySurvivalStage(t.key.mapID) {
 				_ = s.spawnCombatLoot(ctx, t.actor, t.sink, q.SpawnOperationID, q.MobID, q.X, q.Y)
 			}
 			s.amoriaMobDefeated(t.key, t.actorSession.CharacterID, q)
@@ -558,6 +579,7 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 			} else {
 				s.expeditionBossDefeated(t.key, t.actorSession.CharacterID, q.MobID)
 			}
+			s.orbisMobDefeated(t.key, t.actorSession.CharacterID, q.MobID)
 		}
 	}
 	s.ghostCombat(t)

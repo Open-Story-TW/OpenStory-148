@@ -18,3 +18,18 @@ func TestAffectedAreaAndTownPortalNativeLayouts(t *testing.T) {
 		t.Fatal("town portal info")
 	}
 }
+
+func TestUseTownPortalNativeDirections(t *testing.T) {
+	for mode := byte(0); mode <= 1; mode++ {
+		body := []byte{0x2f, 0x13, 0, 0, mode}
+		v, err := ReadUseTownPortal(NewReader(body))
+		if err != nil || v.OwnerID != 4911 || v.ToTown != (mode == 0) {
+			t.Fatalf("mode %d: %+v %v", mode, v, err)
+		}
+	}
+	for _, body := range [][]byte{{0x2f, 0x13, 0, 0, 2}, {0x2f, 0x13, 0, 0}, {0x2f, 0x13, 0, 0, 1, 0}, {0, 0, 0, 0, 0}} {
+		if _, err := ReadUseTownPortal(NewReader(body)); err == nil {
+			t.Fatalf("accepted malformed use %x", body)
+		}
+	}
+}

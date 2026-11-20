@@ -21,7 +21,7 @@ var v148Attacks = []attack{
 	{id: 5111009, kind: combat.Melee},                              // 雙重螺旋
 	{id: 5111012, kind: combat.Melee},                              // 衝擊波
 	{id: 5121013, kind: combat.Melee | combat.Shoot, noAmmo: true}, // 戰艦鯨魚號
-	{id: 5121016, kind: combat.Melee | combat.Shoot, noAmmo: true}, // 能量爆發
+	{id: 5121016, kind: combat.Shoot, noAmmo: true, prepare: requiresAttackBuff(5110001, "ENERGY_CHARGE", energyFull)}, // 能量爆發
 	// 槍手 520, 神槍手 521, 槍神 522
 	{id: 5200010, kind: combat.Shoot},                              // 三重火力: bulletCount 3
 	{id: 5211008, kind: combat.Shoot},                              // 雙重槍閃: bulletConsume 2
@@ -53,15 +53,6 @@ func init() {
 		return skills.Bonus{STR: c.Values["strX"], DEX: c.Values["dexX"]}
 	}
 	passive(5000007, critical("cr"))                               // 初階爆擊: cr, criticaldamageMin
-	passive(5080000, func(c *skills.PassiveContext) skills.Bonus { // 俠客行
-		return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
-	})
-	passive(5710004, func(c *skills.PassiveContext) skills.Bonus { // 金剛不壞
-		return skills.Bonus{
-			MaxHP: c.Values["mhpX"], MaxMP: c.Values["mmpX"], ASR: c.Values["asrR"],
-			WDEFPercent: c.Values["pddR"], MDEFPercent: c.Values["mddR"],
-		}
-	})
 	passive(5100010, training)                                     // 體能訓練
 	passive(5200009, training)                                     // 體能訓練
 	passive(5110011, func(c *skills.PassiveContext) skills.Bonus { // 爆擊鬥氣
@@ -79,11 +70,25 @@ func init() {
 	passive(5210013, func(c *skills.PassiveContext) skills.Bonus { // 金屬外殼
 		return skills.Bonus{Critical: c.Values["cr"], IgnoreDefense: c.Values["ignoreMobpdpR"]}
 	})
-	passive(5220020, func(c *skills.PassiveContext) skills.Bonus { // 槍神奧義: mastery with a gun; its extra shot is not applied
-		if weaponType(c.Character) != gun {
-			return skills.Bonus{}
-		}
-		return skills.Bonus{Mastery: c.Values["mastery"]}
+	// Gun Expert is skillType 3 in v148. The client sends its extra hit as
+	// a separate 0x56 frame with the same tick as the triggering attack.
+	skills.Register(skills.Handler{
+		ID: 5220020, Kind: skills.KindPassive | skills.KindAttack,
+		Attack: &combat.AttackSpec{
+			Kind: combat.Shoot, Ammo: combat.AmmoNone,
+			Prepare: func(c *combat.AttackContext) error {
+				if weaponType(c.Character) != gun {
+					return combat.ErrRejected
+				}
+				return nil
+			},
+		},
+		Passive: func(c *skills.PassiveContext) skills.Bonus {
+			if weaponType(c.Character) != gun {
+				return skills.Bonus{}
+			}
+			return skills.Bonus{Mastery: c.Values["mastery"]}
+		},
 	})
 	skills.Register(skills.Handler{ID: 5100013, Kind: skills.KindPassive}) // 耐久: see the server's periodic recovery
 	skills.Register(skills.Handler{ID: 5700005, Kind: skills.KindPassive}) // 血脈通暢: periodic max-HP and max-MP recovery

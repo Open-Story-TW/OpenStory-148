@@ -46,7 +46,10 @@ func init() {
 	skills.Register(skills.Handler{ID: 4120011, Kind: skills.KindPassive | skills.KindMobStatus}) // 致命的飛毒殺: see venom
 	passive(4120012, expertMastery(weaponClaw))                                                   // 暗器精通
 	strike(4121013, either())                                                                     // 四飛閃
-	skills.Register(skills.Handler{ID: 4121014, Kind: skills.KindBuff | skills.KindPassive, Cast: darkHarmony, Passive: ignoreDefense})
+	skills.Register(skills.Handler{ID: 4121014, Kind: skills.KindBuff | skills.KindPassive,
+		Cast: func(c *skills.CastContext) (skills.CastPlan, error) {
+			return selfBuff(c, stat("ANGEL_ATK", c.Value("indiePad")))
+		}, Passive: learnedDefenseIgnore}) // 黑暗能量
 	skills.Register(skills.Handler{ID: 4121015, Kind: skills.KindSpecial, Cast: skills.CostOnly}) // 絕對領域: cost only (area debuff)
 	strike(4121016, either(noAmmo, prepare(suddenRaid)))                                          // 穢土轉生.改
 
@@ -70,8 +73,8 @@ func init() {
 	skills.Register(skills.Handler{ID: 4220011, Kind: skills.KindPassive | skills.KindMobStatus})  // 致命的飛毒殺: see venom
 	passive(4220012, expertMastery(weaponDagger))                                                  // 進階精準之刀
 	strike(4221010, either(noAmmo, prepare(suddenRaid)))                                           // 穢土轉生.改
-	// Shadower Instinct's attack bonus is active and its defense ignore is passive.
-	skills.Register(skills.Handler{ID: 4221013, Kind: skills.KindBuff | skills.KindPassive, Cast: shadowerInstinct, Passive: ignoreDefense})
+	skills.Register(skills.Handler{ID: 4221013, Kind: skills.KindBuff | skills.KindPassive,
+		Cast: attackBuff("x"), Passive: learnedDefenseIgnore}) // 暗影神偷本能: kill-point bonus is not applied
 	for _, id := range []int{4001013, 4101008, 4101010, 4111010, 4111013, 4121013, 4121016, 4211011, 4221010} { // Venom poisons on these too
 		venomAttacks[id] = true
 	}
@@ -93,16 +96,16 @@ func expertMastery(weapon int) func(*skills.PassiveContext) skills.Bonus {
 	}
 }
 
-func ignoreDefense(c *skills.PassiveContext) skills.Bonus {
+// attackBuff applies the weapon attack component for the WZ duration.
+func attackBuff(key string) func(*skills.CastContext) (skills.CastPlan, error) {
+	return func(c *skills.CastContext) (skills.CastPlan, error) {
+		return selfBuff(c, stat("WATK", c.Value(key)))
+	}
+}
+
+// Both native skill descriptions list ignoreMobpdpR as a permanent effect of learning the skill.
+func learnedDefenseIgnore(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{IgnoreDefense: c.Values["ignoreMobpdpR"]}
-}
-
-func darkHarmony(c *skills.CastContext) (skills.CastPlan, error) {
-	return selfBuff(c, stat("ANGEL_ATK", c.Value("indiePad")))
-}
-
-func shadowerInstinct(c *skills.CastContext) (skills.CastPlan, error) {
-	return selfBuff(c, stat("WATK", c.Value("x")))
 }
 
 // suddenRaid (4121016, 4221010) leaves a poison: dot percent of the base

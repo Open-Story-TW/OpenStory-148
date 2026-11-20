@@ -15,11 +15,43 @@ func EffectiveLevel(c domain.Character, id int, now time.Time) int {
 	return levelFor(c, id, id, now)
 }
 
+// EquipmentRelatedSkillLevel authorizes only the original ring summon's
+// hidden assistance effect. The public cast path still requires its own level.
+func EquipmentRelatedSkillLevel(c domain.Character, id int, now time.Time) int {
+	switch id % 10000 {
+	case 86, 88, 91, 180:
+	default:
+		return 0
+	}
+	parent := id + 999
+	h, ok := Lookup(parent)
+	if !ok || h.CastEquipment == 0 || h.Attack == nil || h.Attack.Summon == nil || h.Attack.Summon.AssistType != 2 || h.Attack.Summon.Sub == nil {
+		return 0
+	}
+	level, ok := CastLevel(c, parent, parent, 1, now)
+	if !ok {
+		return 0
+	}
+	return level
+}
+
 // CastLevel validates a client-sent level for skill id, whose level is
 // learned through learnedID (Handler.LevelFrom, else id). The client sends
 // the effective level; the plain learned level is also accepted while a
 // COMBAT_ORDERS change is in flight. It returns the level to use.
 func CastLevel(c domain.Character, learnedID, id, client int, now time.Time) (int, bool) {
+	if h, ok := Lookup(id); ok && h.CastEquipment != 0 {
+		if client == 1 {
+			for _, item := range c.Equipment {
+				// Original v148 0x4D926A scans the 35 ordinary equip slots.
+				if item.ItemID == h.CastEquipment && item.Slot < 0 && item.Slot >= -35 &&
+					(item.ExpiresAt <= 0 || item.ExpiresAt > now.UnixMilli()) {
+					return 1, true
+				}
+			}
+		}
+		return 0, false
+	}
 	base := learnedLevel(c, learnedID, now)
 	if base < 1 || client < 1 {
 		return 0, false

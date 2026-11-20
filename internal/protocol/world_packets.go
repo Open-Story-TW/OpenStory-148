@@ -18,7 +18,7 @@ func SetField(c domain.Character, channel int) []byte {
 	if _, err := rand.Read(seeds[:]); err != nil {
 		return nil
 	}
-	return setFieldAt(c, channel, time.Now(), seeds)
+	return setFieldAt(c, channel, domain.GuildAuditDate(c, time.Now()), seeds)
 }
 func setFieldAt(c domain.Character, channel int, now time.Time, seeds [12]byte) []byte {
 	if !validCharacter(c) || channel < 1 || channel > 20 {
@@ -116,9 +116,9 @@ func addCharacterInfo(w *Writer, c domain.Character, now time.Time) {
 	w.U16(0)       // NPC limited-purchase list (mask 0x4000000).
 	w.Zero(13 * 4) // mask 0x20000000 phantom stolen slots; v148 groups are 4+4+3+2.
 	w.Zero(4 * 4)  // mask 0x10000000 phantom chosen skills 24001001/24101001/24111001/24121001.
-	w.U16(0)       // mask 0x80000000 v148 {u8,i32,u8,u8} list.
-	w.I32(0)       // high mask 1: two i32.
-	w.I32(0)
+	addInnerAbilityStats(w, c.Abilities)
+	w.I32(int32(c.HonorLevel)) // high mask 1: original slot-gating progression.
+	w.I32(int32(c.HonorEXP))
 	w.U16(0) // mask 0x80000000 OX system.
 	w.U16(0) // high mask 1: exp chair list.
 }

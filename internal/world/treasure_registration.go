@@ -42,7 +42,7 @@ func (s *Server) manageTreasureHunt(channel int, action int64, now time.Time) st
 	run := space.hunts[channel]
 	switch action {
 	case 1:
-		if run != nil || space.channels[channel] != nil {
+		if run != nil || space.channels[channel] != nil || space.obstacles[channel] != nil || space.snowballs[channel] != nil || space.coconuts[channel] != nil {
 			return "本頻道已有活動。"
 		}
 		var fields []content.Map
@@ -187,12 +187,22 @@ func (s *Server) treasurePortal(ctx context.Context, channel int, live *liveChar
 }
 
 func (s *Server) joinGMEvent(ctx context.Context, channel int, live *liveCharacter, sink packetSink) error {
+	if handled, err := s.joinSnowball(ctx, channel, live, sink); handled {
+		return err
+	}
+	if handled, err := s.joinCoconut(ctx, channel, live, sink); handled {
+		return err
+	}
 	space := s.quizzes
 	if space == nil {
 		return s.joinOXQuiz(ctx, channel, live, sink)
 	}
 	session := partySession(live)
 	space.mu.Lock()
+	if space.obstacles[channel] != nil {
+		space.mu.Unlock()
+		return s.joinObstacleEvent(ctx, channel, live, sink)
+	}
 	run := space.hunts[channel]
 	if run == nil {
 		space.mu.Unlock()

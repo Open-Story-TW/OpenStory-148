@@ -62,18 +62,18 @@ func TestPotentialAvoidFlatPercentAndChanceAreIndependent(t *testing.T) {
 		t.Fatal("potential flat/percent became chance", b, err)
 	}
 	p, err := PlayerStatsChecked(c, now)
-	if err != nil || p.Avoid != 38 || p.PotentialAvoidPercent != 10 || p.DodgeRate != 11 {
-		t.Fatal("flat source missing/percent applied to incomplete base/chance changed", p, err)
+	if err != nil || p.Avoid != 80 || p.MagicAvoid != 52 || p.PotentialAvoidPercent != 10 || p.DodgeRate != 11 {
+		t.Fatal("effective EVA or chance disagrees with the flat and percent sources", p, err)
 	}
 	c.Equipment[0].Potential.Options = [5]uint16{10008, 10008, 10008, 10008, 10008}
 	p, err = PlayerStatsChecked(c, now)
-	if err != nil || p.Avoid != 58 || p.PotentialAvoidPercent != 0 || p.DodgeRate != 11 {
-		t.Fatal("five flat sources not added exactlyonce", p, err)
+	if err != nil || p.Avoid != 93 || p.MagicAvoid != 68 || p.PotentialAvoidPercent != 0 || p.DodgeRate != 11 {
+		t.Fatal("five flat sources did not produce the expected EVA", p, err)
 	}
 	c.Equipment[0].Potential.Options = [5]uint16{10048}
 	p, err = PlayerStatsChecked(c, now)
-	if err != nil || p.Avoid != 33 || p.PotentialAvoidPercent != 10 || p.DodgeRate != 11 {
-		t.Fatal("percentage invented flat value or chance", p, err)
+	if err != nil || p.Avoid != 74 || p.MagicAvoid != 47 || p.PotentialAvoidPercent != 10 || p.DodgeRate != 11 {
+		t.Fatal("percent source did not scale both EVA values independently of chance", p, err)
 	}
 	c.Equipment[0].Potential.Options = before.Equipment[0].Potential.Options
 	if !reflect.DeepEqual(before, c) {
@@ -124,7 +124,7 @@ func TestPotentialAvoidOriginalWZFiveFlatRows(t *testing.T) {
 	}{{8, 2}, {10008, 4}, {20008, 4}, {30008, 6}, {40008, 8}} {
 		c := domain.Character{Job: 100, Level: 30, STR: 10, DEX: 10, INT: 10, LUK: 10, Equipment: []domain.Equipment{{ItemID: 1302000, Slot: -11, AVOID: 10, Potential: domain.EquipmentPotential{Present: true, RawState: 17, Options: [5]uint16{tc.id}}}}, SkillBuffs: []domain.SkillBuff{{Stat: "AVOID", Value: 3, ExpiresAt: now.Add(time.Minute)}}}
 		p, err := PlayerStatsChecked(c, now)
-		if err != nil || p.Avoid != 13+tc.flat || p.PotentialAvoidPercent != 0 || p.DodgeRate != 0 {
+		if err != nil || p.Avoid != 35+tc.flat || p.MagicAvoid != 35+tc.flat || p.PotentialAvoidPercent != 0 || p.DodgeRate != 0 {
 			t.Fatal("originalincEVA", tc, p, err)
 		}
 	}
@@ -134,8 +134,9 @@ func TestPotentialAvoidOriginalWZFiveFlatRows(t *testing.T) {
 	}{{10048, 1}, {20048, 2}, {30048, 3}, {40048, 6}} {
 		c := domain.Character{Job: 100, Level: 30, STR: 10, DEX: 10, INT: 10, LUK: 10, Equipment: []domain.Equipment{{ItemID: 1302000, Slot: -11, AVOID: 10, Potential: domain.EquipmentPotential{Present: true, RawState: 17, Options: [5]uint16{tc.id}}}}}
 		p, err := PlayerStatsChecked(c, now)
-		if err != nil || p.Avoid != 10 || p.PotentialAvoidPercent != tc.percent || p.DodgeRate != 0 {
-			t.Fatal("originalincEVAr became chance or incomplete-base multiplier", tc, p, err)
+		want := 32 + 32*tc.percent/100
+		if err != nil || p.Avoid != want || p.MagicAvoid != want || p.PotentialAvoidPercent != tc.percent || p.DodgeRate != 0 {
+			t.Fatal("original incEVAr total differs from the skill panel calculation", tc, p, err)
 		}
 	}
 }

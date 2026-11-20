@@ -4,8 +4,43 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"maple-go-server/internal/domain"
+	"slices"
 	"testing"
 )
+
+func TestV148SatelliteRetainsOriginalInterleavedDamageRecords(t *testing.T) {
+	const wire = "200148420f005982040184041cffd70015ffd7000000000049420f00706f9800070100706f98000132ffd70032ffd7006801090d0000173538ba4a420f00706f9800070100706f98000152ffd70052ffd70068014b0500001deb7a0449420f00706f9800070100706f98000132ffd70032ffd7006801930c0000173538ba4a420f00706f9800070100706f98000152ffd70052ffd70068010e0f00001deb7a04"
+	packet, err := hex.DecodeString(wire)
+	if err != nil {
+		t.Fatal(err)
+	}
+	in, err := ReadSummonAttack(NewReader(packet[2:]))
+	if err != nil || in.ObjectID != 1000008 || in.Tick != 17072729 || !slices.Equal(in.HitOrder, []int{0, 1, 0, 1}) || !slices.Equal(in.Wire, packet[2:]) || len(in.Targets) != 2 {
+		t.Fatalf("original Mechanic satellite packet: %+v (%v)", in, err)
+	}
+	for index, want := range [][2]int{{3337, 3219}, {1355, 3854}} {
+		target := in.Targets[index]
+		if target.ObjectID != int32(1000009+index) || len(target.Lines) != 2 || target.Lines[0].Damage != want[0] || target.Lines[1].Damage != want[1] {
+			t.Fatalf("target %d %+v", index, target)
+		}
+	}
+}
+
+func TestV148SG88ReadsOriginalChargeGauge(t *testing.T) {
+	const wire = "20015d420f0081920902840115ffd70015ffd700280000005c420f00706f9800070100706f9800016600d7006600d7000000012d0000b2aff972"
+	packet, err := hex.DecodeString(wire)
+	if err != nil {
+		t.Fatal(err)
+	}
+	in, err := ReadSummonAttack(NewReader(packet[2:]))
+	if err != nil || in.ObjectID != 1000029 || in.ChargeGauge != 40 || len(in.Targets) != 1 {
+		t.Fatalf("original SG-88 attack: %+v (%v)", in, err)
+	}
+	target := in.Targets[0]
+	if target.ObjectID != 1000028 || len(target.Lines) != 1 || target.Lines[0].Damage != 11521 {
+		t.Fatalf("original charged SG-88 target: %+v", target)
+	}
+}
 
 func TestNativeRemoveSummonExactObjectAndOwnerPacket(t *testing.T) {
 	// 0x6DB45D emits exactly one object DWORD after opcode0x103.

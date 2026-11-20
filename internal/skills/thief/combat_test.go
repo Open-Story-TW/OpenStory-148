@@ -46,14 +46,24 @@ func prepared(t *testing.T, id, level int, kind combat.AttackKind, ch domain.Cha
 // learned Venom's prop, dotTime and dot% of max base damage.
 func TestVenomPoisonsListedAttacks(t *testing.T) {
 	stats := combat.PlayerStats{Job: 422, LUK: 400, DEX: 50, STR: 4, WATK: 100, WeaponID: 1332000}
-	ch := learnedChar(422, domain.SkillState{ID: 4220005, Level: 30})
+	now := time.Unix(1000, 0)
+	skill := domain.SkillState{ID: 4220005, Level: 30}
+	ch := learnedChar(422, skill)
+	if values(ch, now, skill.ID) == nil {
+		skill = domain.SkillState{ID: 4210010, Level: 20}
+		ch = learnedChar(422, skill)
+	}
+	wz := values(ch, now, skill.ID)
+	if wz == nil {
+		t.Fatalf("no configured Venom definition for %d", skill.ID)
+	}
 	ctx := prepared(t, 4201005, 30, combat.Melee, ch, stats)
-	want := int64(140) * combat.MaxBaseDamage(stats) / 100
+	want := int64(wz["dot"]) * combat.MaxBaseDamage(stats) / 100
 	if len(ctx.Effect.MonsterStatus) != 1 {
 		t.Fatalf("savage blow statuses %+v", ctx.Effect.MonsterStatus)
 	}
 	got := ctx.Effect.MonsterStatus[0]
-	if got.Stat != combat.MobPoison || !got.Poison || int64(got.Value) != want || got.Prop != 40 || got.Duration != 8*time.Second {
+	if got.Stat != combat.MobPoison || !got.Poison || int64(got.Value) != want || got.Prop != wz["prop"] || got.Duration != time.Duration(wz["dotTime"])*time.Second {
 		t.Fatalf("venom %+v want tick %d", got, want)
 	}
 	if ctx = prepared(t, 4211004, 20, combat.Melee, ch, stats); len(ctx.Effect.MonsterStatus) != 0 {
@@ -67,16 +77,31 @@ func TestVenomPoisonsListedAttacks(t *testing.T) {
 // Passive damage increases add to the attack's damage percent.
 func TestDamageIncreases(t *testing.T) {
 	stats := combat.PlayerStats{Job: 412, LUK: 400, WATK: 100, WeaponID: 1472000}
-	ctx := prepared(t, 4111005, 20, combat.Shoot, learnedChar(412, domain.SkillState{ID: 4120010, Level: 10}), stats)
-	if ctx.Effect.Damage != 400+25 {
-		t.Fatalf("avenger with expert star handling: %d", ctx.Effect.Damage)
+	now := time.Unix(1000, 0)
+	legacyExpert := learnedChar(412, domain.SkillState{ID: 4120010, Level: 10})
+	if old := values(legacyExpert, now, 4120010); old != nil {
+		base := prepared(t, 4111005, 20, combat.Shoot, learnedChar(412), stats)
+		ctx := prepared(t, 4111005, 20, combat.Shoot, legacyExpert, stats)
+		if ctx.Effect.Damage != base.Effect.Damage+old["damR"] {
+			t.Fatalf("avenger with expert star handling: %d", ctx.Effect.Damage)
+		}
+	} else {
+		v148Expert := learnedChar(412, domain.SkillState{ID: 4110012, Level: 10})
+		v148Expert.Equipment = []domain.Equipment{{Slot: -11, ItemID: stats.WeaponID}}
+		wz := values(v148Expert, now, 4110012)
+		ctx := prepared(t, 4001344, 20, combat.Shoot, v148Expert, stats)
+		if wz == nil || ctx.Stats.DamageRate != wz["damR"] {
+			t.Fatalf("lucky seven with v148 throwing star mastery: %+v", ctx.Stats)
+		}
 	}
-	ctx = prepared(t, 4201005, 30, combat.Melee, learnedChar(422, domain.SkillState{ID: 4221007, Level: 30}), stats)
+	ctx := prepared(t, 4201005, 30, combat.Melee, learnedChar(422, domain.SkillState{ID: 4221007, Level: 30}), stats)
 	if ctx.Effect.Damage != 90+25 {
 		t.Fatalf("savage blow with boomerang step: %d", ctx.Effect.Damage)
 	}
-	ctx = prepared(t, 4211006, 20, combat.Melee, learnedChar(422, domain.SkillState{ID: 4220009, Level: 10}), stats)
-	if ctx.Effect.Damage != 180+60 {
+	greed := learnedChar(422, domain.SkillState{ID: 4220009, Level: 10})
+	base := prepared(t, 4211006, 20, combat.Melee, learnedChar(422), stats)
+	ctx = prepared(t, 4211006, 20, combat.Melee, greed, stats)
+	if ctx.Effect.Damage != base.Effect.Damage+values(greed, now, 4220009)["x"] {
 		t.Fatalf("meso explosion with greed: %d", ctx.Effect.Damage)
 	}
 }
@@ -94,11 +119,16 @@ func TestStarRules(t *testing.T) {
 	defer func(r func(int) bool) { roll = r }(roll)
 	roll = func(int) bool { return true }
 	expert := domain.SkillState{ID: 4120010, Level: 10}
+	foreignJob := 411
+	if values(learnedChar(412, expert), now, expert.ID) == nil {
+		expert.ID = 4110012
+		foreignJob = 422
+	}
 	if !prepared(t, 4001344, 20, combat.Shoot, learnedChar(412, expert), stats).NoAmmo {
 		t.Fatal("expert star handling did not keep the star")
 	}
-	if prepared(t, 4001344, 20, combat.Shoot, learnedChar(411, expert), stats).NoAmmo {
-		t.Fatal("expert star handling outside job 412")
+	if prepared(t, 4001344, 20, combat.Shoot, learnedChar(foreignJob, expert), stats).NoAmmo {
+		t.Fatal("expert star handling outside the supported job")
 	}
 	for _, id := range []int{4121003, 4221003, 4111004} {
 		if spec(t, id).Ammo != combat.AmmoNone {
@@ -125,7 +155,7 @@ func TestAttackSpecs(t *testing.T) {
 	if s := spec(t, 4121003); len(s.OnHit) != 3 || s.OnHit[0].Stat != combat.MobShowdown {
 		t.Fatalf("taunt %+v", s.OnHit)
 	}
-	for id, st := range map[int]combat.MobStat{4111003: combat.MobWeb, 4121004: combat.MobAmbush, 4221004: combat.MobAmbush} {
+	for id, st := range map[int]combat.MobStat{4121004: combat.MobAmbush, 4221004: combat.MobAmbush} {
 		s := spec(t, id)
 		if s.Kind != 0 || s.MobCast == nil || !s.MobCast.UseBox || s.MobCast.Statuses[0].Stat != st {
 			t.Errorf("skill %d monster cast %+v", id, s.MobCast)
@@ -202,17 +232,17 @@ func trigger(t *testing.T, id, level int, e *combat.AttackEvent) *skills.BuffCha
 	return registered(t, id).OnAttack(&skills.TriggerContext{Skill: ctx.Skill, Level: level, Values: ctx.Values, Attack: e, Now: time.Unix(0, 0)})
 }
 
-// Final Cut's buff follows Java effect.applyTo: only after its own attack hit
-// something, FINAL_CUT y for 900 seconds; the HP cost is paid with the attack.
+// Final Cut grants the v148 WZ y and time after its own hit. Its attack pays
+// the v148 WZ HP ratio.
 func TestFinalCutAfterHit(t *testing.T) {
 	c := trigger(t, 4341002, 30, &combat.AttackEvent{SkillID: 4341002, Targets: []int32{7}})
-	if c == nil || c.Cancel || c.Buff == nil || c.Buff.Duration != 900*time.Second || !reflect.DeepEqual(c.Buff.Stats, buff(stat("FINAL_CUT", 140))) {
+	if c == nil || c.Cancel || c.Buff == nil || c.Buff.Duration != 60*time.Second || !reflect.DeepEqual(c.Buff.Stats, buff(stat("FINAL_CUT", 160))) {
 		t.Fatalf("final cut %+v", c)
 	}
 	if trigger(t, 4341002, 30, &combat.AttackEvent{SkillID: 4341002}) != nil || trigger(t, 4341002, 30, &combat.AttackEvent{SkillID: 4341004, Targets: []int32{7}}) != nil {
 		t.Fatal("final cut without its own hit")
 	}
-	if ctx := prepared(t, 4341002, 30, combat.Melee, learnedChar(434), combat.PlayerStats{}); ctx.Effect.HPRatio != 20 {
+	if ctx := prepared(t, 4341002, 30, combat.Melee, learnedChar(434), combat.PlayerStats{}); ctx.Effect.HPRatio != 10 {
 		t.Fatalf("final cut hp ratio %d", ctx.Effect.HPRatio)
 	}
 }
@@ -221,7 +251,6 @@ func TestDamageOverTimeSources(t *testing.T) {
 	for id, want := range map[int]combat.MobStatusApply{
 		4121004: {Stat: combat.MobAmbush, Poison: true, TickFrom: "damage"},
 		4221004: {Stat: combat.MobAmbush, Poison: true, TickFrom: "damage"},
-		4111003: {Stat: combat.MobWeb, Poison: true, TickFrom: "mobhp50"},
 	} {
 		if got := spec(t, id).MobCast.Statuses; len(got) != 1 || got[0] != want {
 			t.Errorf("skill %d %+v", id, got)
@@ -235,6 +264,37 @@ func TestDamageOverTimeSources(t *testing.T) {
 	}
 	if s := spec(t, 4341006).Summon; s.HP != 0 {
 		t.Fatal("mirrored target HP must come from WZ x")
+	}
+}
+
+func TestV148ShadowWebPlansMeleeDamageAndWZTicks(t *testing.T) {
+	ch := learnedChar(411)
+	ch.ID, ch.MP = 7, 500
+	stats := combat.PlayerStats{Job: 411, LUK: 400, DEX: 50, STR: 4, WATK: 100, WeaponID: 1472000}
+	def, err := content.SkillDefinition(t.TempDir(), 4111003)
+	if err != nil {
+		t.Fatal(err)
+	}
+	effect, err := combat.FromSkill(def, 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx := combat.AttackContext{Kind: combat.Melee, Character: ch, Stats: stats, Effect: effect, Now: time.Unix(1000, 0)}
+	ctx.Attack = protocol.Attack{
+		Opcode: protocol.RecvMeleeAttack, SkillID: 4111003, TByte: 0x11,
+		Targets: []protocol.AttackTarget{{ObjectID: 3, Lines: []protocol.AttackLine{{Raw: 100}}}},
+	}
+	ctx.Targets = []combat.TargetInfo{{ObjectID: 3, X: -10, HP: 100000}}
+	p, err := combat.PlanAttack(spec(t, 4111003), ctx, func(prop int) bool { return prop == 80 })
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Cost.MP != 25 || len(p.Targets) != 1 || p.Targets[0].Total() != 100 || len(p.Targets[0].Statuses) != 1 {
+		t.Fatalf("Shadow Web plan %+v", p)
+	}
+	if s := p.Targets[0].Statuses[0]; s.Stat != combat.MobWeb || s.ExpiresAt.Sub(ctx.Now) != 8*time.Second ||
+		s.Interval != time.Second || s.TickDamage != combat.MaxBaseDamage(stats) {
+		t.Fatalf("Shadow Web status %+v", s)
 	}
 }
 
@@ -313,11 +373,19 @@ func TestLifeDrain(t *testing.T) {
 
 func TestStealRollsPropOnNonBosses(t *testing.T) {
 	defer func(r func(int) bool, b func(int) bool) { roll, mobBoss = r, b }(roll, mobBoss)
-	roll = func(p int) bool { return p == 40 }
+	def, err := content.ConfiguredSkillDefinition(4201004)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wz, err := def.Values(def.MaxLevel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	roll = func(p int) bool { return p == wz["prop"] }
 	mobBoss = func(id int) bool { return id == 9 }
 	var stolen []int32
 	e := combat.AttackEvent{SkillID: 4201004, Now: time.Unix(1000, 0),
-		Session:   domain.CharacterSession{Character: learnedChar(422, domain.SkillState{ID: 4201004, Level: 20})},
+		Session:   domain.CharacterSession{Character: learnedChar(422, domain.SkillState{ID: 4201004, Level: def.MaxLevel})},
 		Hits:      []combat.HitInfo{{ObjectID: 1, MobID: 100100}, {ObjectID: 2, MobID: 9}},
 		StealItem: func(h combat.HitInfo) error { stolen = append(stolen, h.ObjectID); return nil }}
 	spec(t, 4201004).AfterHit(e)

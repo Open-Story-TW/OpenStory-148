@@ -82,7 +82,7 @@ const PartyDataSize = 383
 // (-1 offline), a per-member byte flag +210 (party op 44), leader +234. Then
 // field ids +238 (unknown/offline 999999999), portals +262 (town, field,
 // skill, x, y) and the setting byte +382. Unknown maps are never inferred
-// from the character's stale checkpoint. Door functionality is not advertised.
+// from the character's stale checkpoint.
 func writePartyData(w *Writer, p domain.PartySnapshot) {
 	if !validPartyID(p.ID) || !validPartyID(p.LeaderID) || len(p.Members) < 1 || len(p.Members) > domain.PartyCapacity {
 		w.err = ErrMalformed
@@ -110,14 +110,41 @@ func writePartyData(w *Writer, p domain.PartySnapshot) {
 			w.I32(int32(m.MapID))
 		}
 	}
-	for range domain.PartyCapacity {
-		w.I32(999999999)
-		w.I32(999999999)
-		w.I32(0)
-		w.I32(0)
-		w.I32(0)
+	for _, m := range slots {
+		d := partyTownPortal(m.TownPortal)
+		w.I32(int32(d.TownMap))
+		w.I32(int32(d.FieldMap))
+		w.I32(int32(d.SkillID))
+		w.I32(int32(d.X))
+		w.I32(int32(d.Y))
 	}
 	w.Bool(p.Setting)
+}
+
+func partyTownPortal(d domain.PartyTownPortal) domain.PartyTownPortal {
+	if d.TownMap <= 0 || d.TownMap >= NoTownPortal || d.FieldMap <= 0 || d.FieldMap >= NoTownPortal ||
+		d.TownMap == d.FieldMap || d.SkillID <= 0 || d.SkillID > math.MaxInt32 {
+		return domain.PartyTownPortal{TownMap: NoTownPortal, FieldMap: NoTownPortal}
+	}
+	return d
+}
+
+// PartyTownPortalUpdate follows v148 party operation 60 at 0x9EF8F2.
+// The client widens X and Y into the 20-byte runtime PARTYDATA slot.
+func PartyTownPortalUpdate(slot int, portal domain.PartyTownPortal) []byte {
+	if slot < 0 || slot >= domain.PartyCapacity {
+		return nil
+	}
+	d := partyTownPortal(portal)
+	w := NewWriter(SendParty)
+	w.U8(60)
+	w.U8(byte(slot))
+	w.I32(int32(d.TownMap))
+	w.I32(int32(d.FieldMap))
+	w.I32(int32(d.SkillID))
+	w.I16(d.X)
+	w.I16(d.Y)
+	return w.Packet()
 }
 
 // writePartyMembers writes the 238-byte member block, which an expedition

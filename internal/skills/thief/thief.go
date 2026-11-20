@@ -131,6 +131,13 @@ func values(ch domain.Character, now time.Time, id int) map[string]int {
 	return v
 }
 
+// basicWeaponMastery retains the basic skill's accuracy. Native v148
+// 0x6D8DDE uses the advanced mastery when available and falls back to
+// the basic mastery only when the advanced value is zero.
+func basicWeaponMastery(c *skills.PassiveContext, advancedID int) skills.Bonus {
+	return skills.Bonus{Mastery: c.BasicMastery(advancedID), ACC: c.Values["x"]}
+}
+
 // roll is a server-side chance in percent.
 var roll = func(prop int) bool { return rand.IntN(100) < prop }
 
@@ -144,7 +151,7 @@ var rollRange = func(lo, hi int) int {
 
 // venomAttacks are the attacks Java DamageParse lets Venom poison on hit.
 var venomAttacks = map[int]bool{
-	4301001: true, 4311002: true, 4311003: true, 4331000: true, 4331005: true, 4341002: true, 4341004: true,
+	4301001: true, 4301004: true, 4311002: true, 4311003: true, 4321006: true, 4331000: true, 4331005: true, 4341002: true, 4341004: true,
 	4331006: true, 4341009: true, 4221007: true, 4221001: true, 4211002: true, 4201005: true, 4001002: true,
 	4001334: true, 4121007: true, 4111005: true, 4001344: true,
 }
@@ -154,16 +161,38 @@ var venomAttacks = map[int]bool{
 // MapleMonster.applyStatus). The v148 books split it into a third job skill
 // and a fourth job one that replaces it; the strongest learned one counts.
 func venom(ctx *combat.AttackContext) error {
-	for _, id := range []int{4120011, 4220011, 4110011, 4210010, 4120005, 4220005, 4340001} {
+	for _, id := range []int{4120011, 4220011, 4340012, 4110011, 4210010, 4320005, 4120005, 4220005, 4340001} {
+		if !domain.CanLearnSkill(ctx.Character.Job, id) {
+			continue
+		}
 		v := values(ctx.Character, ctx.Now, id)
 		if v == nil {
 			continue
 		}
 		tick := max(1, int64(v["dot"])*combat.MaxBaseDamage(ctx.Stats)/100)
+		status := combat.MobPoison
+		switch id {
+		case 4120011:
+			if ctx.Stats.WeaponID/10000 != weaponClaw {
+				continue
+			}
+			status = combat.MobBurned
+		case 4220011:
+			if ctx.Stats.WeaponID/10000 != weaponDagger {
+				continue
+			}
+			status = combat.MobBurned
+		case 4340012:
+			// CMob's v148 tick distinguishes these three skill IDs in BurnedInfo.
+			if ctx.Stats.WeaponID/10000 != weaponDagger || !kataraEquipped(ctx.Character) {
+				continue
+			}
+			status = combat.MobBurned
+		}
 		ctx.Effect.MonsterStatus = append(ctx.Effect.MonsterStatus, combat.MobStatusApply{
-			Stat: combat.MobPoison, Poison: true, Value: int(min(tick, 0x7fffffff)),
+			Stat: status, Poison: true, Value: int(min(tick, 0x7fffffff)),
 			Prop: max(1, v["prop"]), Duration: time.Duration(v["dotTime"]) * time.Second,
-			SourceSkill: id, StackLimit: v["dotSuperpos"],
+			SourceSkill: id, StackLimit: v["dotSuperpos"], DOTInterval: time.Duration(v["dotInterval"]) * time.Second,
 		})
 		return nil
 	}
@@ -238,6 +267,15 @@ func weaponType(c domain.Character) int {
 		}
 	}
 	return 0
+}
+
+func kataraEquipped(c domain.Character) bool {
+	for _, e := range c.Equipment {
+		if e.Slot == -10 && e.ItemID/10000 == weaponKatara {
+			return true
+		}
+	}
+	return false
 }
 
 const (

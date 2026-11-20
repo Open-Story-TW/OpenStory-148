@@ -22,11 +22,12 @@ type mapKey struct {
 }
 
 type mapMember struct {
-	id      int64
-	x, y    int
-	look    domain.Character
-	sink    packetSink
-	visible map[int64]struct{}
+	id          int64
+	x, y        int
+	look        domain.Character
+	sink        packetSink
+	visible     map[int64]struct{}
+	coconutTeam *byte
 	// Evan dragon position from MOVE_DRAGON; the owner position until moved.
 	dragonX, dragonY int
 	dragonMoved      bool
@@ -114,6 +115,10 @@ func newMapSpace(radius int) *mapSpace {
 }
 
 func (m *mapSpace) Enter(channel, mapID int, look domain.Character, sink packetSink) {
+	m.enter(channel, mapID, look, sink, nil)
+}
+
+func (m *mapSpace) enter(channel, mapID int, look domain.Character, sink packetSink, coconutTeam *byte) {
 	if channel < 1 || mapID < 0 || look.ID <= 0 || sink == nil {
 		return
 	}
@@ -122,7 +127,7 @@ func (m *mapSpace) Enter(channel, mapID int, look domain.Character, sink packetS
 	defer m.publication.Unlock()
 	var spawned []mapSpawnPair
 	self := &mapMember{
-		id: look.ID, x: look.X, y: look.Y, look: look, sink: sink,
+		id: look.ID, x: look.X, y: look.Y, look: look, sink: sink, coconutTeam: coconutTeam,
 		visible: map[int64]struct{}{}, watching: map[int64]struct{}{}, hidden: gmHidden(look),
 	}
 	m.mu.Lock()

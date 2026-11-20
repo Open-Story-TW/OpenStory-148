@@ -60,9 +60,8 @@ func (s *Store) ExpireCashLocker(ctx context.Context, session domain.CashSession
 	return expired, tx.Commit()
 }
 
-// ExpireCashInventory uses the database clock and the same fencing and revision
-// contract as item commands. A concurrent transfer or checkpoint cannot restore
-// an expired asset after this transaction commits.
+// ExpireCashInventory also retires timed ordinary bundles. It uses the same
+// database clock, fencing and revision contract as item commands.
 func (s *Store) ExpireCashInventory(ctx context.Context, session domain.CharacterSession) (domain.InventoryResult, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -98,7 +97,7 @@ func (s *Store) ExpireCashInventory(ctx context.Context, session domain.Characte
 	for _, item := range c.Items {
 		// An expired pet stays in the bag (Legacy keeps the "doll"); its summon
 		// is recalled by the pet tick and refused while expired.
-		if item.CashID > 0 && item.ExpiresAt > 0 && item.ExpiresAt <= now && !domain.IsPetTemplate(item.TemplateID) {
+		if item.ExpiresAt > 0 && item.ExpiresAt <= now && !domain.IsPetTemplate(item.TemplateID) {
 			if _, err = tx.ExecContext(ctx, `DELETE FROM asset_items WHERE id=$1 AND character_id=$2`, item.ID, c.ID); err != nil {
 				return domain.InventoryResult{}, err
 			}

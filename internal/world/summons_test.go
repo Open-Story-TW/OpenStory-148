@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
@@ -77,6 +78,46 @@ func TestSummonSpawnLateJoinMoveAndOwnerLeave(t *testing.T) {
 	}
 }
 
+func TestSummonPeerPacketReportsBoundLinesInNativeOrder(t *testing.T) {
+	attack := genericAttack{
+		summon:           &roomSummon{ownerID: 1, objectID: 900},
+		summonOwnerLevel: 100,
+		summonAction:     132,
+		summonHitOrder:   []int{0, 1, 0, 1},
+		attack: protocol.Attack{Targets: []protocol.AttackTarget{
+			{ObjectID: 1001, Lines: []protocol.AttackLine{{Damage: 5}, {Damage: 7}}},
+			{ObjectID: 1002, Lines: []protocol.AttackLine{{Damage: 4}, {Damage: 3}}},
+		}},
+	}
+	r := protocol.NewReader(attack.remotePacket(domain.Character{}, nil))
+	if r.U16() != protocol.SendSummonAttack || r.I32() != 1 || r.I32() != 900 || r.U8() != 99 || r.U8() != 132 || r.U8() != 4 {
+		t.Fatalf("incorrect native summon attack header: %+v", attack)
+	}
+	for _, want := range [][2]int{{1001, 5}, {1002, 4}, {1001, 7}, {1002, 3}} {
+		if oid, anim, damage := r.I32(), r.U8(), r.U32(); int(oid) != want[0] || anim != 7 || int(damage) != want[1] {
+			t.Fatalf("peer row got %d %d %d want %v", oid, anim, damage, want)
+		}
+	}
+	if r.U8() != 0 || r.Remaining() != 0 || r.Err() != nil {
+		t.Fatal("malformed summon peer tail")
+	}
+}
+
+func TestSingleHitSummonDoesNotGainExtraDamageFromRepeatedWireObject(t *testing.T) {
+	s, lives, sinks, mob, oid := summonFixture(t)
+	mob.hp = 1000
+	in := protocol.SummonAttackInput{ObjectID: oid, Tick: 5, Targets: []protocol.AttackTarget{{
+		ObjectID: mob.objectID,
+		Lines:    []protocol.AttackLine{{Raw: 7, Damage: 7}, {Raw: 7, Damage: 7}},
+	}}, HitOrder: []int{0, 0}}
+	if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], in); err != nil {
+		t.Fatal(err)
+	}
+	if mob.hp != 1000 || sinks[1].count(protocol.SendSummonAttack) != 0 {
+		t.Fatalf("single-hit summon admitted repeated damage: HP %d", mob.hp)
+	}
+}
+
 func TestSummonAttackSettlesWithoutCostAndExpires(t *testing.T) {
 	s, lives, sinks, mob, oid := summonFixture(t)
 	mob.hp = 1000
@@ -122,6 +163,205 @@ func TestSummonAttackSettlesWithoutCostAndExpires(t *testing.T) {
 	s.gameplay.tickSummons(time.Now().Add(11 * time.Second))
 	if sinks[1].count(protocol.SendRemoveSummon) != 1 {
 		t.Fatal("summon did not expire")
+	}
+}
+
+func TestAF11ExpiryAttackUsesOriginalActionBoundsAndObjectOnce(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	s, lives, sinks, mob := sharedWorldFixture(t)
+	s.repo = &sharedCombatRepo{apply: func(q domain.CombatAttackRequest) (domain.CombatAttackResult, error) { return fakeSharedResult(q), nil }}
+	c := &lives[0].session.Character
+	c.Job, c.Equipment[0].ItemID = 3512, 1492004
+	c.Skills = append(c.Skills, domain.SkillState{ID: 35121010, Level: 20})
+	mob.hp = 1000
+	stamp := time.Now()
+	oid, err := s.SpawnSummon(1, lives[0], 35121010, 20, stamp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	room := s.gameplay.rooms[mapKey{channel: 1, mapID: c.MapID}]
+	m := room.summons[oid]
+	if m.expiresAt != stamp.Add(80*time.Second) || m.deathWindow != 1080*time.Millisecond || m.deathEffect.Damage != 300 || m.deathEffect.MobCount != 6 || m.deathEffect.AttackCount != 1 || m.deathEffect.Box.LT != (combat.Point{X: -120, Y: -120}) || m.deathEffect.Box.RB != (combat.Point{X: 120, Y: 0}) {
+		t.Fatalf("AF-11 v148 data: duration %s, death window %s, effect %+v", m.expiresAt.Sub(stamp), m.deathWindow, m.deathEffect)
+	}
+	mob.life.X, mob.life.Y = m.x, m.y
+	in := protocol.SummonAttackInput{ObjectID: oid, Tick: 5, Action: 0x11, Targets: []protocol.AttackTarget{{ObjectID: mob.objectID, Lines: []protocol.AttackLine{{Raw: 7, Damage: 7}}}}}
+	attack := func() {
+		t.Helper()
+		if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], in); err != nil {
+			t.Fatal(err)
+		}
+	}
+	attack() // The real terminal mode cannot damage targets while AF-11 is active.
+	m.expiresAt = time.Now().Add(-25 * time.Millisecond)
+	s.gameplay.tickSummons(time.Now())
+	if room.summons[oid] != m {
+		t.Fatal("world discarded the original object during its death animation")
+	}
+	if m.amplifierAreaActive || sinks[0].count(protocol.SendAffectedAreaRemoved) != 1 || sinks[1].count(protocol.SendAffectedAreaRemoved) != 1 {
+		t.Fatal("expiry did not remove the area independently of the death animation")
+	}
+	in.Action = 4
+	attack() // The normal summon action is invalid even inside the death window.
+	in.Action = 0x11
+	mob.life.X = m.x + 121
+	in.X = int16(mob.life.X)
+	attack() // The client cannot move the origin of the immobile robot's explosion.
+	if mob.hp != 1000 {
+		t.Fatalf("early, wrong-action or out-of-bounds AF-11 attack damaged mob: %d", mob.hp)
+	}
+	mob.life.X = m.x + 96
+	attack()
+	in.Tick++
+	attack() // A different tick cannot replay the terminal attack.
+	if mob.hp != 993 || sinks[1].count(protocol.SendSummonAttack) != 1 {
+		t.Fatalf("AF-11 terminal attack did not settle exactly once: hp %d", mob.hp)
+	}
+	s.gameplay.tickSummons(time.Now().Add(time.Second))
+	if room.summons[oid] != nil || sinks[1].count(protocol.SendRemoveSummon) != 1 {
+		t.Fatal("AF-11 was not removed after its terminal attack")
+	}
+}
+
+func TestAF11AffectedAreaAdmitsOnlyTheExactOwnerOrAnInRangePartyMember(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	s, lives, sinks, _ := sharedWorldFixture(t)
+	now := time.Now()
+	caster := &lives[0].session.Character
+	caster.Job, caster.X, caster.Y = 3512, 50, 215
+	caster.Skills = append(caster.Skills, domain.SkillState{ID: af11Skill, Level: 20})
+	pos := combat.Point{X: caster.X, Y: caster.Y}
+	oid, err := s.spawnSummonAt(1, lives[0], af11Skill, 20, &pos, now, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	room := s.gameplay.rooms[mapKey{channel: 1, mapID: caster.MapID}]
+	for _, sink := range sinks {
+		if sink.count(protocol.SendSpawnSummon) != 1 || sink.count(protocol.SendAffectedAreaCreated) != 1 {
+			t.Fatal("owner and observer must both receive the summon and its amplification area")
+		}
+	}
+	m := room.summons[oid]
+	r := protocol.NewReader(m.amplifierAreaPacket(now))
+	if r.U16() != protocol.SendAffectedAreaCreated || r.I32() != oid || r.I32() != 1 || r.I32() != int32(caster.ID) ||
+		r.I32() != af11Skill || r.U8() != 20 || r.U16() != 0 || r.I32() != -150 || r.I32() != 125 || r.I32() != 250 || r.I32() != 240 {
+		t.Fatal("AF-11 area packet does not encode the exact original WZ rectangle and owner")
+	}
+	if got := summonEnterPacketsLocked(room); len(got) != 2 {
+		t.Fatal("late entrant did not receive both live objects")
+	}
+	party := domain.PartySnapshot{ID: 1, Members: []domain.PartyMember{{CharacterID: caster.ID}, {CharacterID: lives[1].session.Character.ID}}}
+	member := lives[1].session.Character
+	member.X, member.Y = 249, 239
+	if physical, magic := amplifierDamageLocked(room, member, party, now); physical != 20 || magic != 20 {
+		t.Fatalf("in-range member got %d physical and %d magic", physical, magic)
+	}
+	if physical, _ := amplifierDamageLocked(room, member, domain.PartySnapshot{}, now); physical != 0 {
+		t.Fatal("amplification leaked to an outsider")
+	}
+	if physical, _ := amplifierDamageLocked(room, *caster, domain.PartySnapshot{}, now); physical != 20 {
+		t.Fatal("unpartied owner did not receive own amplification")
+	}
+	for _, outside := range []combat.Point{{X: 250, Y: 215}, {X: 50, Y: 240}, {X: -151, Y: 215}} {
+		member.X, member.Y = outside.X, outside.Y
+		if physical, magic := amplifierDamageLocked(room, member, party, now); physical != 0 || magic != 0 {
+			t.Fatalf("member outside the native rectangle at %+v got %d/%d", outside, physical, magic)
+		}
+	}
+	s.leaveGameplay(1, caster.MapID, caster.ID, sinks[0])
+	if sinks[1].count(protocol.SendAffectedAreaRemoved) != 1 || sinks[1].count(protocol.SendRemoveSummon) != 1 || len(room.summons) != 0 {
+		t.Fatal("AF-11 left a detached area or robot after its owner left")
+	}
+}
+
+func TestSG88BodyRequiresItsLiveOwnedRobot(t *testing.T) {
+	const id = 35121003
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	s, lives, sinks, mob := sharedWorldFixture(t)
+	calls := 0
+	s.repo = &sharedCombatRepo{apply: func(q domain.CombatAttackRequest) (domain.CombatAttackResult, error) {
+		calls++
+		return fakeSharedResult(q), nil
+	}}
+	now := time.Now()
+	for _, live := range lives {
+		c := &live.session.Character
+		c.Job, c.Equipment[0].ItemID = 3512, 1492004
+		c.Skills = append(c.Skills, domain.SkillState{ID: id, Level: 30})
+		c.SkillBuffs = append(c.SkillBuffs, domain.SkillBuff{ID: id, Stat: "COMBO", Value: 1, ExpiresAt: now.Add(time.Minute)})
+	}
+	mob.hp, mob.life.X, mob.life.Y = 1000, 0, 0
+	attack := func(owner int, tick uint32) {
+		t.Helper()
+		a := genericMelee(id, tick, mob.objectID, 7)
+		a.Opcode = protocol.RecvBodyAttack
+		if err := s.genericAttackGameplay(context.Background(), 1, lives[owner], sinks[owner], a); err != nil {
+			t.Fatal(err)
+		}
+	}
+	attack(0, 1)
+	if _, err := s.SpawnSummon(1, lives[0], id, 30, now); err != nil {
+		t.Fatal(err)
+	}
+	attack(1, 2)
+	if mob.hp != 1000 {
+		t.Fatalf("SG-88 pulse accepted with no live owned robot: hp %d", mob.hp)
+	}
+	attack(0, 3)
+	if mob.hp != 993 || calls != 0 || sinks[1].count(protocol.SendBodyAttack) != 1 {
+		t.Fatalf("SG-88 pulse did not settle once as a free body attack: hp %d, calls %d", mob.hp, calls)
+	}
+}
+
+func TestSG88SummonUsesOriginalChargeWithoutExceedingDoubleDamage(t *testing.T) {
+	const id = 35121003
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	template, err := content.SkillDefinition("", id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name          string
+		gauge         uint32
+		damagePercent int
+	}{
+		{"uncharged", 0, 1440},
+		{"original forty", 40, 2016},
+		{"full", 100, 2880},
+		{"outside original scale", ^uint32(0), 2880},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			s, lives, sinks, mob := sharedWorldFixture(t)
+			s.repo = &sharedCombatRepo{}
+			c := &lives[0].session.Character
+			c.Job, c.Equipment[0].ItemID = 3512, 1492004
+			c.Skills = append(c.Skills, domain.SkillState{ID: id, Level: 30})
+			now := time.Now()
+			oid, err := s.SpawnSummon(1, lives[0], id, 30, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			stats, err := combat.AttackStats(*c, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			effect, err := combat.SummonEffect(template, 30)
+			if err != nil {
+				t.Fatal(err)
+			}
+			effect.Damage = tc.damagePercent
+			mob.hp = 1_000_000
+			want := combat.SummonCeiling(combat.DamageContext{Stats: stats, Effect: effect, Mob: mob.stats, HP: mob.hp, Attacker: *c})
+			const claim = 500_000
+			in := protocol.SummonAttackInput{ObjectID: oid, Tick: 3, Action: 132, ChargeGauge: tc.gauge,
+				Targets: []protocol.AttackTarget{{ObjectID: mob.objectID, Lines: []protocol.AttackLine{{Raw: claim, Damage: claim}}}}}
+			if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], in); err != nil {
+				t.Fatal(err)
+			}
+			if got := 1_000_000 - mob.hp; got != int64(want) || want <= 0 || sinks[1].count(protocol.SendSummonAttack) != 1 {
+				t.Fatalf("SG-88 settled %d damage, want %d with charge %d", got, want, tc.gauge)
+			}
+		})
 	}
 }
 

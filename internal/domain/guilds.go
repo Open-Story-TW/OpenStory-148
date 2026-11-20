@@ -27,6 +27,13 @@ const (
 	AllianceMaxGuilds   = 5
 )
 
+const (
+	GuildSupportQuestID = 26000
+	GuildSupportNPCID   = 2010010
+	GuildSupportSkillID = 91000006
+	GuildSupportPotion  = 2002037
+)
+
 // Legacy GameConstants.guildexp; level i needs guildexp[i] GP.
 var guildExp = [...]int{0, 20000, 160000, 540000, 1280000, 2500000, 4320000, 6860000, 10240000, 14580000}
 

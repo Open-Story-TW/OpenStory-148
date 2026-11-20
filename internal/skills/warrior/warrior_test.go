@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-// Every thread-W skill of the plan inventory is registered here, and only those.
+// The original warrior inventory remains registered alongside the v148 jobs.
 func TestRegistersEveryInventorySkill(t *testing.T) {
 	raw, err := os.ReadFile("../testdata/skill-plan-inventory.json")
 	if err != nil {
@@ -36,7 +36,7 @@ func TestRegistersEveryInventorySkill(t *testing.T) {
 		}
 	}
 	for _, id := range skills.IDs() {
-		if h, _ := skills.Lookup(id); h.Package() == "warrior" {
+		if h, _ := skills.Lookup(id); h.Package() == "warrior" && !domain.IsMihileJob(id/10000) {
 			got = append(got, id)
 		}
 	}
@@ -177,13 +177,13 @@ func spec(t *testing.T, id int) *combat.AttackSpec {
 	return h.Attack
 }
 
-// Real attacks use the melee packet; summon and monster-cast specs can never
-// be named by an attack packet.
+// Adventurer attacks use the melee packet. Summons and monster casts use their
+// own packets.
 func TestAttacksUseTheirPacket(t *testing.T) {
 	n := 0
 	for _, id := range skills.IDs() {
 		h, _ := skills.Lookup(id)
-		if h.Package() != "warrior" || h.Attack == nil {
+		if h.Package() != "warrior" || h.Attack == nil || domain.IsMihileJob(id/10000) {
 			continue
 		}
 		if h.Attack.MobCast != nil || h.Attack.Summon != nil {
@@ -199,6 +199,70 @@ func TestAttacksUseTheirPacket(t *testing.T) {
 	}
 	if n != 27 {
 		t.Fatalf("%d warrior attacks", n)
+	}
+}
+
+func TestMihileSoulBladeAndSwordMastery(t *testing.T) {
+	if got := spec(t, 51001004); got.Kind != combat.Shoot || got.Ammo != combat.AmmoNone {
+		t.Fatalf("Soul Blade spec = %+v", got)
+	}
+	for _, tc := range []struct {
+		item int
+		want skills.Bonus
+	}{
+		{1302000, skills.Bonus{Mastery: 50, ACC: 120}},
+		{1402000, skills.Bonus{}},
+	} {
+		character := wielding(tc.item)
+		character.Job = 5110
+		c := skills.PassiveContext{Character: character, Values: map[string]int{"mastery": 50, "accX": 120}}
+		if got := mihileSwordMastery(&c); got != tc.want {
+			t.Errorf("weapon %d gives %+v, want %+v", tc.item, got, tc.want)
+		}
+	}
+}
+
+func TestMihileV148AttackFamilies(t *testing.T) {
+	for _, id := range []int{51100002, 51101005, 51101006, 51111006, 51120002, 51121007} {
+		if got := spec(t, id).Kind; got != combat.Melee {
+			t.Errorf("%d is family %v, want 0x55", id, got)
+		}
+	}
+	for _, id := range []int{51001004, 51111007, 51121008} {
+		got := spec(t, id)
+		if got.Kind != combat.Shoot || got.Ammo != combat.AmmoNone {
+			t.Errorf("%d is %+v, want ammo-free 0x56", id, got)
+		}
+	}
+	for _, id := range []int{51111007, 51121008} {
+		if got := spec(t, id).OnHit; !reflect.DeepEqual(got, stun) {
+			t.Errorf("%d stun effect = %+v", id, got)
+		}
+	}
+	darkness := spec(t, 51121007).OnHit
+	if len(darkness) != 1 || darkness[0].Stat != combat.MobDarkness || darkness[0].ValueFrom != "x" {
+		t.Fatalf("Soul Assault darkness = %+v", darkness)
+	}
+	clock := time.Unix(100, 0)
+	effect := combat.Effect{SkillID: 51121007, X: 15, Prop: 25, Time: 70 * time.Second}
+	for _, target := range []struct {
+		boss bool
+		want time.Duration
+	}{
+		{false, 70 * time.Second},
+		{true, 35 * time.Second},
+	} {
+		mob := content.Mob{Boss: target.boss}
+		status, ok := combat.ResolveOn(darkness[0], effect, 1, 100, mob, clock, func(prop int) bool { return prop == 25 })
+		if !combat.CanInflict(mob, darkness[0].Stat, combat.Physical) || !ok || status.Value != 15 || status.ExpiresAt.Sub(clock) != target.want {
+			t.Errorf("Soul Assault darkness on boss=%v = %+v", target.boss, status)
+		}
+	}
+	for _, id := range []int{51100002, 51120002} {
+		prepare := spec(t, id).Prepare
+		if prepare(&combat.AttackContext{Character: wielding(1302000)}) != nil || prepare(&combat.AttackContext{Character: wielding(1402000)}) == nil {
+			t.Errorf("%d must require a one-handed sword", id)
+		}
 	}
 }
 
@@ -244,18 +308,23 @@ func comboBuff(value int) domain.Character {
 	return domain.Character{SkillBuffs: []domain.SkillBuff{{ID: 1111002, Stat: "COMBO", Value: value, ExpiresAt: time.Unix(200, 0)}}}
 }
 
-// Java PlayerHandler.isFinisher: orbs required, ceiling × orbs.
+// v148 WZ y sets the required orb count for each finisher.
 func TestFinishersNeedCombo(t *testing.T) {
-	for _, id := range []int{1111003, 1111005} {
-		if _, err := prepared(t, id, buffed(), combat.Effect{Damage: 500}); err == nil {
-			t.Errorf("%d without combo accepted", id)
+	for _, tc := range []struct{ id, required int }{{1111003, 2}, {1111005, 1}} {
+		cast := castCtx(t, tc.id, 20)
+		eff, err := combat.FromSkill(cast.Skill, 20)
+		if err != nil || eff.Y != tc.required {
+			t.Fatalf("%d expected WZ cost %d: %+v %v", tc.id, tc.required, eff, err)
 		}
-		if _, err := prepared(t, id, comboBuff(1), combat.Effect{Damage: 500}); err == nil {
-			t.Errorf("%d with zero orbs accepted", id)
+		if _, err := prepared(t, tc.id, buffed(), eff); err == nil {
+			t.Errorf("%d without combo accepted", tc.id)
 		}
-		e, err := prepared(t, id, comboBuff(4), combat.Effect{Damage: 500})
-		if err != nil || e.Damage != 1500 {
-			t.Errorf("%d with 3 orbs: %d %v", id, e.Damage, err)
+		if _, err := prepared(t, tc.id, comboBuff(tc.required), eff); err == nil {
+			t.Errorf("%d accepted with one fewer orb", tc.id)
+		}
+		e, err := prepared(t, tc.id, comboBuff(tc.required+1), eff)
+		if err != nil || e.Damage != eff.Damage*tc.required {
+			t.Errorf("%d with %d orbs: %d %v", tc.id, tc.required, e.Damage, err)
 		}
 	}
 }
@@ -280,6 +349,9 @@ func trigger(t *testing.T, id, level int, ch domain.Character, attack int, damag
 func comboAfter(t *testing.T, ch domain.Character, attack int) int {
 	t.Helper()
 	ch.Skills = append(ch.Skills, domain.SkillState{ID: 1111002, Level: 20})
+	if attack == 1111003 || attack == 1111005 {
+		ch.Skills = append(ch.Skills, domain.SkillState{ID: attack, Level: 20})
+	}
 	got := trigger(t, 1111002, 20, ch, attack, 0)
 	if got == nil {
 		v, _ := skills.ActiveStat(ch, "COMBO", time.Unix(100, 0))
@@ -291,12 +363,12 @@ func comboAfter(t *testing.T, ch domain.Character, attack int) int {
 	return got.Buff.Stats[0].Value
 }
 
-// Java handleOrbgain / handleOrbconsume.
+// v148 finisher cost plus normal orb gain.
 func TestComboOrbs(t *testing.T) {
 	cases := []struct{ value, attack, want int }{
 		{1, 1001004, 2}, {5, 1121008, 6}, {6, 1121008, 6}, // level 20 x = 5 orbs
 		{4, 1111008, 4}, {4, 1111002, 4}, // Shout and the cast give none
-		{4, 1111003, 3}, {4, 1111005, 2}, {2, 1111005, 1},
+		{4, 1111003, 2}, {4, 1111005, 3}, {3, 1111003, 1}, {2, 1111005, 1},
 	}
 	for _, c := range cases {
 		if got := comboAfter(t, comboBuff(c.value), c.attack); got != c.want {
@@ -461,6 +533,37 @@ func wielding(itemID int) domain.Character {
 	return domain.Character{Equipment: []domain.Equipment{{Slot: -5, ItemID: 1040002}, {Slot: -11, ItemID: itemID}}}
 }
 
+func TestV148PaladinChargeUpgradeUsesLearnedLevel(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	handler, ok := skills.Lookup(1211002)
+	if !ok || handler.Attack == nil || handler.Attack.LearnedEffect == nil {
+		t.Fatal("Charged Blow has no learned effect")
+	}
+	base := combat.Effect{SkillID: 1211002, Damage: 550, MobCount: 4, AttackCount: 1}
+	upgrade := domain.SkillState{ID: 1220010, Level: 10}
+	for _, test := range []struct {
+		name             string
+		job              int
+		learned          []domain.SkillState
+		damage, mob, hit int
+	}{
+		{"white knight", 121, []domain.SkillState{upgrade}, 550, 4, 1},
+		{"paladin before learning Elemental Force", 122, nil, 550, 4, 1},
+		{"paladin with max Elemental Force", 122, []domain.SkillState{upgrade}, 370, 6, 2},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			character := domain.Character{Job: test.job, Skills: test.learned}
+			e := base
+			if err := handler.Attack.ApplyLearnedEffect(character, time.Time{}, &e); err != nil {
+				t.Fatal(err)
+			}
+			if e.Damage != test.damage || e.MobCount != test.mob || e.AttackCount != test.hit {
+				t.Fatalf("Charged Blow effect %+v", e)
+			}
+		})
+	}
+}
+
 func TestPassives(t *testing.T) {
 	cases := []struct {
 		id, level int
@@ -488,7 +591,8 @@ func TestPassives(t *testing.T) {
 		{1220005, 30, domain.Character{}, skills.Bonus{WDEFPercent: 20}},
 		{1220006, 30, domain.Character{}, skills.Bonus{ASR: 30, TER: 30}},
 		{1310000, 20, domain.Character{}, skills.Bonus{TER: 50}},
-		{1320006, 30, domain.Character{}, skills.Bonus{DamagePercent: 60}},
+		{1320006, 30, domain.Character{HP: 199, MaxHP: 1000}, skills.Bonus{}},
+		{1320006, 30, domain.Character{HP: 200, MaxHP: 1000}, skills.Bonus{DamagePercent: 60, Speed: 20, Critical: 10, CriticalDamageMin: 15}},
 	}
 	for _, c := range cases {
 		if got := passive(t, c.id, c.level, c.ch); got != c.want {

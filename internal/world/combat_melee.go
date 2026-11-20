@@ -42,6 +42,9 @@ func (s *Server) settledMeleeGameplay(ctx context.Context, channel int, live *li
 	var err error
 	now := time.Now()
 	if family == domain.CombatPhysicalSkill {
+		if content.SubwaySurvivalStage(c.MapID) {
+			return reject()
+		}
 		profile, err = content.PhysicalAttackProfileFor(os.Getenv("MAPLEGO_WZ_ROOT"), c, a.Skill, now)
 		if err != nil {
 			return reject()
@@ -63,6 +66,7 @@ func (s *Server) settledMeleeGameplay(ctx context.Context, channel int, live *li
 	if len(a.Targets) > maxTargets || c.MP < cost {
 		return reject()
 	}
+	party := s.partySnapshotOf(c.ID)
 	g := s.gameplay
 	key := mapKey{channel: channel, mapID: c.MapID}
 	g.mu.Lock()
@@ -76,6 +80,7 @@ func (s *Server) settledMeleeGameplay(ctx context.Context, channel int, live *li
 		g.mu.Unlock()
 		return reject()
 	}
+	physicalAmp, _ := amplifierDamageLocked(room, c, party, now)
 	attackKey := live.nextAttackKey(now)
 	ticket := &combatTicket{actor: live, sink: sink, actorSession: session, key: key, attack: a, request: domain.CombatAttackRequest{Session: session, OperationID: fmt.Sprintf("combat-%s-%d-%d-%d", session.SessionID, session.Generation, attackKey, family), ClientTick: attackKey, Family: family, SkillID: a.Skill}}
 	seen := map[int32]bool{}
@@ -96,6 +101,9 @@ func (s *Server) settledMeleeGameplay(ctx context.Context, channel int, live *li
 			g.mu.Unlock()
 			return reject()
 		}
+		if physicalAmp > 0 {
+			maximum = int((int64(maximum)*int64(100+physicalAmp) + 99) / 100)
+		}
 		damage := min(target.Damage, maximum, int(mob.lethalHP()))
 		a.Targets[i].Damage = damage
 		q := domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage),
@@ -106,6 +114,7 @@ func (s *Server) settledMeleeGameplay(ctx context.Context, channel int, live *li
 		killed = killed || q.Defeated
 	}
 	member.attacked, member.lastTick, member.lastAttack = true, a.Tick, now
+	member.lastAttackWasGunShot = false
 	ticket.attack = a
 	if family == domain.CombatNormal && !killed {
 		// No durable cost or reward exists for an ordinary nonlethal swing. Its

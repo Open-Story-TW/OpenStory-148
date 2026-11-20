@@ -16,7 +16,7 @@ func TestInfinityTickPublishesValueAndMPOnlyRecoveryToCurrentVisit(t *testing.T)
 	snap := cloneCombatSession(a.session)
 	a.session.Character.MP = 29
 	beforeLocal, beforeRemote, beforeHP := first.count(0x2d), second.count(0x145), first.count(0x2c)
-	s.publishSkillTick(snap, first, domain.SkillResult{Character: a.session.Character, Updated: []domain.SkillBuff{buff}}, 50)
+	s.publishSkillTick(snap, first, domain.SkillResult{Character: a.session.Character, Updated: []domain.SkillBuff{buff}}, 50, a.session.Character.MP)
 	if first.count(0x2d) != beforeLocal+1 || second.count(0x145) != beforeRemote+1 || first.count(0x2c) != beforeHP+1 {
 		t.Fatal("missing value or MP-only update")
 	}
@@ -26,7 +26,7 @@ func TestInfinityTickPublishesValueAndMPOnlyRecoveryToCurrentVisit(t *testing.T)
 	newSink := &gameplayTestSink{}
 	enterBuffScope(t, s, a, newSink)
 	beforeRemote = second.count(0x145)
-	s.publishSkillTick(snap, first, domain.SkillResult{Updated: []domain.SkillBuff{buff}}, 50)
+	s.publishSkillTick(snap, first, domain.SkillResult{Updated: []domain.SkillBuff{buff}}, 50, a.session.Character.MP)
 	if second.count(0x145) != beforeRemote || newSink.count(0x2c) != 0 {
 		t.Fatal("old tick crossed visit")
 	}

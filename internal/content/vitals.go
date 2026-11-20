@@ -116,6 +116,9 @@ func DerivedVitals(c domain.Character, now time.Time) (hp, mp int, err error) {
 			hpPercent += buff.Value
 		}
 	}
+	dice := ActiveDiceBonuses(c, now)
+	hpPercent += dice.HPPercent
+	mpPercent += dice.MPPercent
 	hp += int(int64(hp) * int64(hpPercent) / 100)
 	mp += int(int64(mp) * int64(mpPercent) / 100)
 	// Java PlayerStats then adds the flat ENHANCED_MAXHP/MP and indie

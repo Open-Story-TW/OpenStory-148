@@ -18,9 +18,8 @@ var taunt = []combat.MobStatusApply{
 // base damage every second for the WZ time.
 var ambush = combat.MobStatusApply{Stat: combat.MobAmbush, Poison: true, TickFrom: "damage"}
 
-// shadowWeb is Java SHADOW_WEB (4111003): binds and ticks the monster's max
-// HP / 50 (MapleMonster.applyStatus).
-var shadowWeb = combat.MobStatusApply{Stat: combat.MobWeb, Poison: true, TickFrom: "mobhp50"}
+// Shadow Web binds the target and uses the v148 WZ dot, dotInterval and dotTime.
+var shadowWeb = combat.MobStatusApply{Stat: combat.MobWeb, Poison: true}
 
 // mobCast is a Java isMonsterBuff skill: statuses on the monsters the cast
 // packet names inside the WZ lt/rb box, no damage.

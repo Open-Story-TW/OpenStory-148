@@ -22,3 +22,20 @@ func TestDerivedVitalsAddsFlatBoostsAfterPercent(t *testing.T) {
 		t.Fatal(hp, mp, err)
 	}
 }
+
+func TestV148WillMaxHPEntersBeforePercent(t *testing.T) {
+	now := time.Unix(100, 0)
+	c := domain.Character{VitalsModel: 1, BaseMaxHP: 4496, BaseMaxMP: 2987,
+		SkillBuffs: []domain.SkillBuff{
+			{Stat: "MAXHP", Value: 60, ExpiresAt: now.Add(time.Minute)},
+			{Stat: "MAXMP", Value: 40, ExpiresAt: now.Add(time.Minute)},
+		},
+	}
+	for _, sample := range []struct{ exp, hp int }{{180, 7193}, {181, 7353}, {domain.MaxTraitEXP, 10393}} {
+		c.Traits.Will = sample.exp
+		hp, mp, err := DerivedVitals(c, now)
+		if err != nil || hp != sample.hp || mp != 4181 || c.WireMaxHP() != 4496 || c.WireMaxMP() != 2987 {
+			t.Fatalf("Will EXP %d yielded HP/MP %d/%d (%v), want %d/4181 with intrinsic packet maxima", sample.exp, hp, mp, err, sample.hp)
+		}
+	}
+}

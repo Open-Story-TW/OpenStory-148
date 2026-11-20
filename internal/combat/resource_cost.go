@@ -47,11 +47,13 @@ func PreparedResourceCost(spec *AttackSpec, ctx AttackContext) (content.Resource
 	switch ctx.Effect.SkillID {
 	case 2301002: // Heal's cast pays; its subsequent undead attack does not.
 		mp = 0
-	case 32111010, 32121003, 31121005:
-		stat := map[int]string{32111010: "TELEPORT_MASTERY", 32121003: "TORNADO", 31121005: "DARK_METAMORPHOSIS"}[ctx.Effect.SkillID]
+	case 32111010, 32121003, 31121005, 35121003:
+		// SG-88's SUMMON alias is stored under the wire canonical name COMBO.
+		stat := map[int]string{32111010: "TELEPORT_MASTERY", 32121003: "TORNADO", 31121005: "DARK_METAMORPHOSIS", 35121003: "COMBO"}[ctx.Effect.SkillID]
 		active := false
 		for _, row := range ctx.Character.SkillBuffs {
-			active = active || row.ID == ctx.Effect.SkillID && row.Stat == stat && row.ExpiresAt.After(ctx.Now)
+			matches := row.Stat == stat || stat == "COMBO" && row.Stat == "SUMMON"
+			active = active || row.ID == ctx.Effect.SkillID && matches && row.ExpiresAt.After(ctx.Now)
 		}
 		if !active {
 			return content.ResourceCost{}, fmt.Errorf("paid attack needs active source cast")

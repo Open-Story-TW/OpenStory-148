@@ -14,11 +14,12 @@ const (
 	NoTownPortal                   = 999999999
 )
 
-// Affected area types (Java MapleMist.isPoisonMist): 0 mob mist, 1 player
-// poison/recovery, 2 invincible smoke.
+// Affected area types in the v148 client. Mob areas can damage players,
+// ordinary player areas supply skill-specific effects, and smoke grants evasion.
 const (
 	AreaMob        int32 = 0
-	AreaPoison     int32 = 1
+	AreaPlayer     int32 = 1
+	AreaPoison           = AreaPlayer
 	AreaInvincible int32 = 2
 	// AreaRecovery is what Java sends for Recovery Aura (isPoisonMist 4); the
 	// v145 create path (0x42E8B2) only special-cases type 3.
@@ -109,14 +110,13 @@ type UseTownPortal struct {
 	ToTown  bool
 }
 
-// ReadUseTownPortal follows Legacy PlayersHandler.UseDoor: owner I32, U8 mode
-// (0 = enter from the field side toward town).
+// ReadUseTownPortal follows v148 0x74180C and 0x503EA8: owner I32, U8 mode
+// (0 from the field, 1 from the town).
 func ReadUseTownPortal(r *Reader) (UseTownPortal, error) {
-	u := UseTownPortal{OwnerID: int64(r.I32())}
-	u.ToTown = r.U8() == 0
-	r.Skip(r.Remaining())
-	if r.Err() != nil || u.OwnerID <= 0 {
-		return u, ErrMalformed
+	owner := int64(r.I32())
+	mode := r.U8()
+	if r.Err() != nil || r.Remaining() != 0 || owner <= 0 || mode > 1 {
+		return UseTownPortal{}, ErrMalformed
 	}
-	return u, nil
+	return UseTownPortal{OwnerID: owner, ToTown: mode == 0}, nil
 }

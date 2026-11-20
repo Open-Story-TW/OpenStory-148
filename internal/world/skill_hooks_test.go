@@ -1,6 +1,7 @@
 package world
 
 import (
+	"bytes"
 	"context"
 	"testing"
 	"time"
@@ -37,7 +38,7 @@ func TestSkillOnEndRunsWhenRowsEnd(t *testing.T) {
 	a.mu.Lock()
 	a.session.Character.SkillBuffs = nil
 	a.mu.Unlock()
-	s.publishSkillTick(snapshot, sink, domain.SkillResult{Expired: []domain.SkillBuff{row}}, 50)
+	s.publishSkillTick(snapshot, sink, domain.SkillResult{Expired: []domain.SkillBuff{row}}, 50, snapshot.Character.MP)
 	select {
 	case id := <-skillEnds:
 		if id != 99990001 {
@@ -88,6 +89,43 @@ func TestAppliedSkillRowsArePublishedForTheCast(t *testing.T) {
 	}
 	if sink.count(0x2d) != 1 {
 		t.Fatalf("applied rows not published: %d", sink.count(0x2d))
+	}
+}
+
+func TestPiratesRevengePublishesAffectedEffectOnce(t *testing.T) {
+	for _, tc := range []struct {
+		id       int
+		affected bool
+	}{{5220012, true}, {5820011, false}} {
+		s := &Server{skills: newSkillSpace(), maps: newMapSpace(100), online: map[int64]domain.CharacterSession{}}
+		owner, peer := buffScopePlayer(1, 0), buffScopePlayer(2, 30)
+		local, remote := &gameplayTestSink{}, &gameplayTestSink{}
+		enterBuffScope(t, s, owner, local)
+		enterBuffScope(t, s, peer, remote)
+		row := domain.SkillBuff{ID: tc.id, Level: 10, Stat: "PIRATES_REVENGE", Value: 15, ExpiresAt: time.Now().Add(time.Minute)}
+		owner.mu.Lock()
+		owner.session.Character.SkillBuffs = []domain.SkillBuff{row}
+		snapshot := cloneCombatSession(owner.session)
+		owner.mu.Unlock()
+		member := s.skillMemberFor(snapshot, owner, local)
+		changes := []domain.SkillBuffChange{{SkillID: tc.id, Level: 10}}
+		s.publishSkillChanges(member, snapshot, domain.SkillResult{}, changes, nil, false)
+		s.publishSkillChanges(member, snapshot, domain.SkillResult{}, changes, []domain.SkillBuff{row}, false)
+		for _, v := range []struct {
+			sink *gameplayTestSink
+			id   int64
+		}{{local, 0}, {remote, owner.session.CharacterID}} {
+			want := protocol.SkillAffectedEffect(v.id, tc.id, 10)
+			count := 0
+			for _, p := range buffPackets(v.sink) {
+				if len(want) != 0 && bytes.Equal(want, p) {
+					count++
+				}
+			}
+			if (tc.affected && count != 1) || (!tc.affected && count != 0) {
+				t.Fatalf("skill%d actor%d emit affected %d times, want=%v", tc.id, v.id, count, tc.affected)
+			}
+		}
 	}
 }
 

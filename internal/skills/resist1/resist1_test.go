@@ -10,6 +10,7 @@ import (
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 )
 
@@ -227,16 +228,27 @@ func TestDemonLashForceGainAndBonus(t *testing.T) {
 		t.Fatalf("a miss gains no force %+v", ch)
 	}
 
+	configuredBonus := func(id int, key string) int {
+		def, err := content.ConfiguredSkillDefinition(id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		v, err := def.Values(1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return v[key]
+	}
 	ctx := &combat.AttackContext{Character: withSkill(withSkill(c, 31100007, 1), 31110010, 1), Effect: combat.Effect{SkillID: 31000004, Damage: 100}, Now: now}
-	if err := lashBonus(ctx); err != nil || ctx.Effect.Damage != 220 {
+	if err := lashBonus(ctx); err != nil || ctx.Effect.Damage != 100+configuredBonus(31110010, "x") {
 		t.Fatalf("2nd enhancement %d %v", ctx.Effect.Damage, err)
 	}
 	ctx = &combat.AttackContext{Character: withSkill(c, 31100007, 1), Effect: combat.Effect{Damage: 100}, Now: now}
-	if lashBonus(ctx); ctx.Effect.Damage != 140 {
+	if lashBonus(ctx); ctx.Effect.Damage != 100+configuredBonus(31100007, "damR") {
 		t.Fatalf("1st enhancement %d", ctx.Effect.Damage)
 	}
 	ctx = &combat.AttackContext{Character: withSkill(c, 31120011, 1), Effect: combat.Effect{Damage: 100}, Now: now}
-	if lashBonus(ctx); ctx.Effect.Damage != 380 {
+	if lashBonus(ctx); ctx.Effect.Damage != 100+configuredBonus(31120011, "x") {
 		t.Fatalf("final enhancement %d", ctx.Effect.Damage)
 	}
 }
@@ -433,12 +445,11 @@ func TestBattleMageCasts(t *testing.T) {
 
 func TestBattleMageAttacks(t *testing.T) {
 	h, _ := skills.Lookup(32121002)
-	ctx := &combat.AttackContext{Effect: combat.Effect{Damage: 180}, Now: now}
-	if err := h.Attack.Prepare(ctx); err != nil || ctx.Effect.Damage != 270 || h.Attack.Kind != combat.Melee|combat.Magic {
-		t.Fatalf("finishing blow %d %v", ctx.Effect.Damage, err)
+	if h.Attack.Prepare != nil || !h.Attack.MagicDamage || h.Attack.Kind != combat.Melee|combat.Magic {
+		t.Fatalf("finishing blow must use the WZ damage in the magic formula: %+v", h.Attack)
 	}
 	h, _ = skills.Lookup(32111003)
-	ctx = &combat.AttackContext{Character: withSkill(demon(3212), 32121004, 30), Effect: combat.Effect{Damage: 1040}, Now: now}
+	ctx := &combat.AttackContext{Character: withSkill(demon(3212), 32121004, 30), Effect: combat.Effect{Damage: 1040}, Now: now}
 	if err := h.Attack.Prepare(ctx); err != nil || ctx.Effect.Damage != 1040*160/100 {
 		t.Fatalf("dark shock with dark genesis %d %v", ctx.Effect.Damage, err)
 	}
@@ -449,6 +460,42 @@ func TestBattleMageAttacks(t *testing.T) {
 	}
 	if b := passive(t, 32120009, 30, staffUser); b.MaxHPPercent != 20 || b.MaxMPPercent != 20 {
 		t.Errorf("energize %+v", b)
+	}
+}
+
+func TestV148EnergizePreservesBothDefenseBonuses(t *testing.T) {
+	handler, ok := skills.Lookup(32120009)
+	if !ok || handler.Passive == nil {
+		t.Fatal("Energize passive is unavailable")
+	}
+	values := map[string]int{"mhpR": 30, "mmpR": 30, "pddR": 150, "mddR": 150}
+	want := skills.Bonus{MaxHPPercent: 30, MaxMPPercent: 30, WDEFPercent: 150, MDEFPercent: 150}
+	if got := handler.Passive(&skills.PassiveContext{Values: values}); got != want {
+		t.Fatalf("Energize = %+v, want %+v", got, want)
+	}
+}
+
+func TestV148TripleBlowMeleePacketUsesMagicDamage(t *testing.T) {
+	h, _ := skills.Lookup(32001000)
+	ctx := combat.AttackContext{
+		Kind:   combat.Melee,
+		Stats:  combat.PlayerStats{Job: 3200, Level: 200, INT: 100, LUK: 100, MATK: 26, WeaponID: 1382000},
+		Effect: combat.Effect{SkillID: 32001000, Level: 20, Damage: 130, MobCount: 8, AttackCount: 3},
+		// Actual v148 0x55 Triple Blow claims observed in the QA arena.
+		Attack: protocol.Attack{Targets: []protocol.AttackTarget{{ObjectID: 7, Lines: []protocol.AttackLine{
+			{Raw: 113}, {Raw: 128}, {Raw: 105},
+		}}}},
+		// 100% physical defense makes a misrouted 0x55 formula visible.
+		Targets: []combat.TargetInfo{{ObjectID: 7, HP: 1000000, Mob: content.Mob{PDRate: 100}}},
+	}
+	p, err := combat.PlanAttack(h.Attack, ctx, nil)
+	if err != nil || len(p.Targets) != 1 || p.Targets[0].Clipped != 0 || p.Targets[0].Total() != 346 {
+		t.Fatalf("native magic lines on melee packet were clipped: %+v, %v", p, err)
+	}
+	ctx.Attack.Targets[0].Lines[0].Raw = 5000
+	p, err = combat.PlanAttack(h.Attack, ctx, nil)
+	if err != nil || len(p.Targets) != 1 || p.Targets[0].Clipped != 1 || p.Targets[0].Lines[0] >= 5000 {
+		t.Fatalf("invalid damage must still be clipped: %+v, %v", p, err)
 	}
 }
 

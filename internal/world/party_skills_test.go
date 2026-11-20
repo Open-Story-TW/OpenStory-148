@@ -426,7 +426,7 @@ func TestHyperBodyOldCancelCannotClearNewerCast(t *testing.T) {
 	if e := s.castSkill(context.Background(), lives[0], sinks[0], q); e != nil {
 		t.Fatal(e)
 	}
-	s.publishSkillTick(old, sinks[0], domain.SkillResult{Expired: oldBuffs}, old.Character.HP)
+	s.publishSkillTick(old, sinks[0], domain.SkillResult{Expired: oldBuffs}, old.Character.HP, old.Character.MP)
 	if sinks[0].count(0x2e) != 0 || sinks[1].count(0x146) != 0 || !lives[0].session.Character.SkillBuffs[0].ExpiresAt.After(oldBuffs[0].ExpiresAt) {
 		t.Fatal("old cancellation cleared replacement percentage state")
 	}

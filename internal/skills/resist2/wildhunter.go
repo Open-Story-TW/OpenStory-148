@@ -106,13 +106,17 @@ func init() {
 
 	// Passives.
 	passive(33000004, func(*skills.PassiveContext) skills.Bonus { return skills.Bonus{} }) // 自然吸血術: Java has no effect
-	passive(33100000, mastery(crossbow))                                                   // 精準之弩 Crossbow Mastery
+	passive(33100000, mastery(crossbow, 33120000))                                         // 精準之弩 Crossbow Mastery
 	passive(33100010, physicalTraining)                                                    // 體能訓練 Physical Training
 	passive(33110000, func(c *skills.PassiveContext) skills.Bonus {                        // 騎乘精通 Jaguar Mastery: Java dam_r/bossdam_r always
 		return skills.Bonus{DamagePercent: c.Values["damage"], BossDamagePercent: c.Values["damage"]}
 	})
 	passive(33120000, func(c *skills.PassiveContext) skills.Bonus { // 弩術精通 Crossbow Expert
-		return skills.Bonus{WATK: c.Values["x"], Mastery: c.Values["mastery"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+		b := skills.Bonus{WATK: c.Values["x"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+		if weaponType(c.Character) == crossbow {
+			b.Mastery = c.Values["mastery"]
+		}
+		return b
 	})
 	passive(33120010, func(c *skills.PassiveContext) skills.Bonus { // 狂暴天性 Wild Instinct
 		return skills.Bonus{IgnoreDefense: c.Values["ignoreMobpdpR"], AvoidRate: c.Values["er"]}

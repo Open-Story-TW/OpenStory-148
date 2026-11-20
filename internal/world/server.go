@@ -138,6 +138,7 @@ func Run(parent context.Context, cfg platform.Config, repo domain.Repository, he
 		}
 	}
 	s.parties = newPartySpace()
+	s.parties.gameplay = gameplay
 	s.events = newEventSpace()
 	s.transitStart = time.Now()
 	s.elevators = &elevatorSpace{starts: make(map[mapKey]time.Time)}
@@ -445,6 +446,22 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 				return
 			}
 			if err = s.changeKeymap(ctx, live, r); err != nil {
+				return
+			}
+		case protocol.RecvBattleSquareEnter, protocol.RecvBattleSquarePartyEnter:
+			if live != nil && s.enterBattleSquare(ctx, live, c, r, op == protocol.RecvBattleSquarePartyEnter) != nil {
+				return
+			}
+		case protocol.RecvBattleSquareLeave:
+			if live != nil && s.leaveBattleSquare(live, c, r) != nil {
+				return
+			}
+		case protocol.RecvBattleSquareAttack:
+			if live != nil && s.handleBattleSquareAttack(live, c, r) != nil {
+				return
+			}
+		case protocol.RecvBattleSquareList:
+			if live != nil && s.handleBattleSquareList(live, c, r) != nil {
 				return
 			}
 		case protocol.RecvClientError:
@@ -883,6 +900,13 @@ func (s *Server) handle(ctx context.Context, raw net.Conn, channel int) {
 		case protocol.RecvMagicAttack:
 			if live == nil {
 				return
+			}
+			if content.SubwaySurvivalStage(partySession(live).Character.MapID) {
+				r.Skip(r.Remaining())
+				if c.WritePacket(protocol.EnableActions()) != nil {
+					return
+				}
+				break
 			}
 			// Preserve a bounded native sample while validating the new family;
 			// this gameplay payload cannot contain login, chat or coupon data.

@@ -68,8 +68,8 @@ func summonBuff(stat buffstat.Stat, link int) func(*skills.CastContext) (skills.
 			return p, fmt.Errorf("skill%d: no duration", c.Skill.ID)
 		}
 		b := &skills.Buff{Duration: time.Duration(c.Value("time")) * time.Second, Stats: []skills.StatValue{{Stat: stat, Value: 1}}}
-		if lv := learned(c.Caster, link); link != 0 && lv > 0 {
-			def, err := content.SkillDefinition("", link)
+		if lv := skills.EffectiveLevel(c.Caster, link, c.Now); lv > 0 {
+			def, err := content.ConfiguredSkillDefinition(link)
 			if err != nil {
 				return p, err
 			}
@@ -88,14 +88,16 @@ func summonBuff(stat buffstat.Stat, link int) func(*skills.CastContext) (skills.
 	}
 }
 
-// spiritLink (3120006, 3220005) is Java PlayerStats while SPIRIT_LINK is up,
-// i.e. while the summon buff is active: HP +x% and damage (and boss damage)
-// +damage%. Java also counts the DAMAGE_BUFF statup, so both apply.
+// spiritLink grants the v148 WZ HP, physical attack, magic attack and total
+// damage percentages while the matching bird is active. The summon buff
+// carries elemental resistance and the client-facing statups.
 func spiritLink(summon int) func(*skills.PassiveContext) skills.Bonus {
 	return func(c *skills.PassiveContext) skills.Bonus {
-		if !c.Active(summon) {
-			return skills.Bonus{}
+		for _, row := range c.Character.SkillBuffs {
+			if row.ID == summon && buffstat.SpiritLinkSkill(row.ID, row.Stat) != 0 && row.ExpiresAt.After(c.Now) {
+				return skills.Bonus{MaxHPPercent: c.Values["x"], WATKPercent: c.Values["y"], MATKPercent: c.Values["z"], DamagePercent: c.Values["damage"]}
+			}
 		}
-		return skills.Bonus{MaxHPPercent: c.Values["x"], DamagePercent: c.Values["damage"], BossDamagePercent: c.Values["damage"]}
+		return skills.Bonus{}
 	}
 }

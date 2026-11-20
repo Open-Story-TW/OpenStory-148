@@ -233,14 +233,14 @@ func addCharStats(w *Writer, c domain.Character, now time.Time) {
 	w.I32(0)
 	w.U8(6)
 	w.I32(0)
-	// v148 GW_CharacterStat::Decode (0x4D122D) adds u8, three i32, u8 and a
-	// six-entry {i32, u8, i32} table before the reversed time.
+	// v148 GW_CharacterStat::Decode (0x4D122D) decodes the six card slots
+	// as character ID, level byte and job before the reversed time.
 	w.U8(0)
 	w.I32(0)
 	w.I32(0)
 	w.I32(0)
 	w.U8(0)
-	w.Zero(6 * 9)
+	addCharacterCardStats(w, c.Cards)
 	reversedLong(w, mapleTime(now))
 	w.Zero(25)
 	w.Bytes([]byte{1, 1, 1, 1, 1})

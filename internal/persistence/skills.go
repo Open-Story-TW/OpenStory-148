@@ -287,6 +287,7 @@ func (s *Store) CastSkill(ctx context.Context, req domain.SkillCastRequest) (dom
 		return r, domain.ErrInvalidInput
 	}
 	r.Effect = true
+	r.Dice = plan.Dice
 	applied, appliedLevel := req.SkillID, state.Level
 	if plan.ApplyAs != 0 {
 		if _, e = content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), plan.ApplyAs); e != nil || plan.ApplyLevel < 0 || plan.ApplyLevel > 255 {
@@ -357,13 +358,14 @@ func skillBuffRows(id, level int, buff *skills.Buff, now time.Time) ([]domain.Sk
 			return nil, false
 		}
 		rows[i] = domain.SkillBuff{ID: id, Level: level, Stat: string(specs[i].Name), Value: v.Value, ExpiresAt: now.Add(buff.Duration), Counter: buff.Counter}
-		if specs[i].Name == "RECOVERY" || specs[i].Name == "INFINITY" && skills.IsInfinity(id) {
+		if specs[i].Name == "RECOVERY" || specs[i].Name == "INFINITY" && skills.IsInfinity(id) ||
+			specs[i].Name == "SOARING" && id == skills.MihileSoaringID {
 			recovery = true
 			rows[i].NextTick = now.Add(buff.Tick)
 		}
 	}
 	if recovery != (buff.Tick > 0) {
-		return nil, false // Only reviewed Recovery/Infinity rows have periodic effects.
+		return nil, false // Only reviewed periodic effects may schedule a tick.
 	}
 	return rows, true
 }
@@ -606,12 +608,14 @@ func replaceSkillBuffs(ctx context.Context, tx *sql.Tx, c *domain.Character, r *
 	}
 	source := rows[0].ID
 	stats := map[string]bool{}
+	slots := map[string]bool{}
 	for _, b := range rows {
 		stats[b.Stat] = true
+		slots[buffstat.EffectSlot(b.Stat)] = true
 	}
 	kept := make([]domain.SkillBuff, 0, len(c.SkillBuffs)+len(rows))
 	for _, old := range c.SkillBuffs {
-		shared := stats[old.Stat] && !(stack && buffstat.Stackable(buffstat.Stat(old.Stat)))
+		shared := slots[buffstat.EffectSlot(old.Stat)] && !(stack && buffstat.Stackable(buffstat.Stat(old.Stat)))
 		if old.ID != source && !shared {
 			kept = append(kept, old)
 			continue
@@ -751,6 +755,18 @@ func (s *Store) advanceSkillBuffs(ctx context.Context, session domain.CharacterS
 				return r, e
 			}
 		}
+		if !remove && b.Stat == "SOARING" && b.ID == skills.MihileSoaringID && !b.NextTick.After(now) {
+			b, remove, e = advanceMihileSoaring(&c, b, now)
+			if e != nil {
+				return r, e
+			}
+			changed = true
+			if !remove {
+				if _, e = tx.ExecContext(ctx, `UPDATE game_skill_buffs SET next_tick=$1 WHERE character_id=$2 AND stat=$3 AND skill_id=$4`, b.NextTick, c.ID, b.Stat, b.ID); e != nil {
+					return r, e
+				}
+			}
+		}
 		if remove {
 			changed = true
 			r.Expired = append(r.Expired, b)
@@ -771,6 +787,36 @@ func (s *Store) advanceSkillBuffs(ctx context.Context, session domain.CharacterS
 	}
 	r.Character = c
 	return s.finishSkill(ctx, tx, r, "", "", 0)
+}
+
+func advanceMihileSoaring(c *domain.Character, b domain.SkillBuff, now time.Time) (domain.SkillBuff, bool, error) {
+	canSoar, err := skills.CanSoar(c.MapID)
+	if err != nil {
+		return b, false, err
+	}
+	if !canSoar || b.NextTick.IsZero() {
+		return b, true, nil
+	}
+	def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), b.ID)
+	if err != nil {
+		return b, false, err
+	}
+	values, err := def.Values(b.Level)
+	if err != nil {
+		return b, false, err
+	}
+	cost := values["y"]
+	if cost < 1 || cost > 32767 {
+		return b, false, domain.ErrInvalidInput
+	}
+	ticks := 1 + now.Sub(b.NextTick)/time.Second
+	if ticks >= time.Duration((c.MP+cost-1)/cost) {
+		c.MP = 0
+		return b, true, nil
+	}
+	c.MP -= int(ticks) * cost
+	b.NextTick = b.NextTick.Add(ticks * time.Second)
+	return b, false, nil
 }
 
 var _ domain.SkillTriggerRepository = (*Store)(nil)
@@ -810,7 +856,7 @@ func (s *Store) ChangeSkillBuffs(ctx context.Context, session domain.CharacterSe
 			for _, b := range c.SkillBuffs {
 				held = held || b.ID == ch.SkillID && b.Level == ch.Level && b.ExpiresAt.After(now)
 			}
-			if !held {
+			if !held && skills.EquipmentRelatedSkillLevel(c, ch.SkillID, now) != ch.Level {
 				return r, domain.ErrForbidden
 			}
 		}

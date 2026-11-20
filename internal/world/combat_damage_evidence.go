@@ -24,6 +24,9 @@ type appliedDamageEvidence struct {
 	Defeated          bool     `json:"defeated"`
 	DurableSettlement bool     `json:"durable_settlement"`
 	ClaimedLines      []uint32 `json:"claimed_lines_raw"`
+	// Long tokens are aliases on the wire. Keep the numbers the server resolved
+	// before applying skill limits so acceptance can compare the full values.
+	ClaimedValues []int64 `json:"claimed_lines_value,omitempty"`
 	// These are the accepted line values, which may already include ClipToHP.
 	// They do not prove separate HP writes for each displayed damage line.
 	BoundedLines    []int                      `json:"bounded_lines"`
@@ -51,12 +54,17 @@ func (t *combatTicket) recordAppliedDamageLocked(q domain.CombatTarget, actualAf
 		SpawnHash: combatEvidenceHash(q.SpawnOperationID), BeforeHP: q.BeforeHP,
 		AfterHP: actualAfterHP, Applied: q.BeforeHP - actualAfterHP,
 		Defeated: actualAfterHP == 0, DurableSettlement: durable}
-	hasCriticality := false
+	hasCriticality, hasLong := false, false
 	for _, line := range q.Lines {
 		e.ClaimedLines = append(e.ClaimedLines, line.Raw)
+		e.ClaimedValues = append(e.ClaimedValues, line.Claimed())
 		e.BoundedLines = append(e.BoundedLines, line.Applied)
 		e.LineCriticality = append(e.LineCriticality, line.Criticality)
 		hasCriticality = hasCriticality || line.Criticality != ""
+		hasLong = hasLong || line.Long != 0
+	}
+	if !hasLong {
+		e.ClaimedValues = nil
 	}
 	if !hasCriticality {
 		e.LineCriticality = nil

@@ -24,6 +24,71 @@ func TestV148RegionalMapleWarriorCastPosition(t *testing.T) {
 	}
 }
 
+func TestV148MihilePartyCastsKeepTheOriginalPositionAndAffectedByte(t *testing.T) {
+	for _, tc := range []struct {
+		wire  string
+		skill int
+		level int
+		x     int16
+		delay uint16
+	}{
+		{"a3007ca5b7014cbd0b031415ffd70030000000", 51101004, 20, -235, 0},
+		{"a3005ee1b7016d0b0c031e0000d70030e80300", 51121005, 30, 0, 1000},
+	} {
+		wire, err := hex.DecodeString(tc.wire)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cast, err := ReadSkillCast(NewReader(wire[2:]))
+		if err != nil || cast.SkillID != tc.skill || cast.Level != tc.level || !cast.HasPosition || cast.X != tc.x ||
+			cast.Y != 215 || cast.Affected != 0x30 || cast.ActionDelay != tc.delay || cast.HasMobs {
+			t.Errorf("native Mihile cast %d: %+v, %v", tc.skill, cast, err)
+		}
+	}
+}
+
+func TestV148SpiritLinkUsesTheLearnedSourceInTheSharedTriplet(t *testing.T) {
+	now := time.Unix(500, 0)
+	for _, tc := range []struct{ summon, linked int }{{3111005, 3120006}, {3211005, 3220005}} {
+		rows := []domain.SkillBuff{
+			{ID: tc.summon, Stat: "COMBO", Value: 1, ExpiresAt: now.Add(time.Second)},
+			{ID: tc.summon, Stat: "SPIRIT_SURGE", Value: 1, ExpiresAt: now.Add(time.Second)},
+		}
+		readMask := func(r *Reader) {
+			t.Helper()
+			for idx, want := range [8]uint32{2: 1 << 9, 7: 1 << 21} {
+				if got := r.U32(); got != want {
+					t.Fatalf("summon %d mask word %d: got %x want %x", tc.summon, idx, got, want)
+				}
+			}
+		}
+		r := NewReader(SkillBuffs(rows, now))
+		if r.U16() != 0x2d {
+			t.Fatal("local stat set missing")
+		}
+		readMask(r)
+		if r.I32() != 1 || r.I32() != int32(tc.summon) || r.I32() != 1000 {
+			t.Fatalf("summon %d slot lost its original cancellation source", tc.summon)
+		}
+		if r.I32() != 1 || r.I32() != int32(tc.linked) || r.I32() != 1000 || r.Err() != nil {
+			t.Fatalf("summon %d learned Spirit Link source missing from I32 triplet", tc.summon)
+		}
+		r = NewReader(ForeignSkillBuffs(7, rows))
+		if r.U16() != 0x145 || r.I32() != 7 {
+			t.Fatal("remote stat set missing")
+		}
+		readMask(r)
+		if r.U8() != 1 || r.U16() != 1 || r.I32() != int32(tc.linked) || r.Err() != nil {
+			t.Fatalf("summon %d learned Spirit Link source missing from remote I16/I32 fields", tc.summon)
+		}
+		r = NewReader(CancelSkillBuffs(0, rows))
+		if r.U16() != 0x2e {
+			t.Fatal("local stat reset missing")
+		}
+		readMask(r)
+	}
+}
+
 func TestNativeSkillPackets(t *testing.T) {
 	w := NewRawWriter()
 	w.U32(2)

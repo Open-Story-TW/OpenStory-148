@@ -84,6 +84,15 @@ func PotentialBonusesChecked(c domain.Character, now time.Time) (Bonus, content.
 // Potential four-stat % acts on base+worn+potential-flat; Maple Warrior remains
 // base-only and active flat buffs are not multiplied by equipment potential.
 func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, error) {
+	return playerStatsCheckedForMode(c, now, false)
+}
+
+// BattleSquareMeleeStats uses v148 arena physical-defense coefficients.
+func BattleSquareMeleeStats(c domain.Character, now time.Time) (combat.PlayerStats, error) {
+	return playerStatsCheckedForMode(c, now, true)
+}
+
+func playerStatsCheckedForMode(c domain.Character, now time.Time, battleSquare bool) (combat.PlayerStats, error) {
 	base, err := combat.BaseStats(c, now)
 	if err != nil {
 		return base, err
@@ -93,7 +102,7 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 		return base, err
 	}
 	if len(effects.Lines) == 0 {
-		p := legacyPlayerStats(c, now)
+		p := legacyPlayerStatsForMode(c, now, battleSquare)
 		p.ResourceCosts, err = ResourceModifiers(c, now)
 		return p, err
 	}
@@ -107,11 +116,9 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.STR = stat(c.STR, p.STR, pot.STR, pot.STRPercent, passive.STR, passive.STRPercent, buff.STR)
 	p.DEX = stat(c.DEX, p.DEX, pot.DEX, pot.DEXPercent, passive.DEX, passive.DEXPercent, buff.DEX)
 	p.INT = stat(c.INT, p.INT, pot.INT, pot.INTPercent, passive.INT, passive.INTPercent, buff.INT)
-	basicINT := p.INT
 	p.LUK = stat(c.LUK, p.LUK, pot.LUK, pot.LUKPercent, passive.LUK, passive.LUKPercent, buff.LUK)
+	basicINT := p.INT
 	preINT := p.INT - buff.INT - floorPercent(c.INT, mw)
-	preDEX := p.DEX - buff.DEX - floorPercent(c.DEX, mw)
-	preLUK := p.LUK - buff.LUK - floorPercent(c.LUK, mw)
 	// Java PlayerStats1500..1502 applies the equipment magic percentage to
 	// local INT too. Do not multiply subsequent flat INT/MW by this source.
 	p.INT += floorPercent(preINT, pot.MATKPercent+infinityMagicPercent(c, now))
@@ -121,35 +128,11 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.MATK += pot.MATK + passive.MATK
 	p.MATK += floorPercent(p.MATK, pot.MATKPercent+passive.MATKPercent+buff.MATKPercent)
 	p.MATK += buff.MATK
-	p.Accuracy += pot.ACC
-	// Java PlayerStats823..835 derives the pre-buff stat contribution before
-	// equipment ACC%. Maple Warrior and late flat stat buffs remain outside it.
-	if preINT > preDEX {
-		p.Accuracy += preINT + preLUK*12/10
-	} else {
-		p.Accuracy += preLUK + preDEX*12/10
-	}
-	// Potential ACC% is an equipment-phase contribution; preserve existing
-	// passive/buff sources as distinct additions rather than compounding them.
-	p.Accuracy += floorPercent(p.Accuracy, pot.ACCPercent)
-	p.Accuracy += passive.ACC + buff.ACC
-	p.Accuracy += floorPercent(p.Accuracy, passive.ACCPercent+buff.ACCPercent)
-	for _, e := range c.Equipment {
-		if e.Slot >= 0 || e.Slot <= -100 {
-			continue
-		}
-		p.Avoid += e.AVOID
-	}
-	foldDefense(&p, c, basicINT, pot, passive, buff)
-	foldMovement(&p, c, pot, passive, buff)
-	// Native6BE054 adds incEVA into the same flat bucket as physical gear
-	// and flat skill effects. This is a contribution view only: native basic
-	// EVA's table term, all percentage phases and the miss RNG remain pending.
-	// Do not treat flat points as percentage dodge or add a server RNG roll.
-	p.Avoid += pot.AVOID + passive.AVOID + buff.AVOID
-	// Native6BE201/6A1674 stores incEVAr as a percentage of the full EVA
-	// aggregate, not an independent miss probability. Preserve the source
-	// separately until the complete native basic/buff EVA phase is supported.
+	foldAccuracy(&p, c.Traits.Insight, pot.ACC+passive.ACC+buff.ACC, pot.ACCPercent+passive.ACCPercent+buff.ACCPercent)
+	foldDefenseMovement(&p, c, basicINT, mw, pot, passive, buff, battleSquare)
+	// 0x7069EE adds source percentages before scaling the complete EVA total.
+	foldAvoidability(&p, c, pot.AVOID+passive.AVOID+buff.AVOID, pot.AVOIDPercent+passive.AVOIDPercent+buff.AVOIDPercent)
+	p.Avoid += floorPercent(p.Avoid, passive.GuildAVOIDPercent)
 	p.PotentialAvoidPercent = pot.AVOIDPercent
 	p.DodgeRate = passive.AvoidRate + buff.AvoidRate
 	p.ASR = pot.ASR + passive.ASR + buff.ASR
@@ -158,6 +141,7 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.Mastery += passive.Mastery + buff.Mastery
 	p.CritRate += pot.Critical + passive.Critical + buff.Critical
 	p.BossCritRate += passive.BossCritical + buff.BossCritical
+	p.StunnedCritRate += passive.StunnedCritical + buff.StunnedCritical
 	p.CritDamage += pot.CriticalDamage + passive.CriticalDamage + buff.CriticalDamage
 	p.DamageRate += passive.DamagePercent + buff.DamagePercent
 	p.BossDamageRate += passive.BossDamagePercent + buff.BossDamagePercent
@@ -165,6 +149,7 @@ func PlayerStatsChecked(c domain.Character, now time.Time) (combat.PlayerStats, 
 	p.FullDefenseIgnore = passive.FullDefenseIgnore
 	p.ElementAmp += passive.ElementAmp + buff.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
+	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
 	factor := func(values []int) (float64, error) {
 		if len(values) == 0 {
 			return 0, nil

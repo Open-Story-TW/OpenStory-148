@@ -1,6 +1,7 @@
 package pirate
 
 import (
+	"encoding/hex"
 	"testing"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 )
 
@@ -53,6 +55,89 @@ func stats(b *skills.Buff) map[buffstat.Stat]int {
 	return out
 }
 
+func TestV148GunExpertAcceptsTheAmmoFreeFollowUp(t *testing.T) {
+	h, ok := skills.Lookup(5220020)
+	if !ok || h.Attack == nil || h.Passive == nil {
+		t.Fatal("Gun Expert lacks its passive or final attack")
+	}
+	def, _ := values(t, 5220020, 30)
+	effect, err := combat.FromSkill(def, 30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := combat.PlanAttack(h.Attack, combat.AttackContext{
+		Kind: combat.Shoot, Effect: effect,
+		Character: domain.Character{Job: 522, Equipment: []domain.Equipment{{ItemID: 1492004, Slot: -11}}},
+		Stats:     combat.PlayerStats{Job: 522, WeaponID: 1492004},
+	}, nil)
+	if err != nil || p.Cost.Bullets != 0 || effect.Damage != 70 {
+		t.Fatalf("Gun Expert final attack plan %+v, effect damage %d, error %v", p, effect.Damage, err)
+	}
+}
+
+func TestV148RegionalMindControlConsumesABulletAndDazzlesOnHit(t *testing.T) {
+	const id = 5921009
+	// Original v148 frame captured from a level-20 Mind Control on a living normal mob.
+	const wire = "56000111f1585a0014031e24fe00007a00c46c6fb10904d47671010000000005000000005e420f00070100706f98000191ffd70091ffd7006501c00a00005d2b923e02d552f331ffd70031ffbb00"
+	data, err := hex.DecodeString(wire)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attack, err := protocol.ReadAttack(protocol.RecvShootAttack, protocol.NewReader(data[2:]))
+	if err != nil || attack.SkillID != id || attack.Slot != 5 || attack.CSStar != 0 || len(attack.Targets) != 1 {
+		t.Fatalf("v148 Mind Control attack %+v, err %v", attack, err)
+	}
+	def, _ := values(t, id, 20)
+	effect, err := combat.FromSkill(def, 20)
+	if err != nil || effect.Range != 350 || effect.Prop != 94 || effect.Time != 40*time.Second {
+		t.Fatalf("v148 WZ effect %+v, err %v", effect, err)
+	}
+	now := time.Unix(100, 0)
+	ctx := combat.AttackContext{
+		Kind: combat.Shoot, Attack: attack, Effect: effect, Now: now,
+		Character: domain.Character{ID: 4911, Job: 592, MP: 1000, Equipment: []domain.Equipment{{ItemID: 1492004, Slot: -11}}},
+		Stats:     combat.PlayerStats{WeaponID: 1492004, STR: 100, DEX: 500, WATK: 200},
+		Targets:   []combat.TargetInfo{{ObjectID: attack.Targets[0].ObjectID, X: int(attack.X) + 96, Y: int(attack.Y), HP: 1_000_000}},
+	}
+	h, ok := skills.Lookup(id)
+	if !ok || h.Attack == nil {
+		t.Fatal("Mind Control attack is not registered")
+	}
+	spec := h.Attack
+	plan, err := combat.PlanAttack(spec, ctx, func(prop int) bool { return prop == 94 })
+	if err != nil || plan.Cost.Ammo != combat.AmmoBullet || plan.Cost.Bullets != 1 || plan.Cost.MP != 50 || len(plan.Targets) != 1 {
+		t.Fatalf("ordinary bullet and MP cost %+v, targets %+v, err %v", plan.Cost, plan.Targets, err)
+	}
+	status := plan.Targets[0].Statuses
+	if len(status) != 1 || status[0].Stat != combat.MobDazzle || status[0].Value != int32(ctx.Character.ID) || status[0].SkillID != id ||
+		status[0].OwnerID != ctx.Character.ID || !status[0].ExpiresAt.Equal(now.Add(40*time.Second)) {
+		t.Fatalf("wrong native Mind Control status %+v", status)
+	}
+	s := status[0]
+	wireStatus := protocol.ApplyMonsterStatus(attack.Targets[0].ObjectID, []protocol.MobStatValue{{Stat: s.Stat, Value: s.Value, Reason: s.SkillID, ExpiresAt: s.ExpiresAt}}, 0, now)
+	r := protocol.NewReader(wireStatus)
+	if r.U16() != protocol.SendApplyMonsterStatus || r.I32() != attack.Targets[0].ObjectID {
+		t.Fatalf("wrong monster in original status packet %x", wireStatus)
+	}
+	for i := 0; i < 7; i++ {
+		if r.U32() != 0 {
+			t.Fatalf("unexpected upper mask word in original status packet %x", wireStatus)
+		}
+	}
+	if r.U32() != 1<<28 || r.I32() != int32(ctx.Character.ID) || r.I32() != id || r.U16() != 80 || r.Err() != nil {
+		t.Fatalf("wrong original Mind Control owner, skill, or expiry in %x", wireStatus)
+	}
+	ctx.Targets[0].Mob.Boss = true
+	boss, err := combat.PlanAttack(spec, ctx, func(int) bool { return true })
+	if err != nil || len(boss.Targets) != 1 || len(boss.Targets[0].Statuses) != 0 {
+		t.Fatalf("boss should take the shot without becoming controllable: %+v, err %v", boss.Targets, err)
+	}
+	ctx.Character.Equipment[0].ItemID = 1482001
+	if _, err = combat.PlanAttack(spec, ctx, nil); err == nil {
+		t.Fatal("Mind Control accepted a non-gun weapon")
+	}
+}
+
 // Every registered pirate skill is in the WZ seed, every castable one plans
 // at every level, and every stat it plans is a known buff stat.
 func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
@@ -69,7 +154,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%d: %v", id, err)
 		}
-		if h.Attack != nil && h.Attack.MobCast == nil && id != 5221009 { // Mind Control has no WZ damage (combat defaults to 100%)
+		if h.Attack != nil && h.Attack.MobCast == nil && id != 5221009 && id != 5921009 { // Mind Control has no WZ damage (combat defaults to 100%).
 			if _, v := values(t, id, def.MaxLevel); v["damage"] < 1 {
 				t.Errorf("%d: attack without damage", id)
 			}
@@ -103,7 +188,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 140 { // 93 from v145 and 47 from the v148 books
+	if count != 196 { // Includes the regional v148 pirate books.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }
@@ -131,10 +216,224 @@ func TestV148PirateRegionalPartyCasts(t *testing.T) {
 	}
 }
 
+func TestBulletTimeUsesNativeV148AccuracyAndJump(t *testing.T) {
+	b := bulletTime(&skills.PassiveContext{Values: map[string]int{
+		"accX": 220, "psdJump": 10, "speedMax": 20,
+	}})
+	if b != (skills.Bonus{ACC: 220, Jump: 10}) {
+		t.Fatalf("v148 Bullet Time ignored its WZ values: %+v", b)
+	}
+}
+
+func TestRegionalMeleeTrainingAffectsOnlyRegionalSkills(t *testing.T) {
+	b := passive(t, 5810008, 10, domain.Character{Job: 581})
+	want := skills.Bonus{SkillDamage: skillDamage(5801002, 120, 5801003, 90, 5801004, 150)}
+	if b != want {
+		t.Fatalf("regional melee training: %+v", b)
+	}
+}
+
+func TestV148PiratesStunCriticalUsesTargetBonus(t *testing.T) {
+	for _, row := range []struct {
+		id     int
+		values map[string]int
+		want   int
+	}{
+		{5110000, map[string]int{"prop": 60, "subProp": 20}, 60},
+		{5810000, map[string]int{"prop": 30}, 30},
+	} {
+		h, ok := skills.Lookup(row.id)
+		if !ok || h.Passive == nil {
+			t.Fatalf("skill %d is missing a passive handler", row.id)
+		}
+		if b := h.Passive(&skills.PassiveContext{Values: row.values}); b != (skills.Bonus{StunnedCritical: row.want}) {
+			t.Fatalf("skill %d target critical: %+v", row.id, b)
+		}
+	}
+}
+
+func TestV148PiratesRevengeUsesNativeAdditiveDamageStat(t *testing.T) {
+	defer func(previous func(int) int) { rollDie = previous }(rollDie)
+	rollDie = func(int) int { return 40 }
+	now := time.Unix(100, 0)
+	for _, id := range []int{5120011, 5220012, 5720012, 5820011, 5920012} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.OnDamaged == nil || h.Passive == nil {
+			t.Fatalf("Pirate's Revenge %d is incomplete", id)
+		}
+		def := content.Skill{ID: id}
+		c := domain.Character{Job: id / 10000}
+		result := h.OnDamaged(&skills.TriggerContext{
+			Skill: def, Character: c, Damage: 100, Now: now,
+			Values: map[string]int{"indieDamR": 15, "time": 45, "x": 50, "prop": 40},
+		})
+		want := skills.StatValue{Stat: "PIRATES_REVENGE", Value: 15}
+		if result == nil || result.Buff == nil || result.Buff.Duration != 45*time.Second ||
+			result.Cooldown != 50*time.Second || len(result.Buff.Stats) != 1 || result.Buff.Stats[0] != want {
+			t.Fatalf("Pirate's Revenge %d: %+v", id, result)
+		}
+		c.SkillBuffs = []domain.SkillBuff{{ID: id, Stat: string(want.Stat), Value: want.Value, ExpiresAt: now.Add(time.Second)}}
+		wire := protocol.NewReader(protocol.SkillBuff(c.SkillBuffs[0], now))
+		if opcode := wire.U16(); opcode != 0x2d {
+			t.Fatalf("Pirate's Revenge %d opcode 0x%x", id, opcode)
+		}
+		for word := 7; word >= 0; word-- {
+			var mask uint32
+			if word == 116/32 {
+				mask = 1 << (116 % 32)
+			}
+			if got := wire.U32(); got != mask {
+				t.Fatalf("Pirate's Revenge %d stat mask word %d: 0x%x, want 0x%x", id, word, got, mask)
+			}
+		}
+		if value, source, duration := wire.I16(), wire.I32(), wire.I32(); value != 15 || source != int32(id) || duration != 1000 {
+			t.Fatalf("Pirate's Revenge %d triplet %d/%d/%d", id, value, source, duration)
+		}
+		if b := h.Passive(&skills.PassiveContext{Skill: def, Character: c, Now: now}); b.DamagePercent != 15 {
+			t.Fatalf("Pirate's Revenge bonus from %d: %+v", id, b)
+		}
+		if b := h.Passive(&skills.PassiveContext{Skill: def, Character: c, Now: now.Add(time.Second)}); b.DamagePercent != 0 {
+			t.Fatalf("Pirate's Revenge expired bonus from %d: %+v", id, b)
+		}
+	}
+}
+
+func TestV148RegionalPirateAttacks(t *testing.T) {
+	for _, row := range []struct {
+		id     int
+		kind   combat.AttackKind
+		charge bool
+		stun   bool
+	}{
+		{5081001, combat.Melee, false, false},
+		{5081002, combat.Shoot, false, false},
+		{5081005, combat.Melee, false, false},
+		{5091003, combat.Shoot, false, false},
+		{5700004, combat.Shoot, false, false},
+		{5121016, combat.Shoot, false, false},
+		{5721001, combat.Shoot, false, false},
+		{5721007, combat.Shoot, false, false},
+		{5801002, combat.Melee, false, true},
+		{5801003, combat.Melee, false, true},
+		{5801004, combat.Melee, true, false},
+		{5811002, combat.Melee, false, true},
+		{5811004, combat.Melee, false, false},
+		{5821004, combat.Melee, false, false},
+		{5901002, combat.Melee, true, false},
+		{5901004, combat.Melee, false, true},
+		{5901006, combat.Shoot, false, false},
+		{5910000, combat.Shoot, false, false},
+		{5911005, combat.Shoot, false, false},
+		{5911006, combat.Shoot, false, false},
+		{5921007, combat.Shoot, false, false},
+		{5921008, combat.Shoot, false, false},
+	} {
+		h, ok := skills.Lookup(row.id)
+		if !ok || h.Attack == nil || h.Attack.Kind != row.kind || protocol.QuirkFor(row.id).Charge != row.charge {
+			t.Fatalf("wrong v148 attack family or charge layout for %d", row.id)
+		}
+		gotStun := len(h.Attack.OnHit) == 1 && h.Attack.OnHit[0].Stat == combat.MobStun
+		if gotStun != row.stun {
+			t.Fatalf("wrong v148 stun assignment for %d", row.id)
+		}
+	}
+	now := time.Unix(100, 0)
+	ctx := &combat.AttackContext{Now: now}
+	regionalEnergyReady := requiresAttackBuff(5810001, "ENERGY_CHARGE", energyFull)
+	regionalBattleshipReady := requiresAttackBuff(5921006, "MONSTER_RIDING", battleshipMount)
+	if regionalEnergyReady(ctx) == nil {
+		t.Fatal("energy attack succeeds with no charge")
+	}
+	ctx.Character.SkillBuffs = []domain.SkillBuff{{ID: 5110001, Stat: "ENERGY_CHARGE", Value: energyFull, ExpiresAt: now.Add(time.Minute)}}
+	if regionalEnergyReady(ctx) == nil {
+		t.Fatal("energy attack accepts another job's gauge")
+	}
+	ctx.Character.SkillBuffs[0].ID = 5810001
+	if err := regionalEnergyReady(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if regionalBattleshipReady(ctx) == nil {
+		t.Fatal("battleship attack succeeds without its active mount")
+	}
+	ctx.Character.SkillBuffs[0] = domain.SkillBuff{ID: 5921006, Stat: "MONSTER_RIDING", Value: battleshipMount, ExpiresAt: now.Add(time.Minute)}
+	if err := regionalBattleshipReady(ctx); err != nil {
+		t.Fatal(err)
+	}
+	morphAttack, _ := skills.Lookup(5821004)
+	ctx.Character.SkillBuffs[0] = domain.SkillBuff{ID: 5811005, Stat: "MORPH", Value: 1001, ExpiresAt: now.Add(time.Minute)}
+	if morphAttack.Attack.Prepare(ctx) == nil {
+		t.Fatal("Demolition accepts an unrelated transform source")
+	}
+	ctx.Character.SkillBuffs[0].ID = 5821003
+	if err := morphAttack.Attack.Prepare(ctx); err != nil {
+		t.Fatal(err)
+	}
+	ctx.Character.SkillBuffs[0].ExpiresAt = now
+	if morphAttack.Attack.Prepare(ctx) == nil {
+		t.Fatal("Demolition accepts an expired transform")
+	}
+	h, _ := skills.Lookup(5911005)
+	def, _ := values(t, 5911005, 20)
+	e, err := combat.FromSkill(def, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan, err := combat.PlanAttack(h.Attack, combat.AttackContext{
+		Kind: combat.Shoot, Effect: e, Character: domain.Character{MP: 1000}, Stats: combat.PlayerStats{WeaponID: 1492004},
+	}, nil)
+	if err != nil || plan.Cost.Items != 0 || plan.Cost.Ammo != combat.AmmoBullet || plan.Cost.Bullets != 1 {
+		t.Fatalf("frost shot uses the native bullet slot: %+v (%v)", plan.Cost, err)
+	}
+	for _, id := range []int{5081002, 5700004, 5721007} {
+		h, _ = skills.Lookup(id)
+		if h.Attack.Ammo != combat.AmmoNone {
+			t.Fatalf("%d native shot does not nominate a projectile stack", id)
+		}
+	}
+}
+
+func TestV148RegionalPiratePassives(t *testing.T) {
+	gunUser := domain.Character{Equipment: []domain.Equipment{{ItemID: 1492004, Slot: -11}}}
+	for _, tc := range []struct {
+		id   int
+		want skills.Bonus
+	}{
+		{5080004, skills.Bonus{Critical: 20, CriticalDamageMin: 10}},
+		{5090000, skills.Bonus{ACC: 160, AVOID: 160}},
+		{5700000, skills.Bonus{Mastery: 50, ACC: 120}},
+		{5700003, skills.Bonus{STR: 30, DEX: 30}},
+		{5800008, skills.Bonus{Critical: 20, CriticalDamageMin: 10}},
+		{5800009, skills.Bonus{MaxHPPercent: 20}},
+		{5900000, skills.Bonus{Mastery: 50, ACC: 120}},
+		{5900007, skills.Bonus{Critical: 20, CriticalDamageMin: 10}},
+	} {
+		def, err := content.SkillDefinition("", tc.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := passive(t, tc.id, def.MaxLevel, gunUser); got != tc.want {
+			t.Errorf("%d got %+v, want %+v", tc.id, got, tc.want)
+		}
+	}
+	knuckleUser := domain.Character{Equipment: []domain.Equipment{{ItemID: 1482000, Slot: -11}}}
+	if got := passive(t, 5800001, 20, knuckleUser); got != (skills.Bonus{Mastery: 50, ACC: 120}) {
+		t.Errorf("knuckle mastery: %+v", got)
+	}
+	if got := passive(t, 5900000, 20, knuckleUser); got != (skills.Bonus{}) {
+		t.Errorf("gun mastery applied with a knuckle: %+v", got)
+	}
+}
+
 func TestBoosterMapleWarriorAndSpeedInfusion(t *testing.T) {
 	p := cast(t, 5101006, 20)
 	if p.MPCost != 11 || p.Self.Duration != 200*time.Second || stats(p.Self)["BOOSTER"] != -2 {
 		t.Fatalf("knuckle booster %+v %+v", p, p.Self)
+	}
+	for _, id := range []int{5701005, 5901003} {
+		p = cast(t, id, 20)
+		if p.MPCost != 11 || p.Self.Duration != 200*time.Second || stats(p.Self)["BOOSTER"] != -2 {
+			t.Fatalf("regional gun booster %d: %+v %+v", id, p, p.Self)
+		}
 	}
 	p = cast(t, 5221000, 30)
 	if p.Self != nil || p.Party == nil || p.Area == nil || p.Area.Left >= 0 || stats(p.Party)["MAPLE_WARRIOR"] != 15 || p.Party.Duration != 900*time.Second || p.MPCost != 70 {
@@ -186,6 +485,10 @@ func TestDashAndMorphs(t *testing.T) {
 	p := cast(t, 5001005, 10)
 	if s := stats(p.Self); s["DASH_SPEED"] != 30 || s["DASH_JUMP"] != 20 || p.Self.Duration != 20*time.Second || p.MPCost != 5 {
 		t.Fatalf("dash %+v %+v", p, p.Self)
+	}
+	p = cast(t, 5091005, 10)
+	if s := stats(p.Self); len(s) != 2 || s["DASH_SPEED"] != 30 || s["DASH_JUMP"] != 20 || p.Self.Duration != 20*time.Second || p.MPCost != 5 {
+		t.Fatalf("regional dash %+v %+v", p, p.Self)
 	}
 	p = cast(t, 5111005, 20)
 	if p.Self.Stats[0] != (skills.StatValue{Stat: "STANCE", Value: 100}) {
@@ -264,7 +567,7 @@ func TestMasteryNeedsTheMatchingWeapon(t *testing.T) {
 	if b := passive(t, 5300005, 20, withWeapon(530, 1532000)); b.Mastery != 50 || b.ACC != 120 {
 		t.Fatalf("cannon mastery %+v", b)
 	}
-	if b := passive(t, 5010003, 10, withWeapon(531, 1532000)); b.WATK != 20 {
+	if b := passive(t, 5010003, 10, withWeapon(531, 1532000)); b != (skills.Bonus{WATK: 20, WDEF: 250, MDEF: 250}) {
 		t.Fatalf("cannon upgrade %+v", b)
 	}
 	if b := passive(t, 5010003, 10, withWeapon(510, 1482000)); b != (skills.Bonus{}) {
@@ -294,6 +597,9 @@ func TestAttackSpecsCarryAmmoStatusAndDrain(t *testing.T) {
 	}
 	if s := spec(5321012); s.Kind != combat.Shoot || s.Ammo != combat.AmmoNone {
 		t.Fatalf("cannon barrage %+v", s)
+	}
+	if s := spec(5311000); s.Kind != combat.Shoot || s.Ammo != combat.AmmoNone {
+		t.Fatalf("v148 cannon spike uses a ranged frame without an ammo slot: %+v", s)
 	}
 	if s := spec(5201002); s.Kind != combat.Melee || s.Prepare == nil {
 		t.Fatalf("grenade is a close-range charge attack with poison %+v", s)
@@ -371,8 +677,15 @@ func TestSpecialCasts(t *testing.T) {
 	if p := cast(t, 5201005, 10); p.Self != nil || p.Party != nil || p.MPCost != 14 {
 		t.Fatalf("wings is cost only %+v", p)
 	}
-	if p := cast(t, 5821010, 30); !p.ResetCooldowns || p.Party == nil || len(p.Party.Stats) != 0 || p.Area == nil || p.Cooldown != 1200*time.Second {
-		t.Fatalf("time leap %+v", p)
+	for _, sample := range []struct {
+		id, level int
+		cooldown  time.Duration
+	}{{5121010, 5, 1500 * time.Second}, {5821010, 30, 1200 * time.Second}} {
+		p := cast(t, sample.id, sample.level)
+		if !p.ResetCooldowns || p.Party == nil || len(p.Party.Stats) != 0 || p.Area == nil || p.Cooldown != sample.cooldown ||
+			len(p.KeepCooldowns) != 2 || p.KeepCooldowns[0] != 5121010 || p.KeepCooldowns[1] != 5821010 {
+			t.Fatalf("time leap %d: %+v", sample.id, p)
+		}
 	}
 	if p := cast(t, 5101005, 10); p.HPCost != 500 || p.Heal == nil || p.Heal.MP != 300 || p.Cooldown != 10*time.Second {
 		t.Fatalf("mp recovery %+v %+v", p, p.Heal)
@@ -400,8 +713,9 @@ func TestPassiveDamageAndStatBonuses(t *testing.T) {
 	if b := passive(t, 5320009, 30, domain.Character{Job: 532}); b.DamagePercent != 40 || b.BossDamagePercent != 40 || b.IgnoreDefense != 20 {
 		t.Fatalf("mega monkey cannon %+v", b)
 	}
-	if b := passive(t, 5310007, 20, domain.Character{Job: 531}); b.MaxHPPercent != 20 || b.ASR != 20 || b.WDEFPercent != 50 {
-		t.Fatalf("ultimate state %+v", b)
+	wantUltimateState := skills.Bonus{MaxHPPercent: 20, ASR: 20, WDEFPercent: 50, MDEFPercent: 50}
+	if b := passive(t, 5310007, 20, domain.Character{Job: 531}); b != wantUltimateState {
+		t.Fatalf("ultimate state %+v, want %+v", b, wantUltimateState)
 	}
 	if b := passive(t, 5300004, 15, domain.Character{Job: 530}); b.Critical != 20 || b.CriticalDamageMin != 10 {
 		t.Fatalf("critical fire %+v", b)
@@ -439,8 +753,33 @@ func TestEnergyChargeGauge(t *testing.T) {
 	}
 }
 
+func TestEnergyExplosionRequiresFullGaugeAndAddsItsOwnGain(t *testing.T) {
+	now := time.Unix(1000, 0)
+	ready, _ := skills.Lookup(5121016)
+	row := domain.SkillBuff{ID: 5110001, Stat: "ENERGY_CHARGE", Value: 9999, ExpiresAt: now.Add(time.Minute)}
+	ctx := &combat.AttackContext{Now: now, Character: domain.Character{Job: 512, SkillBuffs: []domain.SkillBuff{row}}}
+	if ready.Attack.Prepare(ctx) == nil {
+		t.Fatal("Energy Explosion accepts a partial charge")
+	}
+	ctx.Character.SkillBuffs[0].Value = energyFull
+	if err := ready.Attack.Prepare(ctx); err != nil {
+		t.Fatal(err)
+	}
+	def, _ := values(t, 5121016, 30)
+	v, _ := def.Values(30)
+	ctx.Character.Skills = []domain.SkillState{{ID: 5121016, Level: 30}}
+	row.ExpiresAt, row.Value = now.Add(skills.Permanent), 0
+	bonus := energyCharge(&skills.TriggerContext{
+		Now: now, Values: map[string]int{"x": 200, "time": 60}, Character: ctx.Character,
+		Rows: []domain.SkillBuff{row}, Attack: &combat.AttackEvent{Targets: []int32{1}, Lines: 2},
+	})
+	if bonus == nil || bonus.Buff.Stats[0].Value != 2*(200+v["x"]) || v["x"] != 100 {
+		t.Fatalf("Energy Explosion gauge bonus: %+v", bonus)
+	}
+}
+
 func TestHomingBeaconMarksTheFirstTarget(t *testing.T) {
-	for _, id := range []int{5211006, 5220011} {
+	for _, id := range []int{5211006, 5220011, 5911006} {
 		h, _ := skills.Lookup(id)
 		def, v := values(t, id, 10)
 		ctx := &skills.TriggerContext{Skill: def, Level: 10, Values: v, Character: domain.Character{Job: 522}, Attack: &combat.AttackEvent{SkillID: id, Targets: []int32{77, 78}}}

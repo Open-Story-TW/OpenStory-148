@@ -48,6 +48,33 @@ func assertNativeDamageWire(t *testing.T, row map[string]any, body []byte, tick 
 	}
 }
 
+func TestDamageEvidencePreservesLongClaimsAlongsideWireAliases(t *testing.T) {
+	ticket := &combatTicket{request: domain.CombatAttackRequest{Session: domain.CharacterSession{CharacterID: 1}}}
+	const claim = 2_802_414_308
+	row := captureNativeDamageEvidence(t, func() {
+		ticket.recordAppliedDamageLocked(domain.CombatTarget{ObjectID: 1, MobID: 9990000, BeforeHP: 5_000_000_000,
+			Lines: []domain.CombatDamageLine{{Raw: 0x7f000000, Applied: claim, Long: claim}, {Raw: 5, Applied: 5},
+				{Raw: 0x7f000001, Long: -1}}}, 5_000_000_000-claim-5, false)
+		ticket.publishAppliedDamageEvidence()
+	})
+	target := row["targets"].([]any)[0].(map[string]any)
+	for key, want := range map[string][]float64{
+		"claimed_lines_raw":   {0x7f000000, 5, 0x7f000001},
+		"claimed_lines_value": {claim, 5, 0},
+		"bounded_lines":       {claim, 5, 0},
+	} {
+		got, ok := target[key].([]any)
+		if !ok || len(got) != len(want) {
+			t.Fatalf("missing %s in evidence: %+v", key, target)
+		}
+		for i, value := range want {
+			if got[i] != value {
+				t.Fatalf("%s[%d] = %v, want %v", key, i, got[i], value)
+			}
+		}
+	}
+}
+
 func evidenceMeleeBody(skill int, tick uint32, objectID int32, claimed int32) []byte {
 	w := protocol.NewRawWriter()
 	w.U8(0)

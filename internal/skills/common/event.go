@@ -44,9 +44,10 @@ func init() {
 		p.MoveTo = c.Value("x")
 		return p, nil
 	}})
-	// 幻影斗蓬 (Phantom 20031205): the client moves the character itself;
-	// the server takes the MP.
-	skills.Register(skills.Handler{ID: 20031205, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	// 幻影斗蓬: v148 OnKey checks bit 219 and this exact source before it
+	// takes an arrow as a cloak direction. The client computes the destination
+	// and the WZ direction limit, while the server supplies the short gate.
+	skills.Register(skills.Handler{ID: 20031205, Kind: skills.KindSpecial, Cast: buff(0, fixed("PHANTOM_CLOAK", 1))})
 	// 卡牌審判 (Phantom 20031209, fourth job 20031210): the world spends the
 	// card deck and throws the cards; the drawn card's own bonus (critical
 	// rate, drop rate, resistance) is not applied yet.

@@ -71,3 +71,37 @@ func TestCancelMonsterStatusAndSpawnCarryStats(t *testing.T) {
 		t.Fatalf("spawn stats layout %x vs %x", with, plain)
 	}
 }
+
+func TestV148BurnedInfoSetAndReset(t *testing.T) {
+	now := time.Unix(1000, 0)
+	burn := MobBurn{OwnerID: 4916, SkillID: 4340012, Damage: 810, Interval: time.Second,
+		ExpiresAt: now.Add(8 * time.Second), RemainingTicks: 8, Stacks: 3}
+	flagStun := MobStatValue{Stat: MobStun, Value: 1, Reason: 4321006, ExpiresAt: now.Add(time.Second)}
+	apply := ApplyMonsterStatus(77, []MobStatValue{flagStun}, 0, now, burn)
+	r := NewReader(apply)
+	if r.U16() != 0x1b1 || r.I32() != 77 {
+		t.Fatalf("apply header %x", apply)
+	}
+	r.Skip(28)
+	if r.U32() != 1<<27|1<<7 || r.I32() != 1 || r.I32() != 4321006 || r.U16() != 2 || r.U8() != 1 {
+		t.Fatalf("mixed status mask, stun triple or burned list count: %x", apply)
+	}
+	for i, expected := range []int32{4916, 4340012, 810, 1000, 1008000, 8, 3} {
+		if actual := r.I32(); actual != expected {
+			t.Fatalf("burn field %d = %d, want %d", i, actual, expected)
+		}
+	}
+	if r.U16() != 0 || r.U8() != 1 || r.U8() != 0 || r.Remaining() != 0 {
+		t.Fatalf("apply suffix %x", apply)
+	}
+	reset := CancelMonsterBurns(77, 0, []MobBurn{burn})
+	r = NewReader(reset)
+	if r.U16() != 0x1b2 || r.I32() != 77 {
+		t.Fatalf("reset header %x", reset)
+	}
+	r.Skip(28)
+	if r.U32() != 1<<27 || r.I32() != 0 || r.I32() != 1 || r.I32() != 4916 ||
+		r.U32() != 4340012<<4|3 || r.U8() != 1 || r.Remaining() != 0 {
+		t.Fatalf("reset burned owner and packed source: %x", reset)
+	}
+}

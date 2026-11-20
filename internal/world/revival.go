@@ -50,7 +50,7 @@ func (s *Server) clearDeathBuffs(ctx context.Context, live *liveCharacter, sink 
 		}
 	}
 	snap := s.mergeSkillResult(live, r)
-	s.publishSkillTick(snap, sink, r, session.Character.HP)
+	s.publishSkillTick(snap, sink, r, session.Character.HP, session.Character.MP)
 	if snap.Character.HP != 0 || len(snap.Character.SkillBuffs) != 0 {
 		return domain.ErrForbidden
 	}

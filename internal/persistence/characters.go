@@ -79,6 +79,9 @@ func readCharacter(ctx context.Context, client *ent.Client, id int64) (domain.Ch
 	if err = readInventorySlots(ctx, client, &value); err != nil {
 		return domain.Character{}, err
 	}
+	if err = readIntrinsicPassives(ctx, client, &value); err != nil {
+		return domain.Character{}, err
+	}
 	if err = readBaseVitals(ctx, client, &value); err != nil {
 		return domain.Character{}, err
 	}
@@ -88,8 +91,18 @@ func readCharacter(ctx context.Context, client *ent.Client, id int64) (domain.Ch
 	return value, nil
 }
 
+// Load both persisted passive sources before deriving effective vitals.
+func readIntrinsicPassives(ctx context.Context, q questQuerier, c *domain.Character) error {
+	cards, err := readCharacterCards(ctx, q, c.AccountID, c.WorldID)
+	if err != nil {
+		return err
+	}
+	c.Cards = cards
+	return readInnerAbilities(ctx, q, c)
+}
+
 func readInventoryItems(ctx context.Context, client *ent.Client, characterID int64) ([]domain.InventoryItem, error) {
-	rows, err := client.QueryContext(ctx, `SELECT id, template_id, inv_type, slot, quantity, revision FROM asset_items WHERE character_id=$1 ORDER BY inv_type, slot`, characterID)
+	rows, err := client.QueryContext(ctx, `SELECT id, template_id, inv_type, slot, quantity, revision, expires_at FROM asset_items WHERE character_id=$1 ORDER BY inv_type, slot`, characterID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +110,7 @@ func readInventoryItems(ctx context.Context, client *ent.Client, characterID int
 	out := make([]domain.InventoryItem, 0, 4)
 	for rows.Next() {
 		var item domain.InventoryItem
-		if err = rows.Scan(&item.ID, &item.TemplateID, &item.InvType, &item.Slot, &item.Quantity, &item.Revision); err != nil {
+		if err = rows.Scan(&item.ID, &item.TemplateID, &item.InvType, &item.Slot, &item.Quantity, &item.Revision, &item.ExpiresAt); err != nil {
 			return nil, err
 		}
 		out = append(out, item)

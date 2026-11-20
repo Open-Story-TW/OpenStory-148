@@ -17,7 +17,9 @@ func init() {
 	skills.Register(skills.Handler{ID: 4110000, Kind: skills.KindPassive, Passive: alchemist})
 	skills.Register(skills.Handler{ID: 4111001, Kind: skills.KindPartyBuff, Cast: mesoUp})
 	skills.Register(skills.Handler{ID: 4111002, Kind: skills.KindBuff, Cast: shadowPartner}) // itemCon 4006001 via StandardCost
-	skills.Register(skills.Handler{ID: 4111003, Kind: skills.KindMobStatus, Cast: costOnly, Attack: mobCast(shadowWeb)})
+	// v148 sends Shadow Web in a 0x55 attack frame. The WZ defines both the
+	// initial hit and the web's damage ticks.
+	skills.Register(skills.Handler{ID: 4111003, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(hit(shadowWeb))})
 	skills.Register(skills.Handler{ID: 4111004, Kind: skills.KindAttack, Attack: shoot(noAmmo, func(s *combat.AttackSpec) { s.DamageRange = shadowMesoRange })}) // Shadow Meso: moneyCon
 	skills.Register(skills.Handler{ID: 4111005, Kind: skills.KindAttack, Attack: shoot()})                                                                       // Avenger: bulletConsume 3
 	skills.Register(skills.Handler{ID: 4111006, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                // Flash Jump
@@ -41,12 +43,12 @@ func clawMastery(c *skills.PassiveContext) skills.Bonus {
 	if weaponType(c.Character) != weaponClaw {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["x"]}
+	return basicWeaponMastery(c, 4120012)
 }
 
 // criticalThrow (4100001) adds prop critical rate and criticaldamageMin.
 func criticalThrow(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{Critical: c.Values["prop"], CriticalDamage: c.Values["criticaldamageMin"]}
+	return skills.Bonus{Critical: c.Values["prop"], CriticalDamageMin: c.Values["criticaldamageMin"]}
 }
 
 // shadowResistance (4100006, 4200006, 4310004) adds mhpR percent max HP and

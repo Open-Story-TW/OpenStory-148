@@ -1,8 +1,10 @@
 package combat
 
 import (
+	"fmt"
 	"time"
 
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 )
 
@@ -22,6 +24,9 @@ type SummonSpec struct {
 	NoCastSpawn bool
 	// SingleAttack removes the summon after its first attack.
 	SingleAttack bool
+	// ExpiryAction authorizes only the original terminal summon attack action.
+	// Its damage, target count, bounds and animation interval come from summon/die.
+	ExpiryAction byte
 	// Puppet summons absorb monster attacks (Decoy) and have HP.
 	Puppet bool
 	HP     int
@@ -60,6 +65,30 @@ type SubSummonResult struct {
 }
 
 type SummonChild struct{ SkillID, Level int }
+
+// SummonExpiryEffect reads the self-destruction attack rather than the cast's
+// party-buff rectangle or the ordinary summon/attack1 action data.
+func SummonExpiryEffect(skill content.Skill, level int) (Effect, time.Duration, error) {
+	effect, err := FromSkill(skill, level)
+	if err != nil {
+		return Effect{}, 0, err
+	}
+	values, err := skill.Values(level)
+	if err != nil {
+		return Effect{}, 0, err
+	}
+	death, damage := skill.SummonDeath, values["selfDestruction"]
+	if death == nil || death.MobCount < 1 || death.MobCount > 15 || death.AttackAfter < 1 || death.AttackAfter > 5000 || damage < 1 || damage > 100000 {
+		return Effect{}, 0, fmt.Errorf("skill%d level%d invalid summon death data", skill.ID, level)
+	}
+	lt, rb := death.Range.LT, death.Range.RB
+	if lt[0] >= rb[0] || lt[1] >= rb[1] {
+		return Effect{}, 0, fmt.Errorf("skill%d invalid summon death bounds", skill.ID)
+	}
+	effect.Damage, effect.MobCount, effect.AttackCount = damage, death.MobCount, 1
+	effect.Box = Box{LT: Point{lt[0], lt[1]}, RB: Point{rb[0], rb[1]}, Set: true}
+	return effect, time.Duration(death.AttackAfter) * time.Millisecond, nil
+}
 
 // SummonCeiling is Java SummonHandler's bound: maxBase × 5 × damage% / 100.
 func SummonCeiling(c DamageContext) int {

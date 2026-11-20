@@ -4,7 +4,7 @@
 -- the character's level and answers with the chosen id. Differences from
 -- Legacy: under level 10 the refusal is a dialogue page instead of a chat
 -- line; 中式結婚 (700000000) is left out because the server's map data does
--- not have that map. Escape and Azwan use the saved MULUNG_TC return location
+-- not have that map. Escape, Azwan, and Nett use the saved MULUNG_TC return location
 -- read by their exit portals.
 local level = npc:level()
 if level < 10 then
@@ -51,7 +51,7 @@ if destination.id == 3 then
     end
     return
 end
-if destination.map == 921160000 or destination.map == 262010000 then
+if destination.map == 921160000 or destination.map == 262010000 or destination.map == 926010000 then
     local saved = npc:exchange({quest_data = {{id = 1900000001, data = tostring(npc:map_id())}}})
     if not saved.ok then
         npc:say("暫時無法記錄返回位置，請再試一次。", false, false)

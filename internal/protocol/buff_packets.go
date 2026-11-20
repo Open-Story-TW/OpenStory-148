@@ -2,9 +2,12 @@ package protocol
 
 import (
 	"fmt"
-	"maple-go-server/internal/buffstat"
 	"slices"
 	"time"
+
+	"maple-go-server/internal/buffstat"
+	"maple-go-server/internal/content"
+	"maple-go-server/internal/domain"
 )
 
 // BuffStat is one stat of a temporary-stat packet.
@@ -60,6 +63,10 @@ type IndieEntry struct {
 // must name every source that still holds the stat; a stat without a list
 // gets the single entry of source.
 func TemporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat, indie map[buffstat.Stat][]IndieEntry) ([]byte, error) {
+	return temporaryStatSetIndie(source, remaining, stats, indie, nil, 0)
+}
+
+func temporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat, indie map[buffstat.Stat][]IndieEntry, sources map[int]int, level int) ([]byte, error) {
 	specs, values, err := buffSpecs(stats)
 	if err != nil {
 		return nil, err
@@ -77,7 +84,7 @@ func TemporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat
 			}
 			w.I16(int16(v))
 		}
-		w.I32(int32(source))
+		w.I32(statPacketSource(source, sources, s.Bit))
 		w.I32(int32(max(0, remaining.Milliseconds())))
 	}
 	w.U8(0)
@@ -102,7 +109,15 @@ func TemporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat
 			case buffstat.ValueI32:
 				w.I32(0)
 			case buffstat.ValueI32x22:
-				w.Zero(22 * 4)
+				var dice [22]int
+				if s.Name == "DICE_ROLL" {
+					b := content.DiceBuffBonuses(domain.SkillBuff{ID: source, Level: level, Stat: string(s.Name), Value: values[s.Bit]})
+					dice[0], dice[1], dice[2] = b.HPPercent, b.MPPercent, b.Critical
+					dice[8], dice[12], dice[17] = b.DefensePercent, b.DamagePercent, b.ExperiencePercent
+				}
+				for _, component := range dice {
+					w.I32(int32(component))
+				}
 			}
 		}
 	}
@@ -131,6 +146,13 @@ func TemporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat
 		w.U8(0)
 	}
 	return w.Packet(), w.err
+}
+
+func statPacketSource(source int, sources map[int]int, bit int) int32 {
+	if override, ok := sources[bit]; ok {
+		return int32(override)
+	}
+	return int32(source)
 }
 
 // writeTwoStates encodes the TwoStateTemporaryStat elements (bits 248..255):
@@ -169,6 +191,10 @@ func ForeignTemporaryStatSet(characterID int64, source int, stats []BuffStat) ([
 // ForeignTemporaryStatSetFor is ForeignTemporaryStatSet with the remaining
 // time two-state terms carry.
 func ForeignTemporaryStatSetFor(characterID int64, source int, remaining time.Duration, stats []BuffStat) ([]byte, error) {
+	return foreignTemporaryStatSetFor(characterID, source, remaining, stats, nil)
+}
+
+func foreignTemporaryStatSetFor(characterID int64, source int, remaining time.Duration, stats []BuffStat, sources map[int]int) ([]byte, error) {
 	specs, values, err := buffSpecs(stats)
 	if err != nil {
 		return nil, err
@@ -188,7 +214,7 @@ func ForeignTemporaryStatSetFor(characterID int64, source int, remaining time.Du
 			w.I32(int32(v))
 		case slices.Equal(s.Remote, []buffstat.Value{buffstat.ValueI16, buffstat.ValueI32}):
 			w.I16(int16(v))
-			w.I32(int32(source))
+			w.I32(statPacketSource(source, sources, s.Bit))
 		default:
 			return nil, fmt.Errorf("buff: stat %s needs a reviewed remote encoding", s.Name)
 		}

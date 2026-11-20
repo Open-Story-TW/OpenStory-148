@@ -6,9 +6,9 @@ package skills
 func OwnerOf(skillID int) string {
 	job := skillID / 10000
 	switch {
-	case job == 0 || job == 800 || job == 900 || job == 910 || job == 1000 || job >= 2000 && job <= 2005 || job == 3000 || job == 3001 || job >= 8000 && job <= 9204:
+	case job == 0 || job == 800 || job == 900 || job == 910 || job == 1000 || job >= 2000 && job <= 2005 || job == 3000 || job == 3001 || job == 5000 || job >= 8000 && job <= 9204:
 		return "common"
-	case job >= 100 && job <= 132:
+	case job >= 100 && job <= 132 || job == 5100 || job >= 5110 && job <= 5112:
 		return "warrior"
 	case job >= 200 && job <= 232:
 		return "magician"

@@ -1,11 +1,24 @@
 package content
 
 import (
+	"encoding/xml"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 )
+
+func TestSummonAttackInfoKeepsNumericWZStrings(t *testing.T) {
+	var raw wzNode
+	data := `<imgdir name="35111009"><imgdir name="summon"><imgdir name="attack1"><imgdir name="info"><string name="attackCount" value="2"/><int name="mobCount" value="4"/><string name="effect" value="laser"/></imgdir></imgdir></imgdir></imgdir>`
+	if err := xml.Unmarshal([]byte(data), &raw); err != nil {
+		t.Fatal(err)
+	}
+	got := skillFromNode(35111009, &raw).SummonAttack
+	if !reflect.DeepEqual(got, map[string]int{"attackCount": 2, "mobCount": 4}) {
+		t.Fatalf("satellite attack info: %+v", got)
+	}
+}
 
 // The embedded seed and live WZ parsing must agree on lt/rb and info.
 func TestSkillRangeAndInfoSeedMatchesWZ(t *testing.T) {
@@ -28,7 +41,13 @@ func TestSkillRangeAndInfoSeedMatchesWZ(t *testing.T) {
 		}
 		t.Fatalf("cannot read skill range WZ source at %s: %v", root, err)
 	}
-	for _, id := range []int{1301007, 1301008, 2301002, 5211002} {
+	ids := []int{1301007, 1301008, 2301002}
+	// Gaviota 5211002 belongs to the stock Legacy book. The original v148
+	// export omits it, so compare its seeded geometry on the Legacy source.
+	if stockSkillBook(filepath.Join(root, "Skill.wz", "521.img.xml"), "521.img.xml") {
+		ids = append(ids, 5211002)
+	}
+	for _, id := range ids {
 		a, err := SkillDefinition("", id)
 		if err != nil {
 			t.Fatalf("seed skill %d: %v", id, err)

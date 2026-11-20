@@ -108,3 +108,27 @@ func TestPartySnapshotRejectsInvalidMembership(t *testing.T) {
 		}
 	}
 }
+
+func TestNativePartyTownPortalUsesTwentyByteRosterAndSeventeenByteDelta(t *testing.T) {
+	p := partyWireFixture()
+	p.Members[1].Channel = 2
+	door := domain.PartyTownPortal{TownMap: 250000000, FieldMap: 250010300, SkillID: 2311002, X: -141, Y: 33}
+	p.Members[1].TownPortal = door
+	full := PartySnapshotPacket(p)
+	r := NewReader(full[7+262+4*20:])
+	if r.I32() != 250000000 || r.I32() != 250010300 || r.I32() != 2311002 || r.I32() != -141 || r.I32() != 33 {
+		t.Fatalf("slot 4 row %x", full[7+262+4*20:7+262+5*20])
+	}
+	want, _ := hex.DecodeString("4d003c0480b2e60ebcdae60e5a43230073ff2100")
+	if update := PartyTownPortalUpdate(4, door); !bytes.Equal(update, want) {
+		t.Fatalf("native operation 60 %x want %x", update, want)
+	}
+	r = NewReader(PartyTownPortalUpdate(4, domain.PartyTownPortal{}))
+	if r.U16() != SendParty || r.U8() != 60 || r.U8() != 4 || r.I32() != NoTownPortal || r.I32() != NoTownPortal ||
+		r.I32() != 0 || r.I16() != 0 || r.I16() != 0 || r.Remaining() != 0 {
+		t.Fatal("native removal must clear the same slot")
+	}
+	if PartyTownPortalUpdate(-1, door) != nil || PartyTownPortalUpdate(domain.PartyCapacity, door) != nil {
+		t.Fatal("invalid portal slot written")
+	}
+}

@@ -11,15 +11,14 @@ import (
 
 // Battle Mage 3200–3212.
 
-// staffAttack is the input family of Battle Mage attacks. They carry WZ
-// magicDamage, but the v145 client sends Triple Blow as a close-range attack
-// (0x4B, MCP 2026-11-02); the magic packet stays accepted until each skill
-// is observed.
+// staffAttack is the input family of Battle Mage attacks. The v148 client
+// sends Triple Blow as a close-range attack (0x55).
 const staffAttack = combat.Melee | combat.Magic
 
-// spears are the staff chain attacks whose ceiling Java DamageParse raises
-// by half (elemMaxDamagePerMob *= 1.5).
-var spears = map[int]bool{32001000: true, 32101000: true, 32111002: true, 32121002: true}
+// The four v148 staff-chain skills enter the same branch at 0x93AA21.
+// The melee sender uses the magic routine at 0x91D3FF for their mage job;
+// Skill.wz marks all four magicDamage=1.
+var magicStaffChain = map[int]bool{32001000: true, 32101000: true, 32111002: true, 32121002: true}
 
 func init() {
 	magic := func(id int, onHit []combat.MobStatusApply, steps ...func(*combat.AttackContext) error) {
@@ -27,10 +26,9 @@ func init() {
 		if onHit != nil {
 			kind |= skills.KindMobStatus
 		}
-		if spears[id] {
-			steps = append(steps, spearCeiling)
-		}
-		skills.Register(skills.Handler{ID: id, Kind: kind, Attack: &combat.AttackSpec{Kind: staffAttack, OnHit: onHit, Prepare: prepare(steps...)}})
+		skills.Register(skills.Handler{ID: id, Kind: kind, Attack: &combat.AttackSpec{
+			Kind: staffAttack, MagicDamage: magicStaffChain[id], OnHit: onHit, Prepare: prepare(steps...),
+		}})
 	}
 	magic(32001000, nil)                 // 三重之矛 Triple Blow
 	magic(32101000, nil)                 // 四重攻擊 Quad Blow
@@ -87,12 +85,6 @@ func init() {
 	for _, id := range []int{32001001, 32000012} {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
 	}
-}
-
-// spearCeiling is Java's 1.5× ceiling of the spear chain.
-func spearCeiling(ctx *combat.AttackContext) error {
-	ctx.Effect.Damage = ctx.Effect.Damage * 3 / 2
-	return nil
 }
 
 // darkShockBonus adds Dark Genesis' passive damR to Dark Shock.

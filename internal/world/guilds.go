@@ -15,7 +15,7 @@ import (
 // guildSpace is world-local presence for guild delivery. Membership itself
 // is durable in PostgreSQL; this registry only answers "who is online here".
 type guildSpace struct {
-	commands sync.Mutex // orders one world's guild publications after commit
+	commands sync.Mutex // orders one world's guild commits and online state changes
 	mu       sync.Mutex
 	peers    map[int64]guildPeer
 }
@@ -64,15 +64,19 @@ func (s *Server) enterGuild(ctx context.Context, live *liveCharacter, sink packe
 		return nil
 	}
 	session := s.petSession(live)
+	space := s.guildSpace()
+	space.commands.Lock()
+	defer space.commands.Unlock()
 	call, done := context.WithTimeout(ctx, 3*time.Second)
 	g, err := repo.ReadGuild(call, session)
 	done()
 	if err != nil {
 		return err
 	}
-	space := s.guildSpace()
-	space.commands.Lock()
-	defer space.commands.Unlock()
+	live.mu.Lock()
+	live.session.Character.Guild = g.Tag(session.CharacterID)
+	live.session.Character.GuildSkills = g.Skills
+	live.mu.Unlock()
 	space.mu.Lock()
 	space.peers[session.CharacterID] = guildPeer{live: live, sink: sink}
 	space.mu.Unlock()
@@ -231,6 +235,14 @@ func (s *Server) commitGuild(ctx context.Context, live *liveCharacter, sink pack
 	defer live.persistMu.Unlock()
 	req.Session = s.petSession(live)
 	req.OperationID = "guild-" + string(req.Action) + "-" + platform.NewID()
+	space := s.guildSpace()
+	space.commands.Lock()
+	var updates []guildTagUpdate
+	defer func() {
+		// Field entry takes its scene gate before the guild command lock.
+		space.commands.Unlock()
+		s.publishGuildTags(updates)
+	}()
 	call, done := context.WithTimeout(ctx, 3*time.Second)
 	m, err := repo.MutateGuild(call, req)
 	done()
@@ -243,23 +255,21 @@ func (s *Server) commitGuild(ctx context.Context, live *liveCharacter, sink pack
 		}
 		return false, sink.WritePacket(guildFailure(err))
 	}
-	space := s.guildSpace()
-	// Lock order: scene gate -> commands (field entry). Release commands
-	// before refreshGuildTags takes other members' scene gates.
-	space.commands.Lock()
 	self := req.Session.CharacterID
 	if m.Character != nil {
 		live.mu.Lock()
 		live.session.Character.Mesos = m.Character.Mesos
 		live.session.Character.Revision = m.Character.Revision
 		live.mu.Unlock()
-		if err = sink.WritePacket(protocol.UpdateMesos(m.Character.Mesos, true)); err != nil {
-			space.commands.Unlock()
-			return true, err
-		}
 	}
 	g := m.After
 	before := m.Before
+	updates = installGuildState(space, before, g)
+	if m.Character != nil {
+		if err = sink.WritePacket(protocol.UpdateMesos(m.Character.Mesos, true)); err != nil {
+			return true, err
+		}
+	}
 	switch m.Action {
 	case domain.GuildCreate:
 		err = sink.WritePacket(protocol.GuildCreated(g, space.online))
@@ -318,17 +328,17 @@ func (s *Server) commitGuild(ctx context.Context, live *liveCharacter, sink pack
 		}
 		err = sink.WritePacket(protocol.GPGainMessage(req.Amount, true))
 	}
-	space.commands.Unlock()
-	if err != nil {
-		return true, err
-	}
-	s.refreshGuildTags(space, before, g)
-	return true, nil
+	return true, err
 }
 
-// refreshGuildTags installs each affected online member's new guild mark and
-// re-announces name and emblem to that member's field (Legacy respawnPlayer).
-func (s *Server) refreshGuildTags(space *guildSpace, before, after domain.GuildSnapshot) {
+type guildTagUpdate struct {
+	peer guildPeer
+	tag  domain.GuildTag
+}
+
+// installGuildState runs under commands so a successful purchase updates all
+// online members before the native skill notification is delivered.
+func installGuildState(space *guildSpace, before, after domain.GuildSnapshot) []guildTagUpdate {
 	ids := map[int64]bool{}
 	for _, m := range before.Members {
 		ids[m.CharacterID] = true
@@ -336,6 +346,7 @@ func (s *Server) refreshGuildTags(space *guildSpace, before, after domain.GuildS
 	for _, m := range after.Members {
 		ids[m.CharacterID] = true
 	}
+	var updates []guildTagUpdate
 	for id := range ids {
 		p, ok := space.peer(id)
 		if !ok {
@@ -345,9 +356,23 @@ func (s *Server) refreshGuildTags(space *guildSpace, before, after domain.GuildS
 		p.live.mu.Lock()
 		changed := p.live.session.Character.Guild != tag
 		p.live.session.Character.Guild = tag
-		snapshot := p.live.session
+		p.live.session.Character.GuildSkills = nil
+		if tag.ID != 0 {
+			p.live.session.Character.GuildSkills = after.Skills
+		}
 		p.live.mu.Unlock()
-		if !changed {
+		if changed {
+			updates = append(updates, guildTagUpdate{peer: p, tag: tag})
+		}
+	}
+	return updates
+}
+
+func (s *Server) publishGuildTags(updates []guildTagUpdate) {
+	for _, update := range updates {
+		p, tag := update.peer, update.tag
+		snapshot := s.petSession(p.live)
+		if snapshot.Character.Guild != tag {
 			continue
 		}
 		s.updateOnlineOwned(snapshot, snapshot)
@@ -355,11 +380,12 @@ func (s *Server) refreshGuildTags(space *guildSpace, before, after domain.GuildS
 		if v == nil || s.maps == nil {
 			continue
 		}
+		id := snapshot.CharacterID
 		unlock, err := s.lockScenePublication(id)
 		if err != nil {
 			continue
 		}
-		if s.sceneCurrent(v) {
+		if s.sceneCurrent(v) && s.petSession(p.live).Character.Guild == tag {
 			s.maps.publishGuildTag(v, tag, protocol.LoadGuildName(id, tag), protocol.LoadGuildIcon(id, tag))
 		}
 		unlock()

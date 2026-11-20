@@ -143,12 +143,13 @@ func readSkillUseTail(v SkillCast, tail []byte) (SkillCast, bool) {
 	return v, true
 }
 
-// castHasPosition is the native predicate 0x669D0E: skills whose use request
+// castHasPosition mirrors the native predicate: skills whose use request
 // carries the caster position (mass spells and a few movement buffs).
 func castHasPosition(a int) bool {
-	// v148 mass-spell predicate 0x6AB232 includes the regional Maple Warriors.
+	// Original v148 0x6AB232 includes the regional Maple Warrior casts
+	// and Mihile's Inspire and Maple Warrior with the same coordinate layout.
 	switch a {
-	case 5721000, 5821000, 5921000:
+	case 5721000, 5821000, 5921000, 51101004, 51111005, 51121005:
 		return true
 	}
 	if a > 5120012 {
@@ -430,13 +431,25 @@ func buffRows(rows []domain.SkillBuff) ([]BuffStat, int, bool) {
 	return stats, rows[0].ID, true
 }
 
+// The summoned bird owns the effect lifetime. v148 BasicStat reads the
+// learned Spirit Link skill from this triplet's source, independently of the
+// summon ID used by the other rows and its cancellation icon.
+func skillBuffWireSources(rows []domain.SkillBuff) map[int]int {
+	for _, row := range rows {
+		if linked := buffstat.SpiritLinkSkill(row.ID, row.Stat); linked != 0 {
+			return map[int]int{169: linked}
+		}
+	}
+	return nil
+}
+
 // SkillBuffs is the local temporary-stat packet for the rows of one skill.
 func SkillBuffs(rows []domain.SkillBuff, now time.Time) []byte {
 	stats, id, ok := buffRows(rows)
 	if !ok {
 		return nil
 	}
-	p, _ := TemporaryStatSet(id, rows[0].ExpiresAt.Sub(now), stats)
+	p, _ := temporaryStatSetIndie(id, rows[0].ExpiresAt.Sub(now), stats, nil, skillBuffWireSources(rows), rows[0].Level)
 	return p
 }
 
@@ -460,7 +473,7 @@ func skillBuffsAmong(rows, active []domain.SkillBuff, characterID int64, now tim
 	for i, row := range rows {
 		stats[i].blueAuraOwner = row.Stat == "BLUE_AURA" && characterID != 0 && row.SourceCharacterID == characterID
 	}
-	p, _ := TemporaryStatSetIndie(id, rows[0].ExpiresAt.Sub(now), stats, IndieEntries(rows, active, now))
+	p, _ := temporaryStatSetIndie(id, rows[0].ExpiresAt.Sub(now), stats, IndieEntries(rows, active, now), skillBuffWireSources(rows), rows[0].Level)
 	return p
 }
 
@@ -494,7 +507,7 @@ func ForeignSkillBuffs(characterID int64, rows []domain.SkillBuff) []byte {
 	if !ok {
 		return nil
 	}
-	p, _ := ForeignTemporaryStatSetFor(characterID, id, time.Until(rows[0].ExpiresAt), stats)
+	p, _ := foreignTemporaryStatSetFor(characterID, id, time.Until(rows[0].ExpiresAt), stats, skillBuffWireSources(rows))
 	return p
 }
 func CancelSkillBuffs(characterID int64, rows []domain.SkillBuff) []byte {
@@ -541,7 +554,7 @@ func GroupSkillBuffs(rows []domain.SkillBuff) [][]domain.SkillBuff {
 // more than the base layout (Open-Maple docs/server/baseline/skill-effect-native.json).
 // It also refuses an unknown skill or a level above the skill's maximum.
 func effectExtraReads(kind byte, skillID int) bool {
-	if def, e := content.SkillDefinition("", skillID); e != nil || def.MaxLevel < 1 {
+	if def, e := content.ConfiguredSkillDefinition(skillID); e != nil || def.MaxLevel < 1 {
 		return true
 	}
 	if kind == 2 {
@@ -554,7 +567,7 @@ func effectExtraReads(kind byte, skillID int) bool {
 	return skillID/10000000 == 9
 }
 func effectMaxLevel(skillID int) int {
-	def, _ := content.SkillDefinition("", skillID)
+	def, _ := content.ConfiguredSkillDefinition(skillID)
 	return def.MaxLevel
 }
 func effectWriter(characterID int64, kind byte, skillID int) *Writer {
@@ -590,6 +603,34 @@ func SkillAffectedEffect(characterID int64, skillID, skillLevel int) []byte {
 	}
 	w := effectWriter(characterID, 2, skillID)
 	w.U8(uint8(skillLevel))
+	return w.Packet()
+}
+
+// SkillDiceEffect follows native OnEffect case 3 at 0x8D7C75; its two
+// I32 animation selectors precede the skill ID and skill rank.
+func SkillDiceEffect(characterID int64, skillID, skillLevel int, roll domain.SkillDiceRoll) []byte {
+	if characterID < 0 || characterID > 2147483647 || skillLevel < 1 || skillLevel > effectMaxLevel(skillID) ||
+		roll.First < 1 || roll.First > 6 || roll.Second < 0 || roll.Second > 6 || (!roll.Upgraded && roll.Second != 0) {
+		return nil
+	}
+	op := uint16(0x154)
+	if characterID != 0 {
+		op = 0x144
+	}
+	w := NewWriter(op)
+	if characterID != 0 {
+		w.I32(int32(characterID))
+	}
+	w.U8(3)
+	w.I32(int32(roll.First))
+	prefix := int32(-1)
+	if roll.Upgraded && roll.Second == 0 {
+		prefix = 0 // The upgraded skill has a separate affected0 branch.
+	}
+	w.I32(prefix)
+	w.I32(int32(skillID))
+	w.U8(uint8(skillLevel))
+	w.U8(0)
 	return w.Packet()
 }
 func PlayerDamagePacket(characterID int64, v PlayerDamage) []byte {

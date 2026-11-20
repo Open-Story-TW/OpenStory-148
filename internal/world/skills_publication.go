@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"maple-go-server/internal/buffstat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
@@ -143,7 +144,24 @@ func (s *Server) publishCurrentSkillStateLocked(source, target *skillMember) {
 	if !valid || snapshot.Character.HP <= 0 {
 		return
 	}
-	for _, group := range protocol.GroupSkillBuffs(activeSkillBuffs(snapshot.Character, time.Now())) {
+	now := time.Now()
+	for _, group := range protocol.GroupSkillBuffs(activeSkillBuffs(snapshot.Character, now)) {
+		if group[0].ID == sceneLocalSG88 {
+			// The remote appearance can be restored to a late observer only
+			// while the actor still owns its real robot in this field.
+			if s.gameplay == nil {
+				continue
+			}
+			s.gameplay.mu.Lock()
+			room := s.gameplay.rooms[mapKey{source.channel, source.mapID}]
+			present := room != nil && room.members[source.characterID] != nil &&
+				room.members[source.characterID].live == source.live &&
+				hasActiveSummon(room, room.members[source.characterID], sceneLocalSG88, now)
+			s.gameplay.mu.Unlock()
+			if !present {
+				continue
+			}
+		}
 		_ = target.sink.WritePacket(protocol.ForeignSkillBuffs(source.characterID, group))
 	}
 }
@@ -253,6 +271,9 @@ func touchesMaxima(rows ...[]domain.SkillBuff) bool {
 			if b.Stat == "MAXHP" || b.Stat == "MAXMP" {
 				return true
 			}
+			if dice := content.DiceBuffBonuses(b); dice.HPPercent != 0 || dice.MPPercent != 0 {
+				return true
+			}
 		}
 	}
 	return false
@@ -263,7 +284,7 @@ func activeSkillStat(c domain.Character, stat string, now time.Time) bool {
 		return false
 	}
 	for _, buff := range c.SkillBuffs {
-		if buff.Stat == stat && buff.ExpiresAt.After(now) {
+		if buffstat.EffectSlot(buff.Stat) == buffstat.EffectSlot(stat) && buff.ExpiresAt.After(now) {
 			return true
 		}
 	}
@@ -333,12 +354,18 @@ func (s *Server) publishSkillCast(source *skillMember, castPeers []*skillMember,
 		}
 	}
 	if castActive {
-		_ = source.sink.WritePacket(protocol.SkillEffect(0, q.SkillID, current.Character.Level, q.Level))
+		effect := func(characterID int64) []byte {
+			if r.Dice.First != 0 {
+				return protocol.SkillDiceEffect(characterID, q.SkillID, q.Level, r.Dice)
+			}
+			return protocol.SkillEffect(characterID, q.SkillID, current.Character.Level, q.Level)
+		}
+		_ = source.sink.WritePacket(effect(0))
 		// Only visits present when the cast began receive the transient cast FX.
 		// Later entrants receive current state through enter/post-spawn sync.
 		for _, target := range castPeers {
 			if s.skillVisible(source, target) {
-				_ = target.sink.WritePacket(protocol.SkillEffect(snapshot.CharacterID, q.SkillID, current.Character.Level, q.Level))
+				_ = target.sink.WritePacket(effect(snapshot.CharacterID))
 			}
 		}
 	}
@@ -404,7 +431,7 @@ func (s *Server) publishSkillForeign(snapshot domain.CharacterSession, live *liv
 // snapshot identifies a committed event, not a replaceable current room.
 // Caller owns source persistMu; old delayed events are checked against current
 // buff state so an old cancellation cannot clear a replacement of the same stat.
-func (s *Server) publishSkillTick(snap domain.CharacterSession, sink packetSink, r domain.SkillResult, previousHP int) {
+func (s *Server) publishSkillTick(snap domain.CharacterSession, sink packetSink, r domain.SkillResult, previousHP, previousMP int) {
 	if s.skills == nil {
 		return
 	}
@@ -425,7 +452,7 @@ func (s *Server) publishSkillTick(snap domain.CharacterSession, sink packetSink,
 	s.publishUpdatedRows(m, peers, current.Character, r.Updated, time.Now())
 	if touchesMaxima(r.Expired) {
 		_ = sink.WritePacket(protocol.InventoryVitals(current.Character))
-	} else if current.Character.HP != previousHP || len(r.Updated) > 0 {
+	} else if current.Character.HP != previousHP || current.Character.MP != previousMP || len(r.Updated) > 0 {
 		_ = sink.WritePacket(protocol.UpdateHPMP(current.Character.HP, current.Character.MP))
 	}
 }

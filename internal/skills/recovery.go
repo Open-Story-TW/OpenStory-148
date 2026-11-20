@@ -19,19 +19,34 @@ const (
 )
 
 func IsReviewedRecoverySkill(id int) bool {
-	return id == 1110000 || id == 11110000 || id == durabilitySkill || id == bloodCirculationSkill
+	return id == 1110000 || id == 11110000 || id == 51110000 || id == durabilitySkill || id == bloodCirculationSkill
 }
 
-// ReviewedRecoveryTick applies the eligible job's HP and MP recovery.
-// Native ordinary regeneration requests omit these skill bonuses.
+func reviewedRecoveryJob(id, job int) bool {
+	switch id {
+	case 1110000:
+		return job == 111 || job == 112
+	case 11110000:
+		return job == 1111 || job == 1112
+	case 51110000:
+		return job == 5111 || job == 5112
+	case durabilitySkill:
+		return job >= 510 && job <= 512
+	case bloodCirculationSkill:
+		return job >= 570 && job <= 572
+	default:
+		return false
+	}
+}
+
+// ReviewedRecoveryTick applies the eligible job's WZ HP and MP recovery.
+// Native ordinary regeneration requests do not include these skill bonuses.
 func ReviewedRecoveryTick(c *TriggerContext) *BuffChange {
 	if c == nil || c.Character.HP <= 0 {
 		return nil
 	}
 	id, job := c.Skill.ID, c.Character.Job
-	hero := id == 1110000 && (job == 111 || job == 112)
-	cygnus := id == 11110000 && (job == 1111 || job == 1112)
-	if !hero && !cygnus {
+	if !reviewedRecoveryJob(id, job) {
 		return nil
 	}
 	stats, err := PlayerStatsChecked(c.Character, c.Now)
@@ -59,11 +74,7 @@ func ReviewedRecoveryPlans(c domain.Character, now time.Time) ([]PeriodicRecover
 		if !IsReviewedRecoverySkill(state.ID) || state.Level <= 0 || !state.ExpiresAt.IsZero() && !state.ExpiresAt.After(now) {
 			continue
 		}
-		eligible := state.ID == 1110000 && (c.Job == 111 || c.Job == 112) ||
-			state.ID == 11110000 && (c.Job == 1111 || c.Job == 1112) ||
-			state.ID == durabilitySkill && c.Job >= 510 && c.Job <= 512 ||
-			state.ID == bloodCirculationSkill && c.Job >= 570 && c.Job <= 572
-		if !eligible {
+		if !reviewedRecoveryJob(state.ID, c.Job) {
 			continue
 		}
 		if seen[state.ID] {

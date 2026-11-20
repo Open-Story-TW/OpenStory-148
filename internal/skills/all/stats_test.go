@@ -40,6 +40,43 @@ func TestV148DemonMasterySelectsAdvancedTier(t *testing.T) {
 	}
 }
 
+func TestV148MovementAndRegionalPassiveFields(t *testing.T) {
+	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	if root == "" {
+		t.Skip("original v148 WZ required")
+	}
+	dodge := skills.Bonus{ACC: 220, Jump: 10, SpeedLimitBonus: 20}
+	archery := skills.Bonus{ACC: 225, AVOID: 225, Speed: 30, Range: 120, SpeedLimitBonus: 20}
+	for _, tc := range []struct {
+		id, job, level int
+		want           skills.Bonus
+	}{
+		{5080000, 508, 10, dodge},
+		{15000000, 1500, 10, dodge},
+		{3000002, 300, 15, archery},
+		{13000001, 1300, 15, archery},
+		{23000001, 2300, 15, skills.Bonus{AvoidRate: 20, Speed: 30, SpeedLimitBonus: 25}},
+		{5710004, 571, 20, skills.Bonus{MaxHP: 600, MaxMP: 600, ASR: 20, WDEFPercent: 30, MDEFPercent: 30}},
+	} {
+		def, err := content.SkillDefinition(root, tc.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		values, err := def.Values(tc.level)
+		if err != nil {
+			t.Fatal(err)
+		}
+		c := domain.Character{Job: tc.job, Level: 200}
+		h, ok := skills.Lookup(tc.id)
+		if !ok || h.Passive == nil || !def.CanLearnBy(c) {
+			t.Fatalf("%d has no eligible passive", tc.id)
+		}
+		if got := h.Passive(&skills.PassiveContext{Skill: def, Level: tc.level, Values: values, Character: c}); got != tc.want {
+			t.Errorf("%d: got %+v, want %+v", tc.id, got, tc.want)
+		}
+	}
+}
+
 // Buffs feed the attacker stats like Java PlayerStats.
 func TestPlayerStatsAddsBuffsAndMapleWarrior(t *testing.T) {
 	now := time.Now()
@@ -179,7 +216,14 @@ func TestV148CriticalRageAppliesBossRateOnlyAgainstBosses(t *testing.T) {
 	}
 	values, err := def.Values(20)
 	if err != nil || values["prop"] == 0 {
-		t.Fatalf("unrelated skill's ordinary critical rate: %v %v", values, err)
+		t.Fatalf("unrelated skill's critical rate: %v %v", values, err)
+	}
+	// v148 data gives 5110000 a subProp, so its prop only counts against a
+	// stunned target and moves neither the ordinary nor the boss rate.
+	_, stunnedOnly := values["subProp"]
+	unrelatedBonus := values["prop"]
+	if stunnedOnly {
+		unrelatedBonus = 0
 	}
 	variants := []struct {
 		name        string
@@ -189,7 +233,7 @@ func TestV148CriticalRageAppliesBossRateOnlyAgainstBosses(t *testing.T) {
 	}{
 		{name: "unlearned"},
 		{name: "critical rage", skill: domain.SkillState{ID: 5110011, Level: 20}, normalBonus: 15, bossBonus: 35},
-		{name: "unrelated skill", skill: domain.SkillState{ID: unrelatedSkill, Level: 20}, normalBonus: values["prop"], bossBonus: values["prop"]},
+		{name: "unrelated skill", skill: domain.SkillState{ID: unrelatedSkill, Level: 20}, normalBonus: unrelatedBonus, bossBonus: unrelatedBonus},
 		{name: "expired", skill: domain.SkillState{ID: 5110011, Level: 20, ExpiresAt: now.Add(-time.Second)}},
 	}
 	const attackCriticalRate = 7
@@ -231,6 +275,10 @@ func TestRegisteredHPPassivesFeedDerivedVitals(t *testing.T) {
 	if hp, _, err = content.DerivedVitals(w, now); err != nil || hp != 102 {
 		t.Fatalf("warrior HP Increase counted once: %d %v", hp, err)
 	}
+	c = domain.Character{Job: 112, Level: 200, VitalsModel: 1, BaseMaxHP: 4422, BaseMaxMP: 2979, Skills: []domain.SkillState{{ID: 80000000, Level: 1}}}
+	if hp, mp, err := content.DerivedVitals(c, now); err != nil || hp != 4643 || mp != 3127 {
+		t.Fatalf("linked Pirate Blessing maxima: %d/%d %v", hp, mp, err)
+	}
 }
 
 func TestDemonFuryAndRecipientBuffStats(t *testing.T) {
@@ -257,5 +305,56 @@ func TestTakenDamageReductions(t *testing.T) {
 	c := domain.Character{HP: 500, MP: 30, SkillBuffs: []domain.SkillBuff{{ID: 23111005, Stat: "WATER_SHIELD", Value: 40, ExpiresAt: now.Add(time.Minute)}}}
 	if hp, mp := skills.TakenDamage(c, 100, now); hp != 60 || mp != 0 {
 		t.Fatalf("water shield %d/%d", hp, mp)
+	}
+}
+
+func TestV148PassivesPopulateStatsWithUnaffixedWeapon(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	now := time.Unix(100, 0)
+	walker := domain.Character{Job: 1411, Level: 100, STR: 10, DEX: 100, INT: 10, LUK: 100,
+		Skills: []domain.SkillState{{ID: 14110009, Level: 20}}, Equipment: []domain.Equipment{{Slot: -11, ItemID: 1472000}}}
+	walkerStats, err := skills.PlayerStatsChecked(walker, now)
+	if err != nil || walkerStats.ASR != 30 || walkerStats.TER != 30 {
+		t.Fatalf("Night Walker resistance ASR=%d TER=%d err=%v", walkerStats.ASR, walkerStats.TER, err)
+	}
+	breaker := domain.Character{Job: 1500, Level: 30, STR: 100, DEX: 100, INT: 10, LUK: 10,
+		Skills: []domain.SkillState{{ID: 15000006, Level: 10}}, Equipment: []domain.Equipment{{Slot: -11, ItemID: 1482000}}}
+	breakerStats, err := skills.PlayerStatsChecked(breaker, now)
+	if err != nil || breakerStats.CritRate != 20 || breakerStats.CritDamageMin != 10 {
+		t.Fatalf("Thunder Breaker critical rate=%d minimum=%d err=%v", breakerStats.CritRate, breakerStats.CritDamageMin, err)
+	}
+}
+
+func TestV148RangedMasterySelectsAdvancedTier(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	now := time.Unix(100, 0)
+	for _, tc := range []struct {
+		job, basic, advanced, level, weapon, mastery, attack int
+	}{
+		{312, 3100000, 3120005, 30, 1452000, 70, 30},
+		{322, 3200000, 3220004, 30, 1462000, 70, 30},
+		{1311, 13100000, 13110003, 20, 1452000, 65, 25},
+		{3312, 33100000, 33120000, 30, 1462000, 70, 30},
+	} {
+		c := domain.Character{Job: tc.job, Level: 200, Skills: []domain.SkillState{{ID: tc.basic, Level: 20}},
+			Equipment: []domain.Equipment{{Slot: -11, ItemID: tc.weapon}}}
+		base := skills.Bonuses(c, now)
+		if base.Mastery != 50 || base.ACC != 120 {
+			t.Errorf("job %d prerequisite mastery/accuracy = %d/%d", tc.job, base.Mastery, base.ACC)
+		}
+		c.Skills = append(c.Skills, domain.SkillState{ID: tc.advanced, Level: tc.level})
+		learned := skills.Bonuses(c, now)
+		if learned.Mastery != tc.mastery || learned.ACC != base.ACC || learned.WATK != tc.attack || learned.CriticalDamageMin != 15 {
+			t.Errorf("job %d advanced mastery/accuracy/attack/critical = %+v", tc.job, learned)
+		}
+		c.Equipment[0].ItemID = 1302000
+		if wrongWeapon := skills.Bonuses(c, now); wrongWeapon.Mastery != 0 || wrongWeapon.ACC != 0 {
+			t.Errorf("job %d invalid weapon mastery/accuracy = %d/%d", tc.job, wrongWeapon.Mastery, wrongWeapon.ACC)
+		}
+		c.Equipment[0].ItemID = tc.weapon
+		c.Skills[1].ExpiresAt = now.Add(-time.Second)
+		if expired := skills.Bonuses(c, now); expired.Mastery != base.Mastery || expired.ACC != base.ACC || expired.WATK != base.WATK {
+			t.Errorf("job %d expired expert bonuses = %+v", tc.job, expired)
+		}
 	}
 }

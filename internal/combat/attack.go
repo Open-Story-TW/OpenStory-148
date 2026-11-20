@@ -38,6 +38,9 @@ type AttackContext struct {
 	Attack    protocol.Attack
 	Targets   []TargetInfo
 	Now       time.Time
+	// AF-11's physical and magic field multipliers come from the owner-bound
+	// affected area around the character in the current gameplay scene.
+	FieldPhysicalAmp, FieldMagicAmp int
 	// NoAmmo may be set by Prepare (Shadow Stars / Soul Arrow active).
 	NoAmmo bool
 	// Mesos are the consumed ground meso amounts (ConsumeMesos skills).
@@ -64,6 +67,8 @@ type TargetPlan struct {
 	Statuses    []ActiveStatus
 	// BossCriticalStep is the physical boss bonus already included in the first hit's rate.
 	BossCriticalStep int
+	// CriticalRate is the first connected hit's rate for this target (skill, boss and stun bonuses).
+	CriticalRate int
 	// Critical marks lines above the noncritical bound: the wire does not say,
 	// but only a critical reaches there. Other clients need it to draw the number.
 	Critical []bool
@@ -165,6 +170,9 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 	if !spec.Allows(ctx.Kind) {
 		return p, ErrKind
 	}
+	if err := spec.ApplyLearnedEffect(ctx.Character, ctx.Now, &ctx.Effect); err != nil {
+		return p, err
+	}
 	if spec != nil && spec.Prepare != nil {
 		if err := spec.Prepare(&ctx); err != nil {
 			return p, err
@@ -211,8 +219,12 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		return p, ErrCost
 	}
 	p.Cooldown = resources.Cooldown
-	// A magic skill's body attack (Teleport Mastery 0x4E) still uses MAD.
-	magic := ctx.Kind == Magic || ctx.Kind == Body && spec != nil && spec.Kind&Magic != 0
+	// Some skills send a melee or body packet but use the magic formula.
+	magic := ctx.Kind == Magic || spec != nil && (spec.MagicDamage || ctx.Kind == Body && spec.Kind&Magic != 0)
+	fieldAmp := ctx.FieldPhysicalAmp
+	if magic {
+		fieldAmp = ctx.FieldMagicAmp
+	}
 	maxBase := MaxBaseDamage(ctx.Stats)
 	for i, t := range ctx.Targets {
 		in := ctx.Attack.Targets[i]
@@ -222,7 +234,7 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		if (spec == nil || !spec.IgnoreRange) && !admits(ctx, t) {
 			return p, fmt.Errorf("%w: target %d at (%d,%d) body %dx%d, origin (%d,%d) left %v, box %+v range %d", ErrRange, t.ObjectID, t.X, t.Y, t.HalfWidth, t.BodyHeight, ctx.Attack.X, ctx.Attack.Y, ctx.Attack.FacingLeft(), ctx.Effect.Box, ctx.Effect.Range)
 		}
-		dc := DamageContext{Stats: ctx.Stats, Effect: e, Mob: t.Mob, Statuses: t.Statuses, Magic: magic, HP: t.HP, Attacker: ctx.Character}
+		dc := DamageContext{Stats: ctx.Stats, Effect: e, Mob: t.Mob, Statuses: t.Statuses, Magic: magic, HP: t.HP, Attacker: ctx.Character, FieldDamagePercent: fieldAmp}
 		floor, ceiling := 0, 0
 		if spec != nil && spec.MaxDamage != nil {
 			ceiling = spec.MaxDamage(dc)
@@ -243,7 +255,10 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 			// floor no longer describes this line.
 			ceiling, floor, ownCeiling = modified, 0, true
 		}
-		tp := TargetPlan{ObjectID: t.ObjectID}
+		tp := TargetPlan{ObjectID: t.ObjectID, CriticalRate: ctx.Stats.CriticalRateAgainst(e.CriticalRate, t.Mob.Boss)}
+		if stun := t.Statuses[MobStun]; stun != nil && stun.ExpiresAt.After(ctx.Now) {
+			tp.CriticalRate += ctx.Stats.StunnedCritRate
+		}
 		if t.Mob.Boss && (ctx.Kind == Melee || ctx.Kind == Shoot) {
 			// The native physical calculation adds the boss rate on each connected line.
 			tp.BossCriticalStep = max(0, ctx.Stats.BossCritRate)

@@ -70,10 +70,13 @@ func elementalResistance(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{TER: c.Values["x"]}
 }
 
-// berserk (1320006) is Java dam_r *= (damage+100)/100; Legacy applies it at
-// any HP although the WZ text limits it to HP above x%.
+// Berserk (1320006) grants its v148 bonuses only at or above x% HP.
 func berserk(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{DamagePercent: c.Values["damage"]}
+	v := c.Values
+	if c.Character.MaxHP <= 0 || int64(c.Character.HP)*100 < int64(c.Character.MaxHP)*int64(v["x"]) {
+		return skills.Bonus{}
+	}
+	return skills.Bonus{DamagePercent: v["damage"], Speed: v["psdSpeed"], Critical: v["cr"], CriticalDamageMin: v["criticaldamageMin"]}
 }
 
 // mapleWarrior is the 4th-job party buff of every Adventurer branch (Java

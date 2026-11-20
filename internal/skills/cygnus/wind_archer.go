@@ -19,7 +19,12 @@ func init() {
 	skills.Register(skills.Handler{ID: 13001003, Kind: skills.KindAttack, Attack: windShoot()}) // 二連箭
 	skills.Register(spirit(13001004, combat.Physical))                                          // 暴風 (Storm)
 
-	passive(13100000, mastery("acc", bow)) // 精準之弓
+	passive(13100000, func(c *skills.PassiveContext) skills.Bonus { // 精準之弓
+		if weaponType(c.Character) != bow {
+			return skills.Bonus{}
+		}
+		return skills.Bonus{Mastery: c.BasicMastery(13110003), ACC: c.Values["x"]}
+	})
 	passive(13100008, physicalTraining)
 	skills.Register(skills.Handler{ID: 13101001, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                                      // 快速之箭
 	skills.Register(skills.Handler{ID: 13101002, Kind: skills.KindBuff | skills.KindAttack, Cast: finalAttack, Attack: windShoot()})       // 終極攻擊
@@ -29,12 +34,16 @@ func init() {
 	skills.Register(skills.Handler{ID: 13101006, Kind: skills.KindBuff, Cast: windWalk, Passive: windWalkDamage, OnAttack: breakOnAttack}) // 風影漫步
 	skills.Register(skills.Handler{ID: 13101007, Kind: skills.KindAttack, Attack: windShoot()})                                            // 四連箭
 
-	passive(13110003, func(c *skills.PassiveContext) skills.Bonus { // 弓術精通: Java trueMastery and critical minimum only
-		return skills.Bonus{Mastery: c.Values["mastery"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+	passive(13110003, func(c *skills.PassiveContext) skills.Bonus { // 弓術精通
+		b := skills.Bonus{WATK: c.Values["x"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+		if weaponType(c.Character) == bow {
+			b.Mastery = c.Values["mastery"]
+		}
+		return b
 	})
 	passive(13110008, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} })                   // 躲避: Java dodgeChance
 	pvpOnly(13110009)                                                                                                                   // 致命箭: hidden, Legacy never applies it
-	skills.Register(skills.Handler{ID: 13111000, Kind: skills.KindAttack | skills.KindMobStatus, Attack: windShoot(noAmmo, hit(stun))}) // 箭雨: WZ stun
+	skills.Register(skills.Handler{ID: 13111000, Kind: skills.KindAttack | skills.KindMobStatus, Attack: windShoot(noAmmo, hit(stun))}) // 箭雨: v148 WZ prop and time
 	skills.Register(skills.Handler{ID: 13111001, Kind: skills.KindBuff, Cast: value("CONCENTRATE", "x")})                               // 集中: CONCENTRATE x, epad
 	skills.Register(skills.Handler{ID: 13111002, Kind: skills.KindAttack, Attack: windShoot()})                                         // 暴風神射: keydown quirk is built into S0b
 	skills.Register(skills.Handler{ID: 13111004, Kind: skills.KindSummon, Cast: summonBuff("PUPPET"), Attack: puppet})                  // 替身術

@@ -29,6 +29,7 @@ type partySpace struct {
 	mu       sync.Mutex
 	peers    map[int64]*partyPeer
 	exp      *expeditions // Protected by mu; changed only under commands.
+	gameplay *gameplaySpace
 }
 
 func newPartySpace() *partySpace {
@@ -132,6 +133,7 @@ func (b *partySpace) visible(p domain.PartySnapshot) domain.PartySnapshot {
 	for i := range p.Members {
 		m := &p.Members[i]
 		m.Channel, m.MapID, m.HP, m.MaxHP = 0, 0, 0, 0
+		m.TownPortal = domain.PartyTownPortal{}
 		peer := b.peers[m.CharacterID]
 		if peer == nil || peer.party.ID != p.ID {
 			continue
@@ -142,6 +144,19 @@ func (b *partySpace) visible(p domain.PartySnapshot) domain.PartySnapshot {
 		}
 		m.Name, m.Level, m.Job, m.SubJob = s.Character.Name, s.Character.Level, s.Character.Job, s.Character.SubJob
 		m.Channel, m.MapID, m.HP, m.MaxHP = s.ChannelID, s.Character.MapID, s.Character.HP, s.Character.MaxHP
+		m.TownPortal = b.gameplay.partyTownPortal(s, p.ID, m.Slot)
+	}
+	return p
+}
+
+func partyPortalsFor(p domain.PartySnapshot, receiverID int64) domain.PartySnapshot {
+	receiver, _ := p.Member(receiverID)
+	p.Members = append([]domain.PartyMember(nil), p.Members...)
+	for i := range p.Members {
+		m := &p.Members[i]
+		if receiver.Channel == 0 || m.Channel != receiver.Channel {
+			m.TownPortal = domain.PartyTownPortal{}
+		}
 	}
 	return p
 }
@@ -151,11 +166,11 @@ func (b *partySpace) snapshots(p domain.PartySnapshot) []partyDelivery {
 		return nil
 	}
 	p = b.visible(p)
-	packet := protocol.PartySnapshotPacket(p)
 	var out []partyDelivery
 	for _, m := range p.Members {
 		if peer := b.peers[m.CharacterID]; peer != nil && peer.party.ID == p.ID {
 			peer.party = p
+			packet := protocol.PartySnapshotPacket(partyPortalsFor(p, m.CharacterID))
 			out = append(out, partyDelivery{peer: peer, packets: [][]byte{packet}})
 		}
 	}
@@ -412,10 +427,10 @@ func (s *Server) applyParty(ctx context.Context, live *liveCharacter, sink packe
 	}
 	switch q.Action {
 	case domain.PartyCreate:
-		out = append(out, partyDelivery{peer: peer, packets: [][]byte{protocol.PartyCreated(after.ID), protocol.PartySnapshotPacket(after)}})
+		out = append(out, partyDelivery{peer: peer, packets: [][]byte{protocol.PartyCreated(after.ID), protocol.PartySnapshotPacket(partyPortalsFor(after, q.Session.CharacterID))}})
 	case domain.PartyInvite:
 		if result.Created {
-			out = append(out, partyDelivery{peer: peer, packets: [][]byte{protocol.PartyCreated(after.ID), protocol.PartySnapshotPacket(after)}})
+			out = append(out, partyDelivery{peer: peer, packets: [][]byte{protocol.PartyCreated(after.ID), protocol.PartySnapshotPacket(partyPortalsFor(after, q.Session.CharacterID))}})
 		}
 		if result.Invitation != nil {
 			i := *result.Invitation
@@ -430,18 +445,19 @@ func (s *Server) applyParty(ctx context.Context, live *liveCharacter, sink packe
 		_, already := result.Before.Member(q.Session.CharacterID)
 		for _, m := range after.Members {
 			if p := b.peers[m.CharacterID]; p != nil {
-				packet := protocol.PartySnapshotPacket(after)
+				seen := partyPortalsFor(after, m.CharacterID)
+				packet := protocol.PartySnapshotPacket(seen)
 				if !already {
-					packet = protocol.PartyJoined(after, q.Session.Character.Name)
+					packet = protocol.PartyJoined(seen, q.Session.Character.Name)
 				}
 				out = append(out, partyDelivery{peer: p, packets: [][]byte{packet}})
 			}
 		}
 	case domain.PartyLeave, domain.PartyExpel:
 		if result.Before.ID != 0 {
-			packet := protocol.PartyDeparted(result.Before, after, result.TargetID, q.Action == domain.PartyExpel)
 			for _, m := range result.Before.Members {
 				if p := b.peers[m.CharacterID]; p != nil {
+					packet := protocol.PartyDeparted(result.Before, partyPortalsFor(after, m.CharacterID), result.TargetID, q.Action == domain.PartyExpel)
 					out = append(out, partyDelivery{peer: p, packets: [][]byte{packet}})
 				}
 			}
@@ -449,7 +465,8 @@ func (s *Server) applyParty(ctx context.Context, live *liveCharacter, sink packe
 	case domain.PartyLeader:
 		for _, m := range after.Members {
 			if p := b.peers[m.CharacterID]; p != nil {
-				out = append(out, partyDelivery{peer: p, packets: [][]byte{protocol.PartyLeaderChanged(after.LeaderID), protocol.PartySnapshotPacket(after)}})
+				packet := protocol.PartySnapshotPacket(partyPortalsFor(after, m.CharacterID))
+				out = append(out, partyDelivery{peer: p, packets: [][]byte{protocol.PartyLeaderChanged(after.LeaderID), packet}})
 			}
 		}
 	case domain.PartySetting:

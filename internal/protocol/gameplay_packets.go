@@ -15,6 +15,7 @@ const (
 	RecvNPCTalkMore         uint16 = 0x6b
 	RecvNPCAction           uint16 = 0x173
 	RecvMoveMonster         uint16 = 0x163
+	RecvMonsterContact      uint16 = 0x169
 	SendMeleeAttack         uint16 = 0x134
 	SendSpawnMonster        uint16 = 0x1ab
 	SendKillMonster         uint16 = 0x1ac
@@ -94,7 +95,7 @@ func warpMap(c domain.Character, channel int, chase bool, x, y int) []byte {
 	} else {
 		w.U8(0)
 	}
-	w.I64(mapleTime(time.Now()))
+	w.I64(mapleTime(domain.GuildAuditDate(c, time.Now())))
 	w.I32(100)
 	w.U8(0)
 	w.U8(0)
@@ -154,8 +155,8 @@ func SpawnMonster(objectID int32, life content.Life, controller bool) []byte {
 
 // SpawnMonsterWithStats carries current temporary stats so late joiners and
 // new controllers see them (CMobPool::OnMobEnterField -> CMob::TempStatSet).
-func SpawnMonsterWithStats(objectID int32, life content.Life, controller bool, stats []MobStatValue, now time.Time) []byte {
-	return spawnMonsterWithType(objectID, life, controller, stats, now, -2)
+func SpawnMonsterWithStats(objectID int32, life content.Life, controller bool, stats []MobStatValue, now time.Time, burns ...MobBurn) []byte {
+	return spawnMonsterWithType(objectID, life, controller, stats, now, -2, burns...)
 }
 
 // SpawnMonsterProjection shows a stationary event body without exposing it
@@ -164,7 +165,7 @@ func SpawnMonsterProjection(objectID int32, life content.Life) []byte {
 	return spawnMonsterWithType(objectID, life, false, nil, time.Time{}, -4)
 }
 
-func spawnMonsterWithType(objectID int32, life content.Life, controller bool, stats []MobStatValue, now time.Time, summonType int8) []byte {
+func spawnMonsterWithType(objectID int32, life content.Life, controller bool, stats []MobStatValue, now time.Time, summonType int8, burns ...MobBurn) []byte {
 	op := SendSpawnMonster
 	if controller {
 		op = SendControlMonster
@@ -177,7 +178,7 @@ func spawnMonsterWithType(objectID int32, life content.Life, controller bool, st
 	w.U8(1)
 	w.I32(int32(life.TemplateID))
 	w.U8(0)
-	WriteMobTempStat(w, stats, now)
+	WriteMobTempStat(w, stats, now, burns...)
 	w.I16(int16(life.X))
 	w.I16(int16(life.Y))
 	w.U8(byte(4 + life.Facing))
@@ -363,6 +364,7 @@ func MeleeAttackPacket(c domain.Character, a MeleeAttack) []byte {
 type MonsterMove struct {
 	ObjectID         int32
 	MoveID           uint16
+	MoveFlags        byte
 	UseSkill         bool
 	Action           byte
 	SkillData        uint32
@@ -379,7 +381,8 @@ func ReadMonsterMove(r *Reader) (MonsterMove, error) {
 	m.ObjectID = r.I32()
 	r.U8() // v148 CMob::SendMoveRequest (0x60C2D8) adds a byte after the object ID.
 	m.MoveID = r.U16()
-	m.UseSkill = r.U8() != 0
+	m.MoveFlags = r.U8()
+	m.UseSkill = m.MoveFlags&1 != 0
 	m.Action = r.U8()
 	m.SkillData = r.U32()
 	pairs := int(r.U8())
@@ -448,13 +451,19 @@ func MonsterMovePacket(m MonsterMove) []byte {
 	return w.Packet()
 }
 func MonsterMoveResponse(m MonsterMove, mp int) []byte {
+	return MonsterMoveResponseWithSkill(m, mp, false, 0, 0)
+}
+
+// MonsterMoveResponseWithSkill updates the controller's proposed action.
+// Original v148 CMob::OnMoveAck (0x601C61) reads skill and level separately.
+func MonsterMoveResponseWithSkill(m MonsterMove, mp int, aggro bool, skill, level byte) []byte {
 	w := NewWriter(SendMoveMonsterResponse)
 	w.I32(m.ObjectID)
 	w.U16(m.MoveID)
-	w.U8(0)
+	w.Bool(aggro)
 	w.I16(int16(mp))
-	w.U8(0)
-	w.U8(0)
+	w.U8(skill)
+	w.U8(level)
 	w.I32(0)
 	return w.Packet()
 }

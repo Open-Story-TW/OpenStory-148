@@ -41,6 +41,10 @@ type SkillCastRequest struct {
 	SkillID, ClientLevel int
 	OperationID          string
 }
+type SkillDiceRoll struct {
+	First, Second int
+	Upgraded      bool
+}
 type SkillResult struct {
 	Character Character
 	Replayed  bool
@@ -56,6 +60,7 @@ type SkillResult struct {
 	MoveTo         int               // Map the caster is moved to after the cast.
 	Cooldowns      []SkillCooldown   // Cooldowns started outside a cast (triggers).
 	Applied        int               // Skill whose rows the cast stored (CastPlan.ApplyAs), else 0.
+	Dice           SkillDiceRoll     // Outcome animation is sent only for the original committed cast.
 }
 
 // SkillBuffChange replaces (or cancels) one learned skill's buff rows outside

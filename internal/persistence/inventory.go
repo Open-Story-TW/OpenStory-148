@@ -260,7 +260,7 @@ func moveBundle(ctx context.Context, tx *sql.Tx, r domain.InventoryMoveRequest, 
 		return domain.ErrNotFound
 	}
 	a := c.Items[src]
-	if dst >= 0 && c.Items[dst].TemplateID == a.TemplateID && a.CashID == 0 && c.Items[dst].CashID == 0 {
+	if dst >= 0 && c.Items[dst].TemplateID == a.TemplateID && a.CashID == 0 && c.Items[dst].CashID == 0 && a.ExpiresAt == c.Items[dst].ExpiresAt {
 		definition, err := inventoryDefinition(a.TemplateID)
 		if err != nil || definition.InvType != r.InvType {
 			return domain.ErrInvalidInput

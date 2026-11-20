@@ -43,12 +43,20 @@ func daggerMastery(c *skills.PassiveContext) skills.Bonus {
 	if w := weaponType(c.Character); w != weaponDagger && w != weaponKatara || dualBlade(c.Character.Job) {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["x"]}
+	return basicWeaponMastery(c, 4220012)
 }
 
 // pickpocket (4211003) is PICKPOCKET x: normal and listed attacks drop mesos.
 func pickpocket(c *skills.CastContext) (skills.CastPlan, error) {
-	return selfBuff(c, stat("PICKPOCKET", c.Value("x")))
+	value := stat("PICKPOCKET", c.Value("x"))
+	if _, timed := c.Values["time"]; timed {
+		return selfBuff(c, value)
+	}
+	// v148 removes the duration and lets the player toggle the effect.
+	p := skills.StandardCost(c)
+	p.Toggle = true
+	p.Self = &skills.Buff{Duration: skills.Permanent, Stats: []skills.StatValue{value}}
+	return p, nil
 }
 
 // mesoGuard (4211005) is MESOGUARD x: damage taken is paid partly in mesos.

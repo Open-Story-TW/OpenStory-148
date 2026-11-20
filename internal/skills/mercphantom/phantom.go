@@ -25,7 +25,6 @@ var phantomAttacks = map[int]rule{
 	24111006: {kind: combat.Melee, boost: []int{24121003}},                      // 幻影衝鋒 Phantom Charge (Twilight damR)
 	24111008: {kind: combat.Melee, boost: []int{24121003}, levelFrom: 24111006}, // (invisible) Breeze Carte, linked to 24111006
 	// 2412
-	24120002: {kind: either},                            // 卡牌：黑 Carte Noir
 	24121000: {kind: combat.Melee},                      // 千針 Mille Aiguilles (keydown charge)
 	24121005: {kind: combat.Melee},                      // 卡牌風暴 Tempest of Card (keydown loop; WZ mobCount 20)
 	24121010: {kind: combat.Melee, levelFrom: 24121003}, // (invisible) Twilight finish, linked to 24121003
@@ -35,6 +34,8 @@ func init() {
 	for id, r := range phantomAttacks {
 		register(id, r)
 	}
+	skills.Register(skills.Handler{ID: 24120002, Kind: skills.KindAttack | skills.KindPassive,
+		Attack: attack(rule{kind: either}), Passive: carteNoirAvoidance})
 
 	passive(24000003, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} }) // 迅捷閃避 Quick Evasion (Legacy reads x, absent in WZ)
 	passive(24000004, nil)                                                                                            // invisible link skill: no PvE effect
@@ -56,6 +57,19 @@ func init() {
 	skills.Register(skills.Handler{ID: 24121007, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: &combat.AttackSpec{MobCast: &combat.MobCastSpec{Dispel: true, UseBox: true}}})                   // 靈魂竊取 Soul Steal
 	skills.Register(skills.Handler{ID: 24121008, Kind: skills.KindPartyBuff, Cast: partyBuff(key("MAPLE_WARRIOR", "x"))})                                                                                    // 楓葉祝福 Maple Warrior
 	skills.Register(skills.Handler{ID: 24121009, Kind: skills.KindSpecial, Cast: skills.HerosWill})                                                                                                          // 勇士的意志 Hero's Will
+}
+
+// Carte Noir's original String.wz gives subProp as its always-on dodge chance.
+func carteNoirAvoidance(c *skills.PassiveContext) skills.Bonus {
+	if !domain.IsPhantomJob(c.Character.Job) {
+		return skills.Bonus{}
+	}
+	return skills.Bonus{AvoidRate: c.Values["subProp"]}
+}
+
+// swiftPhantom (24001002) is Java speed += psdSpeed and jump += psdJump.
+func swiftPhantom(c *skills.PassiveContext) skills.Bonus {
+	return skills.Bonus{Speed: c.Values["psdSpeed"], Jump: c.Values["psdJump"]}
 }
 
 // luckOfPhantomThief (24111002) is Java PlayerStats localluk += lukX.

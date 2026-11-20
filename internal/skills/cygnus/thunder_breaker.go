@@ -30,6 +30,8 @@ func init() {
 	})})
 
 	passive(15110000, critical("prop"))                                                                                    // 衝壓暴擊
+	passive(15110009, criticalSpirit)                                                                                      // 爆擊鬥氣
+	passive(15110010, stunnedCritical)                                                                                     // 致命暗襲
 	skills.Register(skills.Handler{ID: 15111001, Kind: skills.KindAttack | skills.KindHeal, Attack: thunderMelee(drainX)}) // 損人利己
 	skills.Register(skills.Handler{ID: 15111002, Kind: skills.KindBuff | skills.KindMorph, Cast: morph(1000)})             // 鬥神附體
 	skills.Register(skills.Handler{ID: 15111003, Kind: skills.KindAttack, Attack: thunderMelee()})                         // 衝擊波
@@ -40,6 +42,29 @@ func init() {
 	skills.Register(skills.Handler{ID: 15111006, Kind: skills.KindBuff | skills.KindAttack, Cast: value("SPARK", "x"), Attack: melee(element(combat.Lightning))})
 	skills.Register(skills.Handler{ID: 15111007, Kind: skills.KindAttack, Attack: attack(combat.Shoot, noAmmo, prepare(thunderCharged))}) // 鯨噬: Java ranged AOE
 	skills.Register(skills.Handler{ID: 15111011, Kind: skills.KindBuff, Cast: dice})                                                      // 幸運骰子
+}
+
+func extremeDodge(c *skills.PassiveContext) skills.Bonus {
+	if _, v148 := c.Values["accX"]; !v148 {
+		return accAvoid(c)
+	}
+	return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
+}
+
+func criticalSpirit(c *skills.PassiveContext) skills.Bonus {
+	v := c.Values
+	b := skills.Bonus{Critical: v["cr"], CriticalDamageMin: v["criticaldamageMin"], CriticalDamage: v["criticaldamageMax"]}
+	if c.Character.Job/1000 == 1 { // v148 0x712E3D selects this boss bonus in the Cygnus branch.
+		b.BossCritical = v["prop"]
+	}
+	return b
+}
+
+func stunnedCritical(c *skills.PassiveContext) skills.Bonus {
+	if c.Character.Job != 1511 { // v148 0x711B7C only selects this passive for job 1511.
+		return skills.Bonus{}
+	}
+	return skills.Bonus{StunnedCritical: c.Values["prop"]}
 }
 
 // thunderMelee is a Thunder Breaker close-range attack; Lightning Charge
@@ -94,7 +119,8 @@ func energyCharge(c *skills.TriggerContext) *skills.BuffChange {
 	case timed:
 		return nil
 	case v < energyFull:
-		return gauge(min(energyFull, v+c.Value("x")*len(c.Attack.Targets)*max(1, c.Attack.Lines)), skills.Permanent)
+		gain := c.Value("x") + values(c.Character, c.Now, 15111008)["x"]
+		return gauge(min(energyFull, v+gain*len(c.Attack.Targets)*max(1, c.Attack.Lines)), skills.Permanent)
 	case c.Value("time") > 0:
 		return gauge(energyFull, time.Duration(c.Value("time"))*time.Second)
 	}
@@ -107,19 +133,5 @@ func energyCharge(c *skills.TriggerContext) *skills.BuffChange {
 // and the time to 90 s (debug overrides); this uses a real roll and the WZ
 // time, like the pirate dice.
 func dice(c *skills.CastContext) (skills.CastPlan, error) {
-	p := skills.StandardCost(c)
-	if c.Value("time") < 1 {
-		return p, fmt.Errorf("skill%d: no time", c.Skill.ID)
-	}
-	if r := rollDie(6); r > 1 {
-		p.Self = &skills.Buff{Duration: time.Duration(c.Value("time")) * time.Second, Stats: []skills.StatValue{stat("DICE_ROLL", r)}}
-	}
-	return p, nil
-}
-
-func extremeDodge(c *skills.PassiveContext) skills.Bonus {
-	if _, original := c.Values["accX"]; !original {
-		return accAvoid(c)
-	}
-	return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
+	return skills.DiceCast(c, rollDie(6), 0, false)
 }

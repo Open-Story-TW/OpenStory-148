@@ -91,6 +91,7 @@ func IsPhantomJob(job int) bool    { return job == 2003 || job/100 == 24 }
 func IsResistanceJob(job int) bool { return job >= 3000 && job <= 3512 }
 func IsDemonJob(job int) bool      { return job == 3001 || job >= 3100 && job <= 3112 }
 func IsCannoneerJob(job int) bool  { return job == 1 || job == 501 || job >= 530 && job <= 532 }
+func IsMihileJob(job int) bool     { return job == 5000 || job == 5100 || job >= 5110 && job <= 5112 }
 func isZenJob(job int) bool        { return job == 508 || job >= 570 && job <= 572 }
 func isPirateRevampJob(job int) bool {
 	return job == 509 || job >= 580 && job <= 582 || job >= 590 && job <= 592
@@ -99,7 +100,7 @@ func isPirateRevampJob(job int) bool {
 // IsBeginnerJob covers every family's level-1 job.
 func IsBeginnerJob(job int) bool {
 	switch job {
-	case 0, 1, 1000, 2000, 2001, 2002, 2003, 3000, 3001:
+	case 0, 1, 1000, 2000, 2001, 2002, 2003, 3000, 3001, 5000:
 		return true
 	}
 	return false
@@ -118,11 +119,11 @@ func SkillBook(job int) int {
 		return job - 2209
 	}
 	switch job {
-	case 2310, 3110, 3210, 3310, 3510, 2410:
+	case 2310, 2410, 3110, 3210, 3310, 3510, 5110:
 		return 1
-	case 2311, 3111, 3211, 3311, 3511, 2411:
+	case 2311, 2411, 3111, 3211, 3311, 3511, 5111:
 		return 2
-	case 2312, 3112, 3212, 3312, 3512, 2412:
+	case 2312, 2412, 3112, 3212, 3312, 3512, 5112:
 		return 3
 	}
 	return 0
@@ -174,20 +175,23 @@ func CanLearnSkill(job, skillID int) bool {
 		return IsResistanceJob(job)
 	case 3001:
 		return IsDemonJob(job)
+	case 5000:
+		return IsMihileJob(job)
 	case 8000, 9000, 9200, 9201, 9202, 9203, 9204:
 		// Shared character skills (monster riding 80001000, the 9000 set and
 		// professions): Legacy grants them to every job outside SP books.
 		// 9100 guild skills belong to the guild, not a character.
 		return ValidJob(job)
 	}
-	// The regional first-tier books 508 and 509 are inherited only by their own branches.
+	// TMS v148 has three additional pirate branches. The first-tier books
+	// 508 and 509 are inherited only by their original branches.
 	if isZenJob(owner) != isZenJob(job) || isPirateRevampJob(owner) != isPirateRevampJob(job) {
 		return false
 	}
 	if job < 0 || job/100 != owner/100 || job/1000 != owner/1000 {
 		return false
 	}
-	for _, sameFamily := range []func(int) bool{IsPhantomJob, IsCannoneerJob, IsDemonJob, IsExplorerJob, IsCygnusJob, IsAranJob, IsEvanJob, IsMercedesJob, IsResistanceJob} {
+	for _, sameFamily := range []func(int) bool{IsPhantomJob, IsCannoneerJob, IsDemonJob, IsExplorerJob, IsCygnusJob, IsAranJob, IsEvanJob, IsMercedesJob, IsResistanceJob, IsMihileJob} {
 		if sameFamily(owner) && !sameFamily(job) {
 			return false
 		}
@@ -204,8 +208,7 @@ func CanLearnSkill(job, skillID int) bool {
 	return owner <= job
 }
 
-// validJobs lists every job with a Skill.wz/<job>.img in v145 (GM 800/900
-// excluded).
+// validJobs lists supported playable job books in Skill.wz.
 var validJobs = map[int]bool{}
 
 func init() {
@@ -217,6 +220,7 @@ func init() {
 		{1000, 1000}, {1100, 1100}, {1110, 1112}, {1200, 1200}, {1210, 1212}, {1300, 1300}, {1310, 1312}, {1400, 1400}, {1410, 1412}, {1500, 1500}, {1510, 1512},
 		{2000, 2003}, {2100, 2100}, {2110, 2112}, {2200, 2200}, {2210, 2218}, {2300, 2300}, {2310, 2312}, {2400, 2400}, {2410, 2412},
 		{3000, 3001}, {3100, 3100}, {3110, 3112}, {3200, 3200}, {3210, 3212}, {3300, 3300}, {3310, 3312}, {3500, 3500}, {3510, 3512},
+		{5000, 5000}, {5100, 5100}, {5110, 5112},
 	} {
 		for job := band[0]; job <= band[1]; job++ {
 			validJobs[job] = true

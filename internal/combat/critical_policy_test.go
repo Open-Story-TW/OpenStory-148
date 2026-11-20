@@ -94,6 +94,29 @@ func TestNativeBossCriticalAccumulatesByPhysicalLineAndResetsPerTarget(t *testin
 	}
 }
 
+func TestCriticalAdmissionUsesEachTargetsBossAndActiveStunState(t *testing.T) {
+	ctx := crusherContext(t)
+	ctx.Stats.CritRate, ctx.Stats.BossCritRate, ctx.Stats.StunnedCritRate = 15, 20, 60
+	ctx.Effect.CriticalRate = 7
+	ctx.Targets[1].Mob.Boss, ctx.Targets[2].Mob.Boss = false, false
+	ctx.Targets[1].Statuses = MobStatuses{MobStun: &ActiveStatus{Stat: MobStun, ExpiresAt: ctx.Now.Add(time.Second)}}
+	ctx.Targets[2].Statuses = MobStatuses{MobStun: &ActiveStatus{Stat: MobStun, ExpiresAt: ctx.Now}}
+	p, err := PlanAttack(&AttackSpec{Kind: Melee}, ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, want := range []int{42, 82, 22} {
+		if got := p.Targets[i].CriticalRate; got != want {
+			t.Errorf("target %d critical rate: got %d want %d", i, got, want)
+		}
+		for _, state := range p.Targets[i].Criticality {
+			if state != domain.CombatCriticalUnknown {
+				t.Fatal("target-specific rate inferred a native critical flag")
+			}
+		}
+	}
+}
+
 func TestReviewedCriticalPolicyKeepsFixedAndOtherBranchesAndFiniteCap(t *testing.T) {
 	ctx := crusherContext(t)
 	dc := DamageContext{Stats: ctx.Stats, Effect: ctx.Effect, Mob: ctx.Targets[0].Mob}

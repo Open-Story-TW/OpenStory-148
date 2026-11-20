@@ -254,6 +254,9 @@ func depositStorage(ctx context.Context, tx *sql.Tx, r domain.StorageRequest, re
 			return domain.ErrNotFound
 		}
 		item := c.Items[index]
+		if item.TemplateID == domain.GuildSupportPotion && item.ExpiresAt > 0 {
+			return domain.ErrForbidden
+		}
 		stored.Item.CashID, stored.Item.ExpiresAt = item.CashID, item.ExpiresAt
 		left := item.Quantity - r.Quantity
 		if item.CashID > 0 && left > 0 {

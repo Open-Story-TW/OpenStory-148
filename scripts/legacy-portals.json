@@ -1270,7 +1270,7 @@
       "legacy": "portal/exit_dragonR.js",
       "source_sha256": "759cb1e8ae072e0820ce403e87f315a96c609e4c92b762b15a7a3302288582a0",
       "lua": "portal/exit_dragonR.lua",
-      "lua_sha256": "f83dc3c3c12cec3426320a9196ace7fb2f9675424e5bdf553ca0d6a08e27430f"
+      "lua_sha256": "87e17ffede00120be5173b5ce633403be75fdfe3cd9fb6a98e488ec5ffec5da2"
     },
     {
       "legacy": "portal/exit_juliet.js",
@@ -2218,7 +2218,7 @@
       "legacy": "portal/nets_out.js",
       "source_sha256": "f61c51ab32d673d878047f13c945d7c3b4a3a9319c2eba1530d180a8b4ba0c64",
       "lua": "portal/nets_out.lua",
-      "lua_sha256": "85c925ff8a451530e98e565f594090498594fb3d7251b409f5cb7c091ee6d6fe"
+      "lua_sha256": "8e5a429f256d93910c03d76c0521eb7f31da02bc45b207a3b257ce9018d04eb8"
     },
     {
       "legacy": "portal/ninja_Boss.js",

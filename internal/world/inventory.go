@@ -48,6 +48,8 @@ func (s *Server) handleInventoryMove(ctx context.Context, live *liveCharacter, c
 		s.offerZakumEye(ctx, req.Session, *result.Drop)
 		s.offerPapulatusFragment(ctx, req.Session, *result.Drop)
 		s.offerMalaysiaBossItem(ctx, req.Session, *result.Drop)
+		s.offerOrbisClouds(ctx, req.Session, *result.Drop)
+		s.offerOrbisRecord(ctx, req.Session, *result.Drop)
 	}
 	if req.InvType == 1 && (req.Source == -18 || req.Source == -19) && req.Destination >= 0 {
 		s.dismount(result.Character)

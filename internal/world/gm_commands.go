@@ -14,6 +14,7 @@ import (
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/platform"
 	"maple-go-server/internal/protocol"
+	"maple-go-server/internal/skills"
 )
 
 // Commands are self-only and delivered by ordinary native chat. Parsing never
@@ -92,7 +93,7 @@ func parseGMCommand(text string) (name string, args []int64, arg string, handled
 	fields := strings.Fields(text)
 	if len(fields) > 0 {
 		switch fields[0] {
-		case "!treasure":
+		case "!fitness", "!ola", "!treasure", "!snowball", "!coconut":
 			if len(fields) == 2 {
 				for index, action := range [...]string{"open", "start", "cancel"} {
 					if fields[1] == action {
@@ -221,6 +222,10 @@ var gmHelpPages = []gmHelpPage{
 		{"!rate <exp或meso或drop> <倍數>", "修改倍率，立即生效"},
 		{"!oxquiz <open|start|cancel>", "開放報名、開始或取消本頻道的 OX 問答"},
 		{"!treasure <open|start|cancel>", "開放報名、開始或取消本頻道的黃金傳說尋寶"},
+		{"!snowball <open|start|cancel>", "開放報名、開始或取消本頻道的滾雪球"},
+		{"!coconut <open|start|cancel>", "開放報名、開始或取消本頻道的打椰子"},
+		{"!fitness <open|start|cancel>", "開放報名、開始或取消本頻道的體能測驗"},
+		{"!ola <open|start|cancel>", "開放報名、開始或取消本頻道的向上攀升"},
 		{"!effstats", "顯示伺服器計算的攻擊數值"},
 		{"!help [編號]", "顯示這份說明"},
 	}},
@@ -695,16 +700,27 @@ func (s *Server) publishQADebuff(session domain.CharacterSession, live *liveChar
 // parses these exact "key value" lines.
 func effectiveStatsLines(c domain.Character, now time.Time) []string {
 	fields := func(p combat.PlayerStats) string {
-		return fmt.Sprintf("str %d dex %d int %d luk %d watk %d matk %d acc %d mastery %d crit %d critdmg %d damr %d bossr %d ignoredef %d elemamp %d shadowpartner %d",
-			p.STR, p.DEX, p.INT, p.LUK, p.WATK, p.MATK, p.Accuracy, p.Mastery, p.CritRate, p.CritDamage, p.DamageRate, p.BossDamageRate, p.IgnoreDefense, p.ElementAmp, p.ShadowPartner)
+		return fmt.Sprintf("str %d dex %d int %d luk %d watk %d matk %d acc %d mastery %d crit %d critdmg %d damr %d bossr %d ignoredef %d elemamp %d shadowpartner %d critdmgmin %d asr %d ter %d",
+			p.STR, p.DEX, p.INT, p.LUK, p.WATK, p.MATK, p.Accuracy, p.Mastery, p.CritRate, p.CritDamage, p.DamageRate, p.BossDamageRate, p.IgnoreDefense, p.ElementAmp, p.ShadowPartner, p.CritDamageMin, p.ASR, p.TER)
 	}
 	total, err := combat.AttackStats(c, now)
 	if err != nil {
 		return []string{"Effective stats unavailable: " + err.Error() + "."}
 	}
+	effective := fmt.Sprintf("Effective stats: %s wdef %d mdef %d speed %d jump %d magicacc %d avoid %d magicavoid %d maxhp %d maxmp %d",
+		fields(total), total.WDEF, total.MDEF, total.Speed, total.Jump, total.MagicAccuracy, total.Avoid, total.MagicAvoid, c.MaxHP, c.MaxMP)
+	if c.MapID == 960010100 {
+		if arena, err := skills.BattleSquareMeleeStats(c, now); err == nil {
+			effective += fmt.Sprintf(" pvpwdef %d", arena.WDEF)
+		}
+	}
+	if c.VitalsModel == 1 {
+		effective += fmt.Sprintf(" basehp %d basemp %d", c.BaseMaxHP, c.BaseMaxMP)
+	}
+	effective += "."
 	base, err := combat.BaseStats(c, now)
 	if err != nil {
-		return []string{"Effective stats: " + fields(total) + "."}
+		return []string{effective}
 	}
-	return []string{"Effective stats: " + fields(total) + ".", "Equipment only: " + fields(base) + "."}
+	return []string{effective, "Equipment only: " + fields(base) + "."}
 }

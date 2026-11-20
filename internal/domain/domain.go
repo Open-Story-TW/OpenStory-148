@@ -119,6 +119,11 @@ type Character struct {
 	Fatigue     int               `json:"fatigue,omitempty"`
 	Pets        []Pet             `json:"pets,omitempty"`
 	Guild       GuildTag          `json:"guild,omitzero"`
+	GuildSkills []GuildSkillState `json:"-"`
+	Cards       CharacterCards    `json:"character_cards,omitzero"`
+	Abilities   InnerAbilities    `json:"inner_abilities,omitzero"`
+	HonorLevel  int               `json:"honor_level,omitempty"`
+	HonorEXP    int               `json:"honor_exp,omitempty"`
 	Revision    int64             `json:"revision"`
 }
 

@@ -20,7 +20,11 @@ func (p *mapMember) dragonPacket() []byte {
 
 // writeMemberSpawn shows source to a viewer: the player, then its dragon.
 func writeMemberSpawn(viewer packetSink, source *mapMember) {
-	_ = viewer.WritePacket(protocol.SpawnPlayer(source.look, 4))
+	packet := protocol.SpawnPlayer(source.look, 4)
+	if packet != nil && source.coconutTeam != nil {
+		packet = append(packet, *source.coconutTeam)
+	}
+	_ = viewer.WritePacket(packet)
 	if p := source.dragonPacket(); p != nil {
 		_ = viewer.WritePacket(p)
 	}

@@ -23,7 +23,7 @@ func learned(ch domain.Character, id int, now time.Time) int {
 
 // values are the WZ values of a skill level.
 func values(id, level int) (map[string]int, error) {
-	def, err := content.SkillDefinition("", id)
+	def, err := content.ConfiguredSkillDefinition(id)
 	if err != nil {
 		return nil, err
 	}

@@ -113,12 +113,34 @@ func genericCombatCost(c domain.Character, q domain.CombatAttackRequest, now tim
 	if state.Level < 1 || !state.ExpiresAt.IsZero() && !state.ExpiresAt.After(now) {
 		return 0, domain.ErrForbidden
 	}
+	if cost.Opcode == protocol.RecvMonsterContact {
+		if !combat.IsMindControlSkill(q.SkillID) || *cost != (domain.CombatCost{Opcode: protocol.RecvMonsterContact, Level: state.Level}) {
+			return 0, domain.ErrInvalidInput
+		}
+		return 0, nil // The original shot already paid for the active control effect.
+	}
 	if cost.Summon != 0 {
 		// Summon attacks cost nothing; their level came from the cast (linked
 		// summons use the parent's) and their target bound is the summon's
 		// own attack info, validated by the world against the registered spec.
-		if spec == nil || spec.Summon == nil || !spec.Allows(combat.Summoned) || cost.Opcode != 0 && cost.Opcode != protocol.RecvSummonAttack || cost.Ongoing || cost.MP != 0 || cost.HP != 0 || cost.Ammo != 0 || cost.CooldownMS != 0 || cost.Level < 1 || cost.Level > 255 || len(q.Targets) > 15 || q.LinesPerTarget != 1 {
+		if spec == nil || spec.Summon == nil || !spec.Allows(combat.Summoned) || cost.Opcode != 0 && cost.Opcode != protocol.RecvSummonAttack || cost.Ongoing || cost.MP != 0 || cost.HP != 0 || cost.Ammo != 0 || cost.CooldownMS != 0 || cost.Level < 1 || cost.Level > 255 || q.LinesPerTarget < 1 || q.LinesPerTarget > 15 || len(q.Targets)*q.LinesPerTarget > 15 {
 			return 0, domain.ErrInvalidInput
+		}
+		if q.LinesPerTarget > 1 {
+			e := spec.Effect
+			if e.SkillID == 0 {
+				def, err := content.ConfiguredSkillDefinition(q.SkillID)
+				if err != nil {
+					return 0, domain.ErrInvalidInput
+				}
+				e, err = combat.SummonEffect(def, cost.Level)
+				if err != nil {
+					return 0, domain.ErrInvalidInput
+				}
+			}
+			if q.LinesPerTarget > e.AttackCount || len(q.Targets) > e.MobCount {
+				return 0, domain.ErrInvalidInput
+			}
 		}
 		return 0, nil
 	}
@@ -133,8 +155,11 @@ func genericCombatCost(c domain.Character, q domain.CombatAttackRequest, now tim
 		return 0, domain.ErrForbidden
 	}
 	e, err := combat.FromSkill(skill, level)
+	if err != nil || spec.ApplyLearnedEffect(c, now, &e) != nil {
+		return 0, domain.ErrInvalidInput
+	}
 	ratio := max(e.X, e.Y, e.Z, 0)
-	if err != nil || cost.HP > e.HPCon+c.HP*min(ratio, 100)/100 || cost.HPGain < 0 || cost.MPGain < 0 {
+	if cost.HP > e.HPCon+c.HP*min(ratio, 100)/100 || cost.HPGain < 0 || cost.MPGain < 0 {
 		return 0, domain.ErrInvalidInput
 	}
 	resource, ongoing, err := skills.AttackResourceCost(c, q.SkillID, level, cost.Opcode, now)

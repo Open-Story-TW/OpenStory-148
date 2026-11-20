@@ -88,7 +88,7 @@ func (s *Store) dropInventory(ctx context.Context, tx *sql.Tx, r domain.Inventor
 	if count >= 512 {
 		return domain.ErrInvalidInput
 	}
-	err := tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment,player_drop) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment)).Scan(&drop.ObjectID)
+	err := tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment,player_drop,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true,clock_timestamp()+make_interval(secs => $11)) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment), itemDropLifetime(drop)).Scan(&drop.ObjectID)
 	if err != nil {
 		return err
 	}
@@ -293,4 +293,13 @@ func pickupBundle(ctx context.Context, tx *sql.Tx, drop domain.ItemDrop, result 
 		return domain.ErrInsufficient
 	}
 	return nil
+}
+
+func itemDropLifetime(drop domain.ItemDrop) int {
+	// These unique materials must survive for the attempt. Orbis expires old
+	// drops on its reserved maps before admitting another party.
+	if content.OrbisPuzzleDrop(drop.MapID, drop.TemplateID) {
+		return content.OrbisPQSeconds
+	}
+	return 120
 }

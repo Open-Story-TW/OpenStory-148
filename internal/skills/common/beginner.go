@@ -7,7 +7,6 @@ import (
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/skills"
 	"math/rand/v2"
-	"sync"
 	"time"
 )
 
@@ -23,7 +22,11 @@ func init() {
 	// Java isPartyBuff is false and only the caster gets it. The Demon one
 	// (30011005) costs forceCon Demon Force (StandardCost).
 	each(1005, skills.Handler{Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
-	skills.Register(skills.Handler{ID: 10001075, Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))}) // 女皇的祈禱 Empress's Prayer
+	// Original v148 0x4C7E2D explicitly maps Mihile 50001215 to suffix1005.
+	skills.Register(skills.Handler{ID: 50001215, Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
+	for _, id := range []int{10001075, 50001075} { // 女皇的祈禱 Empress's Prayer
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
+	}
 
 	// 金剛不壞 Invincible Barrier: DIVINE_BODY 1 for time (Java broadcasts it
 	// too). Legacy bans a non-GM casting the Explorer 1010.
@@ -47,10 +50,12 @@ func init() {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff | skills.KindMorph, Cast: ride(equippedMount)})
 	}
 
-	// Angelic Blessing rings (Java isAngel): a following summon plus the
-	// hard-coded ANGEL_ATK/ANGEL_MATK for 2100000000 ms.
-	for suffix, v := range map[int]int{1085: 5, 1087: 10, 1090: 5, 1179: 12} {
-		each(suffix, skills.Handler{Kind: skills.KindSummon | skills.KindBuff, Cast: buff(skills.Permanent, fixed("ANGEL_ATK", v), fixed("ANGEL_MATK", v)), Attack: angel})
+	// Original v148 0x6AF12B resolves these casts through the equipped ring.
+	for _, source := range []struct{ suffix, ring, attack int }{
+		{1085, 1112585, 5}, {1087, 1112586, 10}, {1090, 1112594, 5}, {1179, 1112663, 12},
+	} {
+		each(source.suffix, skills.Handler{Kind: skills.KindSummon | skills.KindBuff, CastEquipment: source.ring,
+			Cast: buff(skills.Permanent, fixed("ANGEL_ATK", source.attack), fixed("ANGEL_MATK", source.attack)), Attack: angel})
 	}
 	// 大天使祝福 etc.: Java maps indiePad/indieMad to ANGEL_ATK/ANGEL_MATK.
 	for _, suffix := range []int{86, 88, 91, 180} {
@@ -112,7 +117,7 @@ func recovery(c *skills.CastContext) (skills.CastPlan, error) {
 // it as a puppet only for the spawn packet's summon type 0, it absorbs no
 // attacks and never attacks. The WZ has no time, so the summon lasts like
 // the buff (Java duration 2100000000).
-var angel = &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: 1, Duration: skills.Permanent}}
+var angel = &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: 1, AssistType: 2, Duration: skills.Permanent, Sub: angelSub}}
 
 // freeze is Java's FREEZE 1 for twice the WZ time ("freezing skills are a
 // little strange").
@@ -183,25 +188,23 @@ func partyHeal(c *skills.CastContext) (skills.CastPlan, error) {
 	return skills.PartyPlan(c, &skills.Buff{}, p)
 }
 
-var mapCatalog = sync.OnceValues(content.DefaultCatalog)
-
 // soar activates the v148 SOARING temporary stat. The client sends a normal
 // cast, but its vertical controls only work after this stat arrives.
 func soar(c *skills.CastContext) (skills.CastPlan, error) {
-	catalog, err := mapCatalog()
+	canSoar, err := skills.CanSoar(c.Caster.MapID)
 	if err != nil {
 		return skills.CastPlan{}, err
 	}
-	m, err := catalog.Map(c.Caster.MapID)
-	if err != nil {
-		return skills.CastPlan{}, err
-	}
-	if !m.Fly {
+	if !canSoar {
 		return skills.CastPlan{}, fmt.Errorf("skill%d: map %d cannot soar", c.Skill.ID, c.Caster.MapID)
 	}
 	p := skills.StandardCost(c)
 	p.Toggle = true
 	p.Self = &skills.Buff{Duration: skills.Permanent, Stats: []skills.StatValue{{Stat: "SOARING", Value: 1}}}
+	if c.Skill.ID == skills.MihileSoaringID {
+		p.Self.Stats[0].Value = c.Value("x")
+		p.Self.Tick = time.Second
+	}
 	return p, nil
 }
 
@@ -209,10 +212,6 @@ func cancelSoaringOnEnter(c domain.Character) bool {
 	if c.MapID == content.DragonRiderTrap {
 		return true
 	}
-	catalog, err := mapCatalog()
-	if err != nil {
-		return true
-	}
-	m, err := catalog.Map(c.MapID)
-	return err != nil || !m.Fly
+	canSoar, err := skills.CanSoar(c.MapID)
+	return err != nil || !canSoar
 }

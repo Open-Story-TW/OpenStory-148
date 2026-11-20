@@ -88,6 +88,24 @@ type MobStatValue struct {
 	Counter   int32 // PCounter/MCounter reflect rate, also the shared counter pair.
 }
 
+// MobBurn is one v148 BurnedInfo entry (CMob::TempStatDecode 0x7220C5,
+// BurnedInfo::Decode 0x6F1787). The native tick loop uses the remaining tick
+// count and the stack count separately.
+type MobBurn struct {
+	OwnerID        int32
+	SkillID        int32
+	Damage         int32
+	Interval       time.Duration
+	ExpiresAt      time.Time
+	RemainingTicks int
+	Stacks         int
+}
+
+func validMobBurn(burn MobBurn) bool {
+	return burn.OwnerID > 0 && burn.SkillID > 0 && burn.SkillID <= 0x0fffffff &&
+		burn.Stacks > 0 && burn.Stacks <= 15
+}
+
 func mobStatMask(w *Writer, stats []MobStat) {
 	var dw [8]uint32
 	for _, s := range stats {
@@ -117,15 +135,18 @@ func sortedMobStats(values []MobStatValue) ([]MobStatValue, bool) {
 
 // WriteMobTempStat writes the CFlag mask and TempStatDecode values. Used by
 // apply-status and by mob enter/control so late joiners see current stats.
-func WriteMobTempStat(w *Writer, values []MobStatValue, now time.Time) {
+func WriteMobTempStat(w *Writer, values []MobStatValue, now time.Time, burns ...MobBurn) {
 	sorted, ok := sortedMobStats(values)
-	if !ok {
+	if !ok || len(burns) > 255 {
 		w.err = ErrMalformed
 		return
 	}
-	stats := make([]MobStat, 0, len(sorted))
+	stats := make([]MobStat, 0, len(sorted)+1)
 	for _, v := range sorted {
 		stats = append(stats, v.Stat)
+	}
+	if len(burns) > 0 {
+		stats = append(stats, MobBurned)
 	}
 	mobStatMask(w, stats)
 	var counter *MobStatValue
@@ -136,6 +157,23 @@ func WriteMobTempStat(w *Writer, values []MobStatValue, now time.Time) {
 		w.U16(uint16(max(0, min(0xffff, units))))
 		if v.Stat == MobPCounter || v.Stat == MobMCounter {
 			counter = &sorted[i]
+		}
+	}
+	if len(burns) > 0 {
+		w.U8(byte(len(burns)))
+		for _, b := range burns {
+			if !validMobBurn(b) || b.Damage <= 0 || b.Interval < time.Millisecond ||
+				b.Interval > 10*time.Minute || b.RemainingTicks < 0 || b.RemainingTicks > 600000 {
+				w.err = ErrMalformed
+				return
+			}
+			w.I32(b.OwnerID)
+			w.I32(b.SkillID)
+			w.I32(b.Damage)
+			w.I32(int32(b.Interval.Milliseconds()))
+			w.U32(uint32(b.ExpiresAt.UnixMilli()))
+			w.I32(int32(b.RemainingTicks))
+			w.I32(int32(b.Stacks))
 		}
 	}
 	// Extras after the ordinary triples: PCounter I32, MCounter I32, then the
@@ -173,13 +211,13 @@ func anyMobStatMoves(values []MobStatValue) bool {
 
 // ApplyMonsterStatus follows CMob::OnStatSet 0x5E2F90 / 0x5DEAF3: temp stat,
 // U16 delay, U8 calc-damage index, and the movement byte when applicable.
-func ApplyMonsterStatus(objectID int32, values []MobStatValue, delay time.Duration, now time.Time) []byte {
-	if objectID <= 0 || len(values) == 0 {
+func ApplyMonsterStatus(objectID int32, values []MobStatValue, delay time.Duration, now time.Time, burns ...MobBurn) []byte {
+	if objectID <= 0 || len(values)+len(burns) == 0 {
 		return nil
 	}
 	w := NewWriter(SendApplyMonsterStatus)
 	w.I32(objectID)
-	WriteMobTempStat(w, values, now)
+	WriteMobTempStat(w, values, now, burns...)
 	w.U16(uint16(max(0, min(0xffff, delay.Milliseconds()))))
 	w.U8(1)
 	if anyMobStatMoves(values) {
@@ -188,6 +226,28 @@ func ApplyMonsterStatus(objectID int32, values []MobStatValue, delay time.Durati
 	if w.Err() != nil {
 		return nil
 	}
+	return w.Packet()
+}
+
+// CancelMonsterBurns follows the v148 reset branch at 0x70729A. BurnedInfo
+// resets identify the owner, skill and number of stacks to remove.
+func CancelMonsterBurns(objectID int32, remainingCount int, ended []MobBurn) []byte {
+	if objectID <= 0 || remainingCount < 0 || remainingCount > 255 || len(ended) == 0 || len(ended) > 255 {
+		return nil
+	}
+	w := NewWriter(SendCancelMonsterStatus)
+	w.I32(objectID)
+	mobStatMask(w, []MobStat{MobBurned})
+	w.I32(int32(remainingCount))
+	w.I32(int32(len(ended)))
+	for _, b := range ended {
+		if !validMobBurn(b) {
+			return nil
+		}
+		w.I32(b.OwnerID)
+		w.U32(uint32(b.SkillID)<<4 | uint32(b.Stacks))
+	}
+	w.U8(1)
 	return w.Packet()
 }
 

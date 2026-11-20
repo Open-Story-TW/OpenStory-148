@@ -33,6 +33,18 @@ func TestSkillDefinitionUsesBuiltInV148Book(t *testing.T) {
 	}
 }
 
+func TestConfiguredSkillDefinitionUsesServerData(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	blast, err := ConfiguredSkillDefinition(1221009)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := blast.Values(blast.MaxLevel)
+	if err != nil || v["attackCount"] != 4 {
+		t.Fatalf("configured blast lines %v %v", v["attackCount"], err)
+	}
+}
+
 // A book the operator wrote is the only one read: its values win and a skill
 // it lacks is unknown, even though the built-in book has it.
 func TestSkillDefinitionKeepsOperatorBook(t *testing.T) {

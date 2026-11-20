@@ -10,8 +10,8 @@ import (
 
 // families are the beginner jobs that share one skill list by suffix (Java
 // GameConstants.isBeginnerJob, sourceid % 10000): Explorer, Cygnus, Aran,
-// Evan, Mercedes, Phantom, Resistance and Demon.
-var families = []int{0, 1000, 2000, 2001, 2002, 2003, 3000, 3001}
+// Evan, Mercedes, Phantom, Resistance, Demon and Mihile.
+var families = []int{0, 1000, 2000, 2001, 2002, 2003, 3000, 3001, 5000}
 
 // each registers h for every beginner family whose Skill.wz has the suffix
 // enabled. h.ID is overwritten.
@@ -24,8 +24,17 @@ func each(suffix int, h skills.Handler) {
 	}
 }
 
-// enabled reports a skill present and not disabled in the WZ seed.
+// enabled checks the embedded seed and the Mihile entries whose original v148
+// WZ level and behavior definitions match these shared beginner handlers.
 func enabled(id int) bool {
+	if id/10000 == 5000 {
+		switch id % 10000 {
+		case 86, 88, 91, 180, 190, 1000, 1001, 1002, 1003, 1005, 1006, 1010, 1011, 1026, 1085, 1087, 1090, 1098, 1179:
+			return true
+		default:
+			return false
+		}
+	}
 	def, err := content.SkillDefinition("", id)
 	return err == nil && !def.Disabled
 }

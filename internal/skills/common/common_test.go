@@ -248,6 +248,42 @@ func TestAngelsAndBlessings(t *testing.T) {
 	}
 }
 
+func TestV148AngelSummonsUseEquippedRingInsteadOfLearnedRank(t *testing.T) {
+	now := time.Unix(100, 0)
+	for skill, ring := range map[int]int{20001085: 1112585, 10001087: 1112586, 20001090: 1112594, 30011179: 1112663} {
+		actor := domain.Character{Equipment: []domain.Equipment{{ItemID: ring, Slot: -12}}}
+		if level, ok := skills.CastLevel(actor, skill, skill, 1, now); !ok || level != 1 {
+			t.Errorf("skill %d with its equipped ring: level %d, accepted %t", skill, level, ok)
+		}
+		if _, ok := skills.CastLevel(actor, skill, skill, 2, now); ok {
+			t.Errorf("skill %d accepted a fabricated higher rank", skill)
+		}
+		actor.Skills = []domain.SkillState{{ID: skill, Level: 1}}
+		for _, equip := range []domain.Equipment{
+			{ItemID: ring, Slot: 1}, {ItemID: ring, Slot: -112}, {ItemID: 1112000, Slot: -12},
+			{ItemID: ring, Slot: -12, ExpiresAt: now.UnixMilli()},
+		} {
+			actor.Equipment[0] = equip
+			if _, ok := skills.CastLevel(actor, skill, skill, 1, now); ok {
+				t.Errorf("skill %d accepted learned rank without its valid equipped ring: %+v", skill, equip)
+			}
+		}
+	}
+}
+
+func TestV148EmpressCallUsesBothWZVitalPercentages(t *testing.T) {
+	for _, id := range []int{10000074, 50000074} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Passive == nil || h.Kind != skills.KindPassive {
+			t.Fatalf("skill %d missing permanent v148 vital effect", id)
+		}
+		b := h.Passive(&skills.PassiveContext{Values: map[string]int{"x": 20}})
+		if b.MaxHPPercent != 20 || b.MaxMPPercent != 20 {
+			t.Errorf("skill %d v148 x=20 effect: %+v", id, b)
+		}
+	}
+}
+
 func TestIceKnight(t *testing.T) {
 	p := mustCast(t, 20031105, 1, domain.Character{})
 	if s := stats(p.Self); s["ICE_SKILL"] != 1 || s["MORPH"] != 2003 || p.Self.Duration != skills.Permanent {
@@ -324,13 +360,31 @@ func TestEventBuffs(t *testing.T) {
 }
 
 func TestPassives(t *testing.T) {
-	if b := passive(t, 110, domain.Character{}); b.STR != 15 || b.LUK != 15 || b.MaxHPPercent != 5 || b.MaxMPPercent != 5 {
-		t.Fatalf("110 %+v", b)
+	for _, id := range []int{190, 10000190, 20000190, 20010190, 20020190, 20030190, 30000190, 30010190, 50000190} {
+		if def, err := content.SkillDefinition("", id); err == nil && !def.Disabled {
+			want := skills.Bonus{STR: 5, DEX: 5, INT: 5, LUK: 5, WATK: 5, MATK: 5}
+			if got := passive(t, id, domain.Character{}); got != want {
+				t.Errorf("%d got %+v, want %+v", id, got, want)
+			}
+		}
 	}
-	if b := passive(t, 80000000, domain.Character{}); b.STR != 15 || b.MaxHPPercent != 0 {
-		t.Fatalf("80000000 %+v", b)
+	for _, id := range []int{110, 80000000} {
+		want := skills.Bonus{STR: 15, DEX: 15, INT: 15, LUK: 15, MaxHPPercent: 5, MaxMPPercent: 5}
+		if got := passive(t, id, domain.Character{}); got != want {
+			t.Errorf("%d got %+v, want %+v", id, got, want)
+		}
 	}
-	if b := passive(t, 20010194, domain.Character{}); b.MaxHPPercent != 25 {
+	for id, want := range map[int]skills.Bonus{
+		20030204: {Critical: 10},
+		80000002: {Critical: 10},
+		80000016: {STR: 7, DEX: 7, INT: 7, LUK: 7, WATK: 7, MATK: 7, IgnoreDefense: 5},
+		80000136: {STR: 3, DEX: 3, INT: 3, LUK: 3, WATK: 1, MATK: 1, MaxHP: 400, MaxMP: 400},
+	} {
+		if got := passive(t, id, domain.Character{}); got != want {
+			t.Errorf("%d got %+v, want %+v", id, got, want)
+		}
+	}
+	if b := passive(t, 20010194, domain.Character{}); b != (skills.Bonus{STR: 10, DEX: 10, INT: 10, LUK: 10, MATK: 10, MDEF: 300, MaxHPPercent: 15, BossDamagePercent: 5}) {
 		t.Fatalf("20010194 %+v", b)
 	}
 	if b := passive(t, 10000074, domain.Character{}); b.MaxHPPercent != 20 || b.MaxMPPercent != 20 {

@@ -118,13 +118,7 @@ func potentialCommandState(c domain.Character, r domain.PotentialCommandRequest)
 	}
 	if r.Action == domain.PotentialSeal {
 		if r.TargetSlot > 0 {
-			spirit := false
-			for _, skill := range c.Skills {
-				if skill.ID == 1003 && skill.Level > 0 {
-					spirit = true
-				}
-			}
-			if !r.LegendarySpirit || !spirit {
+			if !r.LegendarySpirit || !learnedLegendarySpirit(c) {
 				return -1, -1, domain.ErrForbidden
 			}
 		} else if r.LegendarySpirit {
@@ -178,20 +172,11 @@ func potentialFeeBeforeRoll(target content.PotentialTarget, action domain.Potent
 	return int64(fee), err
 }
 
-func guardPotentialSpirit(ctx context.Context, tx *sql.Tx, r domain.PotentialCommandRequest) error {
+func guardPotentialSpirit(ctx context.Context, tx *sql.Tx, r domain.PotentialCommandRequest, c domain.Character) error {
 	if r.Action != domain.PotentialSeal || r.TargetSlot < 0 {
 		return nil
 	}
-	// readSkillState preserves expired learned rows too. The SQL clock, not
-	// the world snapshot or this process's wall clock, decides current access.
-	var active bool
-	if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM game_skills WHERE character_id=$1 AND skill_id=1003 AND level>0 AND (expires_at IS NULL OR expires_at>clock_timestamp()))`, r.Session.CharacterID).Scan(&active); err != nil {
-		return err
-	}
-	if !active {
-		return domain.ErrForbidden
-	}
-	return nil
+	return guardLearnedLegendarySpirit(ctx, tx, c)
 }
 
 func potentialPlanDigest(raw []byte) string {
@@ -376,7 +361,7 @@ func (s *Store) applyPotential(ctx context.Context, r domain.PotentialCommandReq
 	if err != nil {
 		return domain.PotentialCommandResult{}, err
 	}
-	if err := guardPotentialSpirit(ctx, tx, r); err != nil {
+	if err := guardPotentialSpirit(ctx, tx, r, c); err != nil {
 		return domain.PotentialCommandResult{}, err
 	}
 	material, equipment := c.Items[materialIndex], c.Equipment[equipmentIndex]
@@ -428,7 +413,7 @@ func (s *Store) applyPotential(ctx context.Context, r domain.PotentialCommandReq
 	if err := guardLease(ctx, tx, r.Session.Lease); err != nil {
 		return domain.PotentialCommandResult{}, err
 	}
-	if err := guardPotentialSpirit(ctx, tx, r); err != nil {
+	if err := guardPotentialSpirit(ctx, tx, r, c); err != nil {
 		return domain.PotentialCommandResult{}, err
 	}
 	if err := guardItemExpiry(ctx, tx, material.ExpiresAt); err != nil {

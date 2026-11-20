@@ -12,6 +12,7 @@ import (
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 )
 
@@ -22,6 +23,52 @@ var pending = map[int]bool{
 	33101005: true, // 吞食: keydown mob link and suck
 	35101005: true, // 開放通道 GX-9: mech door object
 	35111002: true, // 磁場: tesla coil triangle
+}
+
+func TestSG88KeepsOperatorAndRobotAttacksSeparate(t *testing.T) {
+	const id = 35121003
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	def, err := content.SkillDefinition("", id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, err := combat.FromSkill(def, 30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ch := domain.Character{Job: 3512, X: 100, Y: 200}
+	ctx := combat.AttackContext{Kind: combat.Body, Character: ch, Effect: body, Now: now,
+		Attack: protocol.Attack{X: 350, Y: 350}, Targets: []combat.TargetInfo{{X: 240, Y: 200}}}
+	h, _ := skills.Lookup(id)
+	if !h.Attack.Allows(combat.Body) || !h.Attack.Allows(combat.Summoned) || h.Attack.Allows(combat.Melee) {
+		t.Fatalf("invalid native SG-88 attack families: %+v", h.Attack)
+	}
+	values, err := def.Values(30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cast, err := h.Cast(&skills.CastContext{Skill: def, Level: 30, Values: values, Caster: ch, Now: now})
+	if err != nil || cast.Self == nil || cast.Self.Duration != 6*time.Second || h.Attack.Summon.Duration != cast.Self.Duration || h.DropOnEnter == nil || !h.DropOnEnter(ch) {
+		t.Fatalf("SG-88 activation escaped its native visit or orphan deadline: %+v (%v)", cast, err)
+	}
+	if err := h.Attack.Prepare(&ctx); err != nil || ctx.Effect.Damage != 250 || ctx.Effect.MobCount != 1 || ctx.Effect.AttackCount != 1 || ctx.Attack.X != 100 || ctx.Attack.Y != 200 {
+		t.Fatalf("SG-88 operator attack: %+v, %v", ctx.Effect, err)
+	}
+	ctx.Targets[0].X = 246
+	if err := h.Attack.Prepare(&ctx); err != combat.ErrRange {
+		t.Fatalf("SG-88 accepted operator hit outside body range: %v", err)
+	}
+	robot, err := combat.SummonEffect(def, 30)
+	if err != nil || robot.Damage != 1440 || robot.MobCount != 15 || robot.AttackCount != 1 || robot.Box.LT != (combat.Point{X: -400, Y: -350}) || robot.Box.RB != (combat.Point{X: 400, Y: 250}) {
+		t.Fatalf("SG-88 robot attack: %+v, %v", robot, err)
+	}
+	if _, _, err := skills.AttackResourceCost(ch, id, 30, protocol.RecvBodyAttack, now); err == nil {
+		t.Fatal("SG-88 operator attack accepted before its activation was paid")
+	}
+	ch.SkillBuffs = []domain.SkillBuff{row(id, "COMBO", 1)}
+	if cost, ongoing, err := skills.AttackResourceCost(ch, id, 30, protocol.RecvBodyAttack, now); err != nil || !ongoing || cost.MP != 0 || cost.Cooldown != 0 {
+		t.Fatalf("SG-88 charged operator attack after its paid cast: %+v, %t, %v", cost, ongoing, err)
+	}
 }
 
 func TestRegistersInventorySkills(t *testing.T) {
@@ -229,7 +276,8 @@ func TestBuffValues(t *testing.T) {
 		{35121006, 25, map[buffstat.Stat]int{"SATELLITESAFE_PROC": 30, "SATELLITESAFE_ABSORB": 80}, skills.Permanent},
 		{35111004, 20, map[buffstat.Stat]int{"MECH_CHANGE": 20}, skills.Permanent},
 		{35121005, 30, map[buffstat.Stat]int{"MECH_CHANGE": 30}, skills.Permanent},
-		{35121010, 20, map[buffstat.Stat]int{"DAMAGE_BUFF": 20}, 60 * time.Second},
+		{35121010, 1, map[buffstat.Stat]int{"DAMAGE_BUFF": 1}, 42 * time.Second},
+		{35121010, 20, map[buffstat.Stat]int{"DAMAGE_BUFF": 20}, 80 * time.Second},
 	} {
 		p := cast(t, tc.id, tc.level)
 		if got := stats(p.Self); !reflect.DeepEqual(got, tc.want) || p.Self.Duration != tc.duration {
@@ -555,7 +603,7 @@ func TestRobotFactorySpawnsThreeBots(t *testing.T) {
 
 // Java's permanent summons have no WZ time; the spawn needs an explicit one.
 func TestPermanentSummonsCarryDuration(t *testing.T) {
-	for _, id := range []int{35111001, 35111009, 35111010, 35121003} {
+	for _, id := range []int{35111001, 35111009, 35111010} {
 		if h, _ := skills.Lookup(id); h.Attack.Summon.Duration != skills.Permanent {
 			t.Errorf("%d: summon duration %v", id, h.Attack.Summon.Duration)
 		}

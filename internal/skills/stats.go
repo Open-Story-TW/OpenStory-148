@@ -1,11 +1,13 @@
 package skills
 
 import (
+	"os"
+	"sort"
+	"time"
+
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
-	"os"
-	"time"
 )
 
 // Stats is the S0a effective-stat provider installed with
@@ -13,7 +15,7 @@ import (
 // passives and active buffs, following Java PlayerStats.
 var Stats combat.StatsProvider = effectiveStatsProvider{}
 
-// MovementPassive reads the learned speed, jump and speed cap from v148 WZ.
+// MovementPassive reads the permanent v148 movement component of learned skills.
 func MovementPassive(c *PassiveContext) Bonus {
 	return Bonus{Speed: c.Values["psdSpeed"], Jump: c.Values["psdJump"], SpeedLimitBonus: c.Values["speedMax"]}
 }
@@ -40,8 +42,8 @@ func (c *PassiveContext) BasicMastery(advancedID int) int {
 // client looks mastery up by job and weapon, so another line's mastery must not
 // raise the damage floor; its other passives, critical rate included, it does count.
 func Bonuses(c domain.Character, now time.Time) Bonus {
-	var total Bonus
 	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	total := guildBonuses(root, c, now).Add(characterCardBonuses(root, c.Cards).Add(innerAbilityBonuses(root, c)))
 	for _, s := range c.Skills {
 		if s.Level < 1 || !s.ExpiresAt.IsZero() && !s.ExpiresAt.After(now) {
 			continue
@@ -60,15 +62,21 @@ func Bonuses(c domain.Character, now time.Time) Bonus {
 			continue
 		}
 		bonus := h.Passive(&PassiveContext{Skill: def, Level: level, Values: values, Character: c, Now: now})
+		bonus.SpeedLimitBonus = max(bonus.SpeedLimitBonus, values["speedMax"])
 		if !def.CanLearnBy(c) {
 			bonus.Mastery = 0
 		}
 		total = total.Add(bonus)
 	}
+	dice := content.ActiveDiceBonuses(c, now)
+	total.WDEFPercent += dice.DefensePercent
+	total.Critical += dice.Critical
+	total.DamagePercent += dice.DamagePercent
+	total.EXP += dice.ExperiencePercent
 	return total
 }
 
-// Add combines two bonuses, using the highest speed limit bonus.
+// Add combines two bonuses. The highest speed limit bonus applies.
 func (b Bonus) Add(o Bonus) Bonus {
 	b.MaxHP += o.MaxHP
 	b.MaxMP += o.MaxMP
@@ -97,11 +105,15 @@ func (b Bonus) Add(o Bonus) Bonus {
 	b.SpeedLimitBonus = max(b.SpeedLimitBonus, o.SpeedLimitBonus)
 	b.ACCPercent += o.ACCPercent
 	b.AVOIDPercent += o.AVOIDPercent
+	b.GuildAVOIDPercent += o.GuildAVOIDPercent
+	b.GuildWDEFPercent += o.GuildWDEFPercent
+	b.GuildMDEFPercent += o.GuildMDEFPercent
 	b.AvoidRate += o.AvoidRate
 	b.Critical += o.Critical
 	b.BossCritical += o.BossCritical
 	b.CriticalDamage += o.CriticalDamage
 	b.CriticalDamageMin += o.CriticalDamageMin
+	b.StunnedCritical += o.StunnedCritical
 	b.Mastery += o.Mastery
 	b.DamagePercent += o.DamagePercent
 	b.BossDamagePercent += o.BossDamagePercent
@@ -155,6 +167,11 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			b.WDEF += v
 		case "MDEF", "ENHANCED_MDEF":
 			b.MDEF += v
+		case "DEFENCE_BOOST_R":
+			// Original v148 705E41/706330 both add getter6EEC2D (bit186)
+			// to the defense rate. Original Soul Endure panels double both.
+			b.WDEFPercent += v
+			b.MDEFPercent += v
 		case "ACC", "ANGEL_ACC":
 			b.ACC += v
 		case "AVOID", "ANGEL_AVOID":
@@ -194,6 +211,8 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			b.AvoidRate += v
 		case "ELEMENTAL_STATUS_R":
 			b.TER += v
+		case "INDIE_DAMAGE":
+			b.DamagePercent += v
 		case "BLUE_AURA":
 			// v148 uses z of the active advanced source and its actual rank.
 			if row.ID != AdvancedBlueAuraSkill && row.ID != 32110008 {
@@ -216,6 +235,10 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 
 // PlayerStats is the effective attacker view used by the S0b pipeline.
 func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
+	return legacyPlayerStatsForMode(c, now, false)
+}
+
+func legacyPlayerStatsForMode(c domain.Character, now time.Time, battleSquare bool) combat.PlayerStats {
 	p, err := combat.BaseStats(c, now)
 	if err != nil {
 		return p
@@ -223,7 +246,6 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	passive := Bonuses(c, now)
 	buff, mw := BuffBonus(c, now)
 	b := passive.Add(buff)
-	foldMovement(&p, c, Bonus{}, passive, buff)
 	scale := func(base, total, percent int) int { return total + int(int64(base)*int64(percent)/100) }
 	str, dex, intl, luk := c.STR, c.DEX, c.INT, c.LUK
 	p.STR = scale(str, p.STR+b.STR, b.STRPercent+mw)
@@ -231,64 +253,128 @@ func legacyPlayerStats(c domain.Character, now time.Time) combat.PlayerStats {
 	p.INT = scale(intl, p.INT+b.INT, b.INTPercent+mw)
 	basicINT := p.INT
 	// Java percent_matk also scales pre-MW INT; late flat INT is excluded.
-	p.INT += floorPercent(p.INT-buff.INT-floorPercent(c.INT, mw), infinityMagicPercent(c, now))
+	preINT := p.INT - buff.INT - floorPercent(c.INT, mw)
+	p.INT += floorPercent(preINT, infinityMagicPercent(c, now))
 	p.LUK = scale(luk, p.LUK+b.LUK, b.LUKPercent+mw)
-	foldDefense(&p, c, basicINT, Bonus{}, passive, buff)
+	foldDefenseMovement(&p, c, basicINT, mw, Bonus{}, passive, buff, battleSquare)
 	p.WATK += b.WATK
 	p.WATK += p.WATK * b.WATKPercent / 100
 	p.MATK += b.MATK
 	p.MATK += p.MATK * b.MATKPercent / 100
-	p.Accuracy += b.ACC
-	p.Accuracy += p.Accuracy * b.ACCPercent / 100
+	foldAccuracy(&p, c.Traits.Insight, b.ACC, b.ACCPercent)
+	foldAvoidability(&p, c, b.AVOID, b.AVOIDPercent)
+	p.Avoid += floorPercent(p.Avoid, b.GuildAVOIDPercent)
 	p.Mastery += b.Mastery
 	p.CritRate += b.Critical
 	p.BossCritRate += b.BossCritical
+	p.StunnedCritRate += b.StunnedCritical
 	p.CritDamage += b.CriticalDamage
+	p.CritDamageMin += b.CriticalDamageMin
+	p.ASR += b.ASR
+	p.TER += b.TER
 	p.DamageRate += b.DamagePercent
 	p.BossDamageRate += b.BossDamagePercent
 	p.IgnoreDefense += b.IgnoreDefense
 	p.FullDefenseIgnore = b.FullDefenseIgnore
 	p.ElementAmp += b.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
+	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
 	return p
 }
 
-func foldDefense(p *combat.PlayerStats, c domain.Character, basicINT int, pot, passive, buff Bonus) {
+// foldDefenseMovement uses the same defense and movement arithmetic for
+// equipment with or without potential. These stats are independently
+// observable in the authorized QA report.
+func foldDefenseMovement(p *combat.PlayerStats, c domain.Character, basicINT, mapleWarrior int, pot, passive, buff Bonus, battleSquare bool) {
 	for _, e := range c.Equipment {
 		if e.Slot >= 0 || e.Slot <= -100 {
 			continue
 		}
 		p.WDEF += e.WDEF
 		p.MDEF += e.MDEF
+		p.Speed += e.Speed
+		p.Jump += e.Jump
 	}
 	p.WDEF += pot.WDEF + passive.WDEF
 	p.MDEF += pot.MDEF + passive.MDEF
+	str, dex, luk := p.STR, p.DEX, p.LUK
+	if battleSquare {
+		// Guardian Gloves retain the arena's pre-buff physical stat inputs.
+		str -= buff.STR + floorPercent(c.STR, mapleWarrior)
+		dex -= buff.DEX + floorPercent(c.DEX, mapleWarrior)
+		luk -= buff.LUK + floorPercent(c.LUK, mapleWarrior)
+	}
 	// v148 BasicStat helpers 0x6F1475 and 0x6F14E0 truncate the combined
 	// weighted primary stats once, with Will included before defense %.
 	will := 5 * c.Traits.WillTier()
-	p.WDEF += (15*p.STR+4*(p.DEX+p.LUK))/10 + will
+	p.WDEF += (15*str+4*(dex+luk))/10 + will
 	p.MDEF += (15*basicINT+4*(p.DEX+p.LUK))/10 + will
 	physical, magic := p.WDEF, p.MDEF
 	physicalPercent := pot.WDEFPercent + passive.WDEFPercent + buff.WDEFPercent
 	magicPercent := pot.MDEFPercent + passive.MDEFPercent + buff.MDEFPercent
 	// v148 calculates each defense percentage from its own pre-percent total.
-	p.WDEF = physical + min(30000, floorPercent(physical, physicalPercent))
+	// CUIStatDetail uses the same separate physical and magic bases for guild ranks.
+	p.WDEF = physical + min(30000, floorPercent(physical, physicalPercent+passive.GuildWDEFPercent))
 	p.MDEF = magic + min(30000, floorPercent(magic, magicPercent))
+	p.MDEF += floorPercent(magic, passive.GuildMDEFPercent)
 	p.WDEF += buff.WDEF
 	p.MDEF += buff.MDEF
+	p.Speed += 100 + pot.Speed + passive.Speed + buff.Speed
+	p.Jump += 100 + pot.Jump + passive.Jump + buff.Jump
+	speedLimit := 140 + passive.SpeedLimitBonus
+	p.Speed = min(p.Speed, speedLimit)
+	p.Jump = min(p.Jump, 123)
 }
 
-func foldMovement(p *combat.PlayerStats, c domain.Character, potential, passive, buff Bonus) {
-	p.Speed += 100 + potential.Speed + passive.Speed + buff.Speed
-	p.Jump += 100 + potential.Jump + passive.Jump + buff.Jump
+// CUIStatDetail's basic EVA helpers (0x6F1629/0x6F1698) add Insight's
+// five-level bonus. These are the cumulative EXP thresholds from 0x6EB087.
+var insightStatEXP = [...]int{
+	0, 181, 851, 2273, 4563, 7562, 11040, 14893, 19044, 23515, 28331,
+	33519, 39110, 45135, 51626, 58371, 65216, 72161, 79206, 86351, 93596,
+}
+
+func insightHitStat(experience int) int {
+	tier := sort.Search(len(insightStatEXP), func(i int) bool { return insightStatEXP[i] > experience }) - 1
+	if tier <= 0 {
+		return 0
+	}
+	return 10 + 5*tier*(tier-1)/2
+}
+
+func hitStatTotal(base, percent int) int {
+	if percent > 0 {
+		base += floorPercent(base, percent)
+	}
+	return min(9999, max(0, base))
+}
+
+// 0x6F154B and 0x6F15BA derive the two basic accuracy values. 0x70681C
+// applies the combined percentage after equipment and learned flat sources.
+func foldAccuracy(p *combat.PlayerStats, insightEXP, flat, percent int) {
+	bonus := insightHitStat(insightEXP)
+	flat += p.Accuracy
+	accuracy := func(light, medium int) int {
+		base := float64(p.LUK)*0.8 + float64(medium)*1.6 + float64(light)*0.4 + float64(bonus)
+		return hitStatTotal(int(base)+flat, percent)
+	}
+	p.Accuracy = accuracy(p.STR, p.DEX)
+	p.MagicAccuracy = accuracy(p.DEX, p.INT)
+}
+
+func foldAvoidability(p *combat.PlayerStats, c domain.Character, flat, percent int) {
 	for _, e := range c.Equipment {
 		if e.Slot < 0 && e.Slot > -100 {
-			p.Speed += e.Speed
-			p.Jump += e.Jump
+			flat += e.AVOID
 		}
 	}
-	p.Speed = min(p.Speed, 140+passive.SpeedLimitBonus)
-	p.Jump = min(p.Jump, 123)
+	insight := insightHitStat(c.Traits.Insight)
+	avoid := func(light, medium int) int {
+		// Preserve the native coefficient order before truncating basic EVA.
+		value := float64(p.LUK)*1.4 + float64(medium)*0.6 + float64(light)*0.2 + float64(insight)
+		return hitStatTotal(int(value)+flat, percent)
+	}
+	p.Avoid = avoid(p.STR, p.DEX)
+	p.MagicAvoid = avoid(p.DEX, p.INT)
 }
 
 // shadowPartner is the extra line percent of an active Shadow Partner: Java
@@ -317,6 +403,8 @@ func init() { content.VitalsPassives = vitalsPassives }
 // content.DerivedVitals (Java PlayerStats percent_hp/percent_mp).
 func vitalsPassives(c domain.Character, now time.Time) (hpFlat, mpFlat, hpPercent, mpPercent int, ids map[int]bool) {
 	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	external := characterCardBonuses(root, c.Cards).Add(innerAbilityBonuses(root, c))
+	hpFlat, mpFlat, hpPercent, mpPercent = external.MaxHP, external.MaxMP, external.MaxHPPercent, external.MaxMPPercent
 	ids = map[int]bool{}
 	for _, s := range c.Skills {
 		if s.Level < 1 || !s.ExpiresAt.IsZero() && !s.ExpiresAt.After(now) {

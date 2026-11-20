@@ -39,6 +39,10 @@ type gameplayMob struct {
 	oneTime          bool
 	nettLane         *content.NettLane
 	carnivalSummoned bool
+	respawnDelay     time.Duration
+	burns            combat.MobBurns
+	nextMobContact   time.Time
+	cast             mobPowerUpCast
 }
 
 // Event maps reset their one-time spawns between groups.
@@ -46,6 +50,9 @@ func (m *gameplayMob) respawnTime(mapID int, now time.Time) time.Time {
 	_, eventMap := content.EventByMap(mapID)
 	if m.oneTime || !m.rushUntil.IsZero() || (eventMap || content.TreasureHuntMap(mapID)) && m.life.RespawnSeconds == -1 {
 		return time.Time{}
+	}
+	if m.respawnDelay > 0 {
+		return now.Add(m.respawnDelay)
 	}
 	return now.Add(time.Duration(max(5, m.life.RespawnSeconds)) * time.Second)
 }
@@ -63,15 +70,18 @@ func (m *gameplayMob) lethalHP() int64 {
 }
 
 type gameplayMember struct {
-	visit      *sceneVisit // Exact entry token for scene-safe QA expiry publication.
-	sink       packetSink
-	live       *liveCharacter
-	sessionID  string
-	generation int64
-	worldID    int
-	lastAttack time.Time
-	lastTick   uint32
-	lastSkill  int // Skill of the last generic attack (rate guard).
+	visit                *sceneVisit // Exact entry token for scene-safe QA expiry publication.
+	sink                 packetSink
+	live                 *liveCharacter
+	sessionID            string
+	generation           int64
+	worldID              int
+	lastAttack           time.Time
+	lastTick             uint32
+	lastSkill            int // Skill of the last generic attack (rate guard).
+	lastAttackWasGunShot bool
+	lastGunExpertTick    uint32
+	hasGunExpertTick     bool
 	// keydownSkill is the charging skill from 0x97, started at keydownAt.
 	keydownSkill  int
 	keydownAt     time.Time
@@ -105,6 +115,8 @@ type gameplayRoom struct {
 	romeoBoss       *romeoBossRoom
 	ghostDeck       *ghostDeck
 	carnival        *carnivalMatch
+	subway          *subwaySurvival
+	orbisProgress   orbisRoomProgress
 }
 type gameplaySpace struct {
 	mu            sync.Mutex
@@ -179,7 +191,11 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 		if oid == 0 {
 			return nil, errors.New("gameplay object ID space exhausted")
 		}
-		r.mobs[oid] = &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP}
+		mob := &gameplayMob{objectID: oid, life: life, origin: life, stats: stats, hp: stats.HP}
+		if m.Subway != nil {
+			mob.respawnDelay = m.Subway.Respawn
+		}
+		r.mobs[oid] = mob
 	}
 	g.addReactorsLocked(r, key.mapID)
 	if altar, ok := content.ZakumAltarByMap(key.mapID); ok {
@@ -345,7 +361,7 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.gameplay.refillHeldMobs()
 			s.gameplay.tickSummons(now)
 			s.gameplay.tickAreas(now)
-			s.gameplay.tickDoors(now, s.partySnapshot())
+			s.tickDoors(now)
 			s.gameplay.tickReactors(now)
 			s.tickEvents(now)
 			s.tickHenesysPQ(ctx, now)
@@ -359,6 +375,10 @@ func (s *Server) runGameplay(ctx context.Context) {
 			s.tickNettDefense(ctx, now)
 			s.tickRomeoBossResults()
 			s.tickAmoria(ctx, now)
+			s.tickSubwaySurvival(ctx, now)
+			s.tickSnowball(now)
+			s.tickCoconut(now)
+			s.tickObstacles(now)
 		}
 	}
 }
@@ -417,6 +437,10 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 			return true, sink.WritePacket(protocol.EnableActions())
 		}
 		return true, s.ellinCapture(ctx, channel, live, sink, request)
+	case protocol.RecvSnowballHit:
+		return true, s.attackSnowball(live, sink, r)
+	case protocol.RecvCoconutHit:
+		return true, s.attackCoconut(live, sink, r)
 	case protocol.RecvScriptPortal:
 		req, err := protocol.ReadScriptPortalRequest(r)
 		if err != nil {
@@ -497,6 +521,8 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		}
 		oid := protocol.NewReader(body).I32()
 		switch partySession(live).Character.MapID {
+		case content.OrbisPQMusic, content.OrbisPQHall, content.OrbisPQGarden:
+			return true, s.clickOrbisReactor(ctx, channel, live, sink, oid)
 		case content.EllinBoulder, content.EllinBaskets, content.EllinAltar:
 			return true, s.ellinReactorClick(ctx, channel, live, sink, oid)
 		case 926100100, 926110100:
@@ -538,10 +564,14 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 		}
 		return true, nil
 	case protocol.RecvEscortAttack:
-		if hit, err := protocol.ReadEscortAttack(r); err == nil {
-			s.escortHit(channel, live, sink, hit, time.Now())
+		actor := partySession(live)
+		if inst := s.eventOf(actor.CharacterID); inst != nil && inst.channel == channel && (inst.ice != nil || inst.hoblin != nil) {
+			if hit, err := protocol.ReadEscortAttack(r); err == nil {
+				s.escortHit(channel, live, sink, hit, time.Now())
+			}
+			return true, nil
 		}
-		return true, nil
+		return true, s.monsterContactGameplay(ctx, channel, live, sink, r.Bytes(r.Remaining()))
 	case protocol.RecvEscortPathRequest:
 		oid := r.I32()
 		if r.Err() != nil || r.Remaining() != 0 || oid <= 0 {
@@ -608,10 +638,16 @@ func (s *Server) scriptPortalGameplay(ctx context.Context, channel int, live *li
 	if handled, err := s.amoriaPortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
+	if handled, err := s.orbisRoomPortal(ctx, live, sink, p); handled {
+		return err
+	}
 	if p.Script == "" {
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	if handled, err := s.treasurePortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.obstaclePortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	return s.runPortalScript(ctx, channel, live, sink, p)
@@ -640,6 +676,12 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return sink.WritePacket(protocol.EnableActions())
 	}
 	if handled, err := s.nettLanePortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.orbisEntrancePortal(ctx, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.orbisRoomPortal(ctx, live, sink, p); handled {
 		return err
 	}
 	if handled, err := s.ludibriumPortal(ctx, live, sink, p); handled {
@@ -673,6 +715,9 @@ func (s *Server) portalGameplay(ctx context.Context, channel int, live *liveChar
 		return err
 	}
 	if handled, err := s.amoriaPortal(ctx, channel, live, sink, p); handled {
+		return err
+	}
+	if handled, err := s.obstaclePortal(ctx, channel, live, sink, p); handled {
 		return err
 	}
 	if p.Script != "" {
@@ -831,6 +876,7 @@ func (s *Server) publishGameplayWarp(ctx context.Context, channel int, live *liv
 		// SetField carries the exact door position (chase flag, 0x69EDC2).
 		warp = protocol.WarpMapAt(wireValue, channel, value.X, value.Y)
 	}
+	warp, coconutTeam := s.coconutSetField(warp, snapshot)
 	if err = sink.WritePacket(warp); err != nil {
 		return err
 	}
@@ -838,7 +884,7 @@ func (s *Server) publishGameplayWarp(ctx context.Context, channel int, live *liv
 		return err
 	}
 	if s.maps != nil {
-		s.maps.Enter(channel, value.MapID, value, sink)
+		s.maps.enter(channel, value.MapID, value, sink, coconutTeam)
 	}
 	if err = showOwnPets(sink, value); err != nil {
 		return err
@@ -919,7 +965,7 @@ func (s *Server) monsterMovement(channel int, live *liveCharacter, sink packetSi
 		g.mu.Unlock()
 		return nil
 	}
-	mp := mob.stats.MP
+	mp := mob.currentMP()
 	switch applyMobMoveLocked(r, mob, m) {
 	case mobMoveRejected:
 		g.mu.Unlock()
@@ -938,10 +984,20 @@ func (s *Server) monsterMovement(channel int, live *liveCharacter, sink packetSi
 	if r.escort != nil && r.escort.mob == mob && r.escort.reported > r.escort.next {
 		escortPackets = advanceEscortLocked(r, time.Now())
 	}
-	// Mob skills need their own authoritative resolver; a controller cannot ask
-	// peers to execute an arbitrary skill through its movement report.
-	m.UseSkill = false
-	m.SkillData = 0
+	now := time.Now()
+	aggro := mob.powerUpControllerEngaged(member, chr.ID)
+	var offer content.MobSkillAction
+	accepted := false
+	if aggro {
+		offer, accepted = mob.powerUpFromMove(g.catalog, member, m, now)
+	}
+	if !accepted {
+		m.UseSkill = false
+		m.SkillData = 0
+	}
+	mp = mob.currentMP()
+	status := mob.applyPowerUpLocked(now)
+	statusDelivery := roomBroadcast(r, status, -1)
 	var peers []packetSink
 	for id, p := range r.members {
 		if id != chr.ID {
@@ -949,8 +1005,9 @@ func (s *Server) monsterMovement(channel int, live *liveCharacter, sink packetSi
 		}
 	}
 	g.mu.Unlock()
-	if err := sink.WritePacket(protocol.MonsterMoveResponse(m, mp)); err != nil {
+	if err := sink.WritePacket(protocol.MonsterMoveResponseWithSkill(m, mp, aggro, offer.ID, offer.Level)); err != nil {
 		deliver(escortPackets)
+		deliver(statusDelivery)
 		return err
 	}
 	packet := protocol.MonsterMovePacket(m)
@@ -958,6 +1015,7 @@ func (s *Server) monsterMovement(channel int, live *liveCharacter, sink packetSi
 		_ = p.WritePacket(packet)
 	}
 	deliver(escortPackets)
+	deliver(statusDelivery)
 	return nil
 }
 

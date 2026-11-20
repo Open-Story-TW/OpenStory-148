@@ -47,6 +47,22 @@ func TestFirstAdventurerJobsCanReenterWorldWithRegularSPPool(t *testing.T) {
 	}
 }
 
+func TestV148PirateJobsCanReenterWorldWithRegularSPPool(t *testing.T) {
+	c := domain.Character{ID: 101, Name: "PirateQA", Level: 120, STR: 20, DEX: 20, INT: 4, LUK: 4,
+		HP: 430, MaxHP: 430, MP: 104, MaxMP: 104, SP: 7, MapID: 120000000}
+	for _, job := range []int{508, 509, 570, 571, 572, 580, 581, 582, 590, 591, 592} {
+		c.Job = job
+		if !validCharacter(c) || len(SetField(c, 1)) == 0 {
+			t.Fatalf("v148 pirate job %d rejected by roster/world encoder", job)
+		}
+		w := NewWriter(0)
+		writeSP(w, c)
+		if p := w.Packet(); len(p) != 4 || p[2] != 7 || p[3] != 0 {
+			t.Fatalf("v148 pirate job %d SP pool %x", job, p)
+		}
+	}
+}
+
 func TestExtendedSPJobsWriteBookPairs(t *testing.T) {
 	defer domain.SetLongStatsForTest(false)()
 	c := domain.Character{Job: 2211, STR: 4, DEX: 4, INT: 4, LUK: 4, HP: 50, MaxHP: 50, MP: 5, MaxMP: 5, SP: 3, SPBooks: domain.SPBookTable{1: 4}}

@@ -14,6 +14,7 @@ import (
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
+	"maple-go-server/internal/skills"
 )
 
 // roomSummon is a transient summon owned by one field visit. It disappears
@@ -33,10 +34,32 @@ type roomSummon struct {
 	foothold             int
 	spec                 *combat.SummonSpec
 	expiresAt            time.Time
+	deathEffect          combat.Effect
+	deathWindow          time.Duration
+	amplifier            combat.Effect
+	amplifierAreaActive  bool
 	hp                   int
 	lastTick             uint32
 	lastAttack, lastHeal time.Time
 	attacked             bool
+}
+
+func (m *roomSummon) attackInLifetime(now time.Time, action byte) bool {
+	if m.spec.ExpiryAction == 0 {
+		return now.Before(m.expiresAt)
+	}
+	// The native animation clock and the world expiry are sampled on separate
+	// loops. Accept a small frame lead and retain the exact object until the
+	// WZ death animation interval ends, without accepting another action.
+	return action == m.spec.ExpiryAction && !m.attacked &&
+		!now.Before(m.expiresAt.Add(-150*time.Millisecond)) && now.Before(m.expiresAt.Add(m.deathWindow))
+}
+
+func (m *roomSummon) removalTime() time.Time {
+	if m.spec.ExpiryAction != 0 && !m.attacked {
+		return m.expiresAt.Add(m.deathWindow)
+	}
+	return m.expiresAt
 }
 
 func (m *roomSummon) view(animated bool) protocol.SummonView {
@@ -45,6 +68,34 @@ func (m *roomSummon) view(animated bool) protocol.SummonView {
 		stance = 4
 	}
 	return protocol.SummonView{OwnerID: m.ownerID, ObjectID: m.objectID, SkillID: m.skillID, OwnerLevel: m.ownerLevel, SkillLevel: m.level, X: int16(m.x), Y: int16(m.y), Stance: stance, Foothold: int16(m.foothold), MoveAbility: m.spec.MoveAbility, AssistType: m.spec.AssistType, Animated: animated, Look: m.look}
+}
+
+const af11Skill = 35121010
+
+func (m *roomSummon) amplifierAreaPacket(now time.Time) []byte {
+	if !m.amplifierAreaActive || !now.Before(m.expiresAt) {
+		return nil
+	}
+	lt, rb := m.amplifier.Box.At(combat.Point{X: m.x, Y: m.y}, false)
+	// Original v148 CalcDamage looks up AF-11 by source in CAffectedAreaPool
+	// (0x42D47D), separate from the visible CSummoned robot (0x1A1).
+	// The native type-0 lookup (0x42D276) applies field damage to everyone.
+	return protocol.AffectedAreaCreated(protocol.AffectedArea{ObjectID: m.objectID, Type: protocol.AreaPlayer, OwnerID: m.ownerID,
+		SkillID: m.skillID, SkillLevel: m.level, Box: protocol.Rect{Left: int32(lt.X), Top: int32(lt.Y), Right: int32(rb.X), Bottom: int32(rb.Y)},
+		X: int16(m.x), Y: int16(m.y)})
+}
+
+func (m *roomSummon) removeAmplifierArea() []byte {
+	if !m.amplifierAreaActive {
+		return nil
+	}
+	m.amplifierAreaActive = false
+	return protocol.AffectedAreaRemoved(m.objectID, m.skillID, false)
+}
+
+func (m *roomSummon) removePackets(room *gameplayRoom, reason byte) []roomDelivery {
+	out := roomBroadcast(room, m.removeAmplifierArea(), -1)
+	return append(out, roomBroadcast(room, protocol.RemoveSummon(m.ownerID, m.objectID, reason), -1)...)
 }
 
 func removeReason(skillID int) byte {
@@ -102,14 +153,26 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 	c := session.Character
 	d := spec.Summon.Duration
 	hp := spec.Summon.HP
-	if d == 0 || spec.Summon.Puppet && hp == 0 {
+	var deathEffect combat.Effect
+	var deathWindow time.Duration
+	var amplifier combat.Effect
+	if d == 0 || spec.Summon.Puppet && hp == 0 || spec.Summon.ExpiryAction != 0 {
 		if template, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), skillID); err == nil {
+			if spec.Summon.ExpiryAction != 0 {
+				deathEffect, deathWindow, err = combat.SummonExpiryEffect(template, level)
+				if err != nil {
+					return 0, err
+				}
+			}
 			if key := spec.Summon.DurationKey; d == 0 && key != "" {
 				if values, err := template.Values(min(level, template.MaxLevel)); err == nil {
 					d = time.Duration(values[key]) * time.Second
 				}
 			}
 			if e, err := combat.FromSkill(template, level); err == nil {
+				if skillID == af11Skill {
+					amplifier = e
+				}
 				if d == 0 {
 					d = e.Time
 				}
@@ -121,6 +184,12 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 	}
 	if d <= 0 {
 		return 0, fmt.Errorf("skill%d summon has no duration", skillID)
+	}
+	if spec.Summon.ExpiryAction != 0 && deathWindow == 0 {
+		return 0, fmt.Errorf("skill%d summon has no death attack data", skillID)
+	}
+	if skillID == af11Skill && (!amplifier.Box.Set || amplifier.X <= 0 || amplifier.Y <= 0) {
+		return 0, fmt.Errorf("skill%d lacks the v148 amplification area or percentages", skillID)
 	}
 	if !until.IsZero() {
 		if !until.After(now) {
@@ -140,7 +209,7 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 		for id, m := range room.summons {
 			if m.ownerID == c.ID && m.source == skillID {
 				delete(room.summons, id)
-				out = append(out, roomBroadcast(room, protocol.RemoveSummon(m.ownerID, m.objectID, protocol.SummonLeaveNone), -1)...)
+				out = append(out, m.removePackets(room, protocol.SummonLeaveNone)...)
 			}
 		}
 	}
@@ -149,7 +218,10 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 		g.mu.Unlock()
 		return 0, fmt.Errorf("object ID space exhausted")
 	}
-	m := &roomSummon{objectID: oid, ownerID: c.ID, ownerSession: session.SessionID, ownerGeneration: session.Generation, ownerEntry: room.members[c.ID], ownerLevel: c.Level, skillID: skillID, source: skillID, level: level, x: c.X, y: c.Y, spec: spec.Summon, expiresAt: now.Add(d), hp: hp, lastHeal: now}
+	m := &roomSummon{objectID: oid, ownerID: c.ID, ownerSession: session.SessionID, ownerGeneration: session.Generation, ownerEntry: room.members[c.ID], ownerLevel: c.Level, skillID: skillID, source: skillID, level: level, x: c.X, y: c.Y, spec: spec.Summon, expiresAt: now.Add(d), deathEffect: deathEffect, deathWindow: deathWindow, hp: hp, lastHeal: now}
+	if skillID == af11Skill {
+		m.amplifier, m.amplifierAreaActive = amplifier, true
+	}
 	if pos != nil {
 		m.x, m.y = pos.X, pos.Y
 	}
@@ -167,6 +239,7 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 	spawn := protocol.SpawnSummon(m.view(true))
 	summonDiag("summon_spawned", c.ID, spawn)
 	out = append(out, roomBroadcast(room, spawn, -1)...)
+	out = append(out, roomBroadcast(room, m.amplifierAreaPacket(now), -1)...)
 	g.mu.Unlock()
 	deliver(out)
 	return oid, nil
@@ -199,7 +272,7 @@ func removeOwnerSummonsLocked(room *gameplayRoom, ownerID int64, skillID int, ex
 			delete(room.summons, id)
 			// The local CSummoned survives a buff reset unless its owner also
 			// receives 0x183. Java broadcasts this removal to the whole field.
-			out = append(out, roomBroadcast(room, protocol.RemoveSummon(m.ownerID, m.objectID, removeReason(m.skillID)), -1)...)
+			out = append(out, m.removePackets(room, removeReason(m.skillID))...)
 		}
 	}
 	return out
@@ -208,8 +281,12 @@ func removeOwnerSummonsLocked(room *gameplayRoom, ownerID int64, skillID int, ex
 // summonEnterPackets lists existing summons for a late joiner.
 func summonEnterPacketsLocked(room *gameplayRoom) [][]byte {
 	var out [][]byte
+	now := time.Now()
 	for _, m := range room.summons {
 		out = append(out, protocol.SpawnSummon(m.view(false)))
+		if area := m.amplifierAreaPacket(now); area != nil {
+			out = append(out, area)
+		}
 	}
 	return out
 }
@@ -220,9 +297,12 @@ func (g *gameplaySpace) tickSummons(now time.Time) {
 	g.mu.Lock()
 	for _, room := range g.rooms {
 		for id, m := range room.summons {
-			if !now.Before(m.expiresAt) {
+			if m.amplifierAreaActive && !now.Before(m.expiresAt) {
+				out = append(out, roomBroadcast(room, m.removeAmplifierArea(), -1)...)
+			}
+			if !now.Before(m.removalTime()) {
 				delete(room.summons, id)
-				out = append(out, roomBroadcast(room, protocol.RemoveSummon(m.ownerID, m.objectID, removeReason(m.skillID)), -1)...)
+				out = append(out, m.removePackets(room, removeReason(m.skillID))...)
 			}
 		}
 	}
@@ -240,6 +320,37 @@ func (s *Server) ownSummonLocked(room *gameplayRoom, live *liveCharacter, oid in
 		return nil
 	}
 	return m
+}
+
+func hasActiveSummon(room *gameplayRoom, owner *gameplayMember, skillID int, now time.Time) bool {
+	for _, m := range room.summons {
+		if m.ownerEntry == owner && m.source == skillID && m.skillID == skillID && m.expiresAt.After(now) {
+			return true
+		}
+	}
+	return false
+}
+
+// amplifierDamageLocked matches the original affected-area membership check.
+// Overlapping amplifiers do not stack. The field pool tries the newest first.
+func amplifierDamageLocked(room *gameplayRoom, c domain.Character, party domain.PartySnapshot, now time.Time) (physical, magic int) {
+	var selected int32
+	for _, m := range room.summons {
+		if !m.amplifierAreaActive || m.objectID <= selected || !now.Before(m.expiresAt) || room.members[m.ownerID] != m.ownerEntry {
+			continue
+		}
+		if c.ID != m.ownerID {
+			if _, same := party.Member(m.ownerID); party.ID == 0 || !same {
+				continue
+			}
+		}
+		lt, rb := m.amplifier.Box.At(combat.Point{X: m.x, Y: m.y}, false)
+		// The v148 receiver's PtInRect treats right and bottom as exclusive.
+		if c.X >= lt.X && c.X < rb.X && c.Y >= lt.Y && c.Y < rb.Y {
+			selected, physical, magic = m.objectID, m.amplifier.X, m.amplifier.Y
+		}
+	}
+	return physical, magic
 }
 
 func (s *Server) summonMove(channel int, live *liveCharacter, mv protocol.SummonMoveInput) {
@@ -333,6 +444,18 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 	if !ok || s.gameplay == nil {
 		return nil
 	}
+	lineCount := 1
+	if len(in.Targets) > 0 {
+		lineCount = len(in.Targets[0].Lines)
+	}
+	if lineCount < 1 || len(in.Targets)*lineCount > 15 {
+		return nil
+	}
+	for _, target := range in.Targets {
+		if len(target.Lines) != lineCount {
+			return nil
+		}
+	}
 	live.persistMu.Lock()
 	locked := true
 	defer func() {
@@ -362,19 +485,23 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 	}
 	ownerEntry := room.members[c.ID]
 	spec, registered := attackSpecFor(m.source)
-	if !registered || spec.Summon == nil || m.spec != spec.Summon || !spec.Allows(combat.Summoned) || m.attacked && (m.lastTick == in.Tick || now.Sub(m.lastAttack) < 200*time.Millisecond) || attackSkillLevel(c, levelSource(m.source, spec), now) < 1 {
+	if !registered || spec.Summon == nil || m.spec != spec.Summon || !spec.Allows(combat.Summoned) ||
+		!m.attackInLifetime(now, in.Action) || m.attacked && (m.lastTick == in.Tick || now.Sub(m.lastAttack) < 200*time.Millisecond) || attackSkillLevel(c, levelSource(m.source, spec), now) < 1 {
 		g.mu.Unlock()
 		slog.Warn("summon_attack_guard_rejected", "character", c.ID, "skill", m.source, "registered", registered, "kind", spec.Kind, "learned", attackSkillLevel(c, levelSource(m.source, spec), now), "summon_level", m.level)
 		return nil
 	}
 	effect := spec.Effect
+	if m.spec.ExpiryAction != 0 {
+		effect = m.deathEffect
+	}
 	if effect.SkillID == 0 {
 		g.mu.Unlock()
 		template, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), m.source)
 		if err != nil {
 			return nil
 		}
-		if effect, err = combat.FromSkill(template, m.level); err != nil {
+		if effect, err = combat.SummonEffect(template, m.level); err != nil {
 			return nil
 		}
 		g.mu.Lock()
@@ -383,13 +510,19 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 			return nil
 		}
 	}
+	if m.source == 35121003 {
+		// v148 SG-88 scales the robot slam by its gauge at 0x73133B; the
+		// operator's separate body attack uses the unscaled WZ effect.
+		charge := int(min(in.ChargeGauge, 100))
+		effect.Damage += effect.Damage * charge / 100
+	}
 	// Preparing checked resource/stat snapshots may read immutable WZ. Never
 	// hold the global room mutex during this phase, then revalidate the exact
 	// summon and owner visit before planning its already-paid hit.
 	g.mu.Unlock()
 	stats, err := combat.AttackStats(c, now)
 	g.mu.Lock()
-	if room = g.rooms[key]; room == nil || room.members[c.ID] != ownerEntry || ownerEntry.sessionID != session.SessionID || ownerEntry.generation != session.Generation || !sameDropSink(ownerEntry.sink, sink) || s.ownSummonLocked(room, live, in.ObjectID) != m || !m.expiresAt.After(time.Now()) {
+	if room = g.rooms[key]; room == nil || room.members[c.ID] != ownerEntry || ownerEntry.sessionID != session.SessionID || ownerEntry.generation != session.Generation || !sameDropSink(ownerEntry.sink, sink) || s.ownSummonLocked(room, live, in.ObjectID) != m || !m.attackInLifetime(time.Now(), in.Action) {
 		g.mu.Unlock()
 		return nil
 	}
@@ -400,20 +533,29 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 	// The summon moves client-side between 0xFF updates; accept its reported
 	// attack position when it is near the server-tracked one.
 	ax, ay := m.x, m.y
-	if within(m.x, m.y, int(in.X), int(in.Y), 300) {
+	if m.spec.ExpiryAction == 0 && within(m.x, m.y, int(in.X), int(in.Y), 300) {
 		ax, ay = int(in.X), int(in.Y)
 	}
-	a := protocol.Attack{Opcode: protocol.RecvSummonAttack, SkillID: m.source, TByte: byte(len(in.Targets)<<4 | 1), Tick: in.Tick, X: int16(ax), Y: int16(ay), Targets: in.Targets, Wire: append([]byte(nil), in.Wire...)}
+	a := protocol.Attack{Opcode: protocol.RecvSummonAttack, SkillID: m.source, TByte: byte(len(in.Targets)<<4 | lineCount), Tick: in.Tick, X: int16(ax), Y: int16(ay), Targets: in.Targets, Wire: append([]byte(nil), in.Wire...)}
 	if in.Action&0x80 != 0 {
 		a.Display = 0x8000
 	}
 	actx := combat.AttackContext{Kind: combat.Summoned, Character: c, Stats: stats, Effect: effect, Attack: a, Now: now, SummonSkillID: m.skillID}
+	var deathLT, deathRB combat.Point
+	if m.spec.ExpiryAction != 0 {
+		deathLT, deathRB = effect.Box.At(combat.Point{X: m.x, Y: m.y}, false)
+	}
 	var mobs []*gameplayMob
 	for _, t := range in.Targets {
 		mob := room.mobs[t.ObjectID]
 		if mob == nil || mob.hp <= 0 || mob.claiming {
 			g.mu.Unlock()
 			slog.Warn("summon_attack_rejected", "character", c.ID, "skill", m.source, "reason", "target_missing", "target", t.ObjectID)
+			return nil
+		}
+		if m.spec.ExpiryAction != 0 && !combat.Inside(deathLT, deathRB, combat.Point{X: mob.life.X, Y: mob.life.Y}) {
+			g.mu.Unlock()
+			slog.Warn("summon_attack_rejected", "character", c.ID, "skill", m.source, "reason", "expiry_target_outside", "target", t.ObjectID)
 			return nil
 		}
 		actx.Targets = append(actx.Targets, combat.TargetInfo{ObjectID: mob.objectID, Mob: mob.stats, X: mob.life.X, Y: mob.life.Y, HP: mob.hp, Statuses: mob.statuses})
@@ -427,16 +569,18 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 	}
 	m.attacked, m.lastTick, m.lastAttack = true, in.Tick, now
 	family := domain.CombatSkill
-	gen := &genericAttack{attack: a, level: m.level, summon: m}
+	gen := &genericAttack{attack: a, level: m.level, summon: m, summonHitOrder: in.HitOrder}
 	ticket := &combatTicket{actor: live, sink: sink, actorSession: session, key: key, generic: gen,
-		request: domain.CombatAttackRequest{Session: session, OperationID: fmt.Sprintf("summon-%s-%d-%d-%d", session.SessionID, session.Generation, m.objectID, in.Tick), ClientTick: in.Tick, Family: family, SkillID: m.source, LinesPerTarget: 1, Cost: &domain.CombatCost{Opcode: protocol.RecvSummonAttack, Level: m.level, Summon: m.objectID}}}
+		request: domain.CombatAttackRequest{Session: session, OperationID: fmt.Sprintf("summon-%s-%d-%d-%d", session.SessionID, session.Generation, m.objectID, in.Tick), ClientTick: in.Tick, Family: family, SkillID: m.source, LinesPerTarget: lineCount, Cost: &domain.CombatCost{Opcode: protocol.RecvSummonAttack, Level: m.level, Summon: m.objectID}}}
 	killed := false
 	for i, mob := range mobs {
 		lines := append([]int(nil), plan.Targets[i].Lines...)
 		damage := int(combat.ClipToHP(lines, mob.lethalHP()))
-		q := domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage),
-			Lines: []domain.CombatDamageLine{{Raw: in.Targets[i].Lines[0].Raw, Applied: lines[0], Long: in.Targets[i].Lines[0].Long}}}
-		gen.attack.Targets[i].Lines[0].Damage = lines[0]
+		q := domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage)}
+		for j, line := range in.Targets[i].Lines {
+			q.Lines = append(q.Lines, domain.CombatDamageLine{Raw: line.Raw, Applied: lines[j], Long: line.Long})
+			gen.attack.Targets[i].Lines[j].Damage = lines[j]
+		}
 		ticket.request.Targets = append(ticket.request.Targets, q)
 		ticket.targets = append(ticket.targets, mob)
 		gen.statuses = append(gen.statuses, plan.Targets[i].Statuses)
@@ -499,6 +643,9 @@ func (s *Server) summonSub(channel int, live *liveCharacter, sink packetSink, in
 		}
 	}
 	subLevel := attackSkillLevel(c, in.SkillID, now)
+	if subLevel == 0 {
+		subLevel = skills.EquipmentRelatedSkillLevel(c, in.SkillID, now)
+	}
 	if subLevel < 1 {
 		return nil
 	}

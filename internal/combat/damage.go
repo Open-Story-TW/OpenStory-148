@@ -145,6 +145,9 @@ type DamageContext struct {
 	// Attacker is the authoritative caster (learned skills, buffs) so
 	// passives can gate on it (Mortal Blow 3110001/3210001).
 	Attacker domain.Character
+	// FieldDamagePercent is the separate AF-11 modifier from v148 PDamage
+	// and MDamage. Its value is resolved in the authoritative map visit.
+	FieldDamagePercent int
 }
 
 // LineCeiling is the server upper bound for one non-critical damage line. It
@@ -230,6 +233,16 @@ func LineBounds(c DamageContext) (floor, ceiling int) {
 		v = defended
 	}
 	v = mulDiv(v, int64(100+max(bonus, 0)), 100)
+	// TWMS v148 CalcDamage (0x71337A) multiplies physical damage by the
+	// active Final Cut value, except for Final Cut's own attack.
+	if !c.Magic && c.Effect.SkillID != 4341002 && stats.FinalCutPercent > 0 {
+		v = mulDiv(v, int64(stats.FinalCutPercent), 100)
+	}
+	if c.FieldDamagePercent > 0 {
+		multiplier := int64(100 + c.FieldDamagePercent)
+		v = mulDiv(v, multiplier, 100)
+		low = mulDiv(low, multiplier, 100)
+	}
 	// Round the fractional upper bound upward and the floor downward once.
 	line := v/1000000 + min(v%1000000, 1)
 	if v == math.MaxInt64 {

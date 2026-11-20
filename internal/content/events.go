@@ -22,6 +22,7 @@ type Event struct {
 	PartyMin, PartyMax int
 	Keep               int
 	LevelMin, LevelMax int
+	AllowSolo          bool
 	Spawns             []EventSpawn
 	// ExpeditionType binds admission to a native expedition instead of a
 	// single party. Expedition entries are restricted to their lobby map.
@@ -55,6 +56,10 @@ var events = eventDefinitions()
 
 func eventDefinitions() map[string]Event {
 	definitions := map[string]Event{
+		"BattleSquareSurvival": {
+			Name: "BattleSquareSurvival", Maps: []int{960010100}, ExitMap: 960000000, Seconds: 600,
+			PartyMin: 4, PartyMax: 10, Keep: 2, LevelMin: 30, LevelMax: 255,
+		},
 		RomeoPQName:     romeoJulietEvent(RomeoPQName, 261000011, 926100000),
 		JulietPQName:    romeoJulietEvent(JulietPQName, 261000021, 926110000),
 		AmoriaName:      amoriaEvent(),
@@ -64,6 +69,7 @@ func eventDefinitions() map[string]Event {
 		EllinPQName:     ellinPQEvent(),
 		PiratePQName:    piratePQEvent(),
 		KentaPQName:     kentaEvent(),
+		OrbisPQName:     orbisPQEvent(),
 		DragonRiderName: dragonRiderEvent(),
 		LudibriumPQName: ludibriumEvent(),
 		ZakumMineName:   zakumMineEvent(),
@@ -72,6 +78,11 @@ func eventDefinitions() map[string]Event {
 		RavanaStoryName: ravanaEvent(true),
 		NettNormal:      nettEvent(NettNormal, NettNormalBase, 60, 89),
 		NettHard:        nettEvent(NettHard, NettHardBase, 90, 109),
+		SubwaySurvivalName: {
+			Name: SubwaySurvivalName, LobbyMap: SubwaySurvivalLobby, ExitMap: SubwaySurvivalLobby,
+			Maps:    []int{SubwaySurvivalFirst, SubwaySurvivalSecond, SubwaySurvivalThird, SubwaySurvivalFailed, SubwaySurvivalCleared},
+			Seconds: 540, PartyMin: 1, PartyMax: 6, Keep: 1, LevelMin: 25, LevelMax: 30, AllowSolo: true,
+		},
 		HenesysPQName: {
 			Name: HenesysPQName, Maps: []int{HenesysPQMap},
 			ExitMap: HenesysPQLobby, Seconds: 600, PartyMin: 3, PartyMax: 6, Keep: 3, LevelMin: 50, LevelMax: 255,

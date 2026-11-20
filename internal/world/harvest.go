@@ -55,7 +55,7 @@ func (g *gameplaySpace) addReactorsLocked(r *gameplayRoom, mapID int) {
 			}
 		} else if def.TemplateID != content.HeliosElevatorDoor && def.TemplateID != content.KrexelReactor &&
 			!content.TreasureHuntReactor(mapID, def.TemplateID) && !content.EscapeReactor(mapID, def.TemplateID) &&
-			!content.RomeoLabReactor(mapID, def.TemplateID) && !content.AmoriaReactor(mapID, def.TemplateID) {
+			!content.RomeoLabReactor(mapID, def.TemplateID) && !content.AmoriaReactor(mapID, def.TemplateID) && !content.OrbisPQReactor(mapID, def.TemplateID) {
 			node, err = content.GatherNodeDefinition(wzRoot(), def.TemplateID)
 			if err != nil {
 				continue
@@ -233,6 +233,10 @@ func (s *Server) hitReactor(ctx context.Context, channel int, live *liveCharacte
 		if handled, err := s.hitZakumMineReactor(ctx, channel, live, sink, objectID); handled {
 			return err
 		}
+		if handled, err := s.hitOrbisCloud(ctx, channel, live, sink, objectID); handled {
+			return err
+		}
+		s.hitOrbisLever(channel, live, sink, objectID)
 		if handled, err := s.hitTreasureChest(ctx, channel, live, sink, objectID); handled {
 			return err
 		}

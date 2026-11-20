@@ -143,14 +143,14 @@ func readCharacterSQL(ctx context.Context, q sqlQuerier, id int64) (domain.Chara
 	if err = rows.Err(); err != nil {
 		return domain.Character{}, err
 	}
-	itemRows, err := q.QueryContext(ctx, `SELECT id, template_id, inv_type, slot, quantity, revision FROM asset_items WHERE character_id=$1 ORDER BY inv_type, slot`, id)
+	itemRows, err := q.QueryContext(ctx, `SELECT id, template_id, inv_type, slot, quantity, revision, expires_at FROM asset_items WHERE character_id=$1 ORDER BY inv_type, slot`, id)
 	if err != nil {
 		return domain.Character{}, err
 	}
 	defer itemRows.Close()
 	for itemRows.Next() {
 		var item domain.InventoryItem
-		if err = itemRows.Scan(&item.ID, &item.TemplateID, &item.InvType, &item.Slot, &item.Quantity, &item.Revision); err != nil {
+		if err = itemRows.Scan(&item.ID, &item.TemplateID, &item.InvType, &item.Slot, &item.Quantity, &item.Revision, &item.ExpiresAt); err != nil {
 			return domain.Character{}, err
 		}
 		c.Items = append(c.Items, item)
@@ -173,6 +173,9 @@ func readCharacterSQL(ctx context.Context, q sqlQuerier, id int64) (domain.Chara
 		return domain.Character{}, err
 	}
 	if err = readInventorySlots(ctx, q, &c); err != nil {
+		return domain.Character{}, err
+	}
+	if err = readIntrinsicPassives(ctx, q, &c); err != nil {
 		return domain.Character{}, err
 	}
 	if err = readBaseVitals(ctx, q, &c); err != nil {

@@ -175,18 +175,19 @@ func ReadSummonMove(r *Reader) (SummonMoveInput, error) {
 }
 
 type SummonAttackInput struct {
-	ObjectID int32
-	Tick     uint32
-	Action   byte
-	X, Y     int16          // Client summon position at attack time.
-	Targets  []AttackTarget // One line per target.
-	Wire     []byte
+	ObjectID    int32
+	Tick        uint32
+	Action      byte
+	X, Y        int16          // Client summon position at attack time.
+	ChargeGauge uint32         // SG-88's original v148 sender writes its charge here.
+	Targets     []AttackTarget // Each mob appears once, with its ordered damage lines.
+	HitOrder    []int          // Target index for each original wire record, including repeat hits.
+	Wire        []byte
 }
 
-// ReadSummonAttack is the MCP-observed v145 layout (2026-11-01, 3101007):
-// oid, tick, U8 action (bit7 facing), U8 target count, I16x/I16y summon
-// position, 8 opaque bytes, then per target oid, 18 opaque bytes, I32
-// damage, I32 checksum. Legacy's GMS=false skips (8+8+8+12) do not apply.
+// ReadSummonAttack decodes the original v148 0x120 sender. Each wire record
+// is one hit. A later line against the same mob repeats its object ID after
+// the other mobs in that attack wave, as seen with Mechanic satellites.
 func ReadSummonAttack(r *Reader) (SummonAttackInput, error) {
 	var a SummonAttackInput
 	start := r.Pos()
@@ -195,24 +196,30 @@ func ReadSummonAttack(r *Reader) (SummonAttackInput, error) {
 	a.Action = r.U8()
 	n := int(r.U8())
 	a.X, a.Y = r.I16(), r.I16()
-	r.Skip(8)
+	r.Skip(4) // Second position pair.
+	a.ChargeGauge = r.U32()
 	if n > 15 || a.ObjectID <= 0 {
 		return a, ErrMalformed
 	}
-	seen := map[int32]bool{}
+	indices := make(map[int32]int, n)
 	for i := 0; i < n; i++ {
-		t := AttackTarget{ObjectID: r.I32()}
+		id := r.I32()
 		// v148 CSummoned attack sender (0x72EEFC) puts the mob template ID
 		// right after the object ID, ahead of the 18 v145 metadata bytes.
 		r.Skip(4 + 18)
 		raw := r.U32()
 		r.Skip(4)
-		if r.Err() != nil || t.ObjectID <= 0 || seen[t.ObjectID] {
+		if r.Err() != nil || id <= 0 {
 			return a, ErrMalformed
 		}
-		seen[t.ObjectID] = true
-		t.Lines = []AttackLine{{Raw: raw, Damage: int(raw & 0x7fffffff)}}
-		a.Targets = append(a.Targets, t)
+		index, exists := indices[id]
+		if !exists {
+			index = len(a.Targets)
+			indices[id] = index
+			a.Targets = append(a.Targets, AttackTarget{ObjectID: id})
+		}
+		a.Targets[index].Lines = append(a.Targets[index].Lines, AttackLine{Raw: raw, Damage: int(raw & 0x7fffffff)})
+		a.HitOrder = append(a.HitOrder, index)
 	}
 	if r.Err() != nil {
 		return a, ErrMalformed

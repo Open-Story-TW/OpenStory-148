@@ -50,6 +50,9 @@ type Handler struct {
 	// AllowDisabledCast accepts an already learned native activation whose WZ
 	// disables ordinary use. Allocation still follows the raw WZ flag.
 	AllowDisabledCast bool
+	// CastEquipment grants this cast at level one while the original required
+	// item is equipped, independently of learned skill records.
+	CastEquipment int
 	// Cast resolves a RecvSkillCast activation (buff, party buff, heal,
 	// summon, field object). Nil means the skill cannot be cast that way.
 	Cast func(*CastContext) (CastPlan, error)
@@ -64,6 +67,9 @@ type Handler struct {
 	// Both run outside the attack transaction and only change buff rows.
 	OnAttack  func(*TriggerContext) *BuffChange
 	OnDamaged func(*TriggerContext) *BuffChange
+	// TriggerAffectedEffect displays the skill's native affected animation
+	// when a trigger installs its buff.
+	TriggerAffectedEffect bool
 	// OnClientCombo runs for each learned skill when the client reports an
 	// Aran combo hit (RecvAranCombo 0xEA, Java PlayerHandler.AranCombo);
 	// ctx.Attack is nil. A CounterPacket skill answers it with its Counter.
@@ -205,6 +211,19 @@ type StatValue struct {
 // or expiry of the session's buffs.
 const Permanent = 2100000000 * time.Millisecond
 
+const MihileSoaringID = 50001026
+
+var soaringMaps = sync.OnceValues(content.DefaultCatalog)
+
+func CanSoar(mapID int) (bool, error) {
+	catalog, err := soaringMaps()
+	if err != nil {
+		return false, err
+	}
+	m, err := catalog.Map(mapID)
+	return m.Fly, err
+}
+
 // Buff is a temporary effect of one skill; it may carry several stats
 // (Hyper Body is MAXHP and MAXMP). A party plan may use a Buff without
 // stats to target the party for Heal, Dispel or ResetCooldowns only.
@@ -239,6 +258,7 @@ type CastPlan struct {
 	MPCost, HPCost int
 	Items          []ItemCost
 	Cooldown       time.Duration
+	Dice           domain.SkillDiceRoll
 	// Self is applied to the caster.
 	Self *Buff
 	// Party is applied to every living party member on the caster's map
@@ -329,13 +349,17 @@ type Bonus struct {
 	WATKPercent, MATKPercent   int
 	WDEFPercent, MDEFPercent   int
 	ACC, AVOID, Speed, Jump    int
-	SpeedLimitBonus            int
+	SpeedLimitBonus            int // Extra points above the normal movement speed limit.
 	ACCPercent, AVOIDPercent   int
+
+	// Guild percentages use the independently derived native stat bases.
+	GuildAVOIDPercent, GuildWDEFPercent, GuildMDEFPercent int
 	// AvoidRate is the chance to dodge outright (Java dodgeChance).
 	AvoidRate                int
 	Critical, CriticalDamage int // Rate and maximum critical damage bonus.
 	BossCritical             int // Additional critical chance against boss monsters.
 	CriticalDamageMin        int
+	StunnedCritical          int // additional critical rate against stunned monsters
 	Mastery                  int
 	DamagePercent            int // damR on every attack.
 	BossDamagePercent        int

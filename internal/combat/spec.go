@@ -144,6 +144,9 @@ type AttackSpec struct {
 	Effect Effect     // Static override; zero means "from content.Skill".
 	Wire   protocol.AttackQuirk
 	Ammo   Ammo
+	// MagicDamage selects the magic damage formula for a skill that the native
+	// client sends through a non-magic attack packet.
+	MagicDamage bool
 	// IgnoreRange skips lt/rb admission (teleport/whole-map skills); still
 	// requires same map and live target.
 	IgnoreRange bool
@@ -153,6 +156,9 @@ type AttackSpec struct {
 	// roll for a line, when it is not a single WZ value (Shadow Meso). Unlike
 	// MaxDamage, the bound stays the generic formula, critical envelope included.
 	DamageRange func(Effect) (low, high int)
+	// LearnedEffect applies a learned skill's WZ overrides. It must use only
+	// the actor's durable state because both planning and settlement call it.
+	LearnedEffect func(domain.Character, time.Time, *Effect) error
 	// Prepare runs before planning and may adjust ctx.Effect from the
 	// caster's state (charge element, HP-ratio cost, resource requirement)
 	// or reject the attack.
@@ -199,6 +205,14 @@ type AttackSpec struct {
 	Field *FieldSpec
 }
 
+// ApplyLearnedEffect resolves the same WZ overrides in planning and settlement.
+func (s *AttackSpec) ApplyLearnedEffect(c domain.Character, now time.Time, effect *Effect) error {
+	if s == nil || s.LearnedEffect == nil {
+		return nil
+	}
+	return s.LearnedEffect(c, now, effect)
+}
+
 // Allows reports whether an input family may carry this skill. A nil spec
 // is the ordinary attack; a registered spec with Kind 0 (cast-only summon,
 // field object or monster cast) never accepts attack packets.
@@ -217,18 +231,19 @@ type PlayerStats struct {
 	STR, DEX, INT, LUK                                       int
 	WATK, MATK                                               int
 	WeaponID, SecondaryWeaponID                              int
-	Accuracy                                                 int
+	Accuracy, MagicAccuracy                                  int
 	Mastery                                                  int     // Percent.
 	CritRate, CritDamage                                     int     // Percent chance / extra percent on a critical.
-	BossCritRate                                             int     // Extra critical chance against boss monsters.
+	BossCritRate, StunnedCritRate                            int     // Target-specific critical chance from learned passives.
 	DamageRate, BossDamageRate                               int     // Percent bonus (0 = none).
+	FinalCutPercent                                          int     // Active physical damage multiplier in percent (0 = inactive).
 	IgnoreDefense                                            int     // Percent of monster PDRate/MDRate ignored.
 	FullDefenseIgnore                                        bool    // A physical hit can proc full defense ignore.
 	ElementAmp                                               int     // Percent bonus for magic element amplification.
 	ShadowPartner                                            int     // Percent of an extra mirrored line set (0 = none).
-	WDEF, MDEF, Avoid, Speed, Jump                           int     // Effective view; contact damage/movement do not yet consume these server-side.
+	WDEF, MDEF, Avoid, MagicAvoid, Speed, Jump               int     // Effective values for defense, avoidance and movement.
 	DodgeRate, ASR, TER, CritDamageMin                       int     // Effective view; no new probabilistic gate is implied.
-	PotentialAvoidPercent                                    int     // Native incEVAr source, not DodgeRate; full base-EVA percentage application remains pending.
+	PotentialAvoidPercent                                    int     // Native incEVAr contribution to the effective EVA values.
 	PotentialDamageMultiplier, PotentialBossDamageMultiplier float64 // zero means identity; each option multiplies once.
 }
 

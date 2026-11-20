@@ -57,6 +57,7 @@ type state struct {
 	world, channel int
 	hello          bool
 	redirected     bool
+	rosterSelected bool
 	attempts       int
 }
 
@@ -131,8 +132,15 @@ func (s *Server) dispatch(ctx context.Context, c *protocol.Conn, st *state, op u
 		return c.WritePacket(protocol.ShowMapleStory())
 	case protocol.RecvGetServer:
 		return c.WritePacket(protocol.LoginBackground())
-	case protocol.RecvClientStart, protocol.RecvPong:
+	case protocol.RecvClientStart:
 		return nil
+	case protocol.RecvPong:
+		// The v148 Character Card confirmation shares this login opcode.
+		// Six encoded character IDs distinguish it from a heartbeat.
+		if r.Remaining() != protocol.CharacterCardSaveBodyLength {
+			return nil
+		}
+		return s.saveCharacterCards(ctx, st, r)
 	case protocol.RecvLogin:
 		if !st.hello {
 			return fmt.Errorf("version handshake required")
@@ -210,6 +218,7 @@ func (s *Server) dispatch(ctx context.Context, c *protocol.Conn, st *state, op u
 		if st.session == nil {
 			return domain.ErrForbidden
 		}
+		st.rosterSelected = false
 		return s.worldList(c)
 	case protocol.RecvCharList:
 		if st.session == nil {
@@ -229,7 +238,22 @@ func (s *Server) dispatch(ctx context.Context, c *protocol.Conn, st *state, op u
 		if err != nil {
 			return err
 		}
-		return c.WritePacket(protocol.CharacterList(chars, domain.AdvertisedCharacterSlots(len(chars))))
+		if repo, ok := s.repo.(domain.CharacterCardRepository); ok {
+			cards, err := repo.LoadCharacterCards(ctx, st.account.ID, world)
+			if err != nil {
+				return err
+			}
+			withCards := append([]domain.CharacterSummary(nil), chars...)
+			for i := range withCards {
+				withCards[i].Cards = cards
+			}
+			chars = withCards
+		}
+		if err := c.WritePacket(protocol.CharacterList(chars, domain.AdvertisedCharacterSlots(len(chars)))); err != nil {
+			return err
+		}
+		st.rosterSelected = true
+		return nil
 	case protocol.RecvCheckName:
 		if st.session == nil {
 			return domain.ErrForbidden
@@ -304,6 +328,21 @@ func (s *Server) dispatch(ctx context.Context, c *protocol.Conn, st *state, op u
 		slog.Debug("login_unhandled_opcode", "opcode", fmt.Sprintf("0x%x", op))
 		return nil
 	}
+}
+
+func (s *Server) saveCharacterCards(ctx context.Context, st *state, r *protocol.Reader) error {
+	if st.session == nil || st.redirected || !st.rosterSelected {
+		return domain.ErrForbidden
+	}
+	repo, ok := s.repo.(domain.CharacterCardRepository)
+	if !ok {
+		return domain.ErrForbidden
+	}
+	ids, err := protocol.ReadCharacterCardSave(r)
+	if err != nil {
+		return err
+	}
+	return repo.SaveCharacterCards(ctx, *st.session, st.world, ids)
 }
 
 func requiresSession(op uint16) bool {

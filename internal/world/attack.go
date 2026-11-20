@@ -39,10 +39,11 @@ type genericAttack struct {
 	// then runs after the attack is applied and published (paid), e.g. the
 	// Monster Bomb statuses of a ThrowGrenade release.
 	then func()
-	// Summon attacks publish 0x185 from the summon instead of a user attack.
+	// Summon attacks publish 0x1A4 from the summon instead of a user attack.
 	summon           *roomSummon
 	summonAction     byte
 	summonOwnerLevel int
+	summonHitOrder   []int
 }
 
 type targetCriticalAudits struct {
@@ -83,6 +84,18 @@ func (a *targetCriticalAudits) apply(target *combat.TargetPlan, boss bool, bossB
 }
 
 var criticalAudits targetCriticalAudits
+
+const gunExpertAttack = 5220020
+
+// The native Gun Expert shot follows a gun attack with the same client tick.
+// The room member pins the same player visit. The follow-up may pick a different mob.
+func (m *gameplayMember) admitsGunExpert(a protocol.Attack, now time.Time) bool {
+	age := now.Sub(m.lastAttack)
+	return m.attacked && a.Opcode == protocol.RecvShootAttack &&
+		m.lastAttackWasGunShot && m.lastSkill != gunExpertAttack &&
+		m.lastTick == a.Tick && age >= 0 && age <= time.Second &&
+		(!m.hasGunExpertTick || m.lastGunExpertTick != a.Tick)
+}
 
 // legacyAttack reports families with reviewed bespoke handlers and MCP
 // evidence; they keep their own path until migrated.
@@ -216,6 +229,9 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	if c.HP <= 0 || kind == 0 {
 		return reject("dead_or_kind", nil)
 	}
+	if a.SkillID != 0 && content.SubwaySurvivalStage(c.MapID) {
+		return reject("subway_basic_attack_only", nil)
+	}
 	spec, effect, level, ok := resolveAttackEffect(c, &a, now)
 	if !ok {
 		if a.SkillID != 0 && attackOnCooldown(c, a.SkillID, now) {
@@ -233,6 +249,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	if kind == combat.Shoot {
 		stats.WATK += projectileAttack(c, int(a.Slot))
 	}
+	party := s.partySnapshotOf(c.ID)
 	var mesos []int64
 	if len(a.MesoDrops) > 0 {
 		if spec == nil || !spec.ConsumeMesos {
@@ -265,6 +282,14 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 		return reject("scene_stale", nil)
 	}
 	member := room.members[c.ID]
+	if a.SkillID == gunExpertAttack && !member.admitsGunExpert(a, now) {
+		g.mu.Unlock()
+		return reject("gun_expert_without_parent_attack", nil)
+	}
+	if a.SkillID == 35121003 && kind == combat.Body && !hasActiveSummon(room, member, a.SkillID, now) {
+		g.mu.Unlock()
+		return reject("sg88_body_without_active_owned_robot", nil)
+	}
 	eruptAreas, err := ownedEruptionAreasLocked(room, member, session, a, effect, now)
 	if err != nil {
 		g.mu.Unlock()
@@ -288,7 +313,9 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 			effect.Element = e
 		}
 	}
-	actx := combat.AttackContext{Kind: kind, Character: c, Stats: stats, Effect: effect, Attack: a, Now: now, Mesos: mesos}
+	physicalAmp, magicAmp := amplifierDamageLocked(room, c, party, now)
+	actx := combat.AttackContext{Kind: kind, Character: c, Stats: stats, Effect: effect, Attack: a, Now: now, Mesos: mesos,
+		FieldPhysicalAmp: physicalAmp, FieldMagicAmp: magicAmp}
 	mobs := make([]*gameplayMob, 0, len(a.Targets))
 	for _, t := range a.Targets {
 		mob := room.mobs[t.ObjectID]
@@ -349,8 +376,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	killed := false
 	for i, mob := range mobs {
 		tp := plan.Targets[i]
-		targetCritRate := stats.CriticalRateAgainst(actx.Effect.CriticalRate, mob.stats.Boss)
-		criticalAudits.apply(&tp, mob.stats.Boss, stats.BossCritRate, targetCritRate, c.ID, a.SkillID)
+		criticalAudits.apply(&tp, mob.stats.Boss, stats.BossCritRate, tp.CriticalRate, c.ID, a.SkillID)
 		lines := append([]int(nil), tp.Lines...)
 		damage := int(combat.ClipToHP(lines, mob.lethalHP()))
 		q := domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage)}
@@ -374,6 +400,10 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 		killed = killed || q.Defeated
 	}
 	member.attacked, member.lastTick, member.lastAttack, member.lastSkill = true, a.Tick, now, a.SkillID
+	member.lastAttackWasGunShot = kind == combat.Shoot && combat.WeaponFor(stats.WeaponID).Projectile == combat.AmmoBullet
+	if a.SkillID == gunExpertAttack {
+		member.lastGunExpertTick, member.hasGunExpertTick = a.Tick, true
+	}
 	gen.erupt = append([]int(nil), specErupt(spec)...)
 	if a.SkillID == 2121003 {
 		gen.erupt = nil
@@ -516,8 +546,19 @@ func (gen *genericAttack) remotePacket(c domain.Character, long *protocol.LongDa
 	}
 	if gen.summon != nil {
 		hits := make([]protocol.SummonHit, 0, len(gen.attack.Targets))
-		for _, t := range gen.attack.Targets {
-			hits = append(hits, protocol.SummonHit{ObjectID: t.ObjectID, Damage: t.Lines[0].Damage})
+		if len(gen.summonHitOrder) > 0 {
+			next := make([]int, len(gen.attack.Targets))
+			for _, index := range gen.summonHitOrder {
+				t := gen.attack.Targets[index]
+				hits = append(hits, protocol.SummonHit{ObjectID: t.ObjectID, Damage: t.Lines[next[index]].Damage})
+				next[index]++
+			}
+		} else {
+			for _, t := range gen.attack.Targets {
+				for _, line := range t.Lines {
+					hits = append(hits, protocol.SummonHit{ObjectID: t.ObjectID, Damage: line.Damage})
+				}
+			}
 		}
 		return protocol.SummonAttackPacketLong(gen.summon.ownerID, gen.summon.objectID, gen.summonOwnerLevel, gen.summonAction, hits, long)
 	}

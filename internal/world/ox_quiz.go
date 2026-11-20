@@ -38,13 +38,20 @@ type oxQuiz struct {
 }
 
 type oxQuizSpace struct {
-	mu       sync.Mutex
-	channels map[int]*oxQuiz
-	hunts    map[int]*treasureHuntRun
+	mu        sync.Mutex
+	channels  map[int]*oxQuiz
+	obstacles map[int]*obstacleRun
+	hunts     map[int]*treasureHuntRun
+	snowballs map[int]*snowballRun
+	coconuts  map[int]*coconutRun
 }
 
 func newOXQuizSpace() *oxQuizSpace {
-	return &oxQuizSpace{channels: make(map[int]*oxQuiz), hunts: make(map[int]*treasureHuntRun)}
+	return &oxQuizSpace{
+		channels: make(map[int]*oxQuiz), hunts: make(map[int]*treasureHuntRun),
+		obstacles: make(map[int]*obstacleRun),
+		snowballs: make(map[int]*snowballRun), coconuts: make(map[int]*coconutRun),
+	}
 }
 
 func (s *Server) oxQuizInProgress(channel int) bool {
@@ -66,7 +73,7 @@ func (s *Server) manageOXQuiz(channel int, action int64) string {
 	q := space.channels[channel]
 	switch action {
 	case 1:
-		if q != nil || space.hunts[channel] != nil {
+		if q != nil || space.obstacles[channel] != nil || space.hunts[channel] != nil || space.snowballs[channel] != nil || space.coconuts[channel] != nil {
 			space.mu.Unlock()
 			return "本頻道已有 OX 問答。"
 		}

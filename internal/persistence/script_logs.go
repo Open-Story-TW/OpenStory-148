@@ -147,6 +147,18 @@ func (s *Store) ExecuteScriptExchange(ctx context.Context, r domain.ScriptExchan
 	if r.EventCredit != 0 && r.EventCredit != 250 && r.EventCredit != 500 && r.EventCredit != 750 {
 		return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
 	}
+	if r.GuildWeeklySupport {
+		if len(r.Logs) != 0 || len(r.Quests) != 2 ||
+			r.Quests[0].QuestID != domain.GuildSupportQuestID || r.Quests[0].State != 1 ||
+			r.Quests[1].QuestID != domain.GuildSupportQuestID || r.Quests[1].State != 2 {
+			return domain.ScriptExchangeResult{}, domain.ErrInvalidInput
+		}
+		one := int64(1)
+		r.Logs = []domain.ScriptLogChange{{
+			Key:   domain.ScriptLogKey{Scope: domain.LogCharacter, Period: domain.LogWeekly, Name: "guild_weekly_support"},
+			Delta: 1, Maximum: &one,
+		}}
+	}
 	if err := validateScriptTravel(r); err != nil {
 		return domain.ScriptExchangeResult{}, err
 	}
@@ -219,6 +231,9 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 	if err = tx.QueryRowContext(ctx, "SELECT clock_timestamp()").Scan(&now); err != nil {
 		return domain.ScriptExchangeResult{}, err
 	}
+	if r.GuildWeeklySupport {
+		now = domain.GuildAuditDate(value, now)
+	}
 	type entry struct {
 		k storedLogKey
 		c domain.ScriptLogChange
@@ -278,6 +293,11 @@ func executeScriptExchangeTx(ctx context.Context, tx *sql.Tx, r domain.ScriptExc
 		return result, err
 	}
 	setQuestRecords(&result.Character, r.QuestData)
+	if r.GuildWeeklySupport {
+		if err = applyGuildWeeklySupport(ctx, tx, &result.InventoryResult, now); err != nil {
+			return result, err
+		}
+	}
 	for _, delta := range r.Items {
 		if delta.Quantity > 0 {
 			err = applyQuestItem(ctx, tx, &result.InventoryResult, content.QuestItem{ID: delta.TemplateID, Count: delta.Quantity})
@@ -599,7 +619,7 @@ func applyScriptItem(ctx context.Context, tx *sql.Tx, result *domain.InventoryRe
 	}
 	for i := range c.Items {
 		item := &c.Items[i]
-		if item.TemplateID != delta.TemplateID || remaining == 0 {
+		if item.TemplateID != delta.TemplateID || item.ExpiresAt != 0 || remaining == 0 {
 			continue
 		}
 		add := min(remaining, def.SlotMax-item.Quantity)

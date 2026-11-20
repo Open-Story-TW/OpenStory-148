@@ -267,6 +267,31 @@ func TestPassives(t *testing.T) {
 	}
 }
 
+func TestV148CarteNoirAvoidance(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	const id = 24120002
+	h, ok := skills.Lookup(id)
+	if !ok || h.Attack == nil || h.Passive == nil {
+		t.Fatal("Carte Noir must retain both of its original effects")
+	}
+	def, err := content.ConfiguredSkillDefinition(id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := def.Values(20)
+	if err != nil || v["subProp"] != 20 {
+		t.Fatalf("original v148 subProp=%d err=%v", v["subProp"], err)
+	}
+	ph := character(2412, caneID, domain.SkillState{ID: id, Level: 20})
+	if got := skills.Bonuses(ph, now).AvoidRate; got != 20 {
+		t.Fatalf("live Phantom bonus %d, want 20", got)
+	}
+	ph.Job = 2312
+	if got := skills.Bonuses(ph, now).AvoidRate; got != 0 {
+		t.Fatalf("unrelated job received the Phantom bonus %d", got)
+	}
+}
+
 func TestBuffDependentPassives(t *testing.T) {
 	active := func(id int) domain.Character {
 		c := character(id/10000, dualBowgunID)
@@ -312,13 +337,28 @@ func TestAttackRules(t *testing.T) {
 		}
 	}
 	// Rising Rush: 23120011 replaces 23110006's damR (Java damageIncrease.put).
+	configuredBonus := func(id, rank int) int {
+		def, err := content.ConfiguredSkillDefinition(id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		v, err := def.Values(rank)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return v["damR"]
+	}
+	_, rush := values(t, 23101001, 15)
+	aerialBarrage := configuredBonus(23110006, 15)
+	advanced := configuredBonus(23120011, 20)
 	base := prepared(t, 23101001, 15, merc).Damage
 	with3rd := prepared(t, 23101001, 15, character(2311, 0, domain.SkillState{ID: 23110006, Level: 15})).Damage
 	with4th := prepared(t, 23101001, 15, character(2312, 0, domain.SkillState{ID: 23110006, Level: 15}, domain.SkillState{ID: 23120011, Level: 20})).Damage
-	if base != 130 || with3rd != 130+30 || with4th != 130+50 {
+	if base != rush["damage"] || with3rd != base+aerialBarrage || with4th != base+advanced {
 		t.Errorf("rising rush damage %d %d %d", base, with3rd, with4th)
 	}
-	if d := prepared(t, 23101007, 20, character(2312, 0, domain.SkillState{ID: 23120011, Level: 20})).Damage; d != 220+50 {
+	_, kick := values(t, 23101007, 20)
+	if d := prepared(t, 23101007, 20, character(2312, 0, domain.SkillState{ID: 23120011, Level: 20})).Damage; d != kick["damage"]+advanced {
 		t.Errorf("rising rush kick damage %d", d)
 	}
 	boosts := []struct{ attack, passive, level, damR int }{

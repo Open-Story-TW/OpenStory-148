@@ -71,6 +71,32 @@ func (e Effect) Lines(k AttackKind) int {
 	return e.AttackCount
 }
 
+// SummonEffect uses the native summon attack's own hit count. A skill with
+// no nested attack count emits one record per mob in the 0x120 sender.
+func SummonEffect(s content.Skill, level int) (Effect, error) {
+	e, err := FromSkill(s, level)
+	if err != nil {
+		return e, err
+	}
+	e.AttackCount = max(1, s.SummonAttack["attackCount"])
+	if e.AttackCount > 15 {
+		return Effect{}, fmt.Errorf("skill%d level%d summon attack count out of range", s.ID, level)
+	}
+	if mobs := s.SummonAttack["mobCount"]; mobs > 0 {
+		e.MobCount = mobs
+	}
+	if s.ID == 35121003 {
+		// The SG-88 robot slam uses summon/attack1/info/range, while the
+		// operator's automatic 0x58 hits use the smaller common rectangle.
+		r := s.SummonAttackRange
+		if r == nil || r.LT[0] >= r.RB[0] || r.LT[1] >= r.RB[1] {
+			return Effect{}, fmt.Errorf("skill%d summon's attack range unavailable", s.ID)
+		}
+		e.Box = Box{LT: Point{r.LT[0], r.LT[1]}, RB: Point{r.RB[0], r.RB[1]}, Set: true}
+	}
+	return e, nil
+}
+
 // NormalEffect is the ordinary (skill 0) attack.
 func NormalEffect() Effect {
 	return Effect{Damage: 100, MobCount: 1, AttackCount: 1}

@@ -115,14 +115,11 @@ func (s *Store) applyScroll(ctx context.Context, r domain.ScrollRequest, randN f
 	}
 	c.HP, c.MP = r.Session.Character.HP, r.Session.Character.MP
 	if r.TargetSlot > 0 {
-		spirit := false
-		for _, skill := range c.Skills {
-			if skill.ID == 1003 && skill.Level > 0 {
-				spirit = true
-			}
-		}
-		if !r.LegendarySpirit || !spirit {
+		if !r.LegendarySpirit {
 			return domain.ScrollResult{}, domain.ErrForbidden
+		}
+		if err := guardLearnedLegendarySpirit(ctx, tx, c); err != nil {
+			return domain.ScrollResult{}, err
 		}
 	} else if r.LegendarySpirit {
 		return domain.ScrollResult{}, domain.ErrInvalidInput
@@ -288,4 +285,28 @@ func (s *Store) applyScroll(ctx context.Context, r domain.ScrollRequest, randN f
 	}
 	s.roster.Invalidate(ctx, c.AccountID, c.WorldID)
 	return result, nil
+}
+
+func learnedLegendarySpirit(c domain.Character) bool {
+	for _, skill := range c.Skills {
+		if skill.Level > 0 && (skill.ID == 1003 || domain.IsMihileJob(c.Job) && skill.ID == 50001003) {
+			return true
+		}
+	}
+	return false
+}
+
+func guardLearnedLegendarySpirit(ctx context.Context, tx *sql.Tx, c domain.Character) error {
+	// Learned rows can remain present after expiry. Authorize bag scrolling
+	// against the transaction's clock and the locked character's current job.
+	var active bool
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM game_skills
+		WHERE character_id=$1 AND (skill_id=1003 OR ($2 AND skill_id=50001003))
+		  AND level>0 AND (expires_at IS NULL OR expires_at>clock_timestamp()))`, c.ID, domain.IsMihileJob(c.Job)).Scan(&active); err != nil {
+		return err
+	}
+	if !active {
+		return domain.ErrForbidden
+	}
+	return nil
 }

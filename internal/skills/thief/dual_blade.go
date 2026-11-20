@@ -34,6 +34,7 @@ func init() {
 
 	skills.Register(skills.Handler{ID: 4340001, Kind: skills.KindPassive | skills.KindMobStatus})  // Venom
 	skills.Register(skills.Handler{ID: 4340010, Kind: skills.KindPassive, Passive: criticalThrow}) // Sharpness: prop, criticaldamageMin
+	skills.Register(skills.Handler{ID: 4340012, Kind: skills.KindPassive | skills.KindMobStatus})  // 致命的飛毒殺, applied by venom
 	skills.Register(skills.Handler{ID: 4341000, Kind: skills.KindPartyBuff, Cast: mapleWarrior})
 	skills.Register(skills.Handler{ID: 4341002, Kind: skills.KindAttack | skills.KindBuff, Attack: melee(func(s *combat.AttackSpec) { s.Prepare = chain(s.Prepare, finalCutCost) }), OnAttack: finalCut})          // Final Cut
 	skills.Register(skills.Handler{ID: 4341003, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(hit(combat.MobStatusApply{Stat: combat.MobTimeBomb, Value: 1, Explode: true, TickFrom: "damage"}))}) // Monster Bomb: charge
@@ -50,7 +51,7 @@ func kataraMastery(c *skills.PassiveContext) skills.Bonus {
 	if w := weaponType(c.Character); w != weaponDagger && w != weaponKatara || !dualBlade(c.Character.Job) {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values["x"]}
+	return basicWeaponMastery(c, 4340013)
 }
 
 // tornadoSpin (4321000) is the dash pair DASH_SPEED 100+x, DASH_JUMP y for one
@@ -69,14 +70,14 @@ func mirrorImage(c *skills.CastContext) (skills.CastPlan, error) {
 	return selfBuff(c, stat("SHADOWPARTNER", c.Value("x")))
 }
 
-// finalCut (4341002) is Java's effect.applyTo after the charged attack hits:
-// FINAL_CUT y for 900 seconds (Legacy overrides the WZ time). Java keeps
-// ATTACK_BUFF x in its own statups but sends only FINAL_CUT to the client.
+// finalCut publishes the original v148 y multiplier after its charged attack
+// hits. The visible tooltip uses the same WZ time as the server timer.
 func finalCut(c *skills.TriggerContext) *skills.BuffChange {
-	if c.Attack == nil || c.Attack.SkillID != 4341002 || len(c.Attack.Targets) == 0 {
+	seconds, multiplier := c.Value("time"), c.Value("y")
+	if c.Attack == nil || c.Attack.SkillID != 4341002 || len(c.Attack.Targets) == 0 || seconds < 1 || multiplier < 1 {
 		return nil
 	}
-	return &skills.BuffChange{Buff: &skills.Buff{Duration: 900 * time.Second, Stats: []skills.StatValue{stat("FINAL_CUT", c.Value("y"))}}}
+	return &skills.BuffChange{Buff: &skills.Buff{Duration: time.Duration(seconds) * time.Second, Stats: []skills.StatValue{stat("FINAL_CUT", multiplier)}}}
 }
 
 // finalCutCost is the Java hpR = -x/100 of Final Cut, paid with the attack.

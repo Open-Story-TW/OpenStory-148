@@ -1,9 +1,11 @@
 package cygnus
 
 import (
+	"fmt"
+	"time"
+
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/skills"
-	"time"
 )
 
 // Night Walker 1400, 1410, 1411.
@@ -44,12 +46,51 @@ func init() {
 	// 毒炸彈: Legacy parses it as a charged close-range attack and leaves a
 	// poison mist (MapleMist isPoisonMist 1).
 	skills.Register(skills.Handler{ID: 14111006, Kind: skills.KindAttack | skills.KindFieldObject | skills.KindMobStatus, Attack: melee(hit(poison), poisonMist(14111006))})
+	skills.Register(skills.Handler{ID: 14111007, Kind: skills.KindBuff, Cast: nightShadowStars})
+	// shadeSplit calls the v148 CUserLocal shoot sender through 0x93920F.
+	skills.Register(skills.Handler{ID: 14111008, Kind: skills.KindAttack, Attack: nightShoot()})
 	pvpOnly(14111010) // 黑暗殺: hidden, Legacy has no effect for it
 }
 
-// nightShoot is a Night Walker star attack with Venom (Java DamageParse:
-// 14001004, 14111002 and 14111005 roll 14110004).
-func nightShoot() *combat.AttackSpec { return shoot(prepare(venom)) }
+// nightShoot applies Night Walker's Shadow Stars and Venom to its star attacks.
+func nightShoot() *combat.AttackSpec {
+	return shoot(prepare(func(ctx *combat.AttackContext) error {
+		if skills.ActiveBuff(ctx.Character, 14111007, ctx.Now) {
+			ctx.NoAmmo = true
+		}
+		return venom(ctx)
+	}))
+}
+
+// nightShadowStars consumes the v148 WZ bulletConsume once and grants
+// SPIRIT_CLAW for the WZ duration. Use the first eligible physical USE slot.
+func nightShadowStars(c *skills.CastContext) (skills.CastPlan, error) {
+	p := skills.StandardCost(c)
+	base, err := combat.BaseStats(c.Caster, c.Now)
+	if err != nil || combat.WeaponFor(base.WeaponID).Projectile != combat.AmmoStar {
+		return p, fmt.Errorf("skill%d: equip a claw", c.Skill.ID)
+	}
+	quantity := c.Value("bulletConsume")
+	if quantity <= 0 {
+		return p, fmt.Errorf("skill%d: missing throwing star cost", c.Skill.ID)
+	}
+	itemID, slot := 0, 0
+	for _, item := range c.Caster.Items {
+		if item.InvType == 2 && item.Slot > 0 && item.Quantity >= quantity &&
+			combat.AmmoOf(item.TemplateID) == combat.AmmoStar && (slot == 0 || item.Slot < slot) {
+			itemID, slot = item.TemplateID, item.Slot
+		}
+	}
+	if itemID == 0 {
+		return p, fmt.Errorf("skill%d: requires %d throwing stars", c.Skill.ID, quantity)
+	}
+	p, err = buff(c, stat("SPIRIT_CLAW", 0))
+	if err != nil {
+		return p, err
+	}
+	p.Items = append(p.Items, skills.ItemCost{ItemID: itemID, Quantity: quantity})
+	return p, nil
+}
 
 // venom adds 14110004's POISON when learned, rolled with its prop: a tick of
 // dot% of the max base damage for dotTime.

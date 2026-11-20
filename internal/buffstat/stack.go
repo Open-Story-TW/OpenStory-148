@@ -29,3 +29,28 @@ func Stackable(name Stat) bool {
 	s, ok := Lookup(name)
 	return ok && s.IndieOrder > 0
 }
+
+// EffectSlot identifies distinct logical effects that share a single native
+// slot. Spirit Link and Spirit Surge cannot coexist in bit169.
+func EffectSlot(name string) string {
+	if name == "SPIRIT_LINK" {
+		return "SPIRIT_SURGE"
+	}
+	return name
+}
+
+// SpiritLinkSkill gives the learned source for a bird's active bit169 row.
+// Current persisted rows use the canonical SPIRIT_SURGE name. Older rows may
+// still carry SPIRIT_LINK from before the shared native slot was identified.
+func SpiritLinkSkill(summon int, stat string) int {
+	if EffectSlot(stat) != "SPIRIT_SURGE" {
+		return 0
+	}
+	switch summon {
+	case 3111005:
+		return 3120006
+	case 3211005:
+		return 3220005
+	}
+	return 0
+}

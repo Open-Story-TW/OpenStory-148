@@ -21,10 +21,10 @@ func init() {
 	register(5100001, mastery(knuckle, "x"))
 	register(5200000, mastery(gun, "x"))
 	register(5300005, mastery(cannon, "accX"))
-	register(5100008, critical("cr"))   // 衝壓暴擊
-	register(5110000, critical("prop")) // 致命暗襲: Java uses prop as the rate
-	register(5200007, critical("cr"))   // 會心一擊-改
-	register(5300004, critical("cr"))   // 烈火暴擊
+	register(5100008, critical("cr")) // 衝壓暴擊
+	register(5110000, criticalPunch)  // 致命暗襲
+	register(5200007, critical("cr")) // 會心一擊-改
+	register(5300004, critical("cr")) // 烈火暴擊
 	register(5100009, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{MaxHPPercent: c.Values["mhpR"]} })
 	register(5310006, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{WATK: c.Values["padX"]} }) // 強化加農砲
 	register(5310007, ultimateState)
@@ -57,9 +57,12 @@ func weaponType(c domain.Character) int {
 	return 0
 }
 
-// bulletTime (極限迴避 5000000): +x accuracy and +y avoidability. Java Legacy
-// does not apply it; this follows the WZ values.
+// v148 replaced the old x/y accuracy and avoidability with flat accuracy
+// and jump. The separate WZ speedMax is a native cap, not a speed bonus.
 func bulletTime(c *skills.PassiveContext) skills.Bonus {
+	if _, ok := c.Values["accX"]; ok {
+		return skills.Bonus{ACC: c.Values["accX"], Jump: c.Values["psdJump"]}
+	}
 	return skills.Bonus{ACC: c.Values["x"], AVOID: c.Values["y"]}
 }
 
@@ -89,6 +92,19 @@ func critical(rateKey string) func(*skills.PassiveContext) skills.Bonus {
 	return func(c *skills.PassiveContext) skills.Bonus {
 		return skills.Bonus{Critical: c.Values[rateKey], CriticalDamageMin: c.Values["criticaldamageMin"]}
 	}
+}
+
+// The v148 calculator checks the target's stun before adding prop. Earlier
+// data has no subProp and retains the legacy unconditional critical bonus.
+func criticalPunch(c *skills.PassiveContext) skills.Bonus {
+	if _, ok := c.Values["subProp"]; ok {
+		return stunnedCritical(c)
+	}
+	return skills.Bonus{Critical: c.Values["prop"], CriticalDamageMin: c.Values["criticaldamageMin"]}
+}
+
+func stunnedCritical(c *skills.PassiveContext) skills.Bonus {
+	return skills.Bonus{StunnedCritical: c.Values["prop"]}
 }
 
 // ultimateState adds max HP, both defenses, and status resistance.

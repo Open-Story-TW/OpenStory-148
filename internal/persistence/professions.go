@@ -247,7 +247,7 @@ func applyScriptDrops(ctx context.Context, tx *sql.Tx, session domain.CharacterS
 				return nil, err
 			}
 		}
-		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment)).Scan(&drop.ObjectID); err != nil {
+		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,equipment,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,clock_timestamp()+make_interval(secs => $11)) RETURNING object_id`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, nullableJSON(equipment), itemDropLifetime(drop)).Scan(&drop.ObjectID); err != nil {
 			return nil, err
 		}
 		out = append(out, drop)

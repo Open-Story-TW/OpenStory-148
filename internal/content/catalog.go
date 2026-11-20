@@ -57,19 +57,20 @@ func (a MapArea) Contains(x, y int) bool {
 }
 
 type Map struct {
-	ID          int            `json:"id"`
-	ReturnMap   int            `json:"return_map"`
-	OnUserEnter string         `json:"on_user_enter,omitempty"`
-	FieldLimit  int64          `json:"field_limit"`
-	Town        bool           `json:"town"`
-	Fly         bool           `json:"fly,omitempty"` // WZ info/fly: Soaring (x026/x142) allowed
-	Portals     []Portal       `json:"portals"`
-	Life        []Life         `json:"life"`
-	Footholds   []Foothold     `json:"footholds"`
-	Areas       []MapArea      `json:"areas,omitempty"`
-	EscortRoute []EscortNode   `json:"escort_route,omitempty"`
-	NettDefense *NettDefense   `json:"-"`
-	Carnival    *CarnivalField `json:"carnival,omitempty"`
+	ID          int                  `json:"id"`
+	ReturnMap   int                  `json:"return_map"`
+	OnUserEnter string               `json:"on_user_enter,omitempty"`
+	FieldLimit  int64                `json:"field_limit"`
+	Town        bool                 `json:"town"`
+	Fly         bool                 `json:"fly,omitempty"` // WZ info/fly: Soaring (x026/x142) allowed
+	Portals     []Portal             `json:"portals"`
+	Life        []Life               `json:"life"`
+	Footholds   []Foothold           `json:"footholds"`
+	Areas       []MapArea            `json:"areas,omitempty"`
+	EscortRoute []EscortNode         `json:"escort_route,omitempty"`
+	NettDefense *NettDefense         `json:"-"`
+	Carnival    *CarnivalField       `json:"carnival,omitempty"`
+	Subway      *SubwaySurvivalRules `json:"-"`
 	obstacles   []fieldObstacle
 }
 
@@ -119,17 +120,24 @@ type Mob struct {
 
 	DefenseLifePoint int `json:"-"` // Barrier HP lost when this defense monster escapes.
 	DefenseSpeed     int `json:"-"` // Original signed WZ walk-speed modifier.
+
+	MassacreRemoveOnMiss bool             `json:"-"`
+	MassacreCoolDamage   int              `json:"-"`
+	MassacreCoolChance   int              `json:"-"`
+	Skills               []MobSkillAction `json:"-"`
 }
 
 //go:embed starter.json
 var starter []byte
 
 type Catalog struct {
-	root      string
-	mu        sync.RWMutex
-	maps      map[int]Map
-	mobs      map[int]Mob
-	mobBodies map[int]MobBodyBounds
+	root          string
+	mu            sync.RWMutex
+	maps          map[int]Map
+	mobs          map[int]Mob
+	mobBodies     map[int]MobBodyBounds
+	mobSkillsOnce sync.Once
+	mobSkills     map[int]MobPowerUp
 }
 
 func NewCatalog(root string) (*Catalog, error) {
@@ -278,6 +286,11 @@ func (c *Catalog) Mob(id int) (Mob, error) {
 		m.DefenseLifePoint = info.intValue("lifePoint", 0)
 		m.DefenseSpeed = info.intValue("speed", 0)
 	}
+	if id >= 9700000 && id <= 9700003 {
+		m.MassacreRemoveOnMiss = info.intValue("removeOnMiss", 0) != 0
+		m.MassacreCoolDamage = info.intValue("coolDamage", 0)
+		m.MassacreCoolChance = info.intValue("coolDamageProb", 0)
+	}
 	if m.HP < 1 {
 		return Mob{}, fmt.Errorf("mob %d has no positive maxHP", id)
 	}
@@ -357,6 +370,7 @@ func parseMob(id int, info *wzNode) Mob {
 			}
 		}
 	}
+	mob.Skills = parseMobSkillActions(info.child("skill"))
 	return mob
 }
 
@@ -394,6 +408,13 @@ func parseMap(id int, n *wzNode) (Map, error) {
 	m := Map{ID: id, ReturnMap: i.intValue("returnMap", id), OnUserEnter: i.stringValue("onUserEnter", ""), FieldLimit: int64(i.intValue("fieldLimit", 0)), Town: i.intValue("town", 0) != 0, Fly: i.intValue("fly", 0) != 0}
 	if usesEscortRoute(id) {
 		m.EscortRoute = escortRoute(n.child("nodeInfo"))
+	}
+	if SubwaySurvivalStage(id) {
+		var err error
+		m.Subway, err = parseSubwaySurvival(n.child("mobMassacre"), i)
+		if err != nil {
+			return Map{}, fmt.Errorf("map %d: %w", id, err)
+		}
 	}
 	if NettDefenseMap(id) && i.intValue("fieldType", 0) == 38 {
 		var err error

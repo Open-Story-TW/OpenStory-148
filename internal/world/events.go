@@ -56,11 +56,14 @@ type eventInstance struct {
 
 	azwanSweepRewards map[int64]azwanSweepReward
 	amoria            *amoriaState
+	subway            *subwaySurvival
 
 	kentaDefenseAt   time.Time
 	kentaDefended    bool
 	kentaBubblesDone bool
 	ghost            *ghostMatch
+	orbis            *orbisRun
+	battleSquare     *battleSquareMatch
 }
 
 type eventSpace struct {
@@ -126,7 +129,7 @@ func (s *Server) eventStatus(channel int, name string) map[string]any {
 // ones among them inside the level range, for the NPC's refusal text.
 func (s *Server) eventStart(ctx context.Context, name string, channel int, live *liveCharacter, sink packetSink) (reason string, here, qualified int, err error) {
 	e, ok := content.EventByName(name)
-	if !ok || s.events == nil || s.gameplay == nil || s.parties == nil {
+	if !ok || e.Name == battleSquareEvent || s.events == nil || s.gameplay == nil || s.parties == nil {
 		return "unknown", 0, 0, nil
 	}
 	destination, err := s.gameplay.catalog.Map(e.Maps[0])
@@ -237,6 +240,19 @@ func (s *Server) eventStart(ctx context.Context, name string, channel int, live 
 	if e.Name == content.KentaPQName {
 		group := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
 		if err = s.prepareKenta(ctx, inst, group); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
+	if inst.subway != nil {
+		if err = s.prepareSubwaySurvival(inst); err != nil {
+			s.eventEnd(inst)
+			return "unavailable", here, qualified, err
+		}
+	}
+	if name == content.OrbisPQName {
+		group := append(append([]eventOccupant(nil), present...), eventOccupant{live, sink})
+		if err = s.prepareOrbisPQ(ctx, inst, group); err != nil {
 			s.eventEnd(inst)
 			return "unavailable", here, qualified, err
 		}
@@ -367,7 +383,7 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		expeditionID, size, group, reason = s.eventExpeditionRoster(e, leader.CharacterID, live)
 	} else {
 		partyID, size, group, reason = s.eventPartyRoster(leader.CharacterID)
-		if reason == "no_party" && e.PartyMin == 1 && (e.Ticket != 0 || e.Name == content.AzwanSweepName || e.Name == content.RavanaStoryName) {
+		if reason == "no_party" && (e.AllowSolo || e.PartyMin == 1 && (e.Ticket != 0 || e.Name == content.AzwanSweepName || e.Name == content.RavanaStoryName)) {
 			size, reason = 1, ""
 		}
 	}
@@ -375,7 +391,8 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 		return nil, nil, reason, 0, 0
 	}
 	fits := func(c domain.Character) bool {
-		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && c.GM > 0 || c.Level >= e.LevelMin && c.Level <= e.LevelMax
+		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && e.Name != content.SubwaySurvivalName && c.GM > 0 ||
+			c.Level >= e.LevelMin && c.Level <= e.LevelMax
 	}
 	here, qualified = 1, 0
 	if fits(leader.Character) {
@@ -485,6 +502,13 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.Name == content.AmoriaName {
 		inst.amoria = newAmoriaState()
 	}
+	if e.Name == content.SubwaySurvivalName {
+		inst.subway = &subwaySurvival{scores: make(map[int64]subwayScore)}
+		inst.starting = true
+	}
+	if e.Name == content.OrbisPQName {
+		inst.orbis = newOrbisRun()
+	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
 	}
@@ -581,7 +605,17 @@ func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bo
 		g.mu.Unlock()
 		return allowed
 	}
-	if content.JudgementRoom(mapID) || !s.treasureAllowsEntry(session, mapID) {
+	if mapID == content.SnowballField && !s.snowballAllowsEntry(session) {
+		return false
+	}
+	if mapID == content.CoconutField {
+		target := session
+		target.Character.MapID = mapID
+		if team, _ := s.coconutFieldInfo(target); team == nil {
+			return false
+		}
+	}
+	if content.JudgementRoom(mapID) || !s.treasureAllowsEntry(session, mapID) || !s.obstacleAllowsEntry(session, mapID) {
 		return false
 	}
 	e, stage := content.EventByMap(mapID)
@@ -592,7 +626,7 @@ func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bo
 	defer s.events.mu.Unlock()
 	inst := s.events.running[eventKey{session.ChannelID, e.Name}]
 	if inst == nil {
-		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && session.Character.GM > 0
+		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && session.Character.GM > 0 && e.Name != battleSquareEvent
 	}
 	return !inst.ended && s.events.byMember[session.CharacterID] == inst
 }
@@ -603,6 +637,9 @@ func (s *Server) eventUnregister(inst *eventInstance, id int64) {
 	if s.events.byMember[id] == inst {
 		delete(s.events.byMember, id)
 		delete(inst.members, id)
+		if inst.battleSquare != nil {
+			delete(inst.battleSquare.arrived, id)
+		}
 	}
 	s.events.mu.Unlock()
 }
@@ -616,6 +653,9 @@ func (s *Server) eventSettle(inst *eventInstance) {
 	}
 	if inst.ghost != nil {
 		keep = int(inst.ghost.minimum.Load())
+	}
+	if inst.battleSquare != nil && !inst.battleSquare.started {
+		keep = 1
 	}
 	short := !inst.starting && !inst.ended && len(inst.members) < keep
 	s.events.mu.Unlock()
@@ -708,6 +748,9 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	}
 	s.oxQuizEntered(channel, live, sink)
 	s.treasureEntered(channel, live, sink)
+	s.snowballEntered(channel, live, sink)
+	s.coconutEntered(channel, live, sink)
+	s.obstacleEntered(channel, live, sink)
 	live.mu.Lock()
 	c := live.session.Character
 	live.mu.Unlock()
@@ -724,6 +767,13 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	s.events.mu.Unlock()
 	if inst != nil {
 		if inst.channel == channel && inst.definition.Stage(c.MapID) {
+			if inst.battleSquare != nil {
+				s.battleSquareEntered(inst, c.ID, sink)
+				return
+			}
+			if inst.subway != nil && s.subwayEntered(inst, c, sink) {
+				return
+			}
 			if left := int(time.Until(deadline) / time.Second); left > 0 {
 				_ = sink.WritePacket(protocol.Clock(left))
 			}
@@ -739,7 +789,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 		s.eventSettle(inst)
 		return
 	}
-	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || content.NettEvent(e.Name) || c.GM == 0) {
+	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || content.NettEvent(e.Name) || c.GM == 0 || e.Name == battleSquareEvent) {
 		go s.eventExit(channel, e, live, sink)
 	}
 }
@@ -813,6 +863,9 @@ func (s *Server) tickEvents(now time.Time) {
 	var due, preludes, kentaDefenses []*eventInstance
 	s.events.mu.Lock()
 	for _, inst := range s.events.running {
+		if inst.subway != nil {
+			continue
+		}
 		if !inst.ended && inst.christmas != christmasRewarding && !now.Before(inst.currentDeadline()) {
 			due = append(due, inst)
 		} else if inst.definition.Name == content.KentaPQName && !inst.ended && !inst.kentaDefended &&
@@ -843,6 +896,11 @@ func (inst *eventInstance) currentDeadline() time.Time {
 	if inst.amoria != nil {
 		if bonus := inst.amoria.bonusDeadline.Load(); bonus != 0 {
 			return time.Unix(0, bonus)
+		}
+	}
+	if inst.subway != nil {
+		if phase := inst.subway.deadline.Load(); phase > 0 {
+			return time.Unix(0, phase)
 		}
 	}
 	if inst.pirate != nil {

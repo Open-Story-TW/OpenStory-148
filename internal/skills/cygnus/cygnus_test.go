@@ -18,7 +18,7 @@ import (
 var now = time.Unix(100, 0)
 
 // Every thread-C skill of the plan inventory is registered here, and only
-// those.
+// the v148 additions.
 func TestRegistersEveryInventorySkill(t *testing.T) {
 	raw, err := os.ReadFile("../testdata/skill-plan-inventory.json")
 	if err != nil {
@@ -44,8 +44,9 @@ func TestRegistersEveryInventorySkill(t *testing.T) {
 			got = append(got, id)
 		}
 	}
+	want = append(want, 14001007, 14101008, 14101009, 14110009, 14110011, 14111007, 14111008, 15000006, 15000008, 15101008, 15101010, 15110009, 15110010, 15111008, 15111012)
 	sort.Ints(want)
-	if len(want) != 116 || !reflect.DeepEqual(got, want) {
+	if len(want) != 131 || !reflect.DeepEqual(got, want) {
 		t.Fatalf("registered %d %v\ninventory %d %v", len(got), got, len(want), want)
 	}
 }
@@ -77,7 +78,12 @@ func castAs(t *testing.T, id, level int, caster domain.Character) skills.CastPla
 }
 
 func cast(t *testing.T, id, level int) skills.CastPlan {
-	return castAs(t, id, level, domain.Character{HP: 5000, MaxHP: 5000, MP: 5000, MaxMP: 5000, Equipment: []domain.Equipment{{Slot: -11, ItemID: 1452000}}})
+	ch := domain.Character{HP: 5000, MaxHP: 5000, MP: 5000, MaxMP: 5000, Equipment: []domain.Equipment{{Slot: -11, ItemID: 1452000}}}
+	if id == 14111007 {
+		ch.Equipment[0].ItemID = 1472000
+		ch.Items = []domain.InventoryItem{{InvType: 2, Slot: 1, TemplateID: 2070000, Quantity: 200}}
+	}
+	return castAs(t, id, level, ch)
 }
 
 func stats(b *skills.Buff) map[buffstat.Stat]int {
@@ -245,9 +251,9 @@ func spec(t *testing.T, id int) *combat.AttackSpec {
 func TestAttackPackets(t *testing.T) {
 	kinds := map[combat.AttackKind][]int{
 		combat.Melee: {11001002, 11001003, 11101002, 11111002, 11111003, 11111004, 11111006, 14001002, 14111006,
-			15001001, 15001002, 15101003, 15101005, 15111001, 15111003, 15111004, 15111006},
+			15001001, 15001002, 15101003, 15101005, 15101010, 15111001, 15111003, 15111004, 15111006, 15111012},
 		combat.Shoot: {11101004, 13001003, 13101002, 13101005, 13101007, 13111000, 13111002, 13111006, 13111007,
-			14001004, 14111002, 14111005, 15111007},
+			14001004, 14101008, 14101009, 14111002, 14111005, 14111008, 15111007, 15111008},
 		combat.Magic:                {12001003, 12101002, 12101006, 12111003, 12111005, 12111006},
 		combat.Magic | combat.Body:  {12111007},
 		combat.Melee | combat.Shoot: {14101006},
@@ -279,7 +285,7 @@ func TestAttackPackets(t *testing.T) {
 			t.Errorf("%d consumes ammo", id)
 		}
 	}
-	for _, id := range []int{13001003, 13101007, 14001004, 14111002} {
+	for _, id := range []int{13001003, 13101007, 14001004, 14101008, 14101009, 14111002} {
 		if spec(t, id).Ammo != combat.AmmoAuto {
 			t.Errorf("%d does not consume ammo", id)
 		}
@@ -514,6 +520,26 @@ func TestEnergyCharge(t *testing.T) {
 	}
 }
 
+func TestV148EnergyBlastRequiresItsOwnFullGauge(t *testing.T) {
+	s := spec(t, 15111008)
+	ctx := &combat.AttackContext{Now: now, Stats: combat.PlayerStats{WeaponID: 1482000}}
+	if !s.Allows(combat.Shoot) || s.Allows(combat.Melee) || s.Ammo != combat.AmmoNone || s.Prepare(ctx) == nil {
+		t.Fatal("Energy Blast allowed the wrong attack family, ammo rule or missing gauge")
+	}
+	ctx.Character.SkillBuffs = []domain.SkillBuff{{ID: 15100004, Stat: "ENERGY_CHARGE", Value: 9999, ExpiresAt: now.Add(time.Minute)}}
+	if s.Prepare(ctx) == nil {
+		t.Fatal("partial gauge allowed")
+	}
+	ctx.Character.SkillBuffs[0].Value = energyFull
+	if err := s.Prepare(ctx); err != nil {
+		t.Fatalf("full gauge rejected: %v", err)
+	}
+	ctx.Character.SkillBuffs[0].ID = 5110001
+	if s.Prepare(ctx) == nil {
+		t.Fatal("another job's retained energy gauge allowed")
+	}
+}
+
 func TestStealthBreaksOnHit(t *testing.T) {
 	for _, id := range []int{13101006, 14001003} {
 		ch := withBuff(id, "DARK_SIGHT", 1)
@@ -565,7 +591,7 @@ func TestPassives(t *testing.T) {
 		{12111004, 20, domain.Character{}, skills.Bonus{TER: 30}},
 		{13000000, 20, domain.Character{}, skills.Bonus{Critical: 40}},
 		{13000001, 15, domain.Character{}, skills.Bonus{ACC: 225, AVOID: 225, Speed: 30, Range: 120, SpeedLimitBonus: 20}},
-		{13110003, 20, domain.Character{}, skills.Bonus{Mastery: 65, CriticalDamageMin: 15}},
+		{13110003, 20, weapon(1452000), skills.Bonus{Mastery: 65, WATK: 25, CriticalDamageMin: 15}},
 		{13110008, 10, domain.Character{}, skills.Bonus{AvoidRate: 30}},
 		{14000000, 20, domain.Character{}, skills.Bonus{ACC: 160, AVOID: 160}},
 		{14000001, 5, domain.Character{}, skills.Bonus{Range: 200}},
@@ -576,6 +602,9 @@ func TestPassives(t *testing.T) {
 		{14110003, 20, domain.Character{}, skills.Bonus{PotionPercent: 50}},
 		{15000000, 20, domain.Character{}, skills.Bonus{ACC: 160, AVOID: 160}},
 		{15110000, 15, domain.Character{}, skills.Bonus{Critical: 30, CriticalDamageMin: 15}},
+		{15110009, 20, domain.Character{Job: 1511}, skills.Bonus{Critical: 15, CriticalDamageMin: 10, CriticalDamage: 10, BossCritical: 20}},
+		{15110010, 20, domain.Character{Job: 1511}, skills.Bonus{StunnedCritical: 60}},
+		{15110010, 20, domain.Character{Job: 1111}, skills.Bonus{}},
 		{13101006, 10, domain.Character{}, skills.Bonus{}},
 		{13101006, 10, withBuff(13101006, "WIND_WALK", 1), skills.Bonus{DamagePercent: 60}},
 		{14001003, 1, withBuff(14001003, "DARK_SIGHT", 1), skills.Bonus{DamagePercent: 27}},
@@ -594,7 +623,7 @@ func TestVenomAndDrains(t *testing.T) {
 		Stat: combat.MobPoison, Poison: true, Prop: 30,
 		Value: int(combat.MaxBaseDamage(stats) * 90 / 100), Duration: 6 * time.Second,
 	}
-	for _, id := range []int{14001004, 14111002, 14111005} {
+	for _, id := range []int{14001004, 14111002, 14111005, 14111008} {
 		ctx := &combat.AttackContext{Kind: combat.Shoot, Character: ch, Stats: stats, Now: now}
 		if err := spec(t, id).Prepare(ctx); err != nil || len(ctx.Effect.MonsterStatus) != 1 || ctx.Effect.MonsterStatus[0] != wantVenom {
 			t.Errorf("%d venom %+v %v", id, ctx.Effect.MonsterStatus, err)
@@ -615,6 +644,36 @@ func TestVenomAndDrains(t *testing.T) {
 	}
 	if spec(t, 13111006).Drain != nil {
 		t.Error("wind piercing drains")
+	}
+}
+
+func TestNightWalkerShadowStarsCostAndSplit(t *testing.T) {
+	const skillID = 14111007
+	ch := domain.Character{Equipment: []domain.Equipment{{Slot: -11, ItemID: 1472000}},
+		Items: []domain.InventoryItem{
+			{InvType: 2, Slot: 5, TemplateID: 2070002, Quantity: 200},
+			{InvType: 2, Slot: 1, TemplateID: 2060000, Quantity: 200},
+			{InvType: 2, Slot: 3, TemplateID: 2070000, Quantity: 190},
+		}}
+	p := castAs(t, skillID, 1, ch)
+	if p.MPCost != 6 || p.Self == nil || p.Self.Duration != 108*time.Second ||
+		!reflect.DeepEqual(p.Items, []skills.ItemCost{{ItemID: 2070000, Quantity: 190}}) ||
+		!reflect.DeepEqual(stats(p.Self), map[buffstat.Stat]int{"SPIRIT_CLAW": 0}) {
+		t.Fatalf("unexpected Shadow Stars cast: %+v", p)
+	}
+	ch.Items = ch.Items[1:]
+	ch.Items[1].Quantity--
+	if _, err := nightShadowStars(castCtx(t, skillID, 1, ch)); err == nil {
+		t.Fatal("Shadow Stars accepted fewer than 190 stars")
+	}
+	ctx := &combat.AttackContext{Kind: combat.Shoot, Character: ch, Now: now}
+	split := spec(t, 14111008)
+	if err := split.Prepare(ctx); err != nil || ctx.NoAmmo || split.Kind != combat.Shoot {
+		t.Fatalf("unbuffed Shadow Split: %+v %v", ctx, err)
+	}
+	ctx.Character.SkillBuffs = []domain.SkillBuff{{ID: skillID, Stat: "SPIRIT_CLAW", ExpiresAt: now.Add(time.Second)}}
+	if err := split.Prepare(ctx); err != nil || !ctx.NoAmmo {
+		t.Fatalf("buffed Shadow Split consumed stars: %+v %v", ctx, err)
 	}
 }
 

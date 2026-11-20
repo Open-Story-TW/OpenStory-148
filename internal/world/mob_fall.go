@@ -136,6 +136,9 @@ func (g *gameplaySpace) respawnMobLocked(r *gameplayRoom, mob *gameplayMob) ([]m
 	mob.contributions = nil
 	mob.reservation = nil
 	mob.statuses = nil
+	mob.burns = nil
+	mob.nextMobContact = time.Time{}
+	mob.cast = mobPowerUpCast{}
 	r.mobs[mob.objectID] = mob
 	var out []mobDelivery
 	for id, m := range r.members {

@@ -76,6 +76,54 @@ func TestTemporaryStatSetWideValuesAndRemotePayloads(t *testing.T) {
 	}
 }
 
+func TestPhantomCloakV148TemporaryStat(t *testing.T) {
+	const skillID = 20031205
+	stats := []BuffStat{{Stat: "PHANTOM_CLOAK", Value: 1}}
+	local, err := TemporaryStatSet(skillID, 2*time.Second, stats)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remote, err := ForeignTemporaryStatSet(17, skillID, stats)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, packet := range []struct {
+		name string
+		data []byte
+		want uint16
+	}{
+		{"local", local, 0x2d},
+		{"remote", remote, 0x145},
+	} {
+		t.Run(packet.name, func(t *testing.T) {
+			r := NewReader(packet.data)
+			if r.U16() != packet.want {
+				t.Fatal("wrong v148 temporary stat opcode")
+			}
+			if packet.name == "remote" && r.I32() != 17 {
+				t.Fatal("wrong cloak owner")
+			}
+			var mask [8]uint32
+			for i := range mask {
+				mask[i] = r.U32()
+			}
+			if mask != [8]uint32{0, 1 << 27} || r.I16() != 1 || r.I32() != skillID {
+				t.Fatalf("cloak mask/source fields mismatch: %x", packet.data)
+			}
+			tail := 5
+			if packet.name == "local" {
+				if r.I32() != 2000 {
+					t.Fatal("incorrect WZ cloak lifetime")
+				}
+				tail = 6
+			}
+			if r.Err() != nil || r.Remaining() != tail {
+				t.Fatalf("wrong trailing fields: remaining %d, %v", r.Remaining(), r.Err())
+			}
+		})
+	}
+}
+
 // Two-state and indie layouts follow Open-Maple docs/server/baseline/buffstat-native.json.
 func TestTwoStateAndIndieLayouts(t *testing.T) {
 	p, err := TemporaryStatSet(5121009, 10*time.Second, []BuffStat{{Stat: "SPEED_INFUSION", Value: 30}, {Stat: "DASH_SPEED", Value: 20}})

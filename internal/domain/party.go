@@ -51,6 +51,14 @@ type PartyMember struct {
 	// Runtime fields are deliberately absent from SQL. Offline members have
 	// Channel=0; the world overlays only its current, identity-checked peers.
 	Channel, MapID, HP, MaxHP int
+	TownPortal                PartyTownPortal
+}
+
+// PartyTownPortal is the active field/town pair for this member's native slot.
+// The coordinates identify the field-side entrance. A zero value has no door.
+type PartyTownPortal struct {
+	TownMap, FieldMap, SkillID int
+	X, Y                       int16
 }
 
 type PartySnapshot struct {

@@ -417,7 +417,7 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 		}
 		c.EXP = 0
 	case "job":
-		// Raymond approved QA job setting for skill acceptance (any v145 job).
+		// QA acceptance can set any supported job book.
 		// A beginner's first Explorer job keeps the native advancement stats.
 		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 9999 || !domain.ValidJob(int(r.Args[0])) {
 			return invalid()

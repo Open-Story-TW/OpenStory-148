@@ -26,8 +26,8 @@ func TestTableOrdersAreUniqueAndDense(t *testing.T) {
 			t.Fatalf("local order gap at %d", i)
 		}
 	}
-	if len(local) != 190 || len(remote) != 72 {
-		t.Fatalf("native audit has 190 triplets and 72 remote stats, got %d/%d", len(local), len(remote))
+	if len(local) != 190 || len(remote) != 73 {
+		t.Fatalf("native audit has 190 triplets and 73 remote stats, got %d/%d", len(local), len(remote))
 	}
 }
 

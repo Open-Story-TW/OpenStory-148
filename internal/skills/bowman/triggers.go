@@ -28,7 +28,7 @@ func mortal(c domain.Character) map[string]int {
 	if lv < 1 {
 		return nil
 	}
-	def, err := content.SkillDefinition("", id)
+	def, err := content.ConfiguredSkillDefinition(id)
 	if err != nil {
 		return nil
 	}

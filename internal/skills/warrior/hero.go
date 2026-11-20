@@ -24,8 +24,8 @@ func init() {
 	skills.Register(skills.Handler{ID: 1110000, Kind: skills.KindPassive, Passive: mpRecovery, OnTick: skills.ReviewedRecoveryTick, TickEvery: 4 * time.Second}) // Improving MP Recovery
 	skills.Register(skills.Handler{ID: 1110009, Kind: skills.KindPassive, Passive: chanceAttack})                                                                // Chance Attack
 	skills.Register(skills.Handler{ID: 1111002, Kind: skills.KindBuff, Cast: combo, OnAttack: comboOrbs})                                                        // Combo Attack
-	skills.Register(skills.Handler{ID: 1111003, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(darkness, finisher)})                              // Panic: DARKNESS x, 1 combo orb
-	skills.Register(skills.Handler{ID: 1111005, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(stun, finisher)})                                  // Coma: STUN, 2 combo orbs
+	skills.Register(skills.Handler{ID: 1111003, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(darkness, finisher)})                              // Panic: DARKNESS x, consumes WZ y orbs
+	skills.Register(skills.Handler{ID: 1111005, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(stun, finisher)})                                  // Coma: STUN, consumes WZ y orbs
 	skills.Register(skills.Handler{ID: 1111007, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: magicCrash()})                                        // Magic Crash
 	skills.Register(skills.Handler{ID: 1111008, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(stun)})                                            // Shout: STUN
 	skills.Register(skills.Handler{ID: 1111010, Kind: skills.KindAttack, Attack: melee(nil)})                                                                    // 雙連斬: ignoreMobpdpR
@@ -47,8 +47,8 @@ func init() {
 // value is orbs+1).
 func combo(c *skills.CastContext) (skills.CastPlan, error) { return buff(c, stat("COMBO", 1)) }
 
-// comboOrbs is Java handleOrbgain / handleOrbconsume on the owner's attacks:
-// Panic uses 1 orb and Coma 2 (never below COMBO 1); Shout gives none; any
+// comboOrbs applies the v148 WZ finisher cost to the owner's attacks.
+// Panic uses 2 orbs and Coma 1 (never below COMBO 1); Shout gives none; any
 // other attack adds one orb up to x (Advanced Combo's x when learned, which
 // also adds a second orb at prop%). The remaining duration is kept.
 func comboOrbs(c *skills.TriggerContext) *skills.BuffChange {
@@ -60,10 +60,13 @@ func comboOrbs(c *skills.TriggerContext) *skills.BuffChange {
 	switch c.Attack.SkillID {
 	case 1111002, 1111008:
 		return nil
-	case 1111003:
-		next = max(1, value-1)
-	case 1111005:
-		next = max(1, value-2)
+	case 1111003, 1111005:
+		id := c.Attack.SkillID
+		v, err := skillValues(id, skills.LinkedLevel(c.Character, id, id, c.Now))
+		if err != nil || v["y"] <= 0 {
+			return nil
+		}
+		next = max(1, value-v["y"])
 	default:
 		limit, prop := c.Value("x"), 0
 		if lv := learnedLevel(c.Character, 1120003); lv > 0 {

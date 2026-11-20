@@ -45,7 +45,7 @@ func learnedLevel(ch domain.Character, id int) int {
 
 // skillValues is the WZ level values of another skill.
 func skillValues(id, level int) (map[string]int, error) {
-	def, err := content.SkillDefinition("", id)
+	def, err := content.ConfiguredSkillDefinition(id)
 	if err != nil {
 		return nil, err
 	}
@@ -98,12 +98,11 @@ func ignoreDefense(ctx *combat.AttackContext) error {
 	return nil
 }
 
-// finisher is Java PlayerHandler.isFinisher for Panic and Coma: rejected
-// without combo orbs (COMBO above 1); the damage ceiling scales by the orb
-// count. Combo Attack's OnAttack consumes the orbs afterwards.
+// finisher requires the v148 WZ y combo orbs. The damage ceiling scales by
+// the current orb count, and Combo Attack consumes the required orbs.
 func finisher(ctx *combat.AttackContext) error {
 	value, ok := skills.ActiveStat(ctx.Character, "COMBO", ctx.Now)
-	if !ok || value < 2 {
+	if !ok || ctx.Effect.Y < 1 || value-1 < ctx.Effect.Y {
 		return errors.New("finisher needs combo orbs")
 	}
 	ctx.Effect.Damage *= value - 1

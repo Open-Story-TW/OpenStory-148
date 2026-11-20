@@ -10,7 +10,7 @@ import (
 // Blow in triggers.go.
 func init() {
 	// Crossbowman.
-	skills.Register(skills.Handler{ID: 3200000, Kind: skills.KindPassive, Passive: weaponMastery(crossbow)})
+	skills.Register(skills.Handler{ID: 3200000, Kind: skills.KindPassive, Passive: weaponMastery(crossbow, 3220004)})
 	skills.Register(skills.Handler{ID: 3200001, Kind: skills.KindAttack, Attack: shoot(rule{})}) // Final Attack: Java mobCount 6
 	skills.Register(skills.Handler{ID: 3200006, Kind: skills.KindPassive, Passive: physicalTraining})
 	skills.Register(skills.Handler{ID: 3201002, Kind: skills.KindBuff, Cast: buff(0, key("BOOSTER", "x"))})
@@ -28,7 +28,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 3211008, Kind: skills.KindAttack, Attack: shoot(rule{})}) // 龍魂之箭: range 440
 
 	// Marksman.
-	skills.Register(skills.Handler{ID: 3220004, Kind: skills.KindPassive, Passive: expert})
+	skills.Register(skills.Handler{ID: 3220004, Kind: skills.KindPassive, Passive: expert(crossbow)})
 	skills.Register(skills.Handler{ID: 3220005, Kind: skills.KindPassive, Passive: spiritLink(3211005)}) // buff stats ride the Frostprey cast (summons.go)
 	skills.Register(skills.Handler{ID: 3220009, Kind: skills.KindPassive, Passive: marksmanship})
 	skills.Register(skills.Handler{ID: 3220010, Kind: skills.KindPassive}) // Ultimate Strafe: applied by 3211006's ultimateStrafe
@@ -60,7 +60,7 @@ func ultimateStrafe(ctx *combat.AttackContext) error {
 	if lv < 1 {
 		return nil
 	}
-	def, err := content.SkillDefinition("", 3220010)
+	def, err := content.ConfiguredSkillDefinition(3220010)
 	if err != nil {
 		return err
 	}

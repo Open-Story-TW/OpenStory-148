@@ -2,10 +2,12 @@ package world
 
 import (
 	"context"
+	"encoding/binary"
 	"testing"
 	"time"
 
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
@@ -95,6 +97,69 @@ func TestTownPortalVisibleToOwnerOnlyWithoutParty(t *testing.T) {
 	s.RemoveTownPortal(1, 1)
 	if sinks[0].count(protocol.SendTownPortalRemoved) != 1 {
 		t.Fatal("door removal")
+	}
+}
+
+func TestTownPortalNativePartySlotRemainsThroughMapRefresh(t *testing.T) {
+	s, _, _, _ := sharedWorldFixture(t)
+	s.parties = newPartySpace()
+	s.parties.gameplay = s.gameplay
+	p := partyRuntimeSnapshot()
+	p.Members = append(p.Members, domain.PartyMember{CharacterID: 33, Slot: 2, Name: "Carol", Level: 10, Job: 100})
+	lives := []*liveCharacter{partyRuntime(11, "Alice", 1, 250010300), partyRuntime(22, "Bob", 1, 250010300), partyRuntime(33, "Carol", 2, 250000000)}
+	sinks := []*partyChannelSink{partySink(), partySink(), partySink()}
+	for i, live := range lives {
+		peer := newPartyPeer(live, sinks[i], p)
+		s.parties.peers[live.session.CharacterID] = peer
+		t.Cleanup(peer.halt)
+	}
+	town := content.Map{ID: 250000000, Portals: []content.Portal{
+		{ID: 9, Name: "tp", Type: 6, X: 1225, Y: -557}, {ID: 10, Name: "east00", Type: 2, X: 12}, {ID: 11, Name: "tp", Type: 6, X: 564, Y: -561},
+	}}
+	exit, ok := townPortalExit(town, 1)
+	if !ok || exit.ID != 11 || exit.X != 564 {
+		t.Fatalf("wrong town portal for owner in slot one: %+v", exit)
+	}
+	if _, ok := townPortalExit(town, 2); ok {
+		t.Fatal("selected nonexistent type-6 ordinal")
+	}
+	now := time.Now()
+	d := &townPortal{ownerID: 22, ownerSession: "party-live", ownerGeneration: 1, partyID: p.ID, partySlot: 1,
+		skillID: 2311002, townMap: 250000000, fieldMap: 250010300, fieldX: -141, fieldY: 33, town: exit, expiresAt: now.Add(time.Minute)}
+	if s.gameplay.doors == nil {
+		s.gameplay.doors = map[doorKey]*townPortal{}
+	}
+	s.gameplay.doors[doorKey{1, 22}] = d
+	s.publishPartyTownPortal(d, 1)
+	for _, sink := range sinks[:2] {
+		data := sink.read(t)
+		if data[2] != 60 || data[3] != 1 || binary.LittleEndian.Uint32(data[4:]) != 250000000 {
+			t.Fatalf("same-channel native slot update %x", data)
+		}
+	}
+	select {
+	case <-sinks[2].writes:
+		t.Fatal("published foreign-channel door")
+	default:
+	}
+	lives[0].session.Character.MapID = 250000000
+	s.refreshParty(lives[0])
+	for i, sink := range sinks {
+		data := sink.read(t)
+		town := uint32(250000000)
+		if i == 2 {
+			town = protocol.NoTownPortal
+		}
+		if data[2] != 42 || binary.LittleEndian.Uint32(data[7+262+20:]) != town {
+			t.Fatalf("map refresh removed or leaked portal slot: recipient %d", i)
+		}
+	}
+	s.tickDoors(now.Add(time.Minute + time.Second))
+	for _, sink := range sinks[:2] {
+		data := sink.read(t)
+		if data[2] != 60 || data[3] != 1 || binary.LittleEndian.Uint32(data[4:]) != protocol.NoTownPortal {
+			t.Fatalf("expiration did not clear the same native slot: %x", data)
+		}
 	}
 }
 

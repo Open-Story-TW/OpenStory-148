@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"maple-go-server/internal/buffstat"
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
@@ -45,6 +46,39 @@ func registered(t *testing.T, id int) skills.Handler {
 }
 
 func buff(stats ...skills.StatValue) []skills.StatValue { return stats }
+
+func TestThiefWeaponAttackBuffsKeepLearnedDefenseIgnore(t *testing.T) {
+	now := time.Unix(100, 0)
+	for _, tc := range []struct {
+		id, job, rank, attack int
+		attackStat            buffstat.Stat
+	}{
+		{4121014, 412, 30, 40, "ANGEL_ATK"},
+		{4221013, 422, 20, 20, "WATK"},
+	} {
+		character := domain.Character{Job: tc.job, Level: 200}
+		if got := skills.Bonuses(character, now).IgnoreDefense; got != 0 {
+			t.Fatalf("skill %d before learning: ignore defense %d", tc.id, got)
+		}
+		character.Skills = []domain.SkillState{{ID: tc.id, Level: tc.rank}}
+		assertPassive := func(at time.Time) {
+			t.Helper()
+			if got := skills.StatDetail(character, at).IgnoreDefense; got != int32(tc.rank) {
+				t.Errorf("skill %d at %v: ignore defense %d, want %d", tc.id, at, got, tc.rank)
+			}
+		}
+		assertPassive(now)
+		cast := plan(t, registered(t, tc.id).Cast, tc.id, tc.rank, character)
+		want := buff(stat(tc.attackStat, tc.attack))
+		if cast.Self == nil || !reflect.DeepEqual(cast.Self.Stats, want) {
+			t.Fatalf("skill %d: cast buffs %+v, want only %v", tc.id, cast.Self, want)
+		}
+		expires := now.Add(cast.Self.Duration)
+		character.SkillBuffs = []domain.SkillBuff{{ID: tc.id, Level: tc.rank, Stat: string(tc.attackStat), Value: tc.attack, ExpiresAt: expires}}
+		assertPassive(now)
+		assertPassive(expires)
+	}
+}
 
 // Every skill the plan assigns to thread T is registered, and the handler
 // shape matches its kind.
@@ -137,6 +171,21 @@ func TestMirrorImageOnlyForBladeLordAndMaster(t *testing.T) {
 	}
 }
 
+func TestV148PickpocketUsesToggle(t *testing.T) {
+	def, err := content.SkillDefinition(t.TempDir(), 4211003)
+	if err != nil {
+		t.Fatal(err)
+	}
+	values, err := def.Values(def.MaxLevel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := pickpocket(&skills.CastContext{Skill: def, Level: def.MaxLevel, Values: values})
+	if err != nil || !p.Toggle || p.MPCost != 0 || p.Self == nil || p.Self.Duration != skills.Permanent || !reflect.DeepEqual(p.Self.Stats, buff(stat("PICKPOCKET", 200))) {
+		t.Fatalf("v148 pickpocket plan %+v buff %+v err %v", p, p.Self, err)
+	}
+}
+
 func TestShadowPartnerTakesASummoningRock(t *testing.T) {
 	for _, id := range []int{4111002, 4211008} {
 		p := plan(t, registered(t, id).Cast, id, 20, domain.Character{})
@@ -192,8 +241,8 @@ func TestPassiveBonuses(t *testing.T) {
 		{4200000, 20, domain.Character{Job: 434, Equipment: dagger}, skills.Bonus{}},
 		{4300000, 20, domain.Character{Job: 434, Equipment: dagger}, skills.Bonus{Mastery: 50, ACC: 120}},
 		{4300000, 20, domain.Character{Job: 422, Equipment: dagger}, skills.Bonus{}},
-		{4100001, 30, domain.Character{}, skills.Bonus{Critical: 50, CriticalDamage: 15}},
-		{4340010, 10, domain.Character{}, skills.Bonus{Critical: 25, CriticalDamage: 20}},
+		{4100001, 30, domain.Character{}, skills.Bonus{Critical: 50, CriticalDamageMin: 15}},
+		{4340010, 10, domain.Character{}, skills.Bonus{Critical: 25, CriticalDamageMin: 20}},
 		{4100006, 20, domain.Character{}, skills.Bonus{MaxHPPercent: 10, ASR: 20, TER: 20}},
 		{4200006, 20, domain.Character{}, skills.Bonus{MaxHPPercent: 10, ASR: 20, TER: 20}},
 		{4310004, 20, domain.Character{}, skills.Bonus{MaxHPPercent: 10, ASR: 20, TER: 20}},
@@ -212,6 +261,34 @@ func TestPassiveBonuses(t *testing.T) {
 		got := h.Passive(&skills.PassiveContext{Skill: ctx.Skill, Level: c.level, Values: ctx.Values, Character: c.char})
 		if got != c.want {
 			t.Errorf("skill %d job %d: %+v, want %+v", c.id, c.char.Job, got, c.want)
+		}
+	}
+}
+
+func TestAdvancedThiefMasteryReplacesBasicMastery(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	now := time.Unix(100, 0)
+	for _, tc := range []struct {
+		job, weapon, basicSkill, advancedSkill int
+	}{
+		{412, 1472000, 4100000, 4120012},
+		{422, 1332000, 4200000, 4220012},
+		{434, 1332000, 4300000, 4340013},
+	} {
+		c := domain.Character{Job: tc.job, Equipment: []domain.Equipment{{Slot: -11, ItemID: tc.weapon}}, Skills: []domain.SkillState{{ID: tc.basicSkill, Level: 20}}}
+		before := skills.Bonuses(c, now)
+		if before.Mastery != 50 || before.ACC != 120 {
+			t.Errorf("job %d basic mastery/ACC = %d/%d", tc.job, before.Mastery, before.ACC)
+		}
+		c.Skills = append(c.Skills, domain.SkillState{ID: tc.advancedSkill, Level: 30})
+		after := skills.Bonuses(c, now)
+		if after.Mastery != 70 || after.ACC != before.ACC || after.WATK != 30 {
+			t.Errorf("job %d advanced mastery/ACC/WATK = %d/%d/%d", tc.job, after.Mastery, after.ACC, after.WATK)
+		}
+		c.Skills[1].ExpiresAt = now.Add(-time.Second)
+		expired := skills.Bonuses(c, now)
+		if expired.Mastery != before.Mastery || expired.ACC != before.ACC || expired.WATK != before.WATK {
+			t.Errorf("job %d expired mastery/ACC/WATK = %d/%d/%d", tc.job, expired.Mastery, expired.ACC, expired.WATK)
 		}
 	}
 }

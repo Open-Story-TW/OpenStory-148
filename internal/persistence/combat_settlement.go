@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 
+	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
@@ -186,7 +187,14 @@ func validateCombatCommand(q domain.CombatAttackRequest) error {
 		if q.LinesPerTarget < 1 || q.LinesPerTarget > 15 || q.Cost == nil || q.SkillID < 0 || q.SkillID > 99999999 {
 			return domain.ErrInvalidInput
 		}
-		if err := validateMistEruptionWire(q); err != nil {
+		if q.Cost.Opcode == protocol.RecvMonsterContact {
+			m, err := protocol.ReadMonsterContact(protocol.NewReader(q.Wire))
+			if err != nil || !combat.IsMindControlSkill(q.SkillID) || int64(m.Character) != q.Session.CharacterID ||
+				len(q.Targets) != 1 || q.LinesPerTarget != 1 || len(q.Targets[0].Lines) != 1 ||
+				m.Target != q.Targets[0].ObjectID || q.Targets[0].Lines[0].Raw != uint32(m.Damage) || len(q.MesoDrops) != 0 {
+				return domain.ErrInvalidInput
+			}
+		} else if err := validateMistEruptionWire(q); err != nil {
 			return err
 		}
 	} else if q.LinesPerTarget != 0 || len(q.Wire) != 0 || q.Cost != nil {

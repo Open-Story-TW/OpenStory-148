@@ -176,6 +176,15 @@ func TestPotentialCommandFreshStateCapacityLifeAndSpirit(t *testing.T) {
 	if a, b, err := potentialCommandState(bag, x); err != nil || a != 0 || b != 0 {
 		t.Fatal(a, b, err)
 	}
+	bag.Job = 5112
+	bag.Skills = []domain.SkillState{{ID: 50001003, Level: 1}}
+	if _, _, err := potentialCommandState(bag, x); err != nil {
+		t.Fatal("Mihile's learned Legendary Spirit must authorize bag scrolls", err)
+	}
+	bag.Job = 112
+	if _, _, err := potentialCommandState(bag, x); !errors.Is(err, domain.ErrForbidden) {
+		t.Fatal("former Mihile cannot use the retained skill in another family", err)
+	}
 	// Magnify has no Legendary Spirit field in native8E and allows a bag item.
 	x.Action, x.LegendarySpirit = domain.PotentialMagnify, false
 	bag.Skills = nil

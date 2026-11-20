@@ -22,6 +22,9 @@ const (
 	heavyWeapon   = 35100008 // 重裝武器精通
 	siege2        = 35121013 // 合金盔甲: 重機槍 (Missile Tank)
 	missileTank   = 35121005 // 合金盔甲: 導彈罐
+	// The v148 operator releases at 2790+2520 ms (0x930A9B). Retain
+	// enough time for the client's removal packet through frame delay.
+	sg88Lifetime = 6 * time.Second
 
 	// recoveryTick is Java MapleCharacter's recovery period (canRecover:
 	// 5 seconds), which also charges Missile Tank's upkeep.
@@ -72,6 +75,34 @@ func siegeLines(ctx *combat.AttackContext) error {
 	ctx.Effect.AttackCount = max(ctx.Effect.AttackCount, 6)
 	ctx.Effect.BulletCount = max(ctx.Effect.BulletCount, 15)
 	return nil
+}
+
+// sg88Body handles the operator's automatic hits; the robot's separate 0x120
+// still uses its full summon attack effect. v148 0x712AC2 reads level y for
+// the operator, and 0x929946 builds the common body rectangle.
+func sg88Body(ctx *combat.AttackContext) error {
+	if ctx.Kind != combat.Body {
+		return nil
+	}
+	e := &ctx.Effect
+	if e.Y < 1 || !e.Box.Set {
+		return combat.ErrRejected
+	}
+	e.Damage, e.MobCount, e.AttackCount = e.Y, 1, 1
+	ctx.Attack.X, ctx.Attack.Y = int16(ctx.Character.X), int16(ctx.Character.Y)
+	lt, rb := e.Box.At(combat.Point{X: ctx.Character.X, Y: ctx.Character.Y}, ctx.Attack.FacingLeft())
+	for _, target := range ctx.Targets {
+		if target.X+target.HalfWidth < lt.X || target.X-target.HalfWidth > rb.X || target.Y < lt.Y || target.Y-target.BodyHeight > rb.Y {
+			return combat.ErrRange
+		}
+	}
+	return nil
+}
+
+func sg88Cast(c *skills.CastContext) (skills.CastPlan, error) {
+	p := skills.StandardCost(c)
+	p.Self = &skills.Buff{Duration: sg88Lifetime, Stats: []skills.StatValue{{Stat: "SUMMON", Value: 1}}}
+	return p, nil
 }
 
 // metalFistBoost adds Metal Fist Mastery's damR to 35001003 and 35101003
@@ -165,10 +196,16 @@ func init() {
 		Summon:  &combat.SummonSpec{MoveAbility: stationary, AssistType: 1},
 		MobCast: &combat.MobCastSpec{WholeField: true, SkipBoss: true, Statuses: []combat.MobStatusApply{{Stat: combat.MobSpeed, ValueFrom: "x"}, {Stat: combat.MobPDR, ValueFrom: "y"}}},
 	}}) // 加速器 : EX-7 Acceleration Bot
-	skills.Register(skills.Handler{ID: 35111011, Kind: skills.KindSummon | skills.KindHeal, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Sub: healingRobot}}})                                                             // 治療機器人 : H-LX Healing Robot
-	skills.Register(skills.Handler{ID: 35121003, Kind: skills.KindSummon, Cast: summonBuff("SUMMON", true), Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 6, Duration: skills.Permanent}}})                                                // 戰鬥機器 : 巨人錘 Giant Robot SG-88
-	skills.Register(skills.Handler{ID: 35121009, Kind: skills.KindSummon, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 5, Sub: robotFactory}}})                                                                               // 機器人工廠 : RM1 Bots 'n Tots
-	skills.Register(skills.Handler{ID: 35121010, Kind: skills.KindSummon | skills.KindBuff, Cast: amplifier, Passive: activeDamage(35121010, "x"), Attack: &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1}}})                                                            // 擴音器 : AF-11 Amplifier Robot
+	skills.Register(skills.Handler{ID: 35111011, Kind: skills.KindSummon | skills.KindHeal, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Sub: healingRobot}}}) // 治療機器人 : H-LX Healing Robot
+	// A new visit has no operator activation to resume, even when other buffs persist.
+	skills.Register(skills.Handler{ID: 35121003, Kind: skills.KindSummon | skills.KindAttack, Cast: sg88Cast,
+		DropOnEnter: func(domain.Character) bool { return true },
+		Attack: &combat.AttackSpec{Kind: combat.Summoned | combat.Body, Prepare: sg88Body,
+			Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 6, Duration: sg88Lifetime}}}) // 戰鬥機器 : 巨人錘 Giant Robot SG-88
+	skills.Register(skills.Handler{ID: 35121009, Kind: skills.KindSummon, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 5, Sub: robotFactory}}}) // 機器人工廠 : RM1 Bots 'n Tots
+	// v148 CSummoned passes death mode 1 at 0x73914D, which 0x72C068 maps
+	// to the terminal 0x120 action 0x11. Other attacks from AF-11 are invalid.
+	skills.Register(skills.Handler{ID: 35121010, Kind: skills.KindSummon | skills.KindBuff, Cast: amplifier, Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, ExpiryAction: 0x11}}})
 	skills.Register(skills.Handler{ID: 35121011, LevelFrom: 35121009, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Kind: combat.Summoned, LevelFrom: 35121009, MaxDamage: boostedSummon(robotMastery, "x"), Summon: &combat.SummonSpec{MoveAbility: walkStationary, Multi: true, SingleAttack: true}}}) // Bots 'n Tots bots (spawned by 35121009)
 }
 
@@ -254,14 +291,18 @@ func mechanicMastery(c *skills.PassiveContext) skills.Bonus {
 	return b
 }
 
-// amplifier (35121010): Java sends DAMAGE_BUFF x for 60 seconds (its own
-// override of the WZ time) to the owner, which PlayerStats adds to damage.
+// amplifier keeps the owner's activation icon. Actual damage amplification
+// depends on the member's position in the native AF-11 affected area.
 func amplifier(c *skills.CastContext) (skills.CastPlan, error) {
 	p := skills.StandardCost(c)
 	if c.Value("x") < 1 {
 		return p, fmt.Errorf("skill35121010: no x")
 	}
-	p.Self = &skills.Buff{Duration: 60 * time.Second, Stats: []skills.StatValue{{Stat: "DAMAGE_BUFF", Value: c.Value("x")}}}
+	duration, err := buffTime(c)
+	if err != nil {
+		return p, err
+	}
+	p.Self = &skills.Buff{Duration: duration, Stats: []skills.StatValue{{Stat: "DAMAGE_BUFF", Value: c.Value("x")}}}
 	return p, nil
 }
 

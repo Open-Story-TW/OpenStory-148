@@ -84,6 +84,30 @@ func TestMagicAmplificationAndWandSwing(t *testing.T) {
 	}
 }
 
+func TestV148FinalCutMultipliesOtherPhysicalAttacks(t *testing.T) {
+	gun := DamageContext{
+		Stats:  PlayerStats{Job: 522, Level: 200, STR: 100, DEX: 100, WATK: 41, WeaponID: 1492004},
+		Effect: Effect{SkillID: 5221004, Damage: 330},
+		Mob:    content.Mob{HP: 1000000, Level: 10},
+	}
+	if got := LineCeiling(gun); got != 1015 {
+		t.Fatalf("unbuffed Rapid Fire ceiling = %d, want 1015", got)
+	}
+	gun.Stats.FinalCutPercent = 160
+	if got := LineCeiling(gun); got != 1624 {
+		t.Fatalf("Final Cut Rapid Fire ceiling = %d, want 1624", got)
+	}
+	gun.Magic = true
+	if got := LineCeiling(gun); got != 1015 {
+		t.Fatalf("Final Cut changed magic ceiling to %d", got)
+	}
+	gun.Magic = false
+	gun.Effect.SkillID = 4341002
+	if got := LineCeiling(gun); got != 1015 {
+		t.Fatalf("Final Cut multiplied its own attack ceiling to %d", got)
+	}
+}
+
 func TestProjectileReachesRangePlusBlast(t *testing.T) {
 	c := warrior()
 	c.Job = 300

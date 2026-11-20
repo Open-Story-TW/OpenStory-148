@@ -5,8 +5,40 @@ import (
 	"time"
 
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 )
+
+func TestSpiritLinkCanonicalRowsPublishLearnedSource(t *testing.T) {
+	now := time.Unix(1000, 0)
+	buff := &skills.Buff{Duration: time.Minute, Stats: []skills.StatValue{
+		{Stat: "SUMMON", Value: 1},
+		{Stat: "SPIRIT_LINK", Value: 1},
+		{Stat: "ELEMENTAL_STATUS_R", Value: 15},
+		{Stat: "DAMAGE_BUFF", Value: 15},
+	}}
+	rows, ok := skillBuffRows(3111005, 20, buff, now)
+	if !ok || len(rows) != 4 || rows[1].Stat != "SPIRIT_SURGE" {
+		t.Fatalf("canonical rows: %+v", rows)
+	}
+	packet := protocol.SkillBuffsAmong(rows, rows, now)
+	r := protocol.NewReader(packet)
+	if r.U16() != 0x2d {
+		t.Fatalf("no local buff: %x", packet)
+	}
+	for range 8 {
+		r.U32()
+	}
+	for i, want := range []int32{3111005, 3111005, 3111005, 3120006} {
+		r.I32() // value
+		if source := r.I32(); source != want || r.I32() != 60000 {
+			t.Fatalf("triplet %d source=%d, want %d: %x", i, source, want, packet)
+		}
+	}
+	if r.Err() != nil {
+		t.Fatal(r.Err())
+	}
+}
 
 // The registry-driven CastSkill must keep every pre-registry skill behaviour.
 // Each legacy test runs against its own private schema.

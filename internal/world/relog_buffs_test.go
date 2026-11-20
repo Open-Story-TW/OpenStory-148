@@ -43,6 +43,7 @@ func TestRestoreSummonsUsesRemainingBuffTime(t *testing.T) {
 	now := time.Now()
 	lives[0].session.Character.SkillBuffs = []domain.SkillBuff{
 		{ID: testSummonSkill, Level: 2, Stat: "SUMMON", Value: 1, ExpiresAt: now.Add(4 * time.Second)},
+		{ID: sceneLocalSG88, Level: 30, Stat: "COMBO", Value: 1, ExpiresAt: now.Add(time.Hour)},     // legacy orphan
 		{ID: testPuppetSkill, Level: 1, Stat: "PUPPET", Value: 1, ExpiresAt: now.Add(-time.Second)}, // expired
 		{ID: 1001003, Level: 1, Stat: "WDEF", Value: 10, ExpiresAt: now.Add(time.Minute)},           // not a summon
 	}
@@ -64,6 +65,29 @@ func TestRestoreSummonsUsesRemainingBuffTime(t *testing.T) {
 		if left := m.expiresAt.Sub(now); left > 4*time.Second || left < 3*time.Second {
 			t.Fatalf("summon lives %v, want the buff's 4s", left)
 		}
+	}
+}
+
+func TestEnteringFieldRetiresOnlyLegacySG88MarkerWithoutRestoringIt(t *testing.T) {
+	changes := make(chan []domain.SkillBuffChange, 1)
+	s := &Server{skills: newSkillSpace(), maps: newMapSpace(100), online: map[int64]domain.CharacterSession{}, repo: skillChangeRepository{changes: changes}}
+	expiry := time.Now().Add(time.Hour)
+	live := buffScopePlayer(1, 0,
+		domain.SkillBuff{ID: sceneLocalSG88, Level: 30, Stat: "COMBO", Value: 1, ExpiresAt: expiry},
+		domain.SkillBuff{ID: 1001003, Level: 10, Stat: "WDEF", Value: 20, ExpiresAt: expiry})
+	live.session.Character.Job = 3512
+	sink := &gameplayTestSink{}
+	enterBuffScope(t, s, live, sink)
+	if actual := sink.count(0x2d); actual != 1 {
+		t.Fatalf("restored %d local buff packets; expected only the unrelated active buff", actual)
+	}
+	select {
+	case pending := <-changes:
+		if len(pending) != 1 || pending[0].SkillID != sceneLocalSG88 || !pending[0].Cancel {
+			t.Fatalf("unexpected field entry skill mutation: %+v", pending)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("legacy SG-88 marker was not retired on field entry")
 	}
 }
 

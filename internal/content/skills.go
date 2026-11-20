@@ -37,7 +37,16 @@ type Skill struct {
 	// SummonAttack is summon/attack1/info (mobCount, attackCount): summon
 	// skills such as Gaviota 5211002 keep their target count there, not in
 	// the level data.
-	SummonAttack map[string]int `json:"summon_attack,omitempty"`
+	SummonAttack      map[string]int `json:"summon_attack,omitempty"`
+	SummonAttackRange *SkillRange    `json:"summon_attack_range,omitempty"`
+	SummonDeath       *SummonDeath   `json:"summon_death,omitempty"`
+}
+
+// SummonDeath is the attack defined by summon/die/info in the original book.
+type SummonDeath struct {
+	MobCount    int        `json:"mob_count"`
+	AttackAfter int        `json:"attack_after_ms"`
+	Range       SkillRange `json:"range"`
 }
 
 // SkillRange is a WZ lt/rb pair relative to the caster facing left.
@@ -116,6 +125,12 @@ var skillSeeds map[int]Skill
 var skillSeedError error
 var skillTemplates sync.Map
 
+// ConfiguredSkillDefinition reads the server's WZ data for live lookups that
+// do not already receive a data root. An empty configuration uses the seed.
+func ConfiguredSkillDefinition(id int) (Skill, error) {
+	return SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), id)
+}
+
 func SkillDefinition(root string, id int) (Skill, error) {
 	if id < 1 || id > 99999999 {
 		return Skill{}, fmt.Errorf("invalid skill id")
@@ -139,9 +154,9 @@ func SkillDefinition(root string, id int) (Skill, error) {
 		}
 		var ok bool
 		s, ok = skillSeeds[id]
-		if !ok || id == 5121010 {
-			// The seed is v145 data. Use the v148 book for new skills and
-			// the revised classic Time Leap cooldown.
+		if !ok || id == 5121010 || id == 4341002 || id == 35121003 || id == 35121010 {
+			// The v148 books also provide Final Cut's duration and the two
+			// Mechanic summons' separate attack geometry.
 			found, _ := skillNode(readV148Skills(fmt.Sprintf("%03d.img.xml", id/10000)))(id)
 			if found == nil {
 				return s, fmt.Errorf("unknown skill%d", id)
@@ -313,13 +328,25 @@ func skillFromNode(id int, n *wzNode) Skill {
 	}
 	if a := n.child("summon").child("attack1").child("info"); a != nil {
 		for _, x := range a.Children {
-			if x.XMLName.Local == "int" {
+			if x.XMLName.Local == "int" || x.XMLName.Local == "string" {
 				if v, e := strconv.Atoi(x.Value); e == nil {
 					if s.SummonAttack == nil {
 						s.SummonAttack = map[string]int{}
 					}
 					s.SummonAttack[x.Name] = v
 				}
+			}
+		}
+		if area := a.child("range"); area.child("lt") != nil && area.child("rb") != nil {
+			if bounds, ok := vectors(area); ok {
+				s.SummonAttackRange = &bounds
+			}
+		}
+	}
+	if d := n.child("summon").child("die").child("info"); d != nil {
+		if area := d.child("range"); area.child("lt") != nil && area.child("rb") != nil {
+			if bounds, ok := vectors(area); ok {
+				s.SummonDeath = &SummonDeath{MobCount: d.intValue("mobCount", 0), AttackAfter: d.intValue("attackAfter", 0), Range: bounds}
 			}
 		}
 	}

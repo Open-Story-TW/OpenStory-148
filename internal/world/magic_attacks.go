@@ -101,6 +101,7 @@ func (s *Server) magicGameplay(ctx context.Context, channel int, live *liveChara
 		ticket.request.Targets = append(ticket.request.Targets, domain.CombatTarget{ObjectID: mob.objectID, MobID: mob.stats.ID, SpawnOperationID: fmt.Sprintf("mob-%s-%d-%d-%d", g.bootID, channel, c.MapID, mob.objectID), X: mob.life.X, Y: mob.life.Y, BeforeHP: mob.hp, Damage: damage, Defeated: int64(damage) == mob.hp, Contributions: addCombatDamage(mob.contributions, session, damage), Lines: []domain.CombatDamageLine{{Raw: target.Lines[0].Raw, Applied: damage}}})
 	}
 	m.attacked, m.lastTick, m.lastAttack = true, a.Tick, now
+	m.lastAttackWasGunShot = false
 	ticket.magic = &a
 	for _, mob := range ticket.targets {
 		mob.claiming = true

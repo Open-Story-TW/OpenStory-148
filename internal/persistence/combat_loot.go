@@ -51,7 +51,7 @@ func rolledLootEquipment(base domain.Equipment, operationID string, rowID int) d
 // enqueueCombatLootTx must follow the asset_combat_rewards insert in the SAME
 // transaction. It pins random outcomes and equipment snapshots before commit.
 func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.CharacterSession, value domain.Character, operationID string, mobID, x, y int) error {
-	if content.JudgementRoom(value.MapID) {
+	if content.JudgementRoom(value.MapID) || content.SubwaySurvivalStage(value.MapID) {
 		return nil
 	}
 	if session.ChannelID < 1 || session.ChannelID > 40 || x < -32768 || x > 32767 || y < -32768 || y > 32767 {
@@ -252,7 +252,7 @@ func (s *Store) MaterializeCombatLoot(ctx context.Context, lease domain.WorldLea
 				return nil, err
 			}
 		}
-		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,mesos,quest_id,quest_drop_type,quest_party_id,quest_owner_until,equipment) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $11>0 AND $12<2 THEN clock_timestamp()+interval '30 seconds' ELSE NULL END,$14) RETURNING object_id,COALESCE((extract(epoch FROM quest_owner_until)*1000)::bigint,0)`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, drop.Mesos, drop.QuestID, kind, drop.QuestPartyID, nullableJSON(equipment)).Scan(&drop.ObjectID, &drop.QuestOwnerUntil); err != nil {
+		if err = tx.QueryRowContext(ctx, `INSERT INTO asset_item_drops(world_id,channel_id,map_id,owner_id,x,y,inv_type,template_id,quantity,mesos,quest_id,quest_drop_type,quest_party_id,quest_owner_until,equipment,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $11>0 AND $12<2 THEN clock_timestamp()+interval '30 seconds' ELSE NULL END,$14,clock_timestamp()+make_interval(secs => $15)) RETURNING object_id,COALESCE((extract(epoch FROM quest_owner_until)*1000)::bigint,0)`, drop.WorldID, drop.ChannelID, drop.MapID, drop.OwnerID, drop.X, drop.Y, drop.InvType, drop.TemplateID, drop.Quantity, drop.Mesos, drop.QuestID, kind, drop.QuestPartyID, nullableJSON(equipment), itemDropLifetime(*drop)).Scan(&drop.ObjectID, &drop.QuestOwnerUntil); err != nil {
 			return nil, err
 		}
 	}

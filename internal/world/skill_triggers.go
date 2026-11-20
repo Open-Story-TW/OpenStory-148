@@ -2,6 +2,7 @@ package world
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"maple-go-server/internal/combat"
@@ -27,7 +28,7 @@ func (s *Server) observeSkillAttack(e combat.AttackEvent) {
 }
 
 // runSkillTriggers commits the OnAttack/OnDamaged buff changes of m's
-// learned skills and publishes them like a cast (without cast FX).
+// learned skills and publishes the resulting buffs and affected animations.
 func (s *Server) runSkillTriggers(m *skillMember, attack *combat.AttackEvent, damage int, mob int32, defType byte) {
 	if _, ok := s.repo.(domain.SkillTriggerRepository); !ok {
 		return
@@ -266,7 +267,8 @@ func (s *Server) publishSkillChanges(m *skillMember, snapshot domain.CharacterSe
 		if len(rows) == 0 {
 			continue
 		}
-		if h, ok := skills.Lookup(ch.SkillID); ok && h.CounterPacket != nil {
+		h, _ := skills.Lookup(ch.SkillID)
+		if h.CounterPacket != nil {
 			if comboReply {
 				_ = m.sink.WritePacket(h.CounterPacket(rows[0].Counter))
 			}
@@ -275,9 +277,18 @@ func (s *Server) publishSkillChanges(m *skillMember, snapshot domain.CharacterSe
 			}
 		}
 		_ = m.sink.WritePacket(protocol.SkillBuffsAmong(rows, current.Character.SkillBuffs, now))
+		showAffected := h.TriggerAffectedEffect && !slices.ContainsFunc(before, func(row domain.SkillBuff) bool {
+			return row.ID == ch.SkillID && row.ExpiresAt.After(now)
+		})
+		if showAffected {
+			_ = m.sink.WritePacket(protocol.SkillAffectedEffect(0, ch.SkillID, rows[0].Level))
+		}
 		for _, target := range peers {
 			if s.skillVisible(m, target) {
 				_ = target.sink.WritePacket(protocol.ForeignSkillBuffs(m.characterID, rows))
+				if showAffected {
+					_ = target.sink.WritePacket(protocol.SkillAffectedEffect(m.characterID, ch.SkillID, rows[0].Level))
+				}
 			}
 		}
 	}

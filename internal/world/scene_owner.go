@@ -199,7 +199,8 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 	snapshot.Character.PlacePetsAtOwner()
 	visit := makeSceneVisit(snapshot, live, sink)
 	s.installScene(visit, snapshot)
-	if err = sink.WritePacket(protocol.SetField(snapshot.Character, channel)); err != nil {
+	field, coconutTeam := s.coconutSetField(protocol.SetField(snapshot.Character, channel), snapshot)
+	if err = sink.WritePacket(field); err != nil {
 		return err
 	}
 	if limit := protocol.LongDamageCap(); limit > 0 {
@@ -227,7 +228,7 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 		}
 	}
 	if s.maps != nil {
-		s.maps.Enter(channel, snapshot.Character.MapID, snapshot.Character, sink)
+		s.maps.enter(channel, snapshot.Character.MapID, snapshot.Character, sink, coconutTeam)
 	}
 	if err = showOwnPets(sink, snapshot.Character); err != nil {
 		return err

@@ -629,6 +629,7 @@ func (s *Session) installHost() {
 		bind("ghost_ship_queue", s.simpleCommand("ghost_ship_queue", 1), 2)
 		bind("ghost_ship_accept", s.simpleCommand("ghost_ship_accept", 1), 2)
 		bind("ghost_ship_waiting", s.simpleCommand("ghost_ship_waiting", 0), 1)
+		bind("orbis_stage", s.simpleCommand("orbis_stage", 0), 1)
 		bind("event_set", func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if err := c.CheckNArgs(3); err != nil {
 				return nil, err

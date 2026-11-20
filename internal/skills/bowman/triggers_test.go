@@ -41,8 +41,14 @@ func TestSpiritLinkPassiveFollowsTheSummonBuff(t *testing.T) {
 		t.Fatalf("no phoenix %+v", b)
 	}
 	ctx.Character.SkillBuffs = []domain.SkillBuff{{ID: 3111005, Stat: "SUMMON", Value: 1, ExpiresAt: now.Add(time.Minute)}}
-	if b := spiritLink(3111005)(ctx); b != (skills.Bonus{MaxHPPercent: 40, DamagePercent: 15, BossDamagePercent: 15}) {
-		t.Fatalf("phoenix up %+v", b)
+	if b := spiritLink(3111005)(ctx); b != (skills.Bonus{}) {
+		t.Fatalf("summon with no active Spirit Link slot: %+v", b)
+	}
+	for _, name := range []string{"SPIRIT_SURGE", "SPIRIT_LINK"} {
+		ctx.Character.SkillBuffs = append(ctx.Character.SkillBuffs[:1], domain.SkillBuff{ID: 3111005, Stat: name, Value: 1, ExpiresAt: now.Add(time.Minute)})
+		if b := spiritLink(3111005)(ctx); b != (skills.Bonus{MaxHPPercent: 40, WATKPercent: 30, MATKPercent: 30, DamagePercent: 15}) {
+			t.Fatalf("phoenix up using %s: %+v", name, b)
+		}
 	}
 }
 

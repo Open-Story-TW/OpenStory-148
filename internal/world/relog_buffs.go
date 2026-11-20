@@ -8,6 +8,9 @@ import (
 	"maple-go-server/internal/domain"
 )
 
+// The v148 operator's SG-88 activation belongs to one native field visit.
+const sceneLocalSG88 = 35121003
+
 // dropRelogBuffs clears the skill buffs a fresh login carries while
 // MAPLEGO_RELOG_BUFFS is off, before any field packet is written. Channel
 // changes and cash shop returns never come here. A failure keeps the buffs
@@ -58,7 +61,7 @@ func (s *Server) restoreSummons(channel int, live *liveCharacter) {
 	now := time.Now()
 	done := map[int]bool{}
 	for _, b := range activeSkillBuffs(c, now) {
-		if done[b.ID] {
+		if done[b.ID] || b.ID == sceneLocalSG88 {
 			continue
 		}
 		done[b.ID] = true

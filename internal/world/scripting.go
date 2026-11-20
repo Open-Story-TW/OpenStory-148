@@ -177,6 +177,11 @@ func (s *Server) startScriptAtNPC(ctx context.Context, channel int, live *liveCh
 		s.npcGMNotice(live, sink, npcID, "未處理(交易中不能對話)")
 		return true, sink.WritePacket(protocol.EnableActions())
 	}
+	if name == "" && snapshot.Character.MapID == battleSquareHub && npcID == 9070000 {
+		s.cancelNPCScriptState(live, false)
+		s.closeEconomyDialog(live)
+		return true, sink.WritePacket(protocol.OpenBattleSquare())
+	}
 	if name == "" {
 		name = fmt.Sprintf("npc/%d.lua", npcID)
 		switch npcID {
@@ -378,7 +383,7 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 	switch command.Kind {
 	case "quest_start", "quest_complete", "quest_forfeit", "exchange", "change_look", "warp", "open_storage", "open_merchant_bank", "open_shop", "advance_warrior", "advance_first_job", "advance_second_job", "depart_island", "take_taxi",
 		"guild_prompt", "guild_disband", "guild_capacity", "alliance_create", "alliance_capacity", "alliance_disband",
-		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "ice_knight_clear",
+		"profession_learn", "profession_forget", "open_crafting", "event_start", "event_finish", "event_leave", "event_summon", "horntail_disguise", "event_set", "event_effect", "henesys_finish", "ludi_stage", "orbis_stage", "ice_knight_clear",
 		"transit_status", "transit_board", "transit_leave", "subway_challenge", "hak_board", "open_rps", "christmas_finish", "hoblin_ambush",
 		"monster_rush_status", "monster_rush_donate", "kenta_finish", "zakum_mine_finish", "escape_finish", "ellin_stage", "pirate_pq_stage", "pet_training", "ghost_ship_queue", "ghost_ship_accept", "carnival_leave":
 		if !a.hasNPCContext(snapshot) {
@@ -541,6 +546,9 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		} else {
 			status, err = a.server.ghostAccept(ctx, snapshot, command.Ints[0] == 1)
 		}
+		return scripting.CommandResult{Value: status}, err
+	case "orbis_stage":
+		status, err := a.server.orbisStage(ctx, a.live, a.sink, snapshot, a.npcID)
 		return scripting.CommandResult{Value: status}, err
 	case "open_npc":
 		if len(command.Ints) != 1 || command.Ints[0] < 1 || command.Ints[0] > 9999999 {
@@ -706,8 +714,14 @@ func (a *worldScript) executeCommand(ctx context.Context, id scripting.Identity,
 		}
 		request.Session = snapshot
 		request.OperationID = command.ID
+		if command.Script == guildWeeklySupportScript {
+			if a.npcID != domain.GuildSupportNPCID {
+				return scripting.CommandResult{}, domain.ErrForbidden
+			}
+			request.GuildWeeklySupport = true
+		}
 		value, err := repo.ExecuteScriptExchange(ctx, request)
-		if errors.Is(err, domain.ErrInsufficient) || errors.Is(err, domain.ErrAlreadyExists) || growth != nil && errors.Is(err, domain.ErrForbidden) {
+		if errors.Is(err, domain.ErrInsufficient) || errors.Is(err, domain.ErrAlreadyExists) || (growth != nil || request.GuildWeeklySupport) && errors.Is(err, domain.ErrForbidden) {
 			return result(map[string]any{"ok": false, "reason": "conditions_not_met"})
 		}
 		if err != nil {
