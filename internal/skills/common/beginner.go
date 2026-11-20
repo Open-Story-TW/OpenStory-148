@@ -50,6 +50,15 @@ func init() {
 	for _, id := range []int{1016, 10001017, 20001041} {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff | skills.KindMorph, Cast: ride(equippedMount)})
 	}
+	// Fixed-item flying/glide mounts (v148 sub_6AB7A9 mount_item -> skill_id table):
+	// 1203 鬥神降世 (1932103), 1204 海盜船 (1932102), 20010022 龍飛行 (1932016),
+	// 30011109 魔族之翼 (1932051), 30011159 特化魔族之翼 (1932085).
+	for _, m := range []struct{ id, item int }{
+		{1203, 1932103}, {1204, 1932102}, {20010022, 1932016}, {30011109, 1932051}, {30011159, 1932085},
+	} {
+		item := m.item
+		skills.Register(skills.Handler{ID: m.id, Kind: skills.KindBuff | skills.KindMorph, Cast: ride(func(domain.Character) int { return item })})
+	}
 
 	// Original v148 0x6AF12B resolves these casts through the equipped ring.
 	for _, source := range []struct{ suffix, ring, attack int }{

@@ -111,6 +111,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 33111004, Kind: skills.KindBuff, Cast: buff(stat{"BLIND", "x"})})                                // 黑暗狙擊 Blind
 	skills.Register(skills.Handler{ID: 33121004, Kind: skills.KindPartyBuff, Cast: party(sharpEyes)})                                   // 銳利之眼 Sharp Eyes
 	skills.Register(skills.Handler{ID: 33121007, Kind: skills.KindPartyBuff, Cast: party(buff(stat{"MAPLE_WARRIOR", "x"}))})            // 楓葉祝福 Maple Warrior
+	skills.Register(skills.Handler{ID: 33101005, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                      // 吞食 Swallow (links 33101006 buff / 33101007 spit)
 	skills.Register(skills.Handler{ID: 33101006, LevelFrom: 33101005, Kind: skills.KindBuff, Cast: swallowBuff, Passive: swallowBonus}) // 吞食 random buff
 	skills.Register(skills.Handler{ID: 33121008, Kind: skills.KindBuff, Cast: skills.HerosWill})                                        // 楓葉淨化 Hero's Will
 	skills.Register(skills.Handler{ID: 33111007, Kind: skills.KindBuff, Cast: felineBerserk, Passive: activeDamage(33111007, "y")})     // 狂獸附體 Feline Berserk

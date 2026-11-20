@@ -40,10 +40,6 @@ var pendingGroups = map[string][]int{
 	"Legacy removes these on job advance":                           {20000014, 20000015, 20000016, 20021166, 20021181, 30010166, 30011167, 30011168, 30011169, 30011170},
 	"Aran tutorial passives, use unknown":                           {20000017, 20000018},
 	"Phantom hidden skills with no Java handling":                   {20031166, 20031181},
-	"flying mounts":                                                 {20010022, 30011109, 30011159},
-	"神龍擺尾: Legacy custom pet summon":                                {80001130},
-	"測謊機 lie detector":                                              {8001000, 9001009},
-	"復活: no lt/rb, Legacy resurrects nobody":                        {9001005},
 	"guild skills: guild system (content/guild_skills.go)":          {91000000, 91000001, 91000002, 91000003, 91000004, 91000005, 91000006},
 	"professions: crafting system (deferred by the plan)":           {92000000, 92010000, 92020000, 92030000, 92040000},
 }

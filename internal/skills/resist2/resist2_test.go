@@ -18,10 +18,8 @@ import (
 
 var now = time.Unix(1000, 0)
 
-// pending are R2 skills that need core support before they can be cast.
-var pending = map[int]bool{
-	33101005: true, // 吞食: keydown mob link and suck
-}
+// pending lists any R2 skills that still wait for core support.
+var pending = map[int]bool{}
 
 func TestSG88KeepsOperatorAndRobotAttacksSeparate(t *testing.T) {
 	const id = 35121003

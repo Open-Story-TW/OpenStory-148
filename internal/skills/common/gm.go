@@ -10,8 +10,11 @@ import (
 // isPartyBuff is false and every buff only reaches the caster. Legacy bans a
 // non-GM who casts 9001000, 9001001, 9001002 or 9001004 (gmOnly).
 func init() {
+	skills.Register(skills.Handler{ID: 8001000, Kind: skills.KindSpecial, Cast: gmOnly(skills.CostOnly)})                    // 測謊機 Lie Detector
 	skills.Register(skills.Handler{ID: 8001001, Kind: skills.KindSpecial, Cast: skills.CostOnly})                            // 瞬間移動 Teleport
+	skills.Register(skills.Handler{ID: 9001005, Kind: skills.KindSpecial, Cast: gmOnly(skills.CostOnly)})                    // 復活 GM Resurrection
 	skills.Register(skills.Handler{ID: 9001007, Kind: skills.KindSpecial, Cast: skills.CostOnly})                            // 終極瞬移 GM Teleport
+	skills.Register(skills.Handler{ID: 9001009, Kind: skills.KindSpecial, Cast: gmOnly(skills.CostOnly)})                    // 測謊機 GM Lie Detector
 	skills.Register(skills.Handler{ID: 9001000, Kind: skills.KindHeal, Cast: gmOnly(skills.HerosWill)})                      // 終極祝福: Java isDispel, prop 100
 	skills.Register(skills.Handler{ID: 9001001, Kind: skills.KindBuff, Cast: gmOnly(skills.StandardBuff)})                   // 終極輕功 Haste: speed, jump
 	skills.Register(skills.Handler{ID: 9001002, Kind: skills.KindBuff, Cast: gmOnly(buff(0, key("HOLY_SYMBOL", "x")))})      // 終極祈禱 Holy Symbol
