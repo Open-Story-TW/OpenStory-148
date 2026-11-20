@@ -852,3 +852,12 @@ func TestBarrelBombAdmitsTargetsWhereTheBarrelBursts(t *testing.T) {
 		}
 	}
 }
+
+// v148 Monkey Super Bomb is also an active ranged attack the client sends as
+// 0x56; the Barrel Bomb damR passive stays.
+func TestMonkeySuperBombAttacksAndKeepsPassive(t *testing.T) {
+	h, ok := skills.Lookup(5311001)
+	if !ok || h.Attack == nil || h.Attack.Kind != combat.Shoot || h.Attack.Ammo != combat.AmmoNone || h.Passive == nil {
+		t.Fatalf("5311001 handler %+v", h)
+	}
+}
