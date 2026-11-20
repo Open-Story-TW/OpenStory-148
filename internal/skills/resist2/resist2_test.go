@@ -679,3 +679,12 @@ func TestSiegeInMissileTankBecomesSiege2(t *testing.T) {
 		t.Fatalf("restored %v", applied)
 	}
 }
+
+// Sonic Roar (33121002) routes through the v148 melee sender (0x91A08F) and
+// consumes no arrows while applying its stun on hit.
+func TestSonicRoarIsMeleeNoAmmo(t *testing.T) {
+	h, ok := skills.Lookup(33121002)
+	if !ok || h.Attack == nil || h.Attack.Kind != combat.Melee || h.Attack.Ammo != combat.AmmoNone || len(h.Attack.OnHit) == 0 {
+		t.Fatalf("33121002 handler: %+v", h.Attack)
+	}
+}

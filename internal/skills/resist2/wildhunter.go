@@ -13,11 +13,10 @@ import (
 // (quest JAGUAR record; capturing is not implemented).
 const jaguarMount = 1932015
 
-// hunterAttack is one Wild Hunter attack. The opcode follows Java Legacy:
-// crossbow skills and the jaguar AOE skills Java lists in rangedAttack
-// (33101002, 33101007, 33121001, 33121002) are RecvShootAttack; the jaguar
-// melee skills 33111002 and 33111006 arrive as RecvMeleeAttack (MCP,
-// 2026-11-02).
+// hunterAttack is one Wild Hunter attack. Crossbow skills and jaguar ranged
+// AOE skills (33101002, 33101007, 33121001) are RecvShootAttack; the jaguar
+// melee skills 33111002, 33111006 and Sonic Roar 33121002 arrive as
+// RecvMeleeAttack (v148 skill dispatcher 0x93694C -> melee sender 0x91A08F).
 type hunterAttack struct {
 	id   int
 	kind combat.AttackKind
@@ -52,7 +51,7 @@ var hunterAttacks = []hunterAttack{
 	{id: 33111006, kind: combat.Melee, drain: swipeDrain},                    // 爪攻擊 Swipe
 	{id: 33120011, kind: combat.Shoot},                                       // 進階終極攻擊 Advanced Final Attack
 	{id: 33121001, kind: combat.Shoot, aoe: true, lineDamage: explosionLine}, // 閃光雨 Exploding Arrows
-	{id: 33121002, kind: combat.Shoot, aoe: true, onHit: stun},               // 音爆 Sonic Roar
+	{id: 33121002, kind: combat.Melee, aoe: true, onHit: stun},               // 音爆 Sonic Roar (v148 0x93694C -> melee 0x91A08F)
 	{id: 33121005, kind: combat.Shoot, onHit: chemicalShell},                 // 化學彈丸 Stinking Shot
 	{id: 33121009, kind: combat.Shoot},                                       // 狂野帕爾坎 Wild Arrow Blast (keydown quirk in S0b)
 }
