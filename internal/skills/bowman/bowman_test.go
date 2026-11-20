@@ -100,7 +100,7 @@ func TestSelfBuffsAtMaxLevel(t *testing.T) {
 		{3111000, 20, 50, 180 * time.Second, []skills.StatValue{{Stat: "ENHANCED_WATK", Value: 20}, {Stat: "CONCENTRATE", Value: 25}}},
 		{3121007, 30, 35, 240 * time.Second, []skills.StatValue{{Stat: "DEX", Value: 40}, {Stat: "HAMSTRING", Value: 30}}},
 		{3201002, 20, 11, 200 * time.Second, []skills.StatValue{{Stat: "BOOSTER", Value: -2}}},
-		{3211000, 20, 50, 180 * time.Second, []skills.StatValue{{Stat: "ENHANCED_WATK", Value: 20}}},
+		{3211000, 20, 50, 180 * time.Second, []skills.StatValue{{Stat: "ENHANCED_WATK", Value: 20}, {Stat: "CONCENTRATE", Value: 25}}},
 		{3221006, 30, 35, 240 * time.Second, []skills.StatValue{{Stat: "DEX", Value: 40}, {Stat: "BLIND", Value: 30}}},
 	} {
 		p := mustCast(t, tc.id, tc.level, c)

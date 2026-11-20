@@ -20,8 +20,9 @@ func init() {
 
 	// Sniper.
 	skills.Register(skills.Handler{ID: 3210007, Kind: skills.KindPassive, Passive: evasionBoost})
-	// Java has no CONCENTRATE case for 3211000, so only the generic epad stat.
-	skills.Register(skills.Handler{ID: 3211000, Kind: skills.KindBuff, Cast: buff(0, key("ENHANCED_WATK", "epad"))})
+	// Sniper Concentrate (3211000) shares 3111000's WZ epad + x (MP cost
+	// reduction) and v148 client handling (0x6AE422), requiring CONCENTRATE.
+	skills.Register(skills.Handler{ID: 3211000, Kind: skills.KindBuff, Cast: buff(0, key("ENHANCED_WATK", "epad"), key("CONCENTRATE", "x"))})
 	skills.Register(skills.Handler{ID: 3211003, Kind: skills.KindAttack | skills.KindMobStatus, Attack: shoot(rule{prepare: blizzard})})
 	skills.Register(skills.Handler{ID: 3211004, Kind: skills.KindAttack | skills.KindMobStatus, Attack: shoot(rule{noAmmo: true, onHit: seal})}) // Arrow Eruption
 	skills.Register(skills.Handler{ID: 3211006, Kind: skills.KindAttack, Attack: shoot(rule{prepare: ultimateStrafe, maxDamage: strafeCeiling})})

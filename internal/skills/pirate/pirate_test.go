@@ -1020,4 +1020,15 @@ func TestPirateAndZenWireAndGrenadeFixes(t *testing.T) {
 	if p, err := h5208.Cast(&skills.CastContext{Skill: def5208, Level: 10, Values: v5208, Caster: bulletChar}); err != nil || stats(p.Self)["SPIRIT_CLAW"] != 6 {
 		t.Fatalf("5201008 bullet index SPIRIT_CLAW: err=%v self=%+v", err, p.Self)
 	}
+	// 5220019 Crew Command adds pad + cr while Summon Crew is active.
+	now := time.Unix(1000, 0)
+	if b := passive(t, 5220019, 10, domain.Character{Job: 522}); b != (skills.Bonus{}) {
+		t.Fatalf("5220019 inactive bonus: %+v", b)
+	}
+	h522, _ := skills.Lookup(5220019)
+	_, v522 := values(t, 5220019, 10)
+	crewChar := domain.Character{Job: 522, SkillBuffs: []domain.SkillBuff{{ID: summonCrew, Stat: "SUMMON", Value: 1, ExpiresAt: now.Add(time.Minute)}}}
+	if b := h522.Passive(&skills.PassiveContext{Values: v522, Character: crewChar, Now: now}); b.WATK != 30 || b.Critical != 10 {
+		t.Fatalf("5220019 active bonus: %+v", b)
+	}
 }
