@@ -969,3 +969,45 @@ func TestV148BuccaneerAndCorsairBuffs(t *testing.T) {
 		t.Fatalf("5221018 active bonus missing DamagePercent")
 	}
 }
+
+func TestPirateAndZenWireAndGrenadeFixes(t *testing.T) {
+	// 5201002 and 5901002 are thrown grenades whose 0x55 packet carries the
+	// caster position while the blast hits where the grenade lands.
+	for _, id := range []int{5201002, 5901002} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Attack == nil || !h.Attack.IgnoreRange {
+			t.Fatalf("%d must ignore caster-centered box range: %+v", id, h.Attack)
+		}
+	}
+	// 5901002 applies fire element and WZ dotTime burn like 5911004.
+	h590, _ := skills.Lookup(5901002)
+	def590, _ := values(t, 5901002, 20)
+	e590, err := combat.FromSkill(def590, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx590 := &combat.AttackContext{Effect: e590}
+	if err := h590.Attack.Prepare(ctx590); err != nil || ctx590.Effect.Element != combat.Fire || len(ctx590.Effect.MonsterStatus) != 1 || !ctx590.Effect.MonsterStatus[0].Poison {
+		t.Fatalf("5901002 prepare: %v %+v", err, ctx590.Effect)
+	}
+	// 5921004 (v148 Rapid Fire) is in v148 0x4E5740 and writes the keydown charge word.
+	if !protocol.QuirkFor(5921004).KeyDown {
+		t.Fatal("5921004 must carry KeyDown quirk")
+	}
+	// 5721003 (Zen Homing Shot) sends bullet slot 0 and requires no ammo.
+	if h, _ := skills.Lookup(5721003); h.Attack == nil || h.Attack.Ammo != combat.AmmoNone {
+		t.Fatalf("5721003 must be AmmoNone: %+v", h.Attack)
+	}
+	// 5711002 (Zen Tiger Charge) is not in v148 0x4E5740; decode a live 0x56 frame.
+	if protocol.QuirkFor(5711002).KeyDown {
+		t.Fatal("5711002 must not carry KeyDown quirk")
+	}
+	raw, err := hex.DecodeString("01119a2457001424344f260000c2815c486081090584da951000000000000000000050420f00070100706f980001ea00d700ea00d7001602e50100005d2b923e42913e683801d7003801bb00")
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err := protocol.ReadAttack(protocol.RecvShootAttack, protocol.NewReader(raw))
+	if err != nil || a.SkillID != 5711002 || len(a.Targets) != 1 || a.Targets[0].ObjectID != 1000016 || a.Targets[0].Lines[0].Claimed() != 485 || a.X != 312 || a.Y != 215 {
+		t.Fatalf("5711002 live frame decode: err=%v attack=%+v", err, a)
+	}
+}

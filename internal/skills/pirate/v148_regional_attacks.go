@@ -35,7 +35,7 @@ func init() {
 		{id: 5811002, kind: combat.Melee, onHit: stun, prepare: requiresAttackBuff(5810001, "ENERGY_CHARGE", energyFull)},
 		{id: 5811004, kind: combat.Melee, prepare: requiresAttackBuff(5810001, "ENERGY_CHARGE", energyFull), drain: energyDrain},
 		{id: 5821004, kind: combat.Melee, prepare: requiresAttackBuff(5821003, "MORPH", 1001)},
-		{id: 5901002, kind: combat.Melee, prepare: regionalFireElement},
+		{id: 5901002, kind: combat.Melee, ignoreRange: true, prepare: regionalFlamethrower},
 		{id: 5901004, kind: combat.Melee, onHit: stun},
 	} {
 		kind := skills.KindAttack

@@ -16,6 +16,9 @@ type attack struct {
 	// noAmmo marks ranged skills that consume no bullet (cannon, Energy Orb,
 	// Battleship, Air Strike).
 	noAmmo bool
+	// ignoreRange marks thrown grenade attacks whose 0x55 packet carries the
+	// caster position while the WZ box describes the distant blast point.
+	ignoreRange bool
 	// onHit is the Java MapleStatEffect monster status, applied with the WZ
 	// prop and time.
 	onHit   []combat.MobStatusApply
@@ -58,7 +61,7 @@ var attacks = []attack{
 	{id: 5121007, kind: combat.Melee},               // 閃．連殺 Barrage (Java comments out its stun)
 	// 槍手 520
 	{id: 5201001, kind: combat.Shoot},                  // 散射 Invisible Shot
-	{id: 5201002, kind: combat.Melee, prepare: poison}, // 炸彈投擲 Grenade
+	{id: 5201002, kind: combat.Melee, ignoreRange: true, prepare: poison}, // 炸彈投擲 Grenade
 	{id: 5201004, kind: combat.Shoot, onHit: stun},     // 偽裝射擊 Blank Shot
 	{id: 5201006, kind: combat.Shoot},                  // 脫離戰場 Recoil Shot
 	// 神槍手 521
@@ -89,7 +92,7 @@ var attacks = []attack{
 }
 
 func spec(a attack) *combat.AttackSpec {
-	s := &combat.AttackSpec{Kind: a.kind, OnHit: a.onHit, Prepare: a.prepare, Drain: a.drain, LevelFrom: a.levelFrom, MaxDamage: a.maxDamage}
+	s := &combat.AttackSpec{Kind: a.kind, IgnoreRange: a.ignoreRange, OnHit: a.onHit, Prepare: a.prepare, Drain: a.drain, LevelFrom: a.levelFrom, MaxDamage: a.maxDamage}
 	if a.noAmmo {
 		s.Ammo = combat.AmmoNone
 	}

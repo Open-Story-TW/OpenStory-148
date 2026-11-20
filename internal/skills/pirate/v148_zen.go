@@ -5,6 +5,7 @@ import (
 
 	"maple-go-server/internal/buffstat"
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 )
 
@@ -24,11 +25,14 @@ func init() {
 		{id: 5721006, kind: combat.Shoot, noAmmo: true, maxDamage: dragonSoulLine}, // 龍魂一擊 Dragon Soul Strike
 		// 精準砲擊: the v148 client lists 5721003 with 5221015/5920011 as the
 		// marking shot (0x6AA744) and reads its x against the marked monster
-		// (0x6F312E), so it marks like 5920011.
-		{id: 5721003, kind: combat.Shoot, onAttack: homingBeacon},
+		// (0x6F312E), so it marks like 5920011; live frames send bullet slot 0.
+		{id: 5721003, kind: combat.Shoot, noAmmo: true, onAttack: homingBeacon},
 	} {
 		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a), OnAttack: a.onAttack, LevelFrom: a.levelFrom})
 	}
+	// 猛虎衝 (5711002) is not in v148's keydown list (0x4E5740), and live 0x56
+	// frames carry no 4-byte keydown charge word before direction/display.
+	protocol.RegisterAttackQuirk(5711002, protocol.AttackQuirk{})
 	// 破城砲 Siege Cannon: the v148 skill dispatcher sends 5711001 to the
 	// stationary summon path at 0x939473 (sub_92E03B), the one 5911001 and
 	// 5920002 use.

@@ -2,6 +2,7 @@ package pirate
 
 import (
 	"maple-go-server/internal/combat"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 )
 
@@ -46,6 +47,9 @@ func init() {
 	skills.Register(skills.Handler{ID: 5801005, Kind: skills.KindHeal, Cast: mpRecovery})
 	skills.Register(skills.Handler{ID: 5801007, Kind: skills.KindBuff | skills.KindMorph, Cast: morph(1002, false)})
 	skills.Register(skills.Handler{ID: 5811007, Kind: skills.KindBuff, Cast: dice(6)})
+	// 瞬‧迅雷 (5921004) is in v148's keydown list (0x4E5740, 0x5A58EC) and
+	// writes the 4-byte charge word in its 0x56 shoot frame like 5221004.
+	protocol.RegisterAttackQuirk(5921004, protocol.AttackQuirk{KeyDown: true})
 	// 瞬‧冰火連擊 raises the regional Flamethrower and Ice Splitter by WZ
 	// damage; the damage calculator reads it at 0x712C46, as 5220001.
 	skills.Register(skills.Handler{ID: 5920001, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
