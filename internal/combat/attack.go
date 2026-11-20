@@ -219,8 +219,10 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		return p, ErrCost
 	}
 	p.Cooldown = resources.Cooldown
-	// Some skills send a melee or body packet but use the magic formula.
-	magic := ctx.Kind == Magic || spec != nil && (spec.MagicDamage || ctx.Kind == Body && spec.Kind&Magic != 0)
+	// Some skills send a melee or body packet but use the magic formula; the
+	// v148 melee sender picks the magic routine for magician-branch skills.
+	magic := ctx.Kind == Magic || spec != nil && (spec.MagicDamage || ctx.Kind == Body && spec.Kind&Magic != 0) ||
+		ctx.Kind == Melee && NativeMagicMelee(ctx.Character.Job, e.SkillID)
 	fieldAmp := ctx.FieldPhysicalAmp
 	if magic {
 		fieldAmp = ctx.FieldMagicAmp
