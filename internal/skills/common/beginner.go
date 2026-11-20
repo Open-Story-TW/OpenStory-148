@@ -37,6 +37,17 @@ func init() {
 	// sets to the target's maximum HP, or 30% of it on a boss (0x71160B).
 	each(1009, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee, Ammo: combat.AmmoNone,
 		MaxDamage: bambooDamage, Prepare: dojangAttack}})
+	// 法老的憤怒攻擊 Pharaoh's Wrath (x1020): v148 0x938AA8 dispatches melee
+	// (0x92D0E9) and CalcDamage 0x711FC2 sets every line to 100% of target max HP.
+	each(1020, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee, Ammo: combat.AmmoNone,
+		MaxDamage: pharaohDamage}})
+	// Giant Potion attacks: v148 0x93B3B8/0x93B3C0 dispatch x1092 (jump) and
+	// x1094 (swing) via melee (0x92D0E9); 0x925CDE dispatches x1095 via body
+	// contact attack (0x9232A1, opcode 0x58).
+	for _, suffix := range []int{1092, 1094} {
+		each(suffix, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee, Ammo: combat.AmmoNone}})
+	}
+	each(1095, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Body, Ammo: combat.AmmoNone}})
 	// 金剛不壞 Invincible Barrier: DIVINE_BODY 1 for time.
 	each(1010, skills.Handler{Kind: skills.KindBuff, Cast: dojangOnly(buff(0, fixed("DIVINE_BODY", 1)))})
 	// 地火天爆 Power Explosion: BERSERK_FURY x (200) for time; v148 CalcDamage
@@ -253,4 +264,10 @@ func bambooDamage(dc combat.DamageContext) int {
 		hp = hp * 3 / 10
 	}
 	return int(min(max(hp, 0), int64(1<<31-1)))
+}
+
+// pharaohDamage is the v148 line value of x1020 (0x711FC2 -> 0x711FB8):
+// 100% of the target's template maximum HP (WZ damagepc=100), with no boss cap.
+func pharaohDamage(dc combat.DamageContext) int {
+	return int(min(max(dc.Mob.HP, 0), int64(1<<31-1)))
 }

@@ -30,14 +30,11 @@ func beginnerIDs(suffixes ...int) []int {
 // Open-Maple docs/server/skills/Z.md explains each group. IDs that are not enabled in the WZ
 // are ignored.
 var pendingGroups = map[string][]int{
-	"潛能開放: Java HIDDEN_POTENTIAL 1 without a duration, use unknown": beginnerIDs(93),
-	"冰衝擊: type 32 without damage, needs MCP observation":            beginnerIDs(104),
-	"法老的憤怒: Pyramid PQ (Java DamageParse)":                          beginnerIDs(1020),
-	"unnamed beginner attacks with no Java handling":                beginnerIDs(1092, 1094, 1095),
-	"助手 (x013): no Java handling":                                   beginnerIDs(1013),
-	"捕獲／獵殺殭屍: monster capture system":                               append(beginnerIDs(1061), 80001132),
-	"guild skills: guild system (content/guild_skills.go)":          {91000000, 91000001, 91000002, 91000003, 91000004, 91000005, 91000006},
-	"professions: crafting system (deferred by the plan)":           {92000000, 92010000, 92020000, 92030000, 92040000},
+	"潛能開放: PvP Battle Mode 7 only (0x9ACFF8), type 50/51 without duration":          beginnerIDs(93),
+	"冰衝擊: Ice Knight PvP polymorph (0x92CCD0 0x5B, damage=0, iceGageCon=60)":        beginnerIDs(104),
+	"助手 (x013): tutorial helper summon removed at level 11 (0x9E3D54), no cast path": beginnerIDs(1013),
+	"捕獲／獵殺殭屍: monster capture system (0x92F18A)":                                    append(beginnerIDs(1061), 80001132),
+	"professions: crafting system (0x7D5347, deferred by the plan)":                 {92000000, 92010000, 92020000, 92030000, 92040000},
 }
 
 func pending() map[int]string {

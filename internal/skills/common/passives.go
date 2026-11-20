@@ -26,6 +26,13 @@ func beginnerPassives() {
 	} {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
 	}
+	// Guild skills (91000000..91000006): stats for 91000000..91000005 are
+	// evaluated from c.GuildSkills with active-guild and expiry checks in
+	// skills.guildBonuses (matching v148 0x91667E), and 91000006 is delivered by
+	// world weekly guild support; Passive stays nil to avoid double-application.
+	for id := 91000000; id <= 91000006; id++ {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
+	}
 
 	// Both v148 百烈祝福 forms grant all four attributes and WZ HP/MP percentages.
 	for _, id := range []int{110, 80000000} {
