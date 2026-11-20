@@ -126,7 +126,9 @@ func teleportMastery(c *skills.CastContext) (skills.CastPlan, error) {
 // cyclone (32121003): TORNADO x for time; the spin hits arrive as body
 // attacks while it runs.
 func cyclone(c *skills.CastContext) (skills.CastPlan, error) {
-	return buff(c, stat("TORNADO", c.Value("x")))
+	// WZ speed 20 is a movement buff while the twister runs; the live v148
+	// caster read no SPEED stat when the world sent TORNADO alone.
+	return buff(c, stat("TORNADO", c.Value("x")), stat("SPEED", c.Value("speed")))
 }
 
 // reaper (32111006) is the REAPER buff; the reapers spawn from attacks while

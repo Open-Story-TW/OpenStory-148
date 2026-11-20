@@ -413,7 +413,7 @@ func TestBattleMageCasts(t *testing.T) {
 	if p.MPCost != 20 || !p.Toggle || stats(p.Self)["TELEPORT_MASTERY"] != 20 || p.Self.Duration != skills.Permanent {
 		t.Fatalf("teleport mastery %+v %+v", p, p.Self)
 	}
-	if p = cast(t, 32121003, 30); stats(p.Self)["TORNADO"] != 1 || p.Self.Duration != 20*time.Second || p.Cooldown != 40*time.Second {
+	if p = cast(t, 32121003, 30); stats(p.Self)["TORNADO"] != 1 || stats(p.Self)["SPEED"] != 20 || p.Self.Duration != 20*time.Second || p.Cooldown != 40*time.Second {
 		t.Fatalf("cyclone %+v %+v", p, p.Self)
 	}
 	if p = cast(t, 32111004, 10); stats(p.Self)["CONVERSION"] != 100 || p.MPCost != 1000 {
