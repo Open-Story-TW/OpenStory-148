@@ -479,6 +479,10 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 		// skill's OnDamaged counts the block and breaks the shield.
 		hpLoss, mpLoss = 0, 0
 	}
+	if _, invincible := skills.ActiveStat(live.session.Character, "DIVINE_BODY", now); invincible {
+		// 金剛不壞 x1010 (Mu Lung Dojo) makes the character invincible.
+		hpLoss, mpLoss = 0, 0
+	}
 	if live.god {
 		// GM !god: the hit is reported and answered, never applied.
 		hpLoss, mpLoss = 0, 0
