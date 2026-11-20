@@ -382,8 +382,8 @@ func passiveBonus(t *testing.T, id, level int, ch domain.Character) skills.Bonus
 
 func TestAranPassives(t *testing.T) {
 	ch := aran(2112)
-	ch.SkillBuffs = []domain.SkillBuff{row(21000000, 10, "ARAN_COMBO", 70, time.Hour)}
-	if b := passiveBonus(t, 21000000, 10, ch); b.WATK != 7 {
+	ch.SkillBuffs = []domain.SkillBuff{{ID: 21000000, Level: 10, Stat: "ARAN_COMBO", Value: 70, Counter: 70, ExpiresAt: now.Add(skills.Permanent)}}
+	if b := passiveBonus(t, 21000000, 10, ch); b.WATK != 21 { // v148: min(x 10, 7) × w 3
 		t.Fatalf("combo ability %+v", b)
 	}
 	if b := passiveBonus(t, 21100000, 20, ch); b.Mastery != 0 {
@@ -402,7 +402,8 @@ func TestAranPassives(t *testing.T) {
 	if b := passiveBonus(t, 21101006, 10, ch); b.DamagePercent != 35 {
 		t.Fatalf("snow charge damR %+v", b)
 	}
-	if b := passiveBonus(t, 21110000, 20, ch); b.Critical != 20 || b.CriticalDamage != 20 {
+	// ch holds a live 70 combo: cr 20 + min(x 10, 7) × y 3.
+	if b := passiveBonus(t, 21110000, 20, ch); b.Critical != 41 || b.CriticalDamage != 20 {
 		t.Fatalf("v148 combo critical cr/criticaldamageMax %+v", b)
 	}
 	// 45 live combo: min(x 10, 45/10) × y 3 = 12 more critical rate.
@@ -602,5 +603,21 @@ func TestEvanPassives(t *testing.T) {
 	}
 	if b := passiveBonus(t, 22170001, 30, evan(2217)); b.MATK != 30 || b.Mastery != 70 || b.CriticalDamageMin != 15 {
 		t.Fatalf("magic mastery %+v", b)
+	}
+}
+
+// v148 Combo Ability: min(x, combo/10) × w attack for the live combo.
+func TestComboAbilityAttackPerTenCombo(t *testing.T) {
+	for _, tc := range []struct{ combo, want int }{{0, 0}, {9, 0}, {25, 6}, {100, 30}, {300, 30}} {
+		ch := aran(2112, domain.SkillState{ID: 21000000, Level: 10})
+		ch.SkillBuffs = []domain.SkillBuff{{ID: 21000000, Level: 10, Stat: "ARAN_COMBO", Counter: tc.combo, Value: 10 * min(tc.combo/10, 10), ExpiresAt: now.Add(skills.Permanent)}}
+		if b := passiveBonus(t, 21000000, 10, ch); b.WATK != tc.want {
+			t.Errorf("combo %d: attack %d, want %d", tc.combo, b.WATK, tc.want)
+		}
+	}
+	idle := aran(2112, domain.SkillState{ID: 21000000, Level: 10})
+	idle.SkillBuffs = []domain.SkillBuff{{ID: 21000000, Level: 10, Stat: "ARAN_COMBO", Counter: 100, Value: 100, ExpiresAt: now.Add(-8 * time.Second).Add(skills.Permanent)}}
+	if b := passiveBonus(t, 21000000, 10, idle); b.WATK != 0 {
+		t.Errorf("an idle combo still gave attack %d", b.WATK)
 	}
 }

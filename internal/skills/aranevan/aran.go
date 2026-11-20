@@ -275,13 +275,16 @@ func comboPacket(counter int) []byte {
 	return w.Packet()
 }
 
-// comboAbility is Java PlayerStats: attack += ARAN_COMBO / 10.
+// comboAbility follows v148 0x706A90: the attack total adds
+// min(x, combo/10) × w for the live combo (21000000 x is the level, w is 3;
+// the field names come from the StringPool keys "w" and "#w" of 0x6AE054).
 func comboAbility(c *skills.PassiveContext) skills.Bonus {
 	row, ok := activeRow(c.Character, 21000000, "ARAN_COMBO", c.Now)
 	if !ok {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{WATK: row.Value / 10}
+	combo := lastCombo([]domain.SkillBuff{row}, c.Now)
+	return skills.Bonus{WATK: max(0, min(c.Values["x"], combo/10)*c.Values["w"])}
 }
 
 // comboRecharge (21111009) pays mpCon and x% of the maximum HP (Java hpR =
