@@ -104,17 +104,21 @@ func (s *Server) applyPartySkill(ctx context.Context, live *liveCharacter, sink 
 	}
 	live.persistMu.Unlock()
 	if source == nil || visit == nil || blocked {
+		slog.Info("party_skill_rejected", "character", initial.CharacterID, "skill", q.SkillID, "reason", "not_ready",
+			"source", source != nil, "scene", visit != nil, "vitals_pending", blocked)
 		return s.writeScenePackets(visit, protocol.EnableActions())
 	}
 	step, cancel := context.WithTimeout(ctx, 3*time.Second)
 	party, e := partyRepo.ReadParty(step, initial)
 	cancel()
 	if e != nil {
+		slog.Info("party_skill_rejected", "character", initial.CharacterID, "skill", q.SkillID, "reason", "party_read", "error", e)
 		return s.writeScenePackets(visit, protocol.EnableActions())
 	}
 	ids := map[int64]bool{initial.CharacterID: true}
 	if party.Party.ID != 0 {
 		if _, member := party.Party.Member(initial.CharacterID); !member {
+			slog.Info("party_skill_rejected", "character", initial.CharacterID, "skill", q.SkillID, "reason", "not_party_member")
 			return s.writeScenePackets(visit, protocol.EnableActions())
 		}
 		for _, p := range party.Party.Members {
@@ -198,6 +202,7 @@ func (s *Server) applyPartySkill(ctx context.Context, live *liveCharacter, sink 
 		}
 		pin := s.sceneFor(m.live, m.sink)
 		if pin == nil || s.combatVitalsPending(m.live, snapshot) {
+			slog.Info("party_skill_rejected", "character", current.CharacterID, "skill", q.SkillID, "reason", "recipient_not_ready", "recipient", snapshot.CharacterID)
 			return s.writeScenePackets(visit, protocol.EnableActions())
 		}
 		candidate.session, candidate.visit, candidate.audience = snapshot, pin, s.skillCastAudience(m)
@@ -313,6 +318,7 @@ func validPartySkillResult(t *partySkillTicket, r domain.PartySkillCastResult) b
 // under a scene/publication/registry lock. Stale results remain durable-only.
 func (s *Server) commitPartySkill(t *partySkillTicket, result domain.PartySkillCastResult) error {
 	if !validPartySkillResult(t, result) {
+		slog.Warn("party_skill_rejected", "character", t.request.Session.CharacterID, "skill", t.request.SkillID, "reason", "invalid_repository_result")
 		return domain.ErrForbidden
 	}
 	type committedPeer struct {
