@@ -257,3 +257,20 @@ func TestQAGMHPSetsZeroToMaxHP(t *testing.T) {
 		t.Fatal("dead character revived by !hp")
 	}
 }
+
+func TestQADojoEnergyIsOffUnlessTheWorldTurnsItOn(t *testing.T) {
+	c := gmPolicyCharacter()
+	c.MapID = 925020100
+	t.Setenv(domain.QADojoEnergyEnv, "")
+	if _, _, _, err := applyQAGMPolicy(&c, domain.GMCommandRequest{Name: "dojoenergy"}, time.Now()); err == nil {
+		t.Fatal("dojoenergy accepted on a world that did not turn it on")
+	}
+	t.Setenv(domain.QADojoEnergyEnv, "1")
+	before := c
+	if changed, _, mapChanged, err := applyQAGMPolicy(&c, domain.GMCommandRequest{Name: "dojoenergy"}, time.Now()); err != nil || changed || mapChanged || !reflect.DeepEqual(before, c) {
+		t.Fatalf("dojoenergy on: changed %t map %t err %v", changed, mapChanged, err)
+	}
+	if _, _, _, err := applyQAGMPolicy(&c, domain.GMCommandRequest{Name: "dojoenergy", Args: []int64{1}}, time.Now()); err == nil {
+		t.Fatal("dojoenergy with an argument accepted")
+	}
+}

@@ -30,7 +30,7 @@ func parseGMChat(text string) (string, []int64, bool) {
 	name := strings.TrimPrefix(fields[0], "!")
 	want := -1
 	switch name {
-	case "heal", "whereami", "effstats", "clearmobs", "online", "rates", "maxskills", "killall", "cleardrops": // !effstats: read-only server stat view
+	case "heal", "whereami", "effstats", "clearmobs", "online", "rates", "maxskills", "killall", "cleardrops", "dojoenergy": // !effstats: read-only server stat view
 		want = 0
 	case "help": // !help [page]
 		want = len(fields) - 1
@@ -204,6 +204,7 @@ var gmHelpPages = []gmHelpPage{
 		{"!cleardrops", "清除這張地圖的掉落物"},
 		{"!clearmobs", "清除自己召喚的怪物"},
 		{"!mobhold <0或1>", "1 讓測試地圖的怪物打不死"},
+		{"!dojoenergy", "測試世界：把武陵道場能量補滿"},
 	}},
 	{"玩家", []gmHelpEntry{
 		{"!online", "列出線上玩家和所在地圖"},
@@ -577,6 +578,14 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 				slog.Warn("qa_alliance_create_failed", "partner", partner, "error", err)
 			}
 		}()
+	}
+	if name == "dojoenergy" {
+		// Authorized only where MAPLEGO_QA_DOJO_ENERGY=1: fill the caller's
+		// gauge in its running challenge and send the normal energy update.
+		if energy, ok := s.qaFillDojoEnergy(next, sink); ok {
+			return true, gmFeedback(sink, fmt.Sprintf("Committed dojoenergy: energy %d; setup provenance: gm_command.", energy))
+		}
+		return true, gmFeedback(sink, "Denied: dojoenergy needs a running Mu Lung Dojo challenge on its current Dojang floor.")
 	}
 	if name == "mobhold" {
 		// Authorized on a QA test field: this field's mobs stop dying and

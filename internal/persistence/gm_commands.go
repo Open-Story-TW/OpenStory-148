@@ -669,6 +669,16 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 			return false, 0, false, e
 		}
 		c.HP, c.MP = c.MaxHP, c.MaxMP
+	case "dojoenergy":
+		// Authorization and audit only: the world fills the gauge of the
+		// caller's running dojo challenge (QA worlds that turned it on).
+		if len(r.Args) != 0 {
+			return invalid()
+		}
+		if !domain.QADojoEnergyEnabled() {
+			return deny("dojoenergy is off on this world")
+		}
+		return false, 0, false, nil
 	case "mobhold":
 		// Authorization and audit only: the world holds this field's mobs.
 		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 1 {

@@ -33,3 +33,12 @@ func QAWarpAllowed(mapID int) bool {
 	}
 	return mapID == qaWarpDojoHall && os.Getenv(QAWarpDojoEnv) == "1"
 }
+
+// QADojoEnergyEnv enables the QA !dojoenergy command, which fills the caller's
+// Mu Lung Dojo energy gauge, when set to 1. It is off by default and exists
+// so an isolated QA world can test the three energy skills without charging
+// the gauge by hand; the energy rules themselves are unchanged.
+const QADojoEnergyEnv = "MAPLEGO_QA_DOJO_ENERGY"
+
+// QADojoEnergyEnabled reports whether !dojoenergy is on for this process.
+func QADojoEnergyEnabled() bool { return os.Getenv(QADojoEnergyEnv) == "1" }

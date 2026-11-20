@@ -402,3 +402,23 @@ func TestOnlySoGongInTheHallOpensADojoRoom(t *testing.T) {
 		t.Fatalf("status %v %v", status.Value, err)
 	}
 }
+
+func TestQADojoEnergyFillsTheCallersCurrentRun(t *testing.T) {
+	f := dojoTestFixture(t, 1)
+	s := f.server
+	if _, ok := s.qaFillDojoEnergy(f.lives[1].session, f.sinks[1]); ok {
+		t.Fatal("filled energy in the hall without a challenge")
+	}
+	inst := f.dojoStarted(t, 1)
+	f.forget(1)
+	energy, ok := s.qaFillDojoEnergy(f.lives[1].session, f.sinks[1])
+	if !ok || energy != content.DojoEnergyFull || f.sent(1, protocol.SessionValue("energy", strconv.Itoa(content.DojoEnergyFull))) != 1 {
+		t.Fatalf("fill: energy %d ok %t", energy, ok)
+	}
+	inst.dojo.mu.Lock()
+	got := inst.dojo.energy[1]
+	inst.dojo.mu.Unlock()
+	if got != content.DojoEnergyFull {
+		t.Fatalf("run energy %d", got)
+	}
+}

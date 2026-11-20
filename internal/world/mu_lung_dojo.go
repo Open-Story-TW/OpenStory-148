@@ -313,3 +313,26 @@ func (s *Server) dojoSpendSkill(channel int, c domain.Character, sink packetSink
 	}
 	return true
 }
+
+// qaFillDojoEnergy is QA !dojoenergy: the caller's gauge in its running
+// challenge becomes full and the client gets the ordinary energy update. It
+// needs the caller on the current Dojang floor of its own run.
+func (s *Server) qaFillDojoEnergy(session domain.CharacterSession, sink packetSink) (int, bool) {
+	c := session.Character
+	if !content.DojangField(c.MapID) {
+		return 0, false
+	}
+	inst := s.dojoInstance(session.ChannelID, c.MapID)
+	if inst == nil || s.eventOf(session.CharacterID) != inst {
+		return 0, false
+	}
+	floor, _, _ := content.DojoFloorOf(c.MapID)
+	inst.dojo.mu.Lock()
+	current := floor == inst.dojo.floor
+	inst.dojo.mu.Unlock()
+	if !current {
+		return 0, false
+	}
+	energy, _ := inst.dojo.gainEnergy(session.CharacterID, content.DojoEnergyFull)
+	return energy, sink.WritePacket(protocol.SessionValue("energy", strconv.Itoa(energy))) == nil
+}
