@@ -920,3 +920,52 @@ func TestV148ZenBuffs(t *testing.T) {
 		}
 	}
 }
+
+func TestV148BuccaneerAndCorsairBuffs(t *testing.T) {
+	now := time.Unix(1000, 0)
+	// 5111010 Counterattack: INVINCIBLE = x and active DamageReduce = x.
+	if p := cast(t, 5111010, 20); p.Self == nil || p.Self.Duration != 180*time.Second ||
+		fmt.Sprint(p.Self.Stats) != fmt.Sprint([]skills.StatValue{{Stat: "INVINCIBLE", Value: 20}}) {
+		t.Fatalf("5111010 cast: %+v", p.Self)
+	}
+	if b := passive(t, 5111010, 20, domain.Character{Job: 511}); b != (skills.Bonus{}) {
+		t.Fatalf("5111010 inactive bonus: %+v", b)
+	}
+	active5111010 := domain.Character{Job: 511, SkillBuffs: []domain.SkillBuff{{ID: 5111010, Stat: "INVINCIBLE", Value: 20, ExpiresAt: now.Add(time.Minute)}}}
+	if h, _ := skills.Lookup(5111010); h.Passive(&skills.PassiveContext{Values: map[string]int{"x": 20}, Character: active5111010, Now: now}).DamageReduce != 20 {
+		t.Fatalf("5111010 active bonus missing DamageReduce")
+	}
+
+	// 5121015 Crossbones: BIT_197 = x and active WATKPercent = x, preserving passive ASR/TER/knuckle mastery.
+	if p := cast(t, 5121015, 30); p.Self == nil || p.Self.Duration != 180*time.Second ||
+		fmt.Sprint(p.Self.Stats) != fmt.Sprint([]skills.StatValue{{Stat: "BIT_197", Value: 15}}) {
+		t.Fatalf("5121015 cast: %+v", p.Self)
+	}
+	knuckleChar := domain.Character{Job: 512, Equipment: []domain.Equipment{{Slot: -11, ItemID: 1482000}}}
+	if b := passive(t, 5121015, 30, knuckleChar); b.ASR != 30 || b.TER != 30 || b.Mastery != 70 || b.WATKPercent != 0 {
+		t.Fatalf("5121015 inactive bonus: %+v", b)
+	}
+	knuckleChar.SkillBuffs = []domain.SkillBuff{{ID: 5121015, Stat: "BIT_197", Value: 15, ExpiresAt: now.Add(time.Minute)}}
+	h512, _ := skills.Lookup(5121015)
+	_, v512 := values(t, 5121015, 30)
+	if b := h512.Passive(&skills.PassiveContext{Values: v512, Character: knuckleChar, Now: now}); b.ASR != 30 || b.TER != 30 || b.Mastery != 70 || b.WATKPercent != 15 {
+		t.Fatalf("5121015 active bonus: %+v", b)
+	}
+
+	// 5221018 Jolly Roger: same buffstats as 5721009 plus active DamagePercent = damR.
+	want5221018 := []skills.StatValue{
+		{Stat: "PIRATES_REVENGE", Value: 10}, {Stat: "ABNORMAL_STATUS_R", Value: 30}, {Stat: "ELEMENTAL_STATUS_R", Value: 30},
+		{Stat: "STANCE", Value: 60}, {Stat: "AVOID", Value: -300},
+	}
+	if p := cast(t, 5221018, 20); p.Self == nil || p.Self.Duration != 180*time.Second ||
+		fmt.Sprint(p.Self.Stats) != fmt.Sprint(want5221018) {
+		t.Fatalf("5221018 cast: %+v", p.Self)
+	}
+	if b := passive(t, 5221018, 20, domain.Character{Job: 522}); b != (skills.Bonus{}) {
+		t.Fatalf("5221018 inactive bonus: %+v", b)
+	}
+	active5221018 := domain.Character{Job: 522, SkillBuffs: []domain.SkillBuff{{ID: 5221018, Stat: "PIRATES_REVENGE", Value: 10, ExpiresAt: now.Add(time.Minute)}}}
+	if h, _ := skills.Lookup(5221018); h.Passive(&skills.PassiveContext{Values: map[string]int{"damR": 10}, Character: active5221018, Now: now}).DamagePercent != 10 {
+		t.Fatalf("5221018 active bonus missing DamagePercent")
+	}
+}

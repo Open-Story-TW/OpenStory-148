@@ -102,18 +102,42 @@ func init() {
 	skills.Register(skills.Handler{ID: 5101011, Kind: skills.KindBuff, Cast: attackBuff("indiePad", "acc")}) // 全神貫注
 	skills.Register(skills.Handler{ID: 5201008, Kind: skills.KindBuff, Cast: infiniteBullets})               // 無形彈藥
 	skills.Register(skills.Handler{ID: 5201011, Kind: skills.KindSpecial, Cast: skills.CostOnly})            // 飛翼
-	skills.Register(skills.Handler{ID: 5121015, Kind: skills.KindSpecial | skills.KindPassive, Cast: skills.CostOnly,
+	// 拳霸大師 Crossbones: active WATK% buff via BIT_197 (read in v148 GetPAD 0x7057B1)
+	// plus passive knuckle mastery and abnormal/elemental status resistances.
+	skills.Register(skills.Handler{ID: 5121015, Kind: skills.KindBuff | skills.KindPassive, Cast: valueBuff("BIT_197", "x"),
 		Passive: func(c *skills.PassiveContext) skills.Bonus {
 			b := skills.Bonus{ASR: c.Values["asrR"], TER: c.Values["terR"]}
 			if weaponType(c.Character) == knuckle {
 				b.Mastery = c.Values["mastery"]
 			}
+			if c.Active(5121015) {
+				b.WATKPercent = c.Values["x"]
+			}
 			return b
 		}})
-	// Cost-only casts whose temporary stat has not been verified.
-	for _, id := range []int{5111010, 5211009, 5221018} { // 雲體風身, 魔法彈丸, 海盜風采
-		skills.Register(skills.Handler{ID: id, Kind: skills.KindSpecial, Cast: skills.CostOnly})
-	}
+	// 雲體風身 Counterattack: damage reduction buff via INVINCIBLE (guard skill
+	// list 0x92B408; physical/magic taken-damage calc 0x7093E1 / 0x7097C0).
+	skills.Register(skills.Handler{ID: 5111010, Kind: skills.KindBuff | skills.KindPassive, Cast: valueBuff("INVINCIBLE", "x"),
+		Passive: func(c *skills.PassiveContext) skills.Bonus {
+			if !c.Active(5111010) {
+				return skills.Bonus{}
+			}
+			return skills.Bonus{DamageReduce: c.Values["x"]}
+		}})
+	// 海盜風采 Jolly Roger: same temporary stats and active damR as 5721009.
+	skills.Register(skills.Handler{ID: 5221018, Kind: skills.KindBuff | skills.KindPassive,
+		Cast: zenBuff(
+			zenStat{"PIRATES_REVENGE", "damR"}, zenStat{"ABNORMAL_STATUS_R", "x"}, zenStat{"ELEMENTAL_STATUS_R", "y"},
+			zenStat{"STANCE", "z"}, zenStat{"AVOID", "eva"},
+		),
+		Passive: func(c *skills.PassiveContext) skills.Bonus {
+			if !c.Active(5221018) {
+				return skills.Bonus{}
+			}
+			return skills.Bonus{DamagePercent: c.Values["damR"]}
+		}})
+	// Cost-only cast whose temporary stat has not been verified.
+	skills.Register(skills.Handler{ID: 5211009, Kind: skills.KindSpecial, Cast: skills.CostOnly}) // 魔法彈丸
 }
 
 // Crew variants share the cast, buff and level. Their own WZ books set their
