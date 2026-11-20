@@ -1,6 +1,9 @@
 package pirate
 
 import (
+	"fmt"
+
+	"maple-go-server/internal/buffstat"
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/skills"
 )
@@ -22,6 +25,50 @@ func init() {
 	} {
 		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a), LevelFrom: a.levelFrom})
 	}
+	// 聚精會神 Focus: indiePad attack and acc accuracy for the WZ time.
+	skills.Register(skills.Handler{ID: 5701006, Kind: skills.KindBuff, Cast: zenBuff(zenStat{"ANGEL_ATK", "indiePad"}, zenStat{"ACC", "acc"})})
+	// 海盜風采 Pirate's Style: damR, x% abnormal and y% elemental resistance,
+	// z% knockback resistance and eva (negative) avoidability.
+	skills.Register(skills.Handler{ID: 5721009, Kind: skills.KindBuff, Passive: pirateStyleDamage, Cast: zenBuff(
+		zenStat{"PIRATES_REVENGE", "damR"}, zenStat{"ABNORMAL_STATUS_R", "x"}, zenStat{"ELEMENTAL_STATUS_R", "y"},
+		zenStat{"STANCE", "z"}, zenStat{"AVOID", "eva"})})
+}
+
+type zenStat struct {
+	stat buffstat.Stat
+	key  string
+}
+
+// zenBuff is a self buff of the listed WZ values for the WZ time; keys with
+// a zero value are left out.
+func zenBuff(stats ...zenStat) func(*skills.CastContext) (skills.CastPlan, error) {
+	return func(c *skills.CastContext) (skills.CastPlan, error) {
+		p := skills.StandardCost(c)
+		d, err := buffTime(c)
+		if err != nil {
+			return p, err
+		}
+		b := &skills.Buff{Duration: d}
+		for _, s := range stats {
+			if v := c.Value(s.key); v != 0 {
+				b.Stats = append(b.Stats, skills.StatValue{Stat: s.stat, Value: v})
+			}
+		}
+		if len(b.Stats) == 0 {
+			return p, fmt.Errorf("skill%d: no stats", c.Skill.ID)
+		}
+		p.Self = b
+		return p, nil
+	}
+}
+
+// pirateStyleDamage is Pirate's Style's damR while the buff runs; the v148
+// client adds the PIRATES_REVENGE (bit 116) value to its damage percent sum.
+func pirateStyleDamage(c *skills.PassiveContext) skills.Bonus {
+	if !c.Active(5721009) {
+		return skills.Bonus{}
+	}
+	return skills.Bonus{DamagePercent: c.Values["damR"]}
 }
 
 // dragonSoulLine (5721006) follows Snipe (3221007) in the v148 physical

@@ -2,6 +2,7 @@ package pirate
 
 import (
 	"encoding/hex"
+	"fmt"
 	"testing"
 	"time"
 
@@ -188,7 +189,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 223 { // Includes the regional v148 pirate books and six regional 57xx attacks.
+	if count != 225 { // Includes the regional v148 pirate books and the eight regional 57xx skills added for lane D.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }
@@ -903,5 +904,19 @@ func TestV148ZenAttacks(t *testing.T) {
 	}
 	if got := dragonSoulLine(combat.DamageContext{Mob: content.Mob{HP: 100}}); got != combat.MaxLineDamage() {
 		t.Errorf("dragon soul non-boss line %d", got)
+	}
+}
+
+func TestV148ZenBuffs(t *testing.T) {
+	want := map[int][]skills.StatValue{
+		5701006: {{Stat: "ANGEL_ATK", Value: 30}, {Stat: "ACC", Value: 160}},
+		5721009: {{Stat: "PIRATES_REVENGE", Value: 10}, {Stat: "ABNORMAL_STATUS_R", Value: 40}, {Stat: "ELEMENTAL_STATUS_R", Value: 40},
+			{Stat: "STANCE", Value: 40}, {Stat: "AVOID", Value: -300}},
+	}
+	for id, stats := range want {
+		p := cast(t, id, 20)
+		if p.Self == nil || fmt.Sprint(p.Self.Stats) != fmt.Sprint(stats) {
+			t.Errorf("%d: %+v", id, p.Self)
+		}
 	}
 }
