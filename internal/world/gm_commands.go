@@ -451,7 +451,7 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 			s.publishQABuffReset(session, live, sink, gmHideBit)
 		}
 	} else if result.Changed && name == "buffreset" {
-		s.publishQABuffReset(session, live, sink, int(args[0]))
+		s.publishQABuffReset(session, live, sink, int(args[0]), lostStats(session.Character, next.Character)...)
 	} else if result.Changed && name == "debuff" {
 		s.publishQADebuff(session, live, sink, next.Character, int(args[0]))
 	} else if result.Changed {
@@ -644,19 +644,43 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 // character and its visible peers, even when no server row held it, so a
 // client stuck in a mode (Mechanic Siege) leaves it. A MECH_CHANGE reset also
 // carries bit 137. Requires publication.
-func (s *Server) publishQABuffReset(session domain.CharacterSession, live *liveCharacter, sink packetSink, bit int) {
+// lostStats are the buff stats before had and after lacks (a !buffreset of a
+// two-state stat removes its whole buff).
+func lostStats(before, after domain.Character) []buffstat.Stat {
+	kept := map[string]bool{}
+	for _, b := range after.SkillBuffs {
+		kept[b.Stat] = true
+	}
+	var out []buffstat.Stat
+	seen := map[string]bool{}
+	for _, b := range before.SkillBuffs {
+		if !kept[b.Stat] && !seen[b.Stat] {
+			seen[b.Stat] = true
+			out = append(out, buffstat.Stat(b.Stat))
+		}
+	}
+	return out
+}
+
+func (s *Server) publishQABuffReset(session domain.CharacterSession, live *liveCharacter, sink packetSink, bit int, also ...buffstat.Stat) {
 	spec, ok := buffstat.ByBit(bit)
 	if !ok {
 		return
 	}
-	if p, err := protocol.TemporaryStatReset(0, []buffstat.Stat{spec.Name}); err == nil {
+	stats := []buffstat.Stat{spec.Name}
+	for _, st := range also {
+		if other, ok := buffstat.Lookup(st); ok && other.Name != spec.Name {
+			stats = append(stats, other.Name)
+		}
+	}
+	if p, err := protocol.TemporaryStatReset(0, stats); err == nil {
 		_ = sink.WritePacket(p)
 	}
 	source := s.skillMemberFor(session, live, sink)
 	if source == nil {
 		return
 	}
-	p, err := protocol.TemporaryStatReset(session.CharacterID, []buffstat.Stat{spec.Name})
+	p, err := protocol.TemporaryStatReset(session.CharacterID, stats)
 	if err != nil {
 		return
 	}

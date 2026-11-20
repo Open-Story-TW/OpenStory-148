@@ -69,6 +69,27 @@ func TestQAGMBuffResetRemovesStatRows(t *testing.T) {
 	}
 }
 
+// A two-state stat takes its whole buff with it: resetting the riding bit of
+// the mech leaves no half-mounted rows, and other buffs stay.
+func TestQAGMBuffResetOfARideRemovesTheWholeMount(t *testing.T) {
+	ctx, s, actors := qaGMFixture(t)
+	a := grantQAActor(t, ctx, s, actors[0])
+	if _, err := s.db.ExecContext(ctx, `INSERT INTO game_skill_buffs(character_id,skill_id,level,stat,value,expires_at) VALUES
+		($1,35001002,10,'MONSTER_RIDING',1932016,now()+interval '1 hour'),
+		($1,35001002,10,'ENHANCED_WATK',20,now()+interval '1 hour'),
+		($1,35121007,30,'MAPLE_WARRIOR',15,now()+interval '1 hour')`, a.CharacterID); err != nil {
+		t.Fatal(err)
+	}
+	var err error
+	if a.Character, err = s.GetCharacter(ctx, a.CharacterID); err != nil || len(a.Character.SkillBuffs) != 3 {
+		t.Fatal("fixture rows", a.Character.SkillBuffs, err)
+	}
+	r, err := s.ExecuteGMCommand(ctx, domain.GMCommandRequest{Session: a, OperationID: fmt.Sprintf("qa-buffreset-ride-%d", a.CharacterID), Name: "buffreset", Args: []int64{251}})
+	if err != nil || !r.Changed || len(r.Character.SkillBuffs) != 1 || r.Character.SkillBuffs[0].Stat != "MAPLE_WARRIOR" {
+		t.Fatalf("ride reset left %+v %v", r.Character.SkillBuffs, err)
+	}
+}
+
 func TestQAGMDebuffAppliesMobSkillStatus(t *testing.T) {
 	ctx, s, actors := qaGMFixture(t)
 	a := grantQAActor(t, ctx, s, actors[0])

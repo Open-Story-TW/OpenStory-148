@@ -255,8 +255,20 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 		for _, alias := range spec.Aliases {
 			names[string(alias)] = true
 		}
+		// A two-state stat (riding, dash) belongs to its whole buff: removing
+		// only that row would leave the mount's other stats behind and the
+		// client half-mounted, refusing the next mount. Remove every row of
+		// the sources that held it.
+		sources := map[int]bool{}
+		if spec.TwoState != 0 {
+			for _, b := range c.SkillBuffs {
+				if names[b.Stat] {
+					sources[b.ID] = true
+				}
+			}
+		}
 		var removed domain.SkillResult
-		if e := removeSkillBuffs(ctx, tx, &c, &removed, func(b domain.SkillBuff) bool { return names[b.Stat] }); e != nil {
+		if e := removeSkillBuffs(ctx, tx, &c, &removed, func(b domain.SkillBuff) bool { return names[b.Stat] || sources[b.ID] }); e != nil {
 			return result, e
 		}
 		if e := commitInventoryState(ctx, tx, &c); e != nil {
