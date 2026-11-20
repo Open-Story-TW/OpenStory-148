@@ -189,7 +189,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 225 { // Includes the regional v148 pirate books and the eight regional 57xx skills added for lane D.
+	if count != 226 { // Includes the regional v148 pirate books and the nine regional 57xx skills added for lane D.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }

@@ -25,6 +25,13 @@ func init() {
 	} {
 		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a), LevelFrom: a.levelFrom})
 	}
+	// 破城砲 Siege Cannon: the v148 skill dispatcher sends 5711001 to the
+	// stationary summon path at 0x939473 (sub_92E03B), the one 5911001 and
+	// 5920002 use.
+	skills.Register(skills.Handler{
+		ID: 5711001, Kind: skills.KindSummon, Cast: valueOne("PUPPET"),
+		Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Multi: true}},
+	})
 	// 聚精會神 Focus: indiePad attack and acc accuracy for the WZ time.
 	skills.Register(skills.Handler{ID: 5701006, Kind: skills.KindBuff, Cast: zenBuff(zenStat{"ANGEL_ATK", "indiePad"}, zenStat{"ACC", "acc"})})
 	// 海盜風采 Pirate's Style: damR, x% abnormal and y% elemental resistance,
