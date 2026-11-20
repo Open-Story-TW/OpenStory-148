@@ -253,3 +253,41 @@ func TestV148BlueAuraSourceRankAndOwnerTail(t *testing.T) {
 		}
 	}
 }
+
+// v148 SecondaryStat::DecodeForLocal (0x71ED0C) reads a local triplet for bit
+// 223 (INDIE_DAMAGE) before the 3 zero bytes, AND DecodeIndieTempStat (0x7264DA)
+// reads Indie #28 after two-states. Omitting the local triplet causes client EOF
+// (error code 38) on Mihile 51111003 (Radiant Burst).
+func TestIndieDamageEncodesLocalTripletAndIndieEntry(t *testing.T) {
+	p, err := TemporaryStatSet(51111003, 180*time.Second, []BuffStat{{Stat: "INDIE_DAMAGE", Value: 20}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := NewReader(p)
+	if r.U16() != 0x2d {
+		t.Fatal("opcode")
+	}
+	var mask [8]uint32
+	for i := range mask {
+		mask[i] = r.U32()
+	}
+	if mask[1] != 1<<31 {
+		t.Fatalf("bit 223 mask = %x", mask)
+	}
+	if val, src, ms := r.I16(), r.I32(), r.I32(); val != 20 || src != 51111003 || ms != 180000 {
+		t.Fatalf("local triplet = %d,%d,%d", val, src, ms)
+	}
+	r.Skip(3) // 3 zero header bytes
+	if count := r.I32(); count != 1 {
+		t.Fatalf("indie count = %d", count)
+	}
+	src, val, _, ms := r.I32(), r.I32(), r.I32(), r.I32()
+	if src != 51111003 || val != 20 || ms != 180000 {
+		t.Fatalf("indie entry = %d,%d,%d", src, val, ms)
+	}
+	r.U16() // delay
+	r.U8()  // v148 trailing byte
+	if r.Err() != nil || r.Remaining() != 0 {
+		t.Fatalf("remaining=%d err=%v", r.Remaining(), r.Err())
+	}
+}
