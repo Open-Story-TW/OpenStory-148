@@ -21,7 +21,7 @@ func init() {
 	passive(15100007, maxHP)                                                                                                       // HP增加: Java percent_hp for 1510–1512
 	passive(15100009, physicalTraining)                                                                                            // 百烈訓練
 	skills.Register(skills.Handler{ID: 15101002, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                              // 致命快打
-	skills.Register(skills.Handler{ID: 15101003, Kind: skills.KindAttack, Attack: thunderMelee()})                                 // 狂暴衝擊: charge quirk is built into S0b
+	skills.Register(skills.Handler{ID: 15101003, Kind: skills.KindAttack, Attack: thunderMelee()})                                 // 狂暴衝擊: plain melee frame (no keydown charge)
 	skills.Register(skills.Handler{ID: 15101005, Kind: skills.KindAttack | skills.KindMobStatus, Attack: thunderMelee(hit(stun))}) // 能量暴擊
 	// 雷鳴: WK_CHARGE x plus the generic mad; Java isPartyBuff does not
 	// exclude it (unlike 11111007/12101005), so it charges the party.

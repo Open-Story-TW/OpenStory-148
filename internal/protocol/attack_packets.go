@@ -56,7 +56,9 @@ func init() {
 	for _, id := range []int{2111007, 2211007, 2311007, 12111007, 22161005, 32111010, 21101003} {
 		RegisterAttackQuirk(id, AttackQuirk{EnergyHeader: true, PreTargets: 1})
 	}
-	for _, id := range []int{24121000, 5201002, 14111006, 4341002, 4341003, 5301001, 31001000, 31101000, 31111005, 15101003} {
+	// Thunder Breaker's 15101003 is not in the v148 keydown list 0x4E5740 and
+	// its melee frame has no charge word (live frame 2026-11-20).
+	for _, id := range []int{24121000, 5201002, 14111006, 4341002, 4341003, 5301001, 31001000, 31101000, 31111005} {
 		RegisterAttackQuirk(id, AttackQuirk{Charge: true})
 	}
 	for _, id := range []int{14111022, 14111023} {

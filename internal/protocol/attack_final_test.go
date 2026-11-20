@@ -73,3 +73,13 @@ func TestReadAttackPoisonBombExplosionPoint(t *testing.T) {
 		t.Fatalf("attacker (%d,%d) bomb (%d,%d)", a.X, a.Y, a.TailX, a.TailY)
 	}
 }
+
+// Thunder Breaker's 15101003 as the v148 client sent it (2026-11-20): the
+// plain melee header with no keydown charge before the direction.
+func TestReadAttackThunderBreaker15101003HasNoCharge(t *testing.T) {
+	body, _ := hex.DecodeString("01114b6ce6000a4307814f007080e94e699b08051464140d000000000000000039430f00070100706f98000115ffd70015ffd7003102be0000005d2b923ed629a00943ffd700")
+	a, err := ReadAttack(RecvMeleeAttack, NewReader(body))
+	if err != nil || a.SkillID != 15101003 || a.Charge != 0 || len(a.Targets) != 1 || a.LineCount() != 1 || a.Targets[0].Lines[0].Damage != 190 || a.X != -189 {
+		t.Fatalf("%+v %v", a, err)
+	}
+}
