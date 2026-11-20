@@ -462,6 +462,9 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 			if err = sink.WritePacket(protocol.UpdateCombatStats(next.Character)); err != nil {
 				return true, err
 			}
+			if name == "job" && hasBuffStat(session.Character, "SHADOWPARTNER") && !hasBuffStat(next.Character, "SHADOWPARTNER") {
+				s.publishQABuffReset(session, live, sink, 26) // the old line's partner was dropped
+			}
 			s.refreshCharacterLookScene(expectedVisit)
 			if name == "job" {
 				s.respawnSceneLocked(expectedVisit) // skill publication is held
@@ -727,4 +730,15 @@ func effectiveStatsLines(c domain.Character, now time.Time) []string {
 		return []string{effective}
 	}
 	return []string{effective, "Equipment only: " + fields(base) + "."}
+}
+
+// hasBuffStat reports a stored buff row of stat, expired or not: the reset
+// is only sent for a row the job change removed.
+func hasBuffStat(c domain.Character, stat string) bool {
+	for _, b := range c.SkillBuffs {
+		if b.Stat == stat {
+			return true
+		}
+	}
+	return false
 }

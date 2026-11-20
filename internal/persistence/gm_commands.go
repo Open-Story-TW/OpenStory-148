@@ -346,6 +346,17 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 		if err = saveJobState(ctx, tx, c); err != nil {
 			return result, err
 		}
+		if r.Name == "job" {
+			// The v148 client draws Shadow Partner from a skill of the
+			// owner's job (0x6F17D9) and terminates when none matches, so a
+			// partner from the previous job's line cannot survive the change.
+			var removed domain.SkillResult
+			if err = removeSkillBuffs(ctx, tx, &c, &removed, func(b domain.SkillBuff) bool {
+				return b.Stat == "SHADOWPARTNER" && !domain.JobOwnsSkill(c.Job, b.ID)
+			}); err != nil {
+				return result, err
+			}
+		}
 		if err = commitInventoryState(ctx, tx, &c); err != nil {
 			return result, err
 		}
