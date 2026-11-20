@@ -13,7 +13,7 @@ func init() {
 		{id: 5091003, kind: combat.Shoot},
 		{id: 5700004, kind: combat.Shoot, noAmmo: true}, // Triple Shot keeps Double Shot's native slot 0
 		{id: 5711000, kind: combat.Shoot, noAmmo: true}, // Double Barrel dispatches 0x56 with slot 0
-		{id: 5721001, kind: combat.Shoot},
+		{id: 5721001, kind: combat.Shoot, noAmmo: true}, // live: every native frame was refused for ammo (bullet slot 0)
 		// The native area shot uses slot 0 even when normal bullets are held.
 		{id: 5721007, kind: combat.Shoot, noAmmo: true},
 		{id: 5901006, kind: combat.Shoot, noAmmo: true}, // the native frame names bullet slot 0

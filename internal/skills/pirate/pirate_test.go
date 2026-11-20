@@ -385,7 +385,7 @@ func TestV148RegionalPirateAttacks(t *testing.T) {
 	if err != nil || plan.Cost.Items != 0 || plan.Cost.Ammo != combat.AmmoBullet || plan.Cost.Bullets != 1 {
 		t.Fatalf("frost shot uses the native bullet slot: %+v (%v)", plan.Cost, err)
 	}
-	for _, id := range []int{5081002, 5700004, 5721007, 5901006} {
+	for _, id := range []int{5081002, 5700004, 5721001, 5721007, 5901006} {
 		h, _ = skills.Lookup(id)
 		if h.Attack.Ammo != combat.AmmoNone {
 			t.Fatalf("%d native shot does not nominate a projectile stack", id)
