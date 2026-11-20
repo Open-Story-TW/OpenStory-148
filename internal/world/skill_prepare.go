@@ -108,6 +108,13 @@ func (s *Server) throwGrenade(ctx context.Context, channel int, live *liveCharac
 		return
 	}
 	s.endSkillPrepare(channel, live, q.SkillID)
+	if grenadeAttackFollows[q.SkillID] {
+		// The v148 client follows this throw with its own attack packet,
+		// which pays the cost, starts the cooldown and lands the status.
+		// Settling the throw too made that attack fail on the cooldown.
+		slog.Info("grenade_deferred_to_attack", "character", c.ID, "skill", q.SkillID)
+		return
+	}
 	now := time.Now()
 	spec, ok := attackSpecFor(q.SkillID)
 	level := skills.LinkedLevel(c, levelSource(q.SkillID, spec), q.SkillID, now)
@@ -189,3 +196,7 @@ func (s *Server) throwGrenade(ctx context.Context, channel int, live *liveCharac
 	}
 	_ = s.genericAttackGameplayThen(ctx, channel, live, sink, a, apply)
 }
+
+// grenadeAttackFollows are thrown skills whose damage and status arrive in a
+// separate attack packet after the throw (Flashbang 4321002: 0xAB, then 0x55).
+var grenadeAttackFollows = map[int]bool{4321002: true}
