@@ -62,6 +62,74 @@ func TestSkillUseRequestNativeTails(t *testing.T) {
 	}
 }
 
+func TestSkillUseRequestSummonAndCaptureTails(t *testing.T) {
+	// 35111002 Magnetic Field (Tesla Coil): coil 1/2 (8-byte tail) and coil 3 (16-byte tail).
+	for _, coils := range []byte{0, 1, 2} {
+		w := NewRawWriter()
+		w.U32(99)
+		w.I32(35111002)
+		w.U8(20)
+		w.U8(coils)
+		if coils == 2 {
+			w.I32(5001)
+			w.I32(5002)
+		}
+		w.I16(-120)
+		w.I16(215)
+		w.U8(1)
+		w.U8(0)
+		w.U8(0)
+		q, err := ReadSkillCast(NewReader(w.Packet()))
+		if err != nil || q.SkillID != 35111002 || q.Level != 20 || !q.HasPosition || q.X != -120 || q.Y != 215 {
+			t.Fatalf("tesla coil count=%d: got %+v, err=%v", coils, q, err)
+		}
+	}
+	// Invalid Tesla Coil count (>2) with 8+ bytes must be rejected.
+	wBad := NewRawWriter()
+	wBad.U32(99)
+	wBad.I32(35111002)
+	wBad.U8(20)
+	wBad.U8(3)
+	wBad.I16(0)
+	wBad.I16(0)
+	wBad.U8(1)
+	wBad.U8(0)
+	wBad.U8(0)
+	if _, err := ReadSkillCast(NewReader(wBad.Packet())); err == nil {
+		t.Fatal("expected invalid tesla coil count=3 to be rejected")
+	}
+
+	// 33101008 Wild Hunter Mine: 8-byte tail (x, y, facing, bAttack, 0, state).
+	wMine := NewRawWriter()
+	wMine.U32(100)
+	wMine.I32(33101008)
+	wMine.U8(10)
+	wMine.I16(44)
+	wMine.I16(-12)
+	wMine.U8(0)
+	wMine.U8(1)
+	wMine.U8(0)
+	wMine.U8(1)
+	qMine, err := ReadSkillCast(NewReader(wMine.Packet()))
+	if err != nil || qMine.SkillID != 33101008 || !qMine.HasPosition || qMine.X != 44 || qMine.Y != -12 {
+		t.Fatalf("wild hunter mine: got %+v, err=%v", qMine, err)
+	}
+
+	// 30001062 Call of the Hunter: 9-byte tail (mobTemplate, x, y, facing).
+	wCall := NewRawWriter()
+	wCall.U32(101)
+	wCall.I32(30001062)
+	wCall.U8(1)
+	wCall.I32(100100)
+	wCall.I16(88)
+	wCall.I16(215)
+	wCall.U8(1)
+	qCall, err := ReadSkillCast(NewReader(wCall.Packet()))
+	if err != nil || qCall.SkillID != 30001062 || !qCall.HasPosition || qCall.X != 88 || qCall.Y != 215 {
+		t.Fatalf("call of the hunter: got %+v, err=%v", qCall, err)
+	}
+}
+
 func TestSkillCancelNativeModeByte(t *testing.T) {
 	w := NewRawWriter()
 	w.I32(5221006)

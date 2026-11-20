@@ -93,12 +93,55 @@ func ReadSkillCast(r *Reader) (SkillCast, error) {
 	return v, nil
 }
 
-// readSkillUseTail follows the native emitter 0x89FF18 after the level:
-// position when castHasPosition, an item I32 for 4121006/4111009/5201008,
-// an optional affected-member byte (2311001 adds delay16 + zero), an
-// optional mob count + I32 object IDs, then delay16 and a zero byte.
+// readSkillUseTail follows the native skill-use emitters after the level:
+// - 0x92E03B (summons): Tesla Coil (35111002) prepends coilCount [and 2 coil
+//   I32s when coilCount == 2] before X/Y/facing/bAttack/0; Wild Hunter Mine
+//   (33101008) appends a mine state byte after X/Y/facing/bAttack/0.
+// - 0x931281 (Call of the Hunter 30001062): mob template I32, X/Y, facing.
+// - 0x89FF18 (ordinary skill use): position when castHasPosition, an item I32
+//   for 4121006/4111009/5201008, an optional affected-member byte (2311001
+//   adds delay16 + zero), an optional mob count + I32 object IDs, then delay16
+//   and a zero byte.
 func readSkillUseTail(v SkillCast, tail []byte) (SkillCast, bool) {
 	r := NewReader(tail)
+	switch v.SkillID {
+	case 35111002: // Magnetic Field / Tesla Coil (0x92E03B)
+		coils := r.U8()
+		if coils > 2 {
+			return v, false
+		}
+		if coils == 2 {
+			r.I32()
+			r.I32()
+		}
+		v.X, v.Y, v.HasPosition = r.I16(), r.I16(), true
+		r.U8() // facing
+		r.U8() // bAttack
+		if r.U8() != 0 || r.Err() != nil || r.Remaining() != 0 {
+			return v, false
+		}
+		return v, true
+	case 33101008: // Wild Hunter Mine (0x92E03B)
+		v.X, v.Y, v.HasPosition = r.I16(), r.I16(), true
+		r.U8() // facing
+		r.U8() // bAttack
+		if r.U8() != 0 {
+			return v, false
+		}
+		r.U8() // mine state byte
+		if r.Err() != nil || r.Remaining() != 0 {
+			return v, false
+		}
+		return v, true
+	case 30001062: // Call of the Hunter (0x931281)
+		r.I32() // captured monster template ID
+		v.X, v.Y, v.HasPosition = r.I16(), r.I16(), true
+		r.U8() // facing
+		if r.Err() != nil || r.Remaining() != 0 {
+			return v, false
+		}
+		return v, true
+	}
 	if castHasPosition(v.SkillID) {
 		v.X, v.Y, v.HasPosition = r.I16(), r.I16(), true
 	}
