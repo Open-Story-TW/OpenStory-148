@@ -569,7 +569,8 @@ func TestKillerWingsMarksFirstTarget(t *testing.T) {
 }
 
 func TestEvanPassives(t *testing.T) {
-	if b := passiveBonus(t, 22000000, 20, evan(2200)); b.MATK != 20 {
+	// Level 20: mad 20, pddX/mddX 5+7*20, psdSpeed u(20/2).
+	if b := passiveBonus(t, 22000000, 20, evan(2200)); b.MATK != 20 || b.WDEF != 145 || b.MDEF != 145 || b.Speed != 10 {
 		t.Fatalf("dragon soul %+v", b)
 	}
 	if b := passiveBonus(t, 22000000, 20, evan(2001)); b.MATK != 0 {

@@ -190,12 +190,15 @@ func onyxWill(c *skills.CastContext) (skills.CastPlan, error) {
 // evanJob reports a dragon-holding Evan job (2200, 2210-2218).
 func evanJob(job int) bool { return job == 2200 || job >= 2210 && job <= 2218 }
 
-// dragonSoul (22000000) is Java magic += its level for 2200-2218 (WZ mad = x).
+// dragonSoul (22000000) is Java magic += its level for 2200-2218 (WZ mad = x;
+// v148 0x710F0A adds it to MAD). The v148 WZ also lists defense (pddX, mddX)
+// and movement speed (psdSpeed) for it.
 func dragonSoul(c *skills.PassiveContext) skills.Bonus {
 	if !evanJob(c.Character.Job) {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{MATK: c.Values["mad"]}
+	v := c.Values
+	return skills.Bonus{MATK: v["mad"], WDEF: v["pddX"], MDEF: v["mddX"], Speed: v["psdSpeed"]}
 }
 
 // spellMastery (22120002) adds x magic attack and the v148 cr with a wand or
