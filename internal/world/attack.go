@@ -115,7 +115,7 @@ func attackSkillLevel(c domain.Character, id int, now time.Time) int {
 			return s.Level
 		}
 	}
-	return 0
+	return c.ChosenStolenLevel(id, now)
 }
 
 func attackOnCooldown(c domain.Character, id int, now time.Time) bool {

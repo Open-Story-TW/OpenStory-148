@@ -523,6 +523,8 @@ func (s *Server) handleGameplay(ctx context.Context, channel int, live *liveChar
 	case protocol.RecvStartHarvest, protocol.RecvStopHarvest, protocol.RecvReactorHit, protocol.RecvProfessionInfo,
 		protocol.RecvCraftEffect, protocol.RecvCraftMake, protocol.RecvCraftDone, protocol.RecvUseRecipe:
 		return true, s.handleProfession(ctx, channel, live, sink, op, r.Bytes(r.Remaining()))
+	case protocol.RecvChooseSkill, protocol.RecvStealSkill, protocol.RecvTargetSkillList:
+		return true, s.handlePhantomSteal(ctx, channel, live, sink, op, r.Bytes(r.Remaining()))
 	case protocol.RecvReactorClick:
 		body := r.Bytes(r.Remaining())
 		if len(body) != 4 {

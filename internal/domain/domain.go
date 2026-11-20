@@ -120,11 +120,12 @@ type Character struct {
 	Pets        []Pet             `json:"pets,omitempty"`
 	Guild       GuildTag          `json:"guild,omitzero"`
 	GuildSkills []GuildSkillState `json:"-"`
-	Cards       CharacterCards    `json:"character_cards,omitzero"`
-	Abilities   InnerAbilities    `json:"inner_abilities,omitzero"`
-	HonorLevel  int               `json:"honor_level,omitempty"`
-	HonorEXP    int               `json:"honor_exp,omitempty"`
-	Revision    int64             `json:"revision"`
+	Cards        CharacterCards    `json:"character_cards,omitzero"`
+	Abilities    InnerAbilities    `json:"inner_abilities,omitzero"`
+	HonorLevel   int               `json:"honor_level,omitempty"`
+	HonorEXP     int               `json:"honor_exp,omitempty"`
+	PhantomSteal PhantomStealState `json:"phantom_steal,omitzero"`
+	Revision     int64             `json:"revision"`
 }
 
 // Summary is read only from the dedicated roster projection, never by loading

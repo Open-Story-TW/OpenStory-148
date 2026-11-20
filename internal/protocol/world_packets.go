@@ -114,8 +114,8 @@ func addCharacterInfo(w *Writer, c domain.Character, now time.Time) {
 	}
 	w.U16(0)       // mask0x400000 unknown list.
 	w.U16(0)       // NPC limited-purchase list (mask 0x4000000).
-	w.Zero(13 * 4) // mask 0x20000000 phantom stolen slots; v148 groups are 4+4+3+2.
-	w.Zero(4 * 4)  // mask 0x10000000 phantom chosen skills 24001001/24101001/24111001/24121001.
+	addPhantomStolenSkills(w, c.PhantomSteal) // mask 0x20000000 phantom stolen slots; v148 groups are 4+4+3+2.
+	addPhantomChosenSkills(w, c.PhantomSteal) // mask 0x10000000 phantom chosen skills 24001001/24101001/24111001/24121001.
 	addInnerAbilityStats(w, c.Abilities)
 	w.I32(int32(c.HonorLevel)) // high mask 1: original slot-gating progression.
 	w.I32(int32(c.HonorEXP))

@@ -72,7 +72,10 @@ func readSkillState(ctx context.Context, q questQuerier, c *domain.Character) er
 	if e != nil {
 		return e
 	}
-	return readProfessionState(ctx, q, c)
+	if e = readProfessionState(ctx, q, c); e != nil {
+		return e
+	}
+	return readPhantomSteal(ctx, q, c)
 }
 func learned(c domain.Character, id int) domain.SkillState {
 	for _, s := range c.Skills {
@@ -269,7 +272,7 @@ func (s *Store) CastSkill(ctx context.Context, req domain.SkillCastRequest) (dom
 		return r, domain.ErrForbidden
 	}
 	template, e := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), req.SkillID)
-	if e != nil || (template.Disabled && !handler.AllowDisabledCast) || !template.CanLearnBy(c) {
+	if e != nil || (template.Disabled && !handler.AllowDisabledCast) || (!template.CanLearnBy(c) && c.ChosenStolenLevel(req.SkillID, now) < 1) {
 		return r, domain.ErrForbidden
 	}
 	state.Level = level

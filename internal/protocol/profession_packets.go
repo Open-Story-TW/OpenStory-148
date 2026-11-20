@@ -92,15 +92,28 @@ func professionSkillValue(p domain.ProfessionState) int32 {
 // wireSkills is the skill record list the client sees: the job skills, each
 // profession, and every learned recipe as a level-1 record of the recipe ID.
 func wireSkills(c domain.Character) []domain.SkillState {
-	if len(c.Professions) == 0 && len(c.Recipes) == 0 {
+	hasStolen := c.PhantomSteal.HasAny()
+	if len(c.Professions) == 0 && len(c.Recipes) == 0 && !hasStolen {
 		return c.Skills
 	}
 	out := append([]domain.SkillState(nil), c.Skills...)
+	seen := make(map[int]bool, len(out))
+	for _, s := range out {
+		seen[s.ID] = true
+	}
 	for _, p := range c.Professions {
 		out = append(out, domain.SkillState{ID: p.ID, Level: int(professionSkillValue(p))})
 	}
 	for _, r := range c.Recipes {
 		out = append(out, domain.SkillState{ID: r, Level: 1})
+	}
+	if hasStolen {
+		for _, s := range c.PhantomSteal.Stolen {
+			if s.SkillID > 0 && s.Level > 0 && !seen[s.SkillID] {
+				seen[s.SkillID] = true
+				out = append(out, domain.SkillState{ID: s.SkillID, Level: s.Level, MasterLevel: s.MasterLevel})
+			}
+		}
 	}
 	return out
 }

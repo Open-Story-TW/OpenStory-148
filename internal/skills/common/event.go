@@ -48,6 +48,12 @@ func init() {
 	// takes an arrow as a cloak direction. The client computes the destination
 	// and the WZ direction limit, while the server supplies the short gate.
 	skills.Register(skills.Handler{ID: 20031205, Kind: skills.KindSpecial, Cast: buff(0, fixed("PHANTOM_CLOAK", 1))})
+	// 幻影技能竊取／技能管理 (Phantom 20031207, 20031208): client-side steal cursor
+	// and skill-management UI; server handles peer inspect (0x109), steal/delete
+	// (0x108), and choose (0x107) in internal/world/phantom_steal.go.
+	for _, id := range []int{20031207, 20031208} {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	}
 	// 卡牌審判 (Phantom 20031209, fourth job 20031210): the world spends the
 	// card deck and throws the cards; the drawn card's own bonus (critical
 	// rate, drop rate, resistance) is not applied yet.

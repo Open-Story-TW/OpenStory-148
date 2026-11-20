@@ -53,6 +53,9 @@ func CastLevel(c domain.Character, learnedID, id, client int, now time.Time) (in
 		return 0, false
 	}
 	base := learnedLevel(c, learnedID, now)
+	if base < 1 {
+		base = c.ChosenStolenLevel(id, now)
+	}
 	if base < 1 || client < 1 {
 		return 0, false
 	}

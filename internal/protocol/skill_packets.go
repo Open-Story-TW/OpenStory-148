@@ -254,13 +254,13 @@ func AddSkillSections(w *Writer, c domain.Character, now time.Time) {
 	}
 	w.U16(0)
 	n = 0
-	for _, s := range c.Skills {
+	for _, s := range records {
 		if s.MasterLevel > 0 {
 			n++
 		}
 	}
 	w.U16(uint16(n))
-	for _, s := range c.Skills {
+	for _, s := range records {
 		if s.MasterLevel > 0 {
 			w.I32(int32(s.ID))
 			w.I32(int32(s.MasterLevel))

@@ -57,6 +57,13 @@ func init() {
 	skills.Register(skills.Handler{ID: 24121007, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: &combat.AttackSpec{MobCast: &combat.MobCastSpec{Dispel: true, UseBox: true}}})                   // 靈魂竊取 Soul Steal
 	skills.Register(skills.Handler{ID: 24121008, Kind: skills.KindPartyBuff, Cast: partyBuff(key("MAPLE_WARRIOR", "x"))})                                                                                    // 楓葉祝福 Maple Warrior
 	skills.Register(skills.Handler{ID: 24121009, Kind: skills.KindSpecial, Cast: skills.HerosWill})                                                                                                          // 勇士的意志 Hero's Will
+	// 技能竊取欄位 Impeccable Memory I-IV (24001001, 24101001, 24111001, 24121001):
+	// slot bindings are managed via 0x107/0x108/0x109; when a chosen stolen
+	// skill is activated, the client sends the chosen skill's own ID and the
+	// server resolves its effective level via Character.ChosenStolenLevel.
+	for _, id := range domain.PhantomBaseSkills {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	}
 }
 
 // prayerOfAria (24121004) is damR and x% ignore defense while the buff is up.

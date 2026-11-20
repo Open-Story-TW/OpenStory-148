@@ -40,7 +40,6 @@ var pendingGroups = map[string][]int{
 	"Legacy removes these on job advance":                           {20000014, 20000015, 20000016, 20021166, 20021181, 30010166, 30011167, 30011168, 30011169, 30011170},
 	"Aran tutorial passives, use unknown":                           {20000017, 20000018},
 	"Phantom hidden skills with no Java handling":                   {20031166, 20031181},
-	"Phantom skill steal (MP thread)":                               {20031207, 20031208},
 	"flying mounts":                                                 {20010022, 30011109, 30011159},
 	"神龍擺尾: Legacy custom pet summon":                                {80001130},
 	"測謊機 lie detector":                                              {8001000, 9001009},
