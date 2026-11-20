@@ -385,6 +385,7 @@ func TestPassives(t *testing.T) {
 		80000137: {STR: 1, DEX: 1, INT: 1, LUK: 1, WDEF: 40, MDEF: 40},
 		20000194: {WATK: 10, WDEF: 300, Speed: 10, Critical: 5, BossDamagePercent: 5},
 		20020112: {Speed: 10, Jump: 20},
+		228:      {Speed: 50, Jump: 20, SpeedLimitBonus: 30},
 	} {
 		if got := passive(t, id, domain.Character{}); got != want {
 			t.Errorf("%d got %+v, want %+v", id, got, want)

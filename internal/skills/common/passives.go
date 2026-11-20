@@ -63,6 +63,11 @@ func beginnerPassives() {
 		v := c.Values
 		return skills.Bonus{WATK: v["padX"], WDEF: v["pddX"], Speed: v["psdSpeed"], Critical: v["cr"], BossDamagePercent: v["bdR"]}
 	}})
+	// 草上飛 (228): movement speed, its speed cap and jump from the v148 WZ.
+	skills.Register(skills.Handler{ID: 228, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		v := c.Values
+		return skills.Bonus{Speed: v["psdSpeed"], Jump: v["psdJump"], SpeedLimitBonus: v["speedMax"]}
+	}})
 	// 王的資格 (Mercedes 20020112): movement speed and jump; its action speed
 	// is applied by the client.
 	skills.Register(skills.Handler{ID: 20020112, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
