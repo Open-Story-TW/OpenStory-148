@@ -68,6 +68,30 @@ func TestRestoreSummonsUsesRemainingBuffTime(t *testing.T) {
 	}
 }
 
+func TestMapChangeBringsOnlyMovingSummons(t *testing.T) {
+	s, lives, sinks, _ := sharedWorldFixture(t)
+	now := time.Now()
+	lives[0].session.Character.SkillBuffs = []domain.SkillBuff{
+		{ID: testSummonSkill, Level: 2, Stat: "SUMMON", Value: 1, ExpiresAt: now.Add(8 * time.Second)}, // circle follow
+		{ID: testPuppetSkill, Level: 1, Stat: "PUPPET", Value: 1, ExpiresAt: now.Add(8 * time.Second)}, // stationary decoy
+	}
+	s.followSummons(1, lives[0])
+	if sinks[0].count(protocol.SendSpawnSummon) != 1 || sinks[1].count(protocol.SendSpawnSummon) != 1 {
+		t.Fatal("the moving summon was not shown to owner and peer on the new field")
+	}
+	s.gameplay.mu.Lock()
+	defer s.gameplay.mu.Unlock()
+	room := s.gameplay.rooms[mapKey{channel: 1, mapID: 40000}]
+	if len(room.summons) != 1 {
+		t.Fatalf("%d summons followed, want only the moving one", len(room.summons))
+	}
+	for _, m := range room.summons {
+		if m.source != testSummonSkill {
+			t.Fatalf("followed summon %d", m.source)
+		}
+	}
+}
+
 func TestEnteringFieldRetiresOnlyLegacySG88MarkerWithoutRestoringIt(t *testing.T) {
 	changes := make(chan []domain.SkillBuffChange, 1)
 	s := &Server{skills: newSkillSpace(), maps: newMapSpace(100), online: map[int64]domain.CharacterSession{}, repo: skillChangeRepository{changes: changes}}
@@ -102,5 +126,27 @@ func TestApplyItemBuffInstallsRowsAndShowsIcon(t *testing.T) {
 	}
 	if sink.count(0x2d) != 1 {
 		t.Fatal("item buff icon not sent")
+	}
+}
+
+// An in-channel map change carries the summons that follow their owner and
+// leaves stationary ones behind (Java MapleCharacter.changeMap).
+func TestFollowSummonsToMapSkipsStationarySummons(t *testing.T) {
+	s, lives, sinks, _ := sharedWorldFixture(t)
+	now := time.Now()
+	lives[0].session.Character.SkillBuffs = []domain.SkillBuff{
+		{ID: testSummonSkill, Level: 2, Stat: "SUMMON", Value: 1, ExpiresAt: now.Add(8 * time.Second)},
+		{ID: testPuppetSkill, Level: 1, Stat: "PUPPET", Value: 1, ExpiresAt: now.Add(8 * time.Second)},
+	}
+	s.followSummons(1, lives[0])
+	if sinks[0].count(protocol.SendSpawnSummon) != 1 {
+		t.Fatalf("spawned %d summons, want only the following one", sinks[0].count(protocol.SendSpawnSummon))
+	}
+	s.gameplay.mu.Lock()
+	defer s.gameplay.mu.Unlock()
+	for _, m := range s.gameplay.rooms[mapKey{channel: 1, mapID: 40000}].summons {
+		if m.source != testSummonSkill {
+			t.Fatalf("stationary summon %d followed its owner", m.source)
+		}
 	}
 }

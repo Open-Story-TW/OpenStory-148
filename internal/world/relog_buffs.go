@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"maple-go-server/internal/combat"
 	"maple-go-server/internal/domain"
 )
 
@@ -49,9 +50,28 @@ func (s *Server) dropRelogBuffs(ctx context.Context, live *liveCharacter) {
 
 // restoreSummons respawns the summon of each active buff row whose skill
 // summons on cast, ending when the buff ends. Summons are field objects that
-// do not survive leaving the field; while MAPLEGO_RELOG_BUFFS is on they come
-// back on every login, channel change and cash shop return.
+// do not survive leaving the field; they come back on every channel change and
+// cash shop return, and on a login while MAPLEGO_RELOG_BUFFS keeps the buffs.
 func (s *Server) restoreSummons(channel int, live *liveCharacter) {
+	s.restoreSummonsMatching(channel, live, nil)
+}
+
+// followSummons brings an owner's moving summons along on a map change; the
+// leave removed them from the old field. Stationary kinds (0 stationary,
+// 2 walk-stationary, 5 circle-stationary) stay behind, as in the original.
+func (s *Server) followSummons(channel int, live *liveCharacter) {
+	s.restoreSummonsMatching(channel, live, movingSummon)
+}
+
+func movingSummon(spec *combat.SummonSpec) bool {
+	switch spec.MoveAbility {
+	case 0, 2, 5:
+		return false
+	}
+	return !spec.Puppet
+}
+
+func (s *Server) restoreSummonsMatching(channel int, live *liveCharacter, keep func(*combat.SummonSpec) bool) {
 	if s.gameplay == nil {
 		return
 	}
@@ -66,7 +86,7 @@ func (s *Server) restoreSummons(channel int, live *liveCharacter) {
 		}
 		done[b.ID] = true
 		spec, ok := attackSpecFor(b.ID)
-		if !ok || spec.Summon == nil || spec.Summon.NoCastSpawn {
+		if !ok || spec.Summon == nil || spec.Summon.NoCastSpawn || keep != nil && !keep(spec.Summon) {
 			continue
 		}
 		if _, err := s.spawnSummonAt(channel, live, b.ID, b.Level, nil, now, b.ExpiresAt); err != nil {

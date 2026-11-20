@@ -921,6 +921,9 @@ func (s *Server) publishGameplayWarp(ctx context.Context, channel int, live *liv
 		return err
 	}
 	s.publishStatDetail(live, sink, time.Now(), true)
+	// Moving summons follow their owner here, after the skills and stat
+	// window, like the initial scene's restoreSummons.
+	s.followSummons(channel, live)
 	s.enqueueMapEntry(channel, live, sink)
 	s.eventEntered(channel, live, sink)
 	return nil

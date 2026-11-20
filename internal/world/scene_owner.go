@@ -250,9 +250,10 @@ func (s *Server) publishInitialScene(ctx context.Context, live *liveCharacter, s
 		return err
 	}
 	s.publishStatDetail(live, sink, time.Now(), true)
-	if domain.RelogBuffsEnabled() {
-		s.restoreSummons(channel, live)
-	}
+	// A fresh login with MAPLEGO_RELOG_BUFFS off has already dropped its buffs,
+	// so this only brings back summons whose buff survived the visit (channel
+	// change, cash shop return, or any login while relog buffs are on).
+	s.restoreSummons(channel, live)
 	if err = s.enterBuddies(ctx, live, sink); err != nil {
 		return err
 	}
