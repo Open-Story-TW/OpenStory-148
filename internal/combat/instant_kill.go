@@ -21,10 +21,32 @@ func NativeMagicMelee(job, skill int) bool {
 	return job%1000/100 == 2 || (job/100 == 24 || job == 2003) && skill/1000000 == 2
 }
 
+// capSentinelSkills are the Head Shots. Against a non-boss the v148 damage
+// calculation 0x71160B sends a single line (0x711F18 sets the line count to
+// 1) and fills it at 0x71219A..0x7121DD with the per-line cap minus a random
+// [0, 10000) (sub_6F1BD3(rand, 10000.0, 0.0) subtracted from the cap at
+// 0x7121CF). The cap is the native 999999 (0xC11080) or, once 0x610 armed
+// it, the long-damage cap the client patches into that read.
+var capSentinelSkills = map[int]bool{
+	3221007: true, // 必殺狙擊
+	5221016: true, // 爆頭射擊 Head Shot
+	5721006: true, // 龍魂一擊
+}
+
+// capSentinelSpread is the random part the client subtracts from the cap.
+const capSentinelSpread = 10000
+
 // InstantKillLine reports whether line of skillID against mob is the
-// client's instant-kill value: the first line, a non-boss target and exactly
-// the template maximum HP.
+// client's instant-kill value: the first line against a non-boss target that
+// is exactly the template maximum HP (Aerial Barrage) or the per-line cap
+// minus less than 10000 (the Head Shots).
 func InstantKillLine(skillID, line int, mob content.Mob, claimed int64) bool {
-	return instantKillSkills[skillID] && line == 0 && !mob.Boss && !mob.Invincible &&
-		mob.HP > 0 && claimed == mob.HP
+	if line != 0 || mob.Boss || mob.Invincible || mob.HP <= 0 {
+		return false
+	}
+	if capSentinelSkills[skillID] {
+		limit := int64(MaxLineDamage())
+		return claimed <= limit && claimed > limit-capSentinelSpread
+	}
+	return instantKillSkills[skillID] && claimed == mob.HP
 }

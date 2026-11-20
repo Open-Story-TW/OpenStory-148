@@ -294,7 +294,7 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 			}
 			claimed := l.Claimed()
 			if InstantKillLine(e.SkillID, j, t.Mob, int64(claimed)) {
-				// The client's instant kill is the target's maximum HP, not a roll.
+				// The client's instant kill (maximum HP or the Head Shot cap sentinel) is not a roll.
 				f, c, normal = claimed, claimed, claimed
 			}
 			v := min(claimed, c)
