@@ -49,7 +49,10 @@ func init() {
 	skills.Register(skills.Handler{ID: 14111007, Kind: skills.KindBuff, Cast: nightShadowStars})
 	// shadeSplit calls the v148 CUserLocal shoot sender through 0x93920F.
 	skills.Register(skills.Handler{ID: 14111008, Kind: skills.KindAttack, Attack: nightShoot()})
-	pvpOnly(14111010) // 黑暗殺: hidden, Legacy has no effect for it
+	// 黑暗殺: v148 CSummoned::Init (0x73AACF) handles 14111010 with Dark Flare
+	// (4111007/4211007) as a stationary reflect summon.
+	skills.Register(skills.Handler{ID: 14111010, Kind: skills.KindSummon, Cast: summonBuff("SUMMON"),
+		Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 7}}})
 }
 
 // nightShoot applies Night Walker's Shadow Stars and Venom to its star attacks.

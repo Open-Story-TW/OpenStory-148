@@ -24,6 +24,8 @@ func init() {
 	skills.Register(skills.Handler{ID: 51101006, Kind: skills.KindAttack, Attack: melee(nil)})
 	skills.Register(skills.Handler{ID: 51110000, Kind: skills.KindPassive, Passive: mpRecovery, OnTick: skills.ReviewedRecoveryTick, TickEvery: 4 * time.Second})
 	skills.Register(skills.Handler{ID: 51110001, Kind: skills.KindPassive, Passive: mihileStrength})
+	// Righteous Indignation (51110002): v148 0x713106 adds x/y only against status-afflicted targets.
+	skills.Register(skills.Handler{ID: 51110002, Kind: skills.KindPassive})
 	skills.Register(skills.Handler{ID: 51111003, Kind: skills.KindBuff, Cast: radiantBurst})
 	skills.Register(skills.Handler{ID: 51111004, Kind: skills.KindBuff, Cast: soulEndure})
 	skills.Register(skills.Handler{ID: 51111005, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: magicCrash()})
@@ -39,6 +41,7 @@ func init() {
 	}})
 	skills.Register(skills.Handler{ID: 51121004, Kind: skills.KindBuff, Cast: value("STANCE", "prop")})
 	skills.Register(skills.Handler{ID: 51121005, Kind: skills.KindPartyBuff, Cast: mapleWarrior})
+	skills.Register(skills.Handler{ID: 51121006, Kind: skills.KindBuff, Cast: soulRage})
 	skills.Register(skills.Handler{ID: 51121007, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee([]combat.MobStatusApply{{
 		Stat: combat.MobDarkness, ValueFrom: "x", HalfDurationOnBoss: true,
 	}})})
@@ -109,4 +112,14 @@ func inspire(c *skills.CastContext) (skills.CastPlan, error) {
 // elemental resistance. Its original client dispatcher is 0x93B096.
 func soulEndure(c *skills.CastContext) (skills.CastPlan, error) {
 	return buff(c, stat("ABNORMAL_STATUS_R", c.Value("y")), stat("ELEMENTAL_STATUS_R", c.Value("z")), stat("DEFENCE_BOOST_R", c.Value("x")))
+}
+
+// soulRage (51121006) mirrors Enrage's ENRAGE (x*100+mobCount) and crit buff
+// without Hero's combo-orb requirement (v148 0x93B0F0 self buff, WZ cooltime).
+func soulRage(c *skills.CastContext) (skills.CastPlan, error) {
+	mobCount := c.Value("mobCount")
+	if mobCount == 0 {
+		mobCount = 1
+	}
+	return buff(c, stat("ENRAGE", c.Value("x")*100+mobCount), stat("SHARP_EYES", c.Value("z")<<8|c.Value("y")))
 }

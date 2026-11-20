@@ -44,9 +44,9 @@ func TestRegistersEveryInventorySkill(t *testing.T) {
 			got = append(got, id)
 		}
 	}
-	want = append(want, 14001007, 14101008, 14101009, 14110009, 14110011, 14111007, 14111008, 15000006, 15000008, 15101008, 15101010, 15110009, 15110010, 15111008, 15111012)
+	want = append(want, 14001007, 14101008, 14101009, 14110009, 14110011, 14111007, 14111008, 15000006, 15000008, 15001007, 15101008, 15101010, 15110009, 15110010, 15111008, 15111012)
 	sort.Ints(want)
-	if len(want) != 131 || !reflect.DeepEqual(got, want) {
+	if len(want) != 132 || !reflect.DeepEqual(got, want) {
 		t.Fatalf("registered %d %v\ninventory %d %v", len(got), got, len(want), want)
 	}
 }
@@ -251,13 +251,13 @@ func spec(t *testing.T, id int) *combat.AttackSpec {
 func TestAttackPackets(t *testing.T) {
 	kinds := map[combat.AttackKind][]int{
 		combat.Melee: {11001002, 11001003, 11101002, 11111002, 11111003, 11111004, 11111006, 14001002, 14111006,
-			15001001, 15001002, 15101003, 15101005, 15101010, 15111001, 15111003, 15111004, 15111006, 15111012},
+			15001001, 15001002, 15001007, 15101003, 15101005, 15101010, 15111001, 15111003, 15111004, 15111006, 15111012},
 		combat.Shoot: {11101004, 13001003, 13101002, 13101005, 13101007, 13111000, 13111002, 13111006, 13111007,
 			14001004, 14101008, 14101009, 14111002, 14111005, 14111008, 15111007, 15111008},
 		combat.Magic:                {12001003, 12101002, 12101006, 12111003, 12111005, 12111006},
 		combat.Magic | combat.Body:  {12111007},
 		combat.Melee | combat.Shoot: {14101006},
-		combat.Summoned:             {11001004, 12001004, 12111004, 13001004, 14001005, 15001004},
+		combat.Summoned:             {11001004, 12001004, 12111004, 13001004, 14001005, 14111010, 15001004},
 	}
 	n := 0
 	for kind, ids := range kinds {
@@ -425,6 +425,16 @@ func TestSummons(t *testing.T) {
 	}
 	if p := cast(t, 13111004, 15); stats(p.Self)["PUPPET"] != 1 || p.Self.Duration != 60*time.Second {
 		t.Errorf("puppet buff %+v", p.Self)
+	}
+	df := spec(t, 14111010)
+	if df.Kind != combat.Summoned || df.Summon == nil || df.Summon.MoveAbility != stationary || df.Summon.AssistType != 7 {
+		t.Errorf("dark flare 14111010 %+v", df.Summon)
+	}
+	if p := cast(t, 14111010, 1); p.MPCost != 100 || p.Cooldown != 60*time.Second || p.Self == nil || p.Self.Duration != 60*time.Second || stats(p.Self)["SUMMON"] != 1 {
+		t.Errorf("dark flare 14111010 cast %+v %+v", p, p.Self)
+	}
+	if h, ok := skills.Lookup(15001007); !ok || h.LevelFrom != 15101003 || h.Attack == nil || h.Attack.Kind != combat.Melee {
+		t.Errorf("dash corkscrew 15001007 handler %+v", h)
 	}
 }
 

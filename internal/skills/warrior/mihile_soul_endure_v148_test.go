@@ -45,3 +45,40 @@ func TestMihileSoulEndureOriginalV148Values(t *testing.T) {
 		}
 	}
 }
+
+func TestMihileRighteousIndignationAndSoulRageV148(t *testing.T) {
+	if h, ok := skills.Lookup(51110002); !ok || h.Kind != skills.KindPassive {
+		t.Fatalf("51110002 handler=%+v ok=%v", h, ok)
+	}
+	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	if root == "" {
+		t.Skip("requires exported original v148 WZ")
+	}
+	def, err := content.SkillDefinition(root, 51121006)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, ok := skills.Lookup(51121006)
+	if !ok || h.Cast == nil {
+		t.Fatal("missing Soul Rage handler")
+	}
+	values, err := def.Values(30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := h.Cast(&skills.CastContext{Skill: def, Values: values, Level: 30})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []skills.StatValue{stat("ENRAGE", 6001), stat("SHARP_EYES", 20<<8|15)}
+	if p.Self == nil || p.Party != nil || p.MPCost != 50 || p.Cooldown != 270*time.Second || p.Self.Duration != 240*time.Second || !reflect.DeepEqual(p.Self.Stats, want) {
+		t.Fatalf("soulRage plan=%+v buff=%+v", p, p.Self)
+	}
+	wire := make([]protocol.BuffStat, 0, len(want))
+	for _, s := range want {
+		wire = append(wire, protocol.BuffStat{Stat: s.Stat, Value: s.Value})
+	}
+	if _, err := protocol.TemporaryStatSet(51121006, p.Self.Duration, wire); err != nil {
+		t.Fatal(err)
+	}
+}

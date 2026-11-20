@@ -20,6 +20,9 @@ func init() {
 
 	passive(15000006, critical("cr"))
 	passive(15000008, maxHP)
+	// v148 0x93694C rewrites Corkscrew Blow (15101003) during Dash (15001003)
+	// to 15001007, and 0x6D447A reads its skill level from 15101003.
+	skills.Register(skills.Handler{ID: 15001007, Kind: skills.KindAttack, LevelFrom: 15101003, Attack: thunderMelee()})
 	skills.Register(skills.Handler{ID: 15101008, Kind: skills.KindBuff, Cast: generic}) // 全神貫注: acc and indiePad
 	skills.Register(skills.Handler{ID: 15101010, Kind: skills.KindAttack, Attack: thunderMelee(prepare(tornadoUpper))})
 	skills.Register(skills.Handler{ID: 15111008, Kind: skills.KindAttack | skills.KindPassive,
