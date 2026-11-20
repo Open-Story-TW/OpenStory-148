@@ -18,8 +18,8 @@ func init() {
 	}
 	register(5000000, bulletTime)
 	register(5010003, cannonUpgrade)
-	register(5100001, mastery(knuckle, "x"))
-	register(5200000, mastery(gun, "x"))
+	register(5100001, mastery(knuckle, "x", 5121015)) // 拳霸大師 replaces it (client 0x6D946E)
+	register(5200000, mastery(gun, "x", 5220020))    // 槍神奧義 replaces it (client 0x6D9566)
 	register(5300005, mastery(cannon, "accX"))
 	register(5100008, critical("cr")) // 衝壓暴擊
 	register(5110000, criticalPunch)  // 致命暗襲
@@ -78,12 +78,18 @@ func cannonUpgrade(c *skills.PassiveContext) skills.Bonus {
 // mastery is Java PlayerStats' weapon mastery: with the matching weapon, the
 // skill's mastery and accuracy key. Cannon Mastery stores its accuracy in accX
 // (Java reads x, which is zero for it).
-func mastery(weapon int, accKey string) func(*skills.PassiveContext) skills.Bonus {
+// expert, when given, is the fourth job skill whose mastery the v148 client
+// (0x6D8DDE) returns instead of this one.
+func mastery(weapon int, accKey string, expert ...int) func(*skills.PassiveContext) skills.Bonus {
 	return func(c *skills.PassiveContext) skills.Bonus {
 		if weaponType(c.Character) != weapon {
 			return skills.Bonus{}
 		}
-		return skills.Bonus{Mastery: c.Values["mastery"], ACC: c.Values[accKey]}
+		value := c.Values["mastery"]
+		for _, id := range expert {
+			value = c.BasicMastery(id)
+		}
+		return skills.Bonus{Mastery: value, ACC: c.Values[accKey]}
 	}
 }
 

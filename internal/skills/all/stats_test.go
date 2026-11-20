@@ -411,3 +411,27 @@ func TestLegacyStatsKeepCriticalMinimumAndDodge(t *testing.T) {
 		t.Fatalf("evasion passive %+v", p)
 	}
 }
+
+// Knuckle and gun expert masteries replace the second job mastery (client 0x6D8DDE).
+func TestV148PirateExpertMasteryReplacesBasic(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(root+"/Skill.wz", 0755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("MAPLEGO_WZ_ROOT", root)
+	now := time.Unix(100, 0)
+	for _, tc := range []struct{ job, weapon, basic, expert, level int }{
+		{512, 1482000, 5100001, 5121015, 30},
+		{522, 1492000, 5200000, 5220020, 30},
+	} {
+		actor := domain.Character{Job: tc.job, Level: 200, Equipment: []domain.Equipment{{Slot: -11, ItemID: tc.weapon}}}
+		actor.Skills = []domain.SkillState{{ID: tc.basic, Level: 20}}
+		if skills.Bonuses(actor, now).Mastery == 0 {
+			t.Fatalf("job %d: no basic mastery", tc.job)
+		}
+		actor.Skills = append(actor.Skills, domain.SkillState{ID: tc.expert, Level: tc.level})
+		if got := skills.Bonuses(actor, now).Mastery; got != 70 {
+			t.Fatalf("job %d: mastery %d, want 70", tc.job, got)
+		}
+	}
+}
