@@ -42,3 +42,33 @@ func TestLineDamageBoundsTheSwappedLine(t *testing.T) {
 		t.Fatalf("without LineDamage the last line %d want %d", p.Targets[0].Lines[2], bound(130))
 	}
 }
+
+// A ScaleCeiling percent scales the normal bound and keeps the critical
+// envelope (Dark Metamorphosis' damR: live criticals were held to normal x1.35).
+func TestScaledCeilingKeepsTheCriticalEnvelope(t *testing.T) {
+	const scaledAttacker = 987654321
+	ScaleCeiling(func(dc DamageContext, c int) int {
+		if dc.Attacker.ID != scaledAttacker {
+			return c
+		}
+		return c * 135 / 100
+	})
+	c := warrior()
+	c.ID = scaledAttacker
+	s, _ := BaseStats(c, time.Now())
+	e := Effect{SkillID: 1001005, Level: 1, Damage: 130, MobCount: 8, AttackCount: 1,
+		Box: Box{LT: Point{-150, -60}, RB: Point{0, 10}, Set: true}}
+	mob := content.Mob{HP: 1_000_000}
+	ctx := AttackContext{Kind: Melee, Character: c, Stats: s, Effect: e, Now: time.Unix(100, 0),
+		Attack:  attack(protocol.RecvMeleeAttack, 1001005, 0x0020, 0, map[int32][]uint32{5: {0x80000000 | 999999}}),
+		Targets: []TargetInfo{{ObjectID: 5, Mob: mob, X: -100, HP: 1_000_000}}}
+	dc := DamageContext{Stats: s, Effect: e, Mob: mob, Attacker: c}
+	want := CritCeiling(dc, LineCeiling(dc)*135/100)
+	p, err := PlanAttack(&AttackSpec{Kind: Melee}, ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := p.Targets[0].Lines[0]; got != want || got <= LineCeiling(dc)*135/100 {
+		t.Fatalf("scaled critical line %d want %d", got, want)
+	}
+}

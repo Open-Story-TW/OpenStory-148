@@ -83,7 +83,7 @@ func init() {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindSummon | skills.KindMobStatus, LevelFrom: 23111008, Attack: knightSpec(nil)})
 	}
 
-	combat.ModifyCeiling(imprintCeiling)
+	combat.ScaleCeiling(imprintCeiling)
 }
 
 // advancedFinalAttack (23120012) is Java watk += padX; ar is the accuracy

@@ -91,7 +91,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 31121004, Kind: skills.KindPartyBuff, Cast: party(value("MAPLE_WARRIOR", "x"))})             // 楓葉祝福 Maple Warrior
 	skills.Register(skills.Handler{ID: 31121007, Kind: skills.KindBuff, Cast: boundlessRage})                                       // 無限力量 Boundless Rage
 	skills.Register(skills.Handler{ID: 31121005, Kind: skills.KindBuff | skills.KindMorph | skills.KindAttack, Cast: metamorphosis, // 變形 Dark Metamorphosis
-		Attack: &combat.AttackSpec{Kind: combat.Melee, Prepare: metamorphosisHit}})
+		Attack: &combat.AttackSpec{Kind: combat.Melee, Prepare: metamorphosisHit}, Passive: metamorphosisDamage})
 
 	passive := func(id int, f func(*skills.PassiveContext) skills.Bonus) {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive, Passive: f})
@@ -130,7 +130,7 @@ func init() {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
 	}
 
-	combat.ModifyCeiling(demonCeiling)
+	combat.ScaleCeiling(demonCeiling)
 	combat.ModifyDrain(comboDrain)
 }
 
@@ -256,18 +256,25 @@ func metamorphosis(c *skills.CastContext) (skills.CastPlan, error) {
 	return buff(c, stat("PIRATES_REVENGE", c.Value("damR")), stat("DARK_METAMORPHOSIS", max(1, c.Value("mobCount"))))
 }
 
+// metamorphosisDamage is Dark Metamorphosis' damR while its buff runs: the
+// v148 client adds the PIRATES_REVENGE (bit 116) value to the damage percent
+// sum of every line (0x713637), so it is an effective-stats damR, critical
+// envelope included.
+func metamorphosisDamage(c *skills.PassiveContext) skills.Bonus {
+	if row, ok := liveRow(c.Character, "PIRATES_REVENGE", c.Now, 31121005); ok {
+		return skills.Bonus{DamagePercent: row.Value}
+	}
+	return skills.Bonus{}
+}
+
 // demonCeiling applies the damage buffs Java PlayerStats multiplies into
-// dam_r for R1 sources: Dark Metamorphosis PIRATES_REVENGE, Dark Aura and
-// Body Boost (v of 32111005).
+// dam_r for R1 sources: Dark Aura and Body Boost (v of 32111005).
 func demonCeiling(dc combat.DamageContext, ceiling int) int {
 	now := time.Now()
 	scale := func(percent int) {
 		if percent > 0 {
 			ceiling = int(min(int64(ceiling)*int64(100+percent)/100, int64(combat.MaxLineDamage())))
 		}
-	}
-	if row, ok := liveRow(dc.Attacker, "PIRATES_REVENGE", now, 31121005); ok {
-		scale(row.Value)
 	}
 	if row, ok := liveRow(dc.Attacker, "DARK_AURA", now, 32001003, 32110007); ok {
 		scale(row.Value)

@@ -74,6 +74,7 @@ func NormalAttack() *AttackSpec {
 var modifiers struct {
 	sync.RWMutex
 	ceilings []func(DamageContext, int) int
+	scales   []func(DamageContext, int) int
 	drains   []func(*AttackContext, int64) (hp, mp int)
 }
 
@@ -82,6 +83,26 @@ func ModifyCeiling(f func(DamageContext, int) int) {
 	modifiers.Lock()
 	modifiers.ceilings = append(modifiers.ceilings, f)
 	modifiers.Unlock()
+}
+
+// ScaleCeiling registers f(dc, ceiling) -> scaled ceiling for a damage
+// percent the native client adds to every line (a buff's damR or attack
+// percent, a debuff on the target). Unlike ModifyCeiling it scales the
+// normal bound, so the floor and the critical envelope still apply.
+func ScaleCeiling(f func(DamageContext, int) int) {
+	modifiers.Lock()
+	modifiers.scales = append(modifiers.scales, f)
+	modifiers.Unlock()
+}
+
+func applyCeilingScales(dc DamageContext, c int) int {
+	modifiers.RLock()
+	fs := append([]func(DamageContext, int) int{}, modifiers.scales...)
+	modifiers.RUnlock()
+	for _, f := range fs {
+		c = f(dc, c)
+	}
+	return max(0, c)
 }
 
 // ModifyDrain registers an HP/MP regain applied to every attack, bounded like

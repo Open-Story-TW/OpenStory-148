@@ -345,8 +345,15 @@ func TestDemonPassives(t *testing.T) {
 func TestDemonCeilingAndComboDrain(t *testing.T) {
 	c := withBuff(domain.Character{}, 31121005, 30, "PIRATES_REVENGE", 35)
 	c.SkillBuffs[0].ExpiresAt = time.Now().Add(time.Hour)
-	if got := demonCeiling(combat.DamageContext{Attacker: c}, 1000); got != 1350 {
-		t.Fatalf("metamorphosis ceiling %d", got)
+	if got := demonCeiling(combat.DamageContext{Attacker: c}, 1000); got != 1000 {
+		t.Fatalf("metamorphosis is a damR, not a ceiling scale: %d", got)
+	}
+	h, _ := skills.Lookup(31121005)
+	if b := h.Passive(&skills.PassiveContext{Character: c, Now: time.Now()}); b.DamagePercent != 35 {
+		t.Fatalf("metamorphosis damR %+v", b)
+	}
+	if b := h.Passive(&skills.PassiveContext{Character: domain.Character{}, Now: time.Now()}); b != (skills.Bonus{}) {
+		t.Fatalf("metamorphosis without buff %+v", b)
 	}
 	c = domain.Character{SkillBuffs: []domain.SkillBuff{{ID: 32001003, Stat: "DARK_AURA", Value: 20, ExpiresAt: time.Now().Add(time.Hour)}, {ID: 32111005, Level: 20, Stat: "BODY_BOOST", Value: 20, ExpiresAt: time.Now().Add(time.Hour)}}}
 	if got := demonCeiling(combat.DamageContext{Attacker: c}, 1000); got != 1200*140/100 {

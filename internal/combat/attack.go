@@ -250,10 +250,13 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		} else {
 			floor, ceiling = LineBounds(dc)
 		}
+		// Damage percents every line gets (Metamorphosis, Imprint) scale the
+		// normal bound; the floor and the critical envelope still follow.
+		ceiling = applyCeilingScales(dc, ceiling)
 		// A skill's or passive's own ceiling (Meso Explosion, Mortal Blow) is the exact bound.
 		ownCeiling := spec != nil && spec.MaxDamage != nil
 		if modified := applyCeilingModifiers(dc, ceiling); modified != ceiling {
-			// A passive rewrote the bound (Mortal Blow, Imprint): the mastery
+			// A passive rewrote the bound (Mortal Blow): the mastery
 			// floor no longer describes this line.
 			ceiling, floor, ownCeiling = modified, 0, true
 		}
@@ -274,6 +277,7 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 					ld := dc
 					ld.Effect.Damage = pct
 					lineFloor, lineCeiling = LineBounds(ld)
+					lineCeiling = applyCeilingScales(ld, lineCeiling)
 				}
 			}
 			f, c := max(0, lineFloor), max(0, lineCeiling)
