@@ -216,6 +216,12 @@ func boosted(ctx *combat.AttackContext) error {
 		if weaponType(ctx.Character) == weaponClaw {
 			ctx.Stats.DamageRate += values(ctx.Character, ctx.Now, 4110012)["damR"]
 		}
+	case 4211011:
+		// v148 Assassinate (4221007) psdSkill grants damR to 4211011.
+		ctx.Stats.DamageRate += values(ctx.Character, ctx.Now, 4221007)["damR"]
+	case 4301004, 4321006:
+		// v148 Bloody Storm (4331000) psdSkill grants damR to 4301004 and 4321006.
+		ctx.Stats.DamageRate += values(ctx.Character, ctx.Now, 4331000)["damR"]
 	}
 	if d, ok := damageIncrease[ctx.Effect.SkillID]; ok {
 		if v := values(ctx.Character, ctx.Now, d.source); v != nil {

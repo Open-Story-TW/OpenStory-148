@@ -9,6 +9,7 @@ import (
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 	_ "maple-go-server/internal/skills/bowman"
 )
@@ -286,7 +287,7 @@ func TestAttackRules(t *testing.T) {
 	plain := prepared(t, 3211006, 20, c, now)
 	c.Skills = []domain.SkillState{{ID: 3220010, Level: 10}}
 	ult := prepared(t, 3211006, 20, c, now)
-	if plain.Effect.Damage != 200 || plain.Effect.Lines(combat.Shoot) != 4 || ult.Effect.Damage != 200+270-150 || ult.Effect.Lines(combat.Shoot) != 6 {
+	if plain.Effect.Damage != 200 || plain.Effect.Lines(combat.Shoot) != 4 || ult.Effect.Damage != 270 || ult.Effect.Lines(combat.Shoot) != 6 {
 		t.Errorf("strafe %d/%d, ultimate %d/%d", plain.Effect.Damage, plain.Effect.Lines(combat.Shoot), ult.Effect.Damage, ult.Effect.Lines(combat.Shoot))
 	}
 	if hp, _ := attackSpec(t, 3111008).Drain(&combat.AttackContext{Character: domain.Character{MaxHP: 1000}, Effect: combat.Effect{X: 50}}, 10000); hp != 500 {
@@ -295,25 +296,69 @@ func TestAttackRules(t *testing.T) {
 }
 
 func TestDamageCeilings(t *testing.T) {
-	stats := combat.PlayerStats{Job: 322, Level: 200, DEX: 900, STR: 100, WATK: 200, WeaponID: 1462000}
+	stats := combat.PlayerStats{Job: 322, Level: 200, DEX: 900, STR: 100, WATK: 200, WeaponID: 1462000, CritDamage: 30}
 	mob := content.Mob{HP: 5000000}
-	dc := combat.DamageContext{Stats: stats, Effect: combat.Effect{SkillID: 3221007, Damage: 720, MobCount: 1}, Mob: mob}
-	base := combat.LineCeiling(dc)
-	// Snipe follows the ordinary bound on every mob; the client patch agrees.
-	if attackSpec(t, 3221007).MaxDamage != nil {
-		t.Errorf("snipe keeps its own ceiling")
+	ch := domain.Character{Job: 322, Level: 200, MP: 5000, Equipment: []domain.Equipment{{ItemID: 1462000, Slot: -11}}}
+	// Snipe, Strafe, Piercing and Dragon's Breath keep the generic critical
+	// envelope instead of a fixed MaxDamage override.
+	for _, id := range []int{3221007, 3211006, 3211008, 3221001} {
+		if attackSpec(t, id).MaxDamage != nil {
+			t.Errorf("skill %d keeps a MaxDamage override", id)
+		}
 	}
-	dc.Effect.MobCount = 3
-	if got := attackSpec(t, 3221001).MaxDamage(dc); got != min(3*base, combat.MaxLineDamage()) {
-		t.Errorf("piercing %d", got)
+
+	planLine := func(skillID, damage, mobCount int, statuses combat.MobStatuses, claimed int) combat.TargetPlan {
+		t.Helper()
+		e := combat.Effect{SkillID: skillID, Level: 20, Damage: damage, MobCount: mobCount, AttackCount: 1, Range: 600}
+		line := protocol.AttackLine{Raw: uint32(min(claimed, 0x7fffffff))}
+		if claimed > 0x7fffffff {
+			line.Long = int64(claimed)
+		}
+		ctx := combat.AttackContext{
+			Kind: combat.Shoot, Character: ch, Stats: stats, Effect: e, Now: time.Unix(100, 0),
+			Attack: protocol.Attack{
+				Opcode: protocol.RecvShootAttack, SkillID: skillID, TByte: 0x11,
+				Targets: []protocol.AttackTarget{{ObjectID: 1, Lines: []protocol.AttackLine{line}}},
+			},
+			Targets: []combat.TargetInfo{{ObjectID: 1, Mob: mob, X: -100, HP: mob.HP, Statuses: statuses}},
+		}
+		p, err := combat.PlanAttack(attackSpec(t, skillID), ctx, nil)
+		if err != nil {
+			t.Fatalf("plan %d: %v", skillID, err)
+		}
+		return p.Targets[0]
 	}
-	strafe := attackSpec(t, 3211006).MaxDamage
-	if got := strafe(dc); got != base {
-		t.Errorf("strafe %d", got)
+
+	// Strafe (3211006): critical hits above the normal bound are accepted on
+	// non-frozen mobs, and Blizzard-frozen mobs lift to MaxLineDamage.
+	strafeDC := combat.DamageContext{Stats: stats, Effect: combat.Effect{SkillID: 3211006, Damage: 200, MobCount: 1}, Mob: mob}
+	strafeNormal := combat.LineCeiling(strafeDC)
+	strafeCrit := combat.CritCeiling(strafeDC, strafeNormal)
+	if tp := planLine(3211006, 200, 1, nil, strafeNormal+1000); tp.Clipped != 0 || tp.Lines[0] != strafeNormal+1000 || !tp.Critical[0] {
+		t.Fatalf("strafe critical hit clipped: normal=%d crit=%d got=%+v", strafeNormal, strafeCrit, tp)
 	}
-	dc.Statuses = combat.MobStatuses{combat.MobFreeze: {Stat: combat.MobFreeze, SkillID: 3211003}}
-	if got := strafe(dc); got != combat.MaxLineDamage() {
-		t.Errorf("strafe on a blizzard-frozen mob %d", got)
+	if tp := planLine(3211006, 200, 1, nil, strafeCrit+500); tp.Clipped != 1 || tp.Lines[0] != strafeCrit {
+		t.Fatalf("strafe above crit ceiling not clipped: crit=%d got=%+v", strafeCrit, tp)
+	}
+	frozen := combat.MobStatuses{combat.MobFreeze: {Stat: combat.MobFreeze, SkillID: 3211003}}
+	if tp := planLine(3211006, 200, 1, frozen, combat.MaxLineDamage()); tp.Clipped != 0 || tp.Lines[0] != combat.MaxLineDamage() {
+		t.Fatalf("strafe on blizzard-frozen mob clipped: %+v", tp)
+	}
+
+	// Dragon's Breath (3211008) and Piercing (3221001): scale by 1.2^(mobCount-1)
+	// before applying the critical envelope.
+	for _, skillID := range []int{3211008, 3221001} {
+		dc := combat.DamageContext{Stats: stats, Effect: combat.Effect{SkillID: skillID, Damage: 350, MobCount: 6}, Mob: mob}
+		base := combat.LineCeiling(dc)
+		// 1.2^5 = 7776 / 3125 = 2.48832; target 5 non-crit (e.g. ~1.62x base) and crit both pass.
+		pierced := (base*7776 + 3124) / 3125
+		piercedCrit := combat.CritCeiling(dc, pierced)
+		if tp := planLine(skillID, 350, 6, nil, base*2); tp.Clipped != 0 || tp.Lines[0] != base*2 {
+			t.Fatalf("skill %d pierced normal clipped: base=%d pierced=%d got=%+v", skillID, base, pierced, tp)
+		}
+		if tp := planLine(skillID, 350, 6, nil, pierced+500); tp.Clipped != 0 || tp.Lines[0] != pierced+500 || !tp.Critical[0] {
+			t.Fatalf("skill %d pierced crit clipped: pierced=%d crit=%d got=%+v", skillID, pierced, piercedCrit, tp)
+		}
 	}
 }
 

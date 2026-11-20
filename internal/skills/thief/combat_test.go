@@ -106,6 +106,55 @@ func TestDamageIncreases(t *testing.T) {
 	}
 }
 
+// TestV148PsdSkillDamR verifies v148 psdSkill damR passives: Bloody Storm
+// (4331000) boosts Dual Slash (4301004) and Flying Assaulter (4321006), and
+// Assassinate (4221007) boosts Boomerang Step (4211011).
+func TestV148PsdSkillDamR(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	db := learnedChar(433, domain.SkillState{ID: 4331000, Level: 20})
+	for _, tc := range []struct {
+		id, lv int
+	}{{4301004, 15}, {4321006, 20}} {
+		def, err := content.ConfiguredSkillDefinition(tc.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		eff, err := combat.FromSkill(def, tc.lv)
+		if err != nil {
+			t.Fatal(err)
+		}
+		ctx := &combat.AttackContext{
+			Kind: combat.Melee, Character: db, Effect: eff, Now: time.Unix(1000, 0),
+			Stats: combat.PlayerStats{Job: 433, LUK: 400, WATK: 100, WeaponID: 1332001},
+		}
+		if err := spec(t, tc.id).Prepare(ctx); err != nil {
+			t.Fatal(err)
+		}
+		if ctx.Stats.DamageRate != 20 {
+			t.Fatalf("skill %d with bloody storm lv 20 damR = %d, want 20", tc.id, ctx.Stats.DamageRate)
+		}
+	}
+	shad := learnedChar(422, domain.SkillState{ID: 4221007, Level: 30})
+	def, err := content.ConfiguredSkillDefinition(4211011)
+	if err != nil {
+		t.Fatal(err)
+	}
+	eff, err := combat.FromSkill(def, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx := &combat.AttackContext{
+		Kind: combat.Melee, Character: shad, Effect: eff, Now: time.Unix(1000, 0),
+		Stats: combat.PlayerStats{Job: 422, LUK: 400, WATK: 100, WeaponID: 1332001},
+	}
+	if err := spec(t, 4211011).Prepare(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if ctx.Stats.DamageRate != 25 {
+		t.Fatalf("skill 4211011 with assassinate lv 30 damR = %d, want 25", ctx.Stats.DamageRate)
+	}
+}
+
 // Shadow Stars removes star use; Expert Throwing Star Handling rolls its prop
 // for Night Lords only; Taunt and Shadow Meso never use stars.
 func TestStarRules(t *testing.T) {
