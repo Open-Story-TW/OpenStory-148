@@ -11,6 +11,11 @@ func init() {
 	skills.Register(skills.Handler{ID: 4320005, Kind: skills.KindPassive | skills.KindMobStatus})  // 飛毒殺, applied by venom
 	skills.Register(skills.Handler{ID: 4321006, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(hit(stun))})
 	skills.Register(skills.Handler{ID: 4330008, Kind: skills.KindPassive, Passive: shadowResistance})
+	// 暗影迴避: the WZ er dodge chance. The 1 s indiePad and the critical
+	// follow-up after a dodge are not applied yet.
+	skills.Register(skills.Handler{ID: 4330009, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		return skills.Bonus{AvoidRate: c.Values["er"]}
+	}})
 	skills.Register(skills.Handler{ID: 4340013, Kind: skills.KindPassive, Passive: bladeExpertise})
 	skills.Register(skills.Handler{ID: 4341011, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(prepare(suddenRaid))})
 }

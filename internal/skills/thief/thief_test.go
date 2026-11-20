@@ -254,6 +254,7 @@ func TestPassiveBonuses(t *testing.T) {
 		{4220009, 10, domain.Character{}, skills.Bonus{MesoRate: 20}},
 		{4341006, 30, domain.Character{Job: 434}, skills.Bonus{WDEFPercent: 60, MDEFPercent: 60, AvoidRate: 25}},
 		{4341006, 30, domain.Character{Job: 432}, skills.Bonus{}},
+		{4330009, 20, domain.Character{}, skills.Bonus{AvoidRate: 30}},
 	}
 	for _, c := range cases {
 		h := registered(t, c.id)
