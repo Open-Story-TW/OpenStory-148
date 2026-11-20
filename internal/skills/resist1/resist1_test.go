@@ -444,11 +444,17 @@ func TestBattleMageCasts(t *testing.T) {
 }
 
 func TestBattleMageAttacks(t *testing.T) {
-	h, _ := skills.Lookup(32121002)
-	if h.Attack.Prepare != nil || !h.Attack.MagicDamage || h.Attack.Kind != combat.Melee|combat.Magic {
-		t.Fatalf("finishing blow must use the WZ damage in the magic formula: %+v", h.Attack)
+	// The staff chain sends a melee packet scored with the magic formula.
+	for _, id := range []int{32001000, 32101000, 32111002, 32121002} {
+		h, _ := skills.Lookup(id)
+		if !h.Attack.MagicDamage || h.Attack.Kind != combat.Melee|combat.Magic || h.Attack.Prepare != nil {
+			t.Fatalf("staff chain %d %+v", id, h.Attack)
+		}
 	}
-	h, _ = skills.Lookup(32111003)
+	if h, _ := skills.Lookup(32101001); h.Attack.MagicDamage {
+		t.Fatal("dark chain is not part of the staff chain")
+	}
+	h, _ := skills.Lookup(32111003)
 	ctx := &combat.AttackContext{Character: withSkill(demon(3212), 32121004, 30), Effect: combat.Effect{Damage: 1040}, Now: now}
 	if err := h.Attack.Prepare(ctx); err != nil || ctx.Effect.Damage != 1040*160/100 {
 		t.Fatalf("dark shock with dark genesis %d %v", ctx.Effect.Damage, err)
