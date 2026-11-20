@@ -233,6 +233,11 @@ func LineBounds(c DamageContext) (floor, ceiling int) {
 		v = defended
 	}
 	v = mulDiv(v, int64(100+max(bonus, 0)), 100)
+	// TWMS v148 CalcDamage::PDamage (0x71289E -> 0x6EF433) multiplies physical
+	// lines by the active WK_CHARGE skill's WZ damage% before elemental affinity.
+	if !c.Magic && stats.ChargeDamagePercent > 100 {
+		v = mulDiv(v, int64(stats.ChargeDamagePercent), 100)
+	}
 	// TWMS v148 CalcDamage (0x713329 / 0x708109) multiplies physical lines by
 	// nBerserkFury/100 and doubles magic lines whenever nBerserkFury is non-zero.
 	if stats.BerserkFuryPercent > 0 {

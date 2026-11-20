@@ -49,3 +49,23 @@ func TestPowerExplosionRaisesTheDamageBound(t *testing.T) {
 		t.Fatalf("expired berserk fury percent = %d, want 0", got)
 	}
 }
+
+func TestPlayerStatsWeaponChargeDamagePercent(t *testing.T) {
+	now := time.Unix(100, 0)
+	for _, tc := range []struct {
+		id, level, want int
+	}{
+		{1211004, 20, 140},
+		{1221004, 20, 150},
+		{11111007, 10, 130},
+	} {
+		ch := domain.Character{Job: 122, Level: 200, STR: 100, DEX: 100,
+			SkillBuffs: []domain.SkillBuff{{ID: tc.id, Level: tc.level, Stat: "WK_CHARGE", Value: 1, ExpiresAt: now.Add(time.Minute)}}}
+		if got := PlayerStats(ch, now).ChargeDamagePercent; got != tc.want {
+			t.Fatalf("charge %d lv%d ChargeDamagePercent = %d, want %d", tc.id, tc.level, got, tc.want)
+		}
+		if got := PlayerStats(ch, now.Add(2*time.Minute)).ChargeDamagePercent; got != 0 {
+			t.Fatalf("expired charge %d ChargeDamagePercent = %d, want 0", tc.id, got)
+		}
+	}
+}

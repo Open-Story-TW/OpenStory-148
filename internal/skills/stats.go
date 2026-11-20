@@ -321,6 +321,7 @@ func legacyPlayerStatsForMode(c domain.Character, now time.Time, battleSquare bo
 	p.ShadowPartner = shadowPartner(c, now)
 	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
 	p.BerserkFuryPercent, _ = ActiveStat(c, "BERSERK_FURY", now)
+	p.ChargeDamagePercent = chargeDamagePercent(c, now)
 	p.SkillDamage = b.SkillDamagePercents()
 	// The potential fold reports dodge too; without it a learned passive's
 	// dodge showed as zero for characters without potential lines.
@@ -439,6 +440,38 @@ func shadowPartner(c domain.Character, now time.Time) int {
 			return 0
 		}
 		return max(0, values["x"])
+	}
+	return 0
+}
+
+// chargeDamagePercent returns the active WK_CHARGE WZ damage multiplier
+// applied by v148 CalcDamage::PDamage (0x71289E -> 0x6EF433 -> 0x5F6B6D).
+func chargeDamagePercent(c domain.Character, now time.Time) int {
+	root := os.Getenv("MAPLEGO_WZ_ROOT")
+	for _, row := range c.SkillBuffs {
+		if row.Stat != "WK_CHARGE" || !row.ExpiresAt.After(now) {
+			continue
+		}
+		switch row.ID {
+		case 1211004, 1211006, 1211008, 1221004, 11111007, 15101006, 21101006:
+		default:
+			continue
+		}
+		def, err := content.SkillDefinition(root, row.ID)
+		if err != nil {
+			continue
+		}
+		lvl := row.Level
+		if lvl < 1 {
+			lvl = EffectiveLevel(c, row.ID, now)
+		}
+		if lvl < 1 {
+			continue
+		}
+		values, err := def.Values(min(lvl, def.MaxLevel))
+		if err == nil && values["damage"] > 100 {
+			return values["damage"]
+		}
 	}
 	return 0
 }

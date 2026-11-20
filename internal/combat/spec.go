@@ -243,6 +243,7 @@ type PlayerStats struct {
 	DamageRate, BossDamageRate                               int     // Percent bonus (0 = none).
 	FinalCutPercent                                          int     // Active physical damage multiplier in percent (0 = inactive).
 	BerserkFuryPercent                                       int     // Active Power Explosion multiplier in percent (0 = inactive).
+	ChargeDamagePercent                                      int     // Active WK_CHARGE WZ damage multiplier in percent (0 = inactive).
 	IgnoreDefense                                            int     // Percent of monster PDRate/MDRate ignored.
 	FullDefenseIgnore                                        bool    // A physical hit can proc full defense ignore.
 	ElementAmp                                               int     // Percent bonus for magic element amplification.
