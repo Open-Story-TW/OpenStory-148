@@ -153,13 +153,22 @@ func (b Bonus) Add(o Bonus) Bonus {
 // BuffBonus turns the active buff stats Java PlayerStats reads into a Bonus.
 // Maple Warrior is returned separately because it scales base stats only.
 func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
+	// The client's own PAD/ACC/EVA buff stats; a full Energy Charge competes
+	// with them instead of adding (see energyChargeValues).
+	var pad, acc, avoid int
 	for _, row := range c.SkillBuffs {
 		if !row.ExpiresAt.After(now) {
 			continue
 		}
 		v := row.Value
 		switch row.Stat {
-		case "WATK", "ENHANCED_WATK", "ANGEL_ATK":
+		case "WATK":
+			pad += v
+		case "ACC":
+			acc += v
+		case "AVOID":
+			avoid += v
+		case "ENHANCED_WATK", "ANGEL_ATK":
 			b.WATK += v
 		case "MATK", "ENHANCED_MATK", "ANGEL_MATK":
 			b.MATK += v
@@ -172,9 +181,9 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			// to the defense rate. Original Soul Endure panels double both.
 			b.WDEFPercent += v
 			b.MDEFPercent += v
-		case "ACC", "ANGEL_ACC":
+		case "ANGEL_ACC":
 			b.ACC += v
-		case "AVOID", "ANGEL_AVOID":
+		case "ANGEL_AVOID":
 			b.AVOID += v
 		case "SPEED", "ANGEL_SPEED":
 			b.Speed += v
@@ -241,7 +250,38 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			}
 		}
 	}
+	energy := energyChargeValues(c, now)
+	b.WATK += max(pad, energy["pad"])
+	b.ACC += max(acc, energy["acc"])
+	b.AVOID += max(avoid, energy["eva"])
 	return b, mapleWarrior
+}
+
+// energyChargeValues are the WZ values of the job's Energy Charge while its
+// gauge is full, nil otherwise. v148 0x6EF837 (PAD, summed by the attack
+// stat builder 0x7057B1), 0x6EF8E9 (ACC) and 0x6EF99B (EVA) return
+// max(buff stat, Energy Charge level data) while the gauge is full (two-state
+// value >= 10000, as 0x6F1954 reads it). The skill comes from the job, as in
+// those getters: 15100004 for Cygnus, 5810001 for jobs 509/58x/59x,
+// otherwise 5110001.
+func energyChargeValues(c domain.Character, now time.Time) map[string]int {
+	full := false
+	for _, row := range c.SkillBuffs {
+		if row.Stat == "ENERGY_CHARGE" && row.Value >= 10_000 && row.ExpiresAt.After(now) {
+			full = true
+		}
+	}
+	if !full {
+		return nil
+	}
+	id := 5110001
+	switch {
+	case c.Job/1000 == 1:
+		id = 15100004
+	case c.Job/10 == 58 || c.Job/10 == 59 || c.Job == 509:
+		id = 5810001
+	}
+	return learnedValues(c, id, now)
 }
 
 // PlayerStats is the effective attacker view used by the S0b pipeline.
