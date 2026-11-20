@@ -153,7 +153,7 @@ func TestBuffsAtMaxLevel(t *testing.T) {
 		{24101005, 20, phantom, []skills.StatValue{{Stat: "BOOSTER", Value: -2}}, 210 * time.Second},
 		{24111003, 20, phantom, []skills.StatValue{{Stat: "MAXHP", Value: 30}, {Stat: "MAXMP", Value: 30}, {Stat: "ABNORMAL_STATUS_R", Value: 40}, {Stat: "ELEMENTAL_STATUS_R", Value: 40}}, 180 * time.Second},
 		{24111005, 20, phantom, []skills.StatValue{{Stat: "ANGEL_ATK", Value: 20}, {Stat: "ANGEL_ACC", Value: 200}}, 180 * time.Second},
-		{24121004, 30, phantom, []skills.StatValue{{Stat: "ENHANCED_WATK", Value: 30}}, 210 * time.Second},
+		{24121004, 30, phantom, []skills.StatValue{{Stat: "PIRATES_REVENGE", Value: 30}, {Stat: "IGNORE_DEFENSE", Value: 30}}, 210 * time.Second},
 		{24121008, 30, phantom, []skills.StatValue{{Stat: "MAPLE_WARRIOR", Value: 15}}, 900 * time.Second},
 	}
 	for _, c := range cases {
@@ -306,6 +306,12 @@ func TestBuffDependentPassives(t *testing.T) {
 	}
 	if got := passive(t, 23121004, 30, active(23121004)); got != (skills.Bonus{AvoidRate: 20, DamagePercent: 30, BossDamagePercent: 30}) {
 		t.Errorf("ancient warding %+v", got)
+	}
+	if got := passive(t, 24121004, 30, character(2412, 0)); got != (skills.Bonus{}) {
+		t.Errorf("prayer of aria without buff %+v", got)
+	}
+	if got := passive(t, 24121004, 30, active(24121004)); got != (skills.Bonus{DamagePercent: 30, IgnoreDefense: 30}) {
+		t.Errorf("prayer of aria %+v", got)
 	}
 }
 

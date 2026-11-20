@@ -219,7 +219,7 @@ var table = []Spec{
 	{Name: "BIT_214", Bit: 214, IndieOrder: 25, Verified: "ida indie#25"},
 	{Name: "BIT_215", Bit: 215, IndieOrder: 26, Verified: "ida indie#26"},
 	{Name: "BIT_216", Bit: 216, IndieOrder: 27, Verified: "ida indie#27"},
-	{Name: "BIT_217", Bit: 217, Order: 185, RemoteOrder: 71, Remote: []Value{ValueI16, ValueI32}, Verified: "ida local#185 remote#71"},
+	{Name: "IGNORE_DEFENSE", Bit: 217, Aliases: []Stat{"BIT_217"}, Order: 185, RemoteOrder: 71, Remote: []Value{ValueI16, ValueI32}, Verified: "v148 mask 0xB1C27C; local 0x71E717 -> SecondaryStat+0x1D84; ignore defense in 0x71160B/0x7073A6"},
 	{Name: "PHANTOM_CLOAK", Bit: 219, Order: 186, RemoteOrder: 72, Remote: []Value{ValueI16, ValueI32}, Verified: "v148 mask 0xB1C2E0, local 0x71E7B4, remote 0x6FA8FC"},
 	{Name: "BIT_220", Bit: 220, Order: 187, Verified: "ida local#187"},
 	{Name: "BIT_221", Bit: 221, Order: 188, Verified: "ida local#188"},

@@ -53,10 +53,21 @@ func init() {
 	skills.Register(skills.Handler{ID: 24111003, Kind: skills.KindBuff, Cast: buff(0, key("MAXHP", "indieMhpR"), key("MAXMP", "indieMmpR"), key("ABNORMAL_STATUS_R", "x"), key("ELEMENTAL_STATUS_R", "y"))}) // 厄運守護 Bad Luck Ward (Legacy has no statups; WZ values)
 	skills.Register(skills.Handler{ID: 24111005, Kind: skills.KindBuff, Cast: buff(0, key("ANGEL_ATK", "indiePad", "indiepad"), key("ANGEL_ACC", "indieAcc"))})                                              // 月光祝福 Moon Light (WZ spells it indiepad)
 	skills.Register(skills.Handler{ID: 24121003, Kind: skills.KindAttack, Attack: attack(rule{kind: combat.Melee})})                                                                                         // 暮光 Twilight: casterMove attack, damR passive for 24111006/24111008
-	skills.Register(skills.Handler{ID: 24121004, Kind: skills.KindBuff, Cast: buff(0, fixed("ENHANCED_WATK", 30))})                                                                                          // 艾莉亞的祈禱 Priere D'Aria (Legacy fixes ENHANCED_WATK 30; WZ damR unused)
+	skills.Register(skills.Handler{ID: 24121004, Kind: skills.KindBuff, Cast: buff(0, key("PIRATES_REVENGE", "damR"), key("IGNORE_DEFENSE", "x")), Passive: prayerOfAria})                                   // 艾莉亞的祈禱 Priere D'Aria
 	skills.Register(skills.Handler{ID: 24121007, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: &combat.AttackSpec{MobCast: &combat.MobCastSpec{Dispel: true, UseBox: true}}})                   // 靈魂竊取 Soul Steal
 	skills.Register(skills.Handler{ID: 24121008, Kind: skills.KindPartyBuff, Cast: partyBuff(key("MAPLE_WARRIOR", "x"))})                                                                                    // 楓葉祝福 Maple Warrior
 	skills.Register(skills.Handler{ID: 24121009, Kind: skills.KindSpecial, Cast: skills.HerosWill})                                                                                                          // 勇士的意志 Hero's Will
+}
+
+// prayerOfAria (24121004) is damR and x% ignore defense while the buff is up.
+// The v148 client reads its PIRATES_REVENGE (bit 116) value into the damage
+// percent sum (0x713637) and its IGNORE_DEFENSE (bit 217) value into the
+// ignore-defense term of the physical (0x71160B) and magic (0x7073A6) calcs.
+func prayerOfAria(c *skills.PassiveContext) skills.Bonus {
+	if !c.Active(24121004) {
+		return skills.Bonus{}
+	}
+	return skills.Bonus{DamagePercent: c.Values["damR"], IgnoreDefense: c.Values["x"]}
 }
 
 // Carte Noir's original String.wz gives subProp as its always-on dodge chance.
