@@ -45,7 +45,6 @@ var pendingGroups = map[string][]int{
 	"神龍擺尾: Legacy custom pet summon":                                {80001130},
 	"測謊機 lie detector":                                              {8001000, 9001009},
 	"復活: no lt/rb, Legacy resurrects nobody":                        {9001005},
-	"monster-status skills 9000xxxx, entry point unknown":           {90000000, 90001001, 90001002, 90001003, 90001004, 90001005, 90001006},
 	"guild skills: guild system (content/guild_skills.go)":          {91000000, 91000001, 91000002, 91000003, 91000004, 91000005, 91000006},
 	"professions: crafting system (deferred by the plan)":           {92000000, 92010000, 92020000, 92030000, 92040000},
 }

@@ -296,7 +296,8 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 				normal = normal * min(ctx.Stats.ShadowPartner, 100) / 100
 			}
 			claimed := l.Claimed()
-			if InstantKillLine(e.SkillID, j, t.Mob, int64(claimed)) {
+			if InstantKillLine(e.SkillID, j, t.Mob, int64(claimed)) ||
+				(ctx.Stats.PotentialInstantKill && j == 0 && !t.Mob.Boss && !t.Mob.Invincible && t.Mob.HP > 0 && int64(claimed) == t.Mob.HP) {
 				// The client's instant kill (maximum HP or the Head Shot cap sentinel) is not a roll.
 				f, c, normal = claimed, claimed, claimed
 			}
@@ -316,6 +317,9 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		}
 		if landed {
 			applies := append(append([]MobStatusApply(nil), e.MonsterStatus...), specOnHit(spec)...)
+			if ctx.Kind != Summoned && ctx.Stats.OnHitProcCount > 0 {
+				applies = append(applies, ctx.Stats.OnHitProcs[:min(ctx.Stats.OnHitProcCount, len(ctx.Stats.OnHitProcs))]...)
+			}
 			for _, a := range applies {
 				if !CanInflict(t.Mob, a.Stat, e.Element) {
 					continue

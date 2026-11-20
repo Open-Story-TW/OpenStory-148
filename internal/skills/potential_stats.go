@@ -103,6 +103,7 @@ func playerStatsCheckedForMode(c domain.Character, now time.Time, battleSquare b
 	}
 	if len(effects.Lines) == 0 {
 		p := legacyPlayerStatsForMode(c, now, battleSquare)
+		attachMonsterPotentialProcs(&p, c, nil)
 		p.ResourceCosts, err = ResourceModifiers(c, now)
 		return p, err
 	}
@@ -189,6 +190,7 @@ func playerStatsCheckedForMode(c domain.Character, now time.Time, battleSquare b
 	if main > 0 && (main > math.MaxInt64/1200/atk || main*1200*atk > math.MaxInt64/100000) {
 		return p, fmt.Errorf("potential attack arithmetic overflow")
 	}
+	attachMonsterPotentialProcs(&p, c, effects.AttackProcs)
 	p.ResourceCosts, err = ResourceModifiers(c, now)
 	return p, err
 }

@@ -256,6 +256,11 @@ type PlayerStats struct {
 	// damage (Elemental Boost 5920001 for 5911004/5911005: v148 0x712C51
 	// adds its damage to the skill's percent before the line is scaled).
 	SkillDamage [4]SkillDamageBonus
+	// OnHitProcs carries weapon/equipment potential or passive monster-status
+	// procs (Skill.wz/9000.img 90001001..90001006) applied on landed attacks.
+	OnHitProcs           [8]MobStatusApply
+	OnHitProcCount       int
+	PotentialInstantKill bool // 90000000 non-boss instant-kill proc active
 }
 
 // SkillDamageBonus is one passive's percent for one skill.

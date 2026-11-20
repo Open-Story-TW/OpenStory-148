@@ -83,6 +83,7 @@ type PotentialEffects struct {
 	Lines               []PotentialEffectLine          `json:"lines,omitempty"`
 	Pending             []PendingPotentialEffect       `json:"pending,omitempty"`
 	NativeContactDamage []NativeContactDamagePotential `json:"native_contact_damage,omitempty"`
+	AttackProcs         []AttackProcPotential          `json:"attack_procs,omitempty"`
 }
 
 type PendingPotentialEffectsError struct{ Effects []PendingPotentialEffect }
@@ -175,16 +176,20 @@ func ResolvePotentialEffects(root string, c domain.Character, now time.Time) (Po
 			if nativeContactKnown {
 				out.NativeContactDamage = append(out.NativeContactDamage, nativeContact)
 			}
+			attackProc, attackProcKnown := attackProcPotential(line)
+			if attackProcKnown {
+				out.AttackProcs = append(out.AttackProcs, attackProc)
+			}
 			pending := PendingPotentialEffect{EquipmentID: e.ID, Line: i + 1, OptionID: int(word)}
 			for key, value := range attributes.Values {
 				support, ok := potentialEffectSupport[key]
 				if !ok {
 					return PotentialEffects{}, fmt.Errorf("unknown potential attribute %s", key)
 				}
-				// Only this exact, native-consumed line shape is recognized.
-				// Global prop/ignoreDAM coverage stays pending for other shapes;
+				// Only exact, consumed line shapes are recognized.
+				// Global prop/ignoreDAM/attackType coverage stays pending for other shapes;
 				// aggregate Values must never drive a second server roll.
-				if support == PotentialPending && value != 0 && !nativeContactKnown {
+				if support == PotentialPending && value != 0 && !nativeContactKnown && !attackProcKnown {
 					pending.Attributes = append(pending.Attributes, key)
 				}
 				next := int64(out.Values[key]) + int64(value)

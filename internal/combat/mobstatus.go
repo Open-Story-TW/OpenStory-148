@@ -68,6 +68,9 @@ type MobStatusApply struct {
 	StackLimit  int
 	// DOTInterval uses the passive's interval when a different skill hits.
 	DOTInterval time.Duration
+	// DOTPercent overrides Effect.DOT when a passive/potential DoT procs from
+	// another attack skill (e.g. 90001003 Poison dot=40%).
+	DOTPercent int
 }
 
 // ActiveStatus is one monster status held in world room memory.
@@ -187,7 +190,11 @@ func ResolveOn(a MobStatusApply, eff Effect, ownerID int64, maxBase int64, mob c
 		st.SkillID = int32(a.SourceSkill)
 	}
 	if a.Poison || a.Explode {
-		switch dot := int64(eff.DOT); {
+		dot := int64(eff.DOT)
+		if a.DOTPercent > 0 {
+			dot = int64(a.DOTPercent)
+		}
+		switch {
 		case a.TickFrom == "damage":
 			st.TickDamage = max(1, int64(eff.Damage)*maxBase/100)
 		case a.TickFrom == "mobhp50":
