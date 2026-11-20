@@ -10,6 +10,7 @@ import (
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 	_ "maple-go-server/internal/skills/common"
 )
@@ -547,5 +548,33 @@ func TestEscapeBalloonAndFlightFollowTheNativeFields(t *testing.T) {
 		if !flying.Toggle || flying.MPCost != 5 || stats(flying.Self)["SOARING"] != 1 {
 			t.Fatalf("field %d had unexpected flight result %+v", field, flying)
 		}
+	}
+}
+
+func TestBambooRainPlansTheClientLines(t *testing.T) {
+	h, _ := skills.Lookup(1009)
+	def, _ := values(t, 1009, 1)
+	effect, err := combat.FromSkill(def, 1)
+	if err != nil || effect.MobCount != 30 || effect.AttackCount != 1 || !effect.Box.Set {
+		t.Fatalf("1009 effect %+v err %v", effect, err)
+	}
+	boss := content.Mob{ID: 9305100, HP: 52500, Boss: true}
+	minion := content.Mob{ID: 9300003, HP: 800}
+	attack := protocol.Attack{Opcode: protocol.RecvMeleeAttack, SkillID: 1009, Targets: []protocol.AttackTarget{
+		{ObjectID: 1, Lines: []protocol.AttackLine{{Raw: 15750}}},
+		{ObjectID: 2, Lines: []protocol.AttackLine{{Raw: 900}}},
+	}}
+	ctx := combat.AttackContext{
+		Kind: combat.Melee, Attack: attack, Effect: effect, Now: time.Unix(100, 0),
+		Character: domain.Character{ID: 1, MapID: 925020100, HP: 50},
+		Targets:   []combat.TargetInfo{{ObjectID: 1, Mob: boss, X: 300, Y: 7, HP: 52500}, {ObjectID: 2, Mob: minion, X: -200, Y: 7, HP: 800}},
+	}
+	plan, err := combat.PlanAttack(h.Attack, ctx, nil)
+	if err != nil || plan.Targets[0].Lines[0] != 15750 || plan.Targets[1].Lines[0] != 800 || plan.Targets[1].Clipped != 1 || plan.Targets[0].Clipped != 0 {
+		t.Fatalf("plan %+v err %v", plan.Targets, err)
+	}
+	ctx.Character.MapID = 925020002
+	if _, err = combat.PlanAttack(h.Attack, ctx, nil); err == nil {
+		t.Fatal("planned outside the dojo")
 	}
 }
