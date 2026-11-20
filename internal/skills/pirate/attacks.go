@@ -79,7 +79,7 @@ var attacks = []attack{
 	{id: 5300007, kind: combat.Melee, levelFrom: 5301001, prepare: barrelRoll}, // (invisible) Barrel Bomb blast, sent after 5301001
 	{id: 5311000, kind: combat.Shoot, noAmmo: true},                            // 加農砲 : 穿刺攻擊 Cannon Spike (v148 0x56, slot 0)
 	{id: 5311002, kind: combat.Shoot, noAmmo: true, onHit: stun},               // 猴子的衝擊波 Monkey Wave
-	{id: 5311003, kind: combat.Melee},                                          // 加農砲跳躍 Cannon Jump
+	{id: 5311003, kind: combat.Shoot, noAmmo: true},                            // 加農砲跳躍 Cannon Jump: a 0x56 ranged attack in v148
 	{id: 5310009, kind: combat.Melee},                                          // 反擊砲手 Counter Crush
 	{id: 5321000, kind: combat.Shoot, noAmmo: true},                            // 加農砲火箭 Cannon Bazooka
 	{id: 5321001, kind: combat.Shoot, noAmmo: true},                            // 戰艦鯨魚號 Nautilus Strike
