@@ -188,7 +188,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 214 { // Includes the regional v148 pirate books.
+	if count != 217 { // Includes the regional v148 pirate books.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }

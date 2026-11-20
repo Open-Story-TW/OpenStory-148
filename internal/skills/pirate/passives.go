@@ -51,6 +51,12 @@ func init() {
 	})
 	// 猴子衝擊 is a proc, not a stat bonus.
 	skills.Register(skills.Handler{ID: 5310008, Kind: skills.KindPassive})
+	// 機遇攻擊／命運攻擊 are the pirate entries of the PvP class skills
+	// (Java PlayerStats.pvpSkills has 5000006 and 5010004; the v148 list
+	// sub_6ABD7C adds 5090006). They have no PvE effect.
+	for _, id := range []int{5000006, 5010004, 5090006} {
+		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})
+	}
 }
 
 // weaponType is the equipped weapon's item id / 10000, 0 when bare-handed.
