@@ -346,6 +346,13 @@ func TestPassives(t *testing.T) {
 	if b := bonus(c, 33100000, 20); b.Mastery != 50 || b.ACC != 120 {
 		t.Errorf("crossbow mastery %+v", b)
 	}
+	// Crossbow Expert sets the mastery instead of adding to the basic one.
+	expert := c
+	expert.Job = 3312 // only a fourth job Wild Hunter can hold Crossbow Expert
+	expert.Skills = append(append([]domain.SkillState(nil), c.Skills...), domain.SkillState{ID: 33120000, Level: 30})
+	if basic, adv := bonus(expert, 33100000, 20), bonus(expert, 33120000, 30); basic.Mastery != 0 || basic.ACC != 120 || adv.Mastery != 70 {
+		t.Errorf("crossbow expert replaces mastery: basic %+v expert %+v", basic, adv)
+	}
 	if b := bonus(c, 33110000, 20); b.DamagePercent != 40 || b.BossDamagePercent != 40 {
 		t.Errorf("jaguar mastery %+v", b)
 	}
