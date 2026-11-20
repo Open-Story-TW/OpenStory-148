@@ -28,6 +28,8 @@ type summon struct {
 	// mobs is the WZ summon/attack1/info mobCount when the skill level has
 	// none (Gaviota's explosion hits up to 3).
 	mobs int
+	// twin is a second summon the cast spawns (SummonSpec.Twins).
+	twin int
 }
 
 var summons = []summon{
@@ -35,13 +37,22 @@ var summons = []summon{
 	{id: 5211002, stat: "SUMMON", move: circleStationary, multi: true, single: true, mobs: 3}, // 海鷗突擊隊 Gaviota
 	{id: 5220002, stat: "PUPPET", move: stationary, multi: true},                              // 砲台章魚王 Wrath of the Octopi
 	{id: 5321003, stat: "PUPPET", move: stationary, maxDamage: anchorCeiling},                 // 磁錨 Anchor Aweigh
-	{id: 5321004, stat: "SUMMON", move: follow},                                               // 雙胞胎猴子 Monkey Militia
+	// 雙胞胎猴子 Monkey Militia: "各以#damage%傷害進行攻擊", two monkeys. The
+	// v148 summon constructor sub_73AACF lists the second one's own id,
+	// 5320011 (0x73B372), beside 5321003/5321004.
+	{id: 5321004, stat: "SUMMON", move: follow, twin: 5320011},
 }
 
 func init() {
 	for _, s := range summons {
 		spec := &combat.AttackSpec{Kind: combat.Summoned, MaxDamage: s.maxDamage, Prepare: summonTargets(s.mobs), Summon: &combat.SummonSpec{MoveAbility: s.move, AssistType: 1, Multi: s.multi, SingleAttack: s.single}}
 		skills.Register(skills.Handler{ID: s.id, Kind: skills.KindSummon, Cast: valueOne(s.stat), Attack: spec})
+		if s.twin != 0 {
+			spec.Summon.Twins = []int{s.twin}
+			// The twin is never learned or cast; it attacks at the cast skill's level.
+			skills.Register(skills.Handler{ID: s.twin, Kind: skills.KindSummon, LevelFrom: s.id,
+				Attack: &combat.AttackSpec{Kind: combat.Summoned, MaxDamage: s.maxDamage, Summon: &combat.SummonSpec{MoveAbility: s.move, AssistType: 1}}})
+		}
 	}
 	// 心靈控制 Mind Control: the client sends it as a ranged attack (Java
 	// rangedAttack; Legacy then refuses it because it disconnected players with

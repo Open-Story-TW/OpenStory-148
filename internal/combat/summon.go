@@ -39,6 +39,10 @@ type SummonSpec struct {
 	// Variants: the spawned summon shows one of these skill IDs at random
 	// (Elemental Knights 23111008/9/10); spec, level and cost stay the cast skill's.
 	Variants []int
+	// Twins are further summons each cast spawns beside the first, shown
+	// with their own skill IDs (Monkey Militia's second monkey 5320011);
+	// spec, level, lifetime and cost stay the cast skill's.
+	Twins []int
 	// Sub handles RecvSubSummon (0x102): the client asks the summon to use a
 	// linked skill (Beholder 1320008 heal / 1320009 buff). Nil ignores it.
 	Sub func(SubSummonContext) (SubSummonResult, error)

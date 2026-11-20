@@ -477,6 +477,8 @@ const (
 	testRemapTo    = 9990019
 	testNoCast     = 9990020
 	testBlink      = 9990021
+	testTwins      = 9990031
+	testTwin       = 9990032
 )
 
 var seenSummonSkill int
@@ -488,6 +490,9 @@ func init() {
 	skills.Register(skills.Handler{ID: testNoCast, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Kind: combat.Summoned, Effect: combat.Effect{SkillID: testNoCast, Damage: 100, MobCount: 1, AttackCount: 1},
 		Summon: &combat.SummonSpec{AssistType: 1, Duration: time.Minute, NoCastSpawn: true}}})
 	skills.Register(skills.Handler{ID: testBlink, Kind: skills.KindBuff, Attack: &combat.AttackSpec{TeleportKey: true}})
+	skills.Register(skills.Handler{ID: testTwins, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Kind: combat.Summoned, IgnoreRange: true,
+		Effect: combat.Effect{SkillID: testTwins, Damage: 100, MobCount: 1, AttackCount: 1},
+		Summon: &combat.SummonSpec{AssistType: 1, Duration: time.Minute, Twins: []int{testTwin}}}})
 	skills.Register(skills.Handler{ID: testRemapTo, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee, IgnoreRange: true, NoCooldown: true, Effect: combat.Effect{SkillID: testRemapTo, Damage: 100, MobCount: 1, AttackCount: 1, Cooltime: time.Minute}}})
 	skills.Register(skills.Handler{ID: testRemapFrom, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee, IgnoreRange: true,
 		Effect: combat.Effect{SkillID: testRemapFrom, Damage: 100, MobCount: 1, AttackCount: 1},
@@ -535,5 +540,41 @@ func TestSummonVariantsAndAttackRemap(t *testing.T) {
 	}
 	if got.SkillID != testRemapTo || got.Cost == nil || got.Cost.CooldownMS != 0 {
 		t.Fatalf("remap/no-cooldown %+v", got)
+	}
+}
+
+func TestSummonTwinsSpawnAttackAndLeaveTogether(t *testing.T) {
+	s, lives, sinks, mob, _ := summonFixture(t)
+	mob.hp = 1000
+	lives[0].session.Character.Skills = append(lives[0].session.Character.Skills, domain.SkillState{ID: testTwins, Level: 1})
+	key := mapKey{channel: 1, mapID: 40000}
+	for range 2 { // a recast replaces both
+		if _, err := s.SpawnSummon(1, lives[0], testTwins, 1, time.Now()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	var twin int32
+	shown := map[int]int{}
+	s.gameplay.mu.Lock()
+	for oid, m := range s.gameplay.rooms[key].summons {
+		if m.source == testTwins {
+			shown[m.skillID]++
+			if m.skillID == testTwin {
+				twin = oid
+			}
+		}
+	}
+	s.gameplay.mu.Unlock()
+	if shown[testTwins] != 1 || shown[testTwin] != 1 {
+		t.Fatalf("summons shown %v", shown)
+	}
+	s.repo = &sharedCombatRepo{apply: func(q domain.CombatAttackRequest) (domain.CombatAttackResult, error) { return fakeSharedResult(q), nil }}
+	in := protocol.SummonAttackInput{ObjectID: twin, Tick: 4, Targets: []protocol.AttackTarget{{ObjectID: mob.objectID, Lines: []protocol.AttackLine{{Raw: 3, Damage: 3}}}}}
+	if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], in); err != nil || mob.hp != 997 {
+		t.Fatalf("twin attack hp%d %v", mob.hp, err)
+	}
+	s.RemoveSummons(1, 40000, lives[0].session.CharacterID, testTwins)
+	if n := s.summonCount(key, lives[0].session.CharacterID, testTwins); n != 0 {
+		t.Fatalf("%d summons left after the buff ended", n)
 	}
 }

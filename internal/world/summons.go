@@ -240,6 +240,18 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 	summonDiag("summon_spawned", c.ID, spawn)
 	out = append(out, roomBroadcast(room, spawn, -1)...)
 	out = append(out, roomBroadcast(room, m.amplifierAreaPacket(now), -1)...)
+	for _, twin := range spec.Summon.Twins {
+		tid := g.alloc()
+		if tid == 0 {
+			break
+		}
+		t := *m
+		t.objectID, t.skillID = tid, twin
+		room.summons[tid] = &t
+		spawn = protocol.SpawnSummon(t.view(true))
+		summonDiag("summon_spawned", c.ID, spawn)
+		out = append(out, roomBroadcast(room, spawn, -1)...)
+	}
 	g.mu.Unlock()
 	deliver(out)
 	return oid, nil

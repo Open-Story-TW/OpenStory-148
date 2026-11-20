@@ -188,7 +188,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 213 { // Includes the regional v148 pirate books.
+	if count != 214 { // Includes the regional v148 pirate books.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }
@@ -877,5 +877,13 @@ func TestCannonSpikeIsRanged(t *testing.T) {
 		if !ok || h.Attack == nil || h.Attack.Kind != combat.Shoot || h.Attack.Ammo != combat.AmmoNone {
 			t.Fatalf("%d handler %+v", id, h)
 		}
+	}
+}
+
+func TestMonkeyMilitiaSpawnsBothMonkeys(t *testing.T) {
+	h, _ := skills.Lookup(5321004)
+	twin, ok := skills.Lookup(5320011)
+	if len(h.Attack.Summon.Twins) != 1 || h.Attack.Summon.Twins[0] != 5320011 || !ok || twin.LevelFrom != 5321004 || twin.Cast != nil {
+		t.Fatalf("monkey militia twin %+v %+v", h.Attack.Summon, twin)
 	}
 }
