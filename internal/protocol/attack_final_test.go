@@ -57,3 +57,19 @@ func TestReadAttackAcceptsV148Actions(t *testing.T) {
 		t.Fatalf("%+v %v", a, err)
 	}
 }
+
+// Poison Bomb's explosion as the v148 client sent it (2026-11-20): the
+// charge header, two targets, the attacker position and then the bomb's.
+func TestReadAttackPoisonBombExplosionPoint(t *testing.T) {
+	body, _ := hex.DecodeString("01211e51d7001e515b81d4000000000011803afe99de07061090380d000000000000000012430f00070100706f9800011900d7001900d70078001c0100005d2b923e78bf979611430f00070100706f980001f9ffd700f9ffd700be00c00000005d2b923e30c535961101d70098ffd700")
+	a, err := ReadAttack(RecvMeleeAttack, NewReader(body))
+	if err != nil || a.SkillID != 14111006 || a.Charge != 212 || len(a.Targets) != 2 || a.LineCount() != 1 {
+		t.Fatalf("%+v %v", a, err)
+	}
+	if a.Targets[0].Lines[0].Damage != 284 || a.Targets[1].Lines[0].Damage != 192 {
+		t.Fatalf("lines %d %d", a.Targets[0].Lines[0].Damage, a.Targets[1].Lines[0].Damage)
+	}
+	if a.X != 273 || a.Y != 215 || a.TailX != -104 || a.TailY != 215 {
+		t.Fatalf("attacker (%d,%d) bomb (%d,%d)", a.X, a.Y, a.TailX, a.TailY)
+	}
+}

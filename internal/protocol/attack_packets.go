@@ -33,6 +33,9 @@ type AttackQuirk struct {
 	MesoExplode  bool // melee: 4211006 Meso Explosion target list
 }
 
+// poisonBomb (14111006) explodes where the thrown bomb landed.
+const poisonBomb = 14111006
+
 // maxAttackAction is the highest action number an attack may name.
 const maxAttackAction = 0x1ff
 
@@ -145,7 +148,8 @@ type Attack struct {
 	MesoDrops     []int32 // Meso Explosion drop object IDs.
 	EruptionAreas []int32 // 2121003 only: explicit Poison Mist object IDs after the magic tail.
 	X, Y          int16
-	// TailX/TailY is the optional trailing shoot position (Wild Hunter).
+	// TailX/TailY is the optional trailing position: Wild Hunter shots,
+	// Evan's dragon magic, Poison Bomb's explosion point.
 	TailX, TailY int16
 	Wire         []byte
 }
@@ -251,6 +255,12 @@ func ReadAttack(op uint16, r *Reader) (Attack, error) {
 	}
 	a.X, a.Y = r.I16(), r.I16()
 	switch op {
+	case RecvMeleeAttack:
+		if a.SkillID == poisonBomb && r.Remaining() == 4 {
+			// v148 melee sender 0x91F641 appends the bomb's own position
+			// (two Encode2) after the attacker's for Poison Bomb.
+			a.TailX, a.TailY = r.I16(), r.I16()
+		}
 	case RecvShootAttack:
 		r.Skip(4)
 		if r.Remaining() == 4 {
