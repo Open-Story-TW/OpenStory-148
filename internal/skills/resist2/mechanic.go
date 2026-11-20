@@ -47,18 +47,35 @@ type mechAttack struct {
 }
 
 var mechAttacks = []mechAttack{
-	{id: 35001001, kind: combat.Shoot},                                               // 火焰發射 Flame Launcher (keydown quirk in S0b)
-	{id: 35001003, kind: jaguar, prepare: metalFistBoost},                            // 鑽孔衝刺 ME-07 Drillhands
-	{id: 35001004, kind: combat.Shoot},                                               // 加格林射擊 Gatling Gun
-	{id: 35101003, kind: jaguar, onHit: stun, prepare: metalFistBoost},               // 自動錘 Atomic Hammer
-	{id: 35101004, kind: jaguar},                                                     // 火箭極速 Rocket Booster
-	{id: 35101009, kind: combat.Shoot, prepare: flamePoison, levelFrom: heavyWeapon}, // 強化的火焰發射
-	{id: 35101010, kind: combat.Shoot, levelFrom: heavyWeapon},                       // 強化的加格林
-	{id: 35111015, kind: combat.Shoot, onHit: stun},                                  // 火箭衝擊 Rocket Punch
-	{id: 35121012, kind: jaguar},                                                     // 雷射衝擊波 Laser Blast
-	{id: 35111004, kind: combat.Shoot, prepare: siegeLines},                          // 重機槍 Siege Mode attack
-	{id: 35121005, kind: combat.Shoot, prepare: siegeLines},                          // 導彈罐 Missile Tank attack
-	{id: 35121013, kind: combat.Shoot, prepare: siegeLines, levelFrom: 35111004},     // 重機槍 Siege Mode 2 attack
+	{id: 35001001, kind: combat.Shoot},                                                                // 火焰發射 Flame Launcher (keydown quirk in S0b)
+	{id: 35001003, kind: jaguar, prepare: metalFistBoost},                                             // 鑽孔衝刺 ME-07 Drillhands
+	{id: 35001004, kind: combat.Shoot},                                                                // 加格林射擊 Gatling Gun
+	{id: 35101003, kind: jaguar, onHit: stun, prepare: metalFistBoost},                                // 自動錘 Atomic Hammer
+	{id: 35101004, kind: jaguar},                                                                      // 火箭極速 Rocket Booster
+	{id: 35101009, kind: combat.Shoot, prepare: heavyWeaponCrit(flamePoison), levelFrom: heavyWeapon}, // 強化的火焰發射
+	{id: 35101010, kind: combat.Shoot, prepare: heavyWeaponCrit(nil), levelFrom: heavyWeapon},         // 強化的加格林
+	{id: 35111015, kind: combat.Shoot, onHit: stun},                                                   // 火箭衝擊 Rocket Punch
+	{id: 35121012, kind: jaguar},                                                                      // 雷射衝擊波 Laser Blast
+	{id: 35111004, kind: combat.Shoot, prepare: siegeLines},                                           // 重機槍 Siege Mode attack
+	{id: 35121005, kind: combat.Shoot, prepare: siegeLines},                                           // 導彈罐 Missile Tank attack
+	{id: 35121013, kind: combat.Shoot, prepare: siegeLines, levelFrom: 35111004},                      // 重機槍 Siege Mode 2 attack
+}
+
+// heavyWeaponCrit gives the enhanced Flame Launcher and Gatling (35101009,
+// 35101010) Heavy Weapon Mastery's cr, which String.wz names as their added
+// critical rate. The v148 client takes 35100008's level data for those two
+// attacks (cost 0x6DAD78, range 0x6D73DD); live, 400+ of their critical
+// lines in one run exceeded the audit at the 10% rate without it.
+func heavyWeaponCrit(next func(*combat.AttackContext) error) func(*combat.AttackContext) error {
+	return func(ctx *combat.AttackContext) error {
+		if v := skillValues(heavyWeapon, learned(ctx.Character, heavyWeapon)); v != nil {
+			ctx.Effect.CriticalRate += v["cr"]
+		}
+		if next != nil {
+			return next(ctx)
+		}
+		return nil
+	}
 }
 
 // flamePoison (35101009) is Java isPoison (dot and dotTime): POISON for

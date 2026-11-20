@@ -465,6 +465,24 @@ func TestLinkedLevels(t *testing.T) {
 	}
 }
 
+// The enhanced Flame Launcher and Gatling take Heavy Weapon Mastery's cr.
+func TestHeavyWeaponCritical(t *testing.T) {
+	c := caster()
+	c.Skills = []domain.SkillState{{ID: heavyWeapon, Level: 20}}
+	cr := skillValues(heavyWeapon, 20)["cr"]
+	for _, id := range []int{35101009, 35101010} {
+		h, _ := skills.Lookup(id)
+		ctx := &combat.AttackContext{Character: c, Effect: combat.Effect{SkillID: id, CriticalRate: 0}, Now: now}
+		if err := h.Attack.Prepare(ctx); err != nil || cr < 1 || ctx.Effect.CriticalRate != cr {
+			t.Errorf("%d critical rate %d want %d (%v)", id, ctx.Effect.CriticalRate, cr, err)
+		}
+	}
+	ctx := &combat.AttackContext{Character: caster(), Effect: combat.Effect{SkillID: 35101010}, Now: now}
+	if h, _ := skills.Lookup(35101010); h.Attack.Prepare(ctx) != nil || ctx.Effect.CriticalRate != 0 {
+		t.Errorf("gatling without Heavy Weapon Mastery %d", ctx.Effect.CriticalRate)
+	}
+}
+
 func TestSwallowBuff(t *testing.T) {
 	defer func(orig func(int) int) { rollDie = orig }(rollDie)
 	want := []map[buffstat.Stat]int{
