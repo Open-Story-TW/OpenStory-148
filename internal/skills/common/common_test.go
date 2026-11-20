@@ -36,10 +36,6 @@ var pendingGroups = map[string][]int{
 	"unnamed beginner attacks with no Java handling":                beginnerIDs(1092, 1094, 1095),
 	"助手 (x013): no Java handling":                                   beginnerIDs(1013),
 	"捕獲／獵殺殭屍: monster capture system":                               append(beginnerIDs(1061), 80001132),
-	"Mercedes morph skill, use unknown":                             {20020111},
-	"Legacy removes these on job advance":                           {20000014, 20000015, 20000016, 20021166, 20021181, 30010166, 30011167, 30011168, 30011169, 30011170},
-	"Aran tutorial passives, use unknown":                           {20000017, 20000018},
-	"Phantom hidden skills with no Java handling":                   {20031166, 20031181},
 	"guild skills: guild system (content/guild_skills.go)":          {91000000, 91000001, 91000002, 91000003, 91000004, 91000005, 91000006},
 	"professions: crafting system (deferred by the plan)":           {92000000, 92010000, 92020000, 92030000, 92040000},
 }
