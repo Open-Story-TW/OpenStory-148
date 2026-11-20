@@ -27,6 +27,8 @@ type attack struct {
 	// level of (Handler.LevelFrom): the client sends the follow-up's own id,
 	// which no character ever learns.
 	levelFrom int
+	// maxDamage overrides the generic per-line ceiling (combat.AttackSpec).
+	maxDamage func(combat.DamageContext) int
 }
 
 var (
@@ -87,7 +89,7 @@ var attacks = []attack{
 }
 
 func spec(a attack) *combat.AttackSpec {
-	s := &combat.AttackSpec{Kind: a.kind, OnHit: a.onHit, Prepare: a.prepare, Drain: a.drain, LevelFrom: a.levelFrom}
+	s := &combat.AttackSpec{Kind: a.kind, OnHit: a.onHit, Prepare: a.prepare, Drain: a.drain, LevelFrom: a.levelFrom, MaxDamage: a.maxDamage}
 	if a.noAmmo {
 		s.Ammo = combat.AmmoNone
 	}

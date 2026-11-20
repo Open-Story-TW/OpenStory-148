@@ -188,7 +188,7 @@ func TestEveryPirateHandlerPlansKnownStats(t *testing.T) {
 			}
 		}
 	}
-	if count != 217 { // Includes the regional v148 pirate books.
+	if count != 223 { // Includes the regional v148 pirate books and six regional 57xx attacks.
 		t.Fatalf("registered %d pirate skills", count)
 	}
 }
@@ -885,5 +885,23 @@ func TestMonkeyMilitiaSpawnsBothMonkeys(t *testing.T) {
 	twin, ok := skills.Lookup(5320011)
 	if len(h.Attack.Summon.Twins) != 1 || h.Attack.Summon.Twins[0] != 5320011 || !ok || twin.LevelFrom != 5321004 || twin.Cast != nil {
 		t.Fatalf("monkey militia twin %+v %+v", h.Attack.Summon, twin)
+	}
+}
+
+// The regional 57xx attacks use their native sender's family; Dragon Soul
+// Strike's non-boss line is the native near-999999 roll.
+func TestV148ZenAttacks(t *testing.T) {
+	for id, kind := range map[int]combat.AttackKind{5701001: combat.Melee, 5711006: combat.Melee, 5711002: combat.Shoot,
+		5710012: combat.Melee | combat.Shoot, 5721004: combat.Shoot, 5721006: combat.Shoot} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Attack == nil || h.Attack.Kind != kind {
+			t.Errorf("%d: %+v", id, h.Attack)
+		}
+	}
+	if h, _ := skills.Lookup(5710012); h.LevelFrom != 5711002 || h.Attack.LevelFrom != 5711002 {
+		t.Error("tiger charge explosion level source")
+	}
+	if got := dragonSoulLine(combat.DamageContext{Mob: content.Mob{HP: 100}}); got != combat.MaxLineDamage() {
+		t.Errorf("dragon soul non-boss line %d", got)
 	}
 }
