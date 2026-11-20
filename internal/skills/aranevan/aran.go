@@ -191,14 +191,20 @@ func snowChargeDamage(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{DamagePercent: c.Values["damR"]}
 }
 
-// comboCritical (21110000) is a v148 psd passive: its WZ common row gives a
-// flat cr and criticaldamageMax for 2111 and 2112. x and y only describe the
-// combo counter text and are not part of the passive rate.
+// comboCritical (21110000) is a v148 psd passive for 2111 and 2112: its WZ
+// common row gives a flat cr and criticaldamageMax, and v148 CalcDamage
+// (0x71160B, the 21110000 lookup after the combo counter 0x6ED7FF) adds
+// min(x, combo/10) × y critical rate, capped at 100, for the live combo.
 func comboCritical(c *skills.PassiveContext) skills.Bonus {
 	if j := c.Character.Job; j != 2111 && j != 2112 {
 		return skills.Bonus{}
 	}
-	return skills.Bonus{Critical: c.Values["cr"], CriticalDamage: c.Values["criticaldamageMax"]}
+	rate := 0
+	if row, ok := activeRow(c.Character, 21000000, "ARAN_COMBO", c.Now); ok {
+		combo := lastCombo([]domain.SkillBuff{row}, c.Now)
+		rate = min(100, max(0, min(c.Values["x"], combo/10)*c.Values["y"]))
+	}
+	return skills.Bonus{Critical: c.Values["cr"] + rate, CriticalDamage: c.Values["criticaldamageMax"]}
 }
 
 // highMastery (21120001) is Java PlayerStats case 2112: x attack, mastery and

@@ -405,6 +405,12 @@ func TestAranPassives(t *testing.T) {
 	if b := passiveBonus(t, 21110000, 20, ch); b.Critical != 20 || b.CriticalDamage != 20 {
 		t.Fatalf("v148 combo critical cr/criticaldamageMax %+v", b)
 	}
+	// 45 live combo: min(x 10, 45/10) × y 3 = 12 more critical rate.
+	combo := ch
+	combo.SkillBuffs = []domain.SkillBuff{{ID: 21000000, Stat: "ARAN_COMBO", Value: 40, Counter: 45, ExpiresAt: now.Add(skills.Permanent)}}
+	if b := passiveBonus(t, 21110000, 20, combo); b.Critical != 32 || b.CriticalDamage != 20 {
+		t.Fatalf("v148 combo critical with 45 combo %+v", b)
+	}
 	if b := passiveBonus(t, 21110000, 20, aran(2110)); b.Critical != 0 {
 		t.Fatalf("combo critical before 2111 %+v", b)
 	}
