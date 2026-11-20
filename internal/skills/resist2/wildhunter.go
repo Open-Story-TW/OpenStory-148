@@ -29,6 +29,8 @@ type hunterAttack struct {
 	// levelFrom is Java getLinkedAranSkill: the learned skill whose level
 	// authorizes this hidden attack.
 	levelFrom int
+	// lineDamage is the native per-line skill percent (combat.AttackSpec).
+	lineDamage func(e combat.Effect, line, lines int) int
 }
 
 var (
@@ -40,25 +42,25 @@ var (
 )
 
 var hunterAttacks = []hunterAttack{
-	{id: 33001000, kind: combat.Shoot},                                      // 三重射 Triple Shot
-	{id: 33100009, kind: combat.Shoot},                                      // 終極攻擊 Final Attack
-	{id: 33101001, kind: combat.Shoot, onHit: stun, maxDamage: bombCeiling}, // 炸彈之箭 Arrow Bomb
-	{id: 33101002, kind: combat.Shoot, aoe: true, onHit: stun},              // 美洲豹咆哮 Jaguar Rawr
-	{id: 33101007, kind: combat.Shoot, aoe: true, levelFrom: 33101005},      // 吞食 (spit)
-	{id: 33111001, kind: combat.Shoot},                                      // 瘋狂射擊 Wild Shot
-	{id: 33111002, kind: combat.Melee, onHit: stun},                         // 歧路 Jaguar Kick
-	{id: 33111006, kind: combat.Melee, drain: swipeDrain},                   // 爪攻擊 Swipe
-	{id: 33120011, kind: combat.Shoot},                                      // 進階終極攻擊 Advanced Final Attack
-	{id: 33121001, kind: combat.Shoot, aoe: true},                           // 閃光雨 Exploding Arrows
-	{id: 33121002, kind: combat.Shoot, aoe: true, onHit: stun},              // 音爆 Sonic Roar
-	{id: 33121005, kind: combat.Shoot, onHit: chemicalShell},                // 化學彈丸 Stinking Shot
-	{id: 33121009, kind: combat.Shoot},                                      // 狂野帕爾坎 Wild Arrow Blast (keydown quirk in S0b)
+	{id: 33001000, kind: combat.Shoot},                                       // 三重射 Triple Shot
+	{id: 33100009, kind: combat.Shoot},                                       // 終極攻擊 Final Attack
+	{id: 33101001, kind: combat.Shoot, onHit: stun, maxDamage: bombCeiling},  // 炸彈之箭 Arrow Bomb
+	{id: 33101002, kind: combat.Shoot, aoe: true, onHit: stun},               // 美洲豹咆哮 Jaguar Rawr
+	{id: 33101007, kind: combat.Shoot, aoe: true, levelFrom: 33101005},       // 吞食 (spit)
+	{id: 33111001, kind: combat.Shoot},                                       // 瘋狂射擊 Wild Shot
+	{id: 33111002, kind: combat.Melee, onHit: stun},                          // 歧路 Jaguar Kick
+	{id: 33111006, kind: combat.Melee, drain: swipeDrain},                    // 爪攻擊 Swipe
+	{id: 33120011, kind: combat.Shoot},                                       // 進階終極攻擊 Advanced Final Attack
+	{id: 33121001, kind: combat.Shoot, aoe: true, lineDamage: explosionLine}, // 閃光雨 Exploding Arrows
+	{id: 33121002, kind: combat.Shoot, aoe: true, onHit: stun},               // 音爆 Sonic Roar
+	{id: 33121005, kind: combat.Shoot, onHit: chemicalShell},                 // 化學彈丸 Stinking Shot
+	{id: 33121009, kind: combat.Shoot},                                       // 狂野帕爾坎 Wild Arrow Blast (keydown quirk in S0b)
 }
 
 // hunterSpec is the attack spec: Soul Arrow (an active SOULARROW) and the
 // AOE skills shoot without arrows, like Java rangedAttack.
 func hunterSpec(a hunterAttack) *combat.AttackSpec {
-	s := &combat.AttackSpec{Kind: a.kind, OnHit: a.onHit, MaxDamage: a.maxDamage, Drain: a.drain, LevelFrom: a.levelFrom}
+	s := &combat.AttackSpec{Kind: a.kind, OnHit: a.onHit, MaxDamage: a.maxDamage, Drain: a.drain, LevelFrom: a.levelFrom, LineDamage: a.lineDamage}
 	if a.aoe {
 		s.Ammo = combat.AmmoNone
 	}
@@ -69,6 +71,16 @@ func hunterSpec(a hunterAttack) *combat.AttackSpec {
 		return nil
 	}
 	return s
+}
+
+// explosionLine (33121001): the y arrows hit at damage% and the last line is
+// the x% explosion. The v148 physical calc 0x71160B takes x for the line
+// a27 == attackCount-1 of 33121001 (0x712B62).
+func explosionLine(e combat.Effect, line, lines int) int {
+	if line == lines-1 {
+		return e.X
+	}
+	return 0
 }
 
 // bombCeiling (33101001) is Java DamageParse's per-line bound times mobCount.

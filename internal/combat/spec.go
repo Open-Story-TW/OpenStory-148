@@ -156,6 +156,10 @@ type AttackSpec struct {
 	// roll for a line, when it is not a single WZ value (Shadow Meso). Unlike
 	// MaxDamage, the bound stays the generic formula, critical envelope included.
 	DamageRange func(Effect) (low, high int)
+	// LineDamage gives the skill percent of one line of a target when the
+	// native client swaps it (0 keeps the effect's damage); the bound is the
+	// generic formula with that percent, critical envelope included.
+	LineDamage func(e Effect, line, lines int) int
 	// LearnedEffect applies a learned skill's WZ overrides. It must use only
 	// the actor's durable state because both planning and settlement call it.
 	LearnedEffect func(domain.Character, time.Time, *Effect) error

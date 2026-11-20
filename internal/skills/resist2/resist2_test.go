@@ -405,6 +405,16 @@ func TestAttackPrepare(t *testing.T) {
 	}
 }
 
+// Exploding Arrows' last line is the x% explosion (v148 0x712B62); the arrows keep damage%.
+func TestExplodingArrowsExplosionLine(t *testing.T) {
+	h, _ := skills.Lookup(33121001)
+	f := h.Attack.LineDamage
+	e := combat.Effect{SkillID: 33121001, Damage: 180, X: 850, AttackCount: 11}
+	if f == nil || f(e, 0, 11) != 0 || f(e, 9, 11) != 0 || f(e, 10, 11) != 850 {
+		t.Fatal("explosion line percent")
+	}
+}
+
 func TestCeilings(t *testing.T) {
 	stats := combat.PlayerStats{Job: 3512, STR: 100, DEX: 500, WATK: 100, WeaponID: 1492000}
 	mob := content.Mob{HP: 100000}

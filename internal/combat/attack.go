@@ -268,11 +268,19 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		landed := false
 		base := e.Lines(ctx.Kind)
 		for j, l := range in.Lines {
-			f, c := max(0, floor), max(0, ceiling)
-			if !ownCeiling {
-				f, c = WireLineBounds(dc, ctx.Kind, l.Raw, floor, max(0, ceiling))
+			lineFloor, lineCeiling := floor, ceiling
+			if spec != nil && spec.LineDamage != nil && !ownCeiling {
+				if pct := spec.LineDamage(e, j%max(base, 1), base); pct > 0 && pct != e.Damage {
+					ld := dc
+					ld.Effect.Damage = pct
+					lineFloor, lineCeiling = LineBounds(ld)
+				}
 			}
-			normal := max(0, ceiling)
+			f, c := max(0, lineFloor), max(0, lineCeiling)
+			if !ownCeiling {
+				f, c = WireLineBounds(dc, ctx.Kind, l.Raw, lineFloor, max(0, lineCeiling))
+			}
+			normal := max(0, lineCeiling)
 			tp.Criticality = append(tp.Criticality, ReviewedWireCriticality(ctx.Kind, e.SkillID, l.Raw))
 			if j >= base && ctx.Stats.ShadowPartner > 0 {
 				// Shadow Partner's mirrored line set deals x% of the original.
