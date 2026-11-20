@@ -21,7 +21,6 @@ var now = time.Unix(1000, 0)
 // pending are R2 skills that need core support before they can be cast.
 var pending = map[int]bool{
 	33101005: true, // 吞食: keydown mob link and suck
-	35111002: true, // 磁場: tesla coil triangle
 }
 
 func TestSG88KeepsOperatorAndRobotAttacksSeparate(t *testing.T) {

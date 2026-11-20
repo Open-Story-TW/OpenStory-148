@@ -9,7 +9,8 @@ import (
 )
 
 // 機甲戰神 3500／3510／3511／3512. Open Portal GX-9 (35101005) is a world
-// field object (FieldOpenGate, COpenGatePool in the v148 client).
+// field object (FieldOpenGate, COpenGatePool in the v148 client) and Magnetic
+// Field (35111002) a three-coil summon triangle (world tesla.go).
 
 const (
 	mechMount = 1932016 // Java getMountItem(35001002/35120000)
@@ -208,6 +209,11 @@ func init() {
 	satellite := func(id, from int) skills.Handler {
 		return skills.Handler{ID: id, LevelFrom: from, Kind: skills.KindSummon, Cast: summonBuff("PUPPET", true), OnDamaged: satelliteSafety, Attack: &combat.AttackSpec{Kind: combat.Summoned, MaxDamage: boostedSummon(satelliteSafe, "damR"), Summon: &combat.SummonSpec{MoveAbility: follow, AssistType: 3, Duration: skills.Permanent}}}
 	}
+	// 磁場 Magnetic Field (Tesla Coil): up to three stationary coils; the third
+	// forms the triangle (world tesla.go). The client picks the targets inside
+	// its own triangle, so the line range is not checked against a box.
+	skills.Register(skills.Handler{ID: 35111002, Kind: skills.KindSummon, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{
+		Kind: combat.Summoned, IgnoreRange: true, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Multi: true}}})
 	skills.Register(satellite(35111001, 0)) // 賽特拉特 Satellite
 	skills.Register(satellite(35111009, 35111001))
 	skills.Register(satellite(35111010, 35111001)) // 衛星

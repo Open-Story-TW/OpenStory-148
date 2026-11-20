@@ -46,6 +46,11 @@ type SummonView struct {
 	// Look is the owner avatar for Mirrored Target 4341006 (Java addCharLook);
 	// 0x6E58A2 decodes AvatarLook when the flag byte is set.
 	Look *domain.Character
+	// TeslaState is Tesla Coil's (35111002) U8 after the look (0x738AE3):
+	// 0 a lone coil, 1 the coil that holds the triangle and runs its attack
+	// (TeslaPoints follow), 2 the other two corners.
+	TeslaState  byte
+	TeslaPoints [3][2]int16
 }
 
 // SpawnSummon writes the create packet (Java CField.spawnSummon).
@@ -74,7 +79,13 @@ func SpawnSummon(v SummonView) []byte {
 		w.U8(0) // No avatar look.
 	}
 	if v.SkillID == 35111002 {
-		w.U8(0) // Tesla Coil: no triangle (Java writes 0; 0x6E58A2 reads 3 points only for 1).
+		w.U8(v.TeslaState)
+		if v.TeslaState == 1 {
+			for _, p := range v.TeslaPoints {
+				w.I16(p[0])
+				w.I16(p[1])
+			}
+		}
 	}
 	return w.Packet()
 }

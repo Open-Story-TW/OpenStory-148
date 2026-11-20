@@ -42,6 +42,9 @@ type roomSummon struct {
 	lastTick             uint32
 	lastAttack, lastHeal time.Time
 	attacked             bool
+	// teslaState and teslaPoints are Tesla Coil's triangle (protocol.SummonView).
+	teslaState  byte
+	teslaPoints [3][2]int16
 }
 
 func (m *roomSummon) attackInLifetime(now time.Time, action byte) bool {
@@ -67,7 +70,8 @@ func (m *roomSummon) view(animated bool) protocol.SummonView {
 	if stance == 0 {
 		stance = 4
 	}
-	return protocol.SummonView{OwnerID: m.ownerID, ObjectID: m.objectID, SkillID: m.skillID, OwnerLevel: m.ownerLevel, SkillLevel: m.level, X: int16(m.x), Y: int16(m.y), Stance: stance, Foothold: int16(m.foothold), MoveAbility: m.spec.MoveAbility, AssistType: m.spec.AssistType, Animated: animated, Look: m.look}
+	return protocol.SummonView{OwnerID: m.ownerID, ObjectID: m.objectID, SkillID: m.skillID, OwnerLevel: m.ownerLevel, SkillLevel: m.level, X: int16(m.x), Y: int16(m.y), Stance: stance, Foothold: int16(m.foothold), MoveAbility: m.spec.MoveAbility, AssistType: m.spec.AssistType, Animated: animated, Look: m.look,
+		TeslaState: m.teslaState, TeslaPoints: m.teslaPoints}
 }
 
 const af11Skill = 35121010
@@ -236,6 +240,9 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 		room.summons = map[int32]*roomSummon{}
 	}
 	room.summons[oid] = m
+	if skillID == teslaCoil {
+		out = append(out, formTeslaTriangleLocked(room, m)...)
+	}
 	spawn := protocol.SpawnSummon(m.view(true))
 	summonDiag("summon_spawned", c.ID, spawn)
 	out = append(out, roomBroadcast(room, spawn, -1)...)
@@ -315,6 +322,7 @@ func (g *gameplaySpace) tickSummons(now time.Time) {
 			if !now.Before(m.removalTime()) {
 				delete(room.summons, id)
 				out = append(out, m.removePackets(room, removeReason(m.skillID))...)
+				out = append(out, breakTeslaTriangleLocked(room, m)...)
 			}
 		}
 	}
