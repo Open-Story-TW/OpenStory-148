@@ -38,6 +38,9 @@ func (a *worldScript) eventCommand(ctx context.Context, snapshot domain.Characte
 		value := s.eventStatus(snapshot.ChannelID, command.Text)
 		inst := s.eventOf(snapshot.CharacterID)
 		value["inside"] = inst != nil && inst.definition.Name == command.Text
+		if command.Text == dojoStartRequest {
+			value["inside"] = inst != nil && inst.dojo != nil
+		}
 		if value["inside"] == true {
 			value["attempt"] = inst.id
 		}
@@ -50,7 +53,19 @@ func (a *worldScript) eventCommand(ctx context.Context, snapshot domain.Characte
 			command.Script != "npc/9201048.lua" || !a.hasNPCContext(snapshot)) {
 			return invalid, domain.ErrForbidden
 		}
-		reason, here, qualified, err := s.eventStart(ctx, command.Text, snapshot.ChannelID, a.live, a.sink)
+		// Only So Gong in the dojo hall opens a Mu Lung Dojo room; the rooms
+		// themselves are never started by name.
+		if content.DojoEvent(command.Text) || command.Text == dojoStartRequest &&
+			(a.npcID != content.DojoNPC || snapshot.Character.MapID != content.DojoHall || !a.hasNPCContext(snapshot)) {
+			return invalid, domain.ErrForbidden
+		}
+		start := s.eventStart
+		if command.Text == dojoStartRequest {
+			start = func(ctx context.Context, _ string, channel int, live *liveCharacter, sink packetSink) (string, int, int, error) {
+				return s.dojoStart(ctx, channel, live, sink)
+			}
+		}
+		reason, here, qualified, err := start(ctx, command.Text, snapshot.ChannelID, a.live, a.sink)
 		return scripting.CommandResult{Value: map[string]any{"ok": reason == "" && err == nil, "reason": reason, "here": int64(here), "qualified": int64(qualified)}}, err
 	case "event_get":
 		if !eventWord.MatchString(command.Text) {

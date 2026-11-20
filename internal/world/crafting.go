@@ -36,6 +36,9 @@ func (s *Server) handleProfession(ctx context.Context, channel int, live *liveCh
 		if s.hitKrexelReactor(channel, live, id) {
 			return nil
 		}
+		if content.DojoField(partySession(live).Character.MapID) {
+			return nil // The dojo door opens only when the floor is cleared.
+		}
 		if handled, err := s.pirateReactorHit(channel, live, sink, id); handled {
 			return err
 		}

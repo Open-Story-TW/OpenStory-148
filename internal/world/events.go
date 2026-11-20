@@ -64,6 +64,7 @@ type eventInstance struct {
 	ghost            *ghostMatch
 	orbis            *orbisRun
 	battleSquare     *battleSquareMatch
+	dojo             *dojoRun
 }
 
 type eventSpace struct {
@@ -509,6 +510,11 @@ func (s *Server) eventReserve(e content.Event, leader domain.CharacterSession, l
 	if e.Name == content.OrbisPQName {
 		inst.orbis = newOrbisRun()
 	}
+	if content.DojoEvent(e.Name) {
+		now := time.Now()
+		inst.dojo = newDojoRun(now)
+		inst.deadline = dojoFloorDeadline(now)
+	}
 	for _, m := range present {
 		inst.members[partySession(m.live).CharacterID] = struct{}{}
 	}
@@ -767,6 +773,10 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 	s.events.mu.Unlock()
 	if inst != nil {
 		if inst.channel == channel && inst.definition.Stage(c.MapID) {
+			if inst.dojo != nil {
+				s.dojoEntered(inst, c, sink)
+				return
+			}
 			if inst.battleSquare != nil {
 				s.battleSquareEntered(inst, c.ID, sink)
 				return

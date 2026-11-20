@@ -580,8 +580,10 @@ func (s *Server) publishCombatTicket(ctx context.Context, t *combatTicket, resul
 				s.expeditionBossDefeated(t.key, t.actorSession.CharacterID, q.MobID)
 			}
 			s.orbisMobDefeated(t.key, t.actorSession.CharacterID, q.MobID)
+			s.dojoMobDefeated(t.key, q.MobID)
 		}
 	}
+	s.dojoAttackSettled(t)
 	s.ghostCombat(t)
 	if t.generic != nil {
 		e := combat.AttackEvent{Session: t.actorSession, Channel: t.key.channel, SkillID: t.request.SkillID, Kind: combat.KindForOpcode(t.generic.attack.Opcode), Summon: t.generic.summon != nil, Now: time.Now()}

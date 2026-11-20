@@ -211,6 +211,13 @@ func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packet
 	if phantomJudgment(q.SkillID) && !s.phantomDeckFull(source, session.Character.Job) {
 		return sink.WritePacket(protocol.EnableActions())
 	}
+	// 金剛不壞 and 地火天爆 need a full Mu Lung Dojo gauge, spent by the cast.
+	var dojo *dojoRun
+	if skills.DojoSkill(q.SkillID) {
+		if dojo = s.dojoSkillRun(session.Character, q.SkillID); dojo == nil {
+			return sink.WritePacket(protocol.EnableActions())
+		}
+	}
 	castPeers := s.skillCastAudience(source)
 	r, e := repo.CastSkill(ctx, domain.SkillCastRequest{Session: session, SkillID: q.SkillID, ClientLevel: q.Level, OperationID: fmt.Sprintf("cast-%s-%d-%d", session.SessionID, session.Generation, q.Tick)})
 	if e != nil {
@@ -222,6 +229,9 @@ func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packet
 	s.syncGMHide(live)
 	if e != nil || r.Replayed || !r.Effect {
 		return e
+	}
+	if dojo != nil {
+		s.dojoSpendSkill(snapshot.ChannelID, snapshot.Character, sink, dojo, q.SkillID)
 	}
 	s.castCombatObjects(snapshot, live, sink, q)
 	if phantomJudgment(q.SkillID) {

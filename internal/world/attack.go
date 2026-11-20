@@ -242,6 +242,11 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 	if !within(c.X, c.Y, int(a.X), int(a.Y), attackReach(a.SkillID, effect)+playerDrift(movedAt, now)) {
 		return reject("position", nil)
 	}
+	// 竹竿千擊 spends the full Mu Lung Dojo gauge and the floor's one use as
+	// soon as the attack is accepted here; the client has already played it.
+	if skills.DojoSkill(a.SkillID) && !s.dojoSpendSkill(channel, c, sink, s.dojoSkillRun(c, a.SkillID), a.SkillID) {
+		return reject("dojo_energy", nil)
+	}
 	stats, err := combat.AttackStats(c, now)
 	if err != nil {
 		return reject("stats", err)
