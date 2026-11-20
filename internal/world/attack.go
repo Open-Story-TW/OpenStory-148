@@ -72,7 +72,7 @@ func (a *targetCriticalAudits) apply(target *combat.TargetPlan, boss bool, bossB
 			connectedIndex++
 		}
 		if !over {
-			audit.Normal(character)
+			audit.Normal(character, rate)
 			continue
 		}
 		if !audit.Admit(character, rate) {

@@ -17,7 +17,7 @@ func TestCriticalAuditNeverClipsAnHonestAttacker(t *testing.T) {
 						t.Fatalf("rate %d seed %d line %d: honest critical refused", rate, seed, i)
 					}
 				} else {
-					a.Normal(1)
+					a.Normal(1, rate)
 				}
 			}
 		}
@@ -49,6 +49,28 @@ func TestCriticalAuditIsPerCharacterAndCertainAtFullRate(t *testing.T) {
 	for i := 0; i < 500; i++ {
 		if !a.Admit(3, 95) {
 			t.Fatal("a certain critical was refused")
+		}
+	}
+}
+
+// Lines hit under a high rate (riding, Sharp Eyes) must not count against a
+// later stretch hit at a low one: each line carries its own chance.
+func TestCriticalAuditJudgesEachLineAtItsOwnRate(t *testing.T) {
+	for seed := int64(1); seed <= 200; seed++ {
+		var a CriticalAudit
+		r := rand.New(rand.NewSource(seed))
+		for i := 0; i < 600; i++ {
+			rate := 40
+			if i >= 200 {
+				rate = 0
+			}
+			if r.Intn(100) < criticalAuditBase+rate {
+				if !a.Admit(1, rate) {
+					t.Fatalf("seed %d line %d at rate %d: honest critical refused", seed, i, rate)
+				}
+			} else {
+				a.Normal(1, rate)
+			}
 		}
 	}
 }

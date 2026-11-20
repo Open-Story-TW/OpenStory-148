@@ -25,26 +25,45 @@ type CriticalAudit struct {
 	chars map[int64]*criticalWindow
 }
 
+// criticalWindow keeps each recent line with the critical chance it was hit
+// at, so lines hit under different rates (a riding or Sharp Eyes stretch, then
+// a skill without them) are judged against their own expected count.
 type criticalWindow struct {
-	lines [criticalAuditWindow]bool // true: above the noncritical bound.
-	next  int
-	seen  int
-	over  int
+	lines    [criticalAuditWindow]auditLine
+	next     int
+	seen     int
+	over     int
+	expected float64 // Sum of p over the window.
+	variance float64 // Sum of p(1-p) over the window.
 }
 
-func (w *criticalWindow) push(over bool) {
+type auditLine struct {
+	over bool // Above the noncritical bound.
+	p    float64
+}
+
+func (w *criticalWindow) push(over bool, p float64) {
 	if w.seen == criticalAuditWindow {
-		if w.lines[w.next] {
+		old := w.lines[w.next]
+		if old.over {
 			w.over--
 		}
+		w.expected -= old.p
+		w.variance -= old.p * (1 - old.p)
 	} else {
 		w.seen++
 	}
-	w.lines[w.next] = over
+	w.lines[w.next] = auditLine{over: over, p: p}
 	if over {
 		w.over++
 	}
+	w.expected += p
+	w.variance += p * (1 - p)
 	w.next = (w.next + 1) % criticalAuditWindow
+}
+
+func auditChance(critRate int) float64 {
+	return min(1, float64(criticalAuditBase+max(0, critRate))/100)
 }
 
 func (a *CriticalAudit) window(character int64) *criticalWindow {
@@ -59,27 +78,27 @@ func (a *CriticalAudit) window(character int64) *criticalWindow {
 	return w
 }
 
-// Normal records a line a noncritical hit can reach.
-func (a *CriticalAudit) Normal(character int64) {
+// Normal records a line a noncritical hit can reach, hit at critRate.
+func (a *CriticalAudit) Normal(character int64, critRate int) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.window(character).push(false)
+	a.window(character).push(false, auditChance(critRate))
 }
 
 // Admit reports whether one more line above the noncritical bound fits the
 // character's critical rate. A refused line counts as normal: it is clipped to
 // the noncritical bound, so a forger keeps only what the rate would have given.
 func (a *CriticalAudit) Admit(character int64, critRate int) bool {
-	p := float64(criticalAuditBase+max(0, critRate)) / 100
-	if p >= 1 {
-		return true
-	}
+	p := auditChance(critRate)
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	w := a.window(character)
-	n := float64(w.seen + 1)
-	limit := n*p + criticalAuditDeviations*math.Sqrt(n*p*(1-p)) + criticalAuditSpare
+	if p >= 1 {
+		w.push(true, 1)
+		return true
+	}
+	limit := w.expected + p + criticalAuditDeviations*math.Sqrt(w.variance+p*(1-p)) + criticalAuditSpare
 	ok := float64(w.over+1) <= limit
-	w.push(ok)
+	w.push(ok, p)
 	return ok
 }

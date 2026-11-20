@@ -23,13 +23,13 @@ func TestBossCriticalAuditKeepsOrdinaryHistoryIndependent(t *testing.T) {
 	}
 
 	const character = 1
-	ordinary.Normal(character)
+	ordinary.Normal(character, 15)
 	for i := 0; i < 250; i++ {
 		if !lateBoss.Admit(character, 95) {
 			t.Fatalf("native 100 percent line clipped at observation %d", i)
 		}
 		if i%5 >= 2 {
-			boss.Normal(character)
+			boss.Normal(character, 35)
 		} else if !boss.Admit(character, 35) {
 			t.Fatalf("boss hit at the configured rate was rejected on line %d", i)
 		}
