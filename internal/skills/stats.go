@@ -331,6 +331,7 @@ func legacyPlayerStatsForMode(c domain.Character, now time.Time, battleSquare bo
 	p.ElementAmp += b.ElementAmp
 	p.ShadowPartner = shadowPartner(c, now)
 	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
+	p.SkillDamage = b.SkillDamagePercents()
 	// The potential fold reports dodge too; without it a learned passive's
 	// dodge showed as zero for characters without potential lines.
 	p.DodgeRate = b.AvoidRate

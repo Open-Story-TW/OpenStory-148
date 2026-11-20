@@ -384,3 +384,11 @@ type Bonus struct {
 	EXP            int // Extra experience percent.
 	DamageReduce   int // Percent of received damage absorbed.
 }
+
+// SkillDamagePercents converts the per-skill damage bonuses for combat.
+func (b Bonus) SkillDamagePercents() (out [4]combat.SkillDamageBonus) {
+	for i, d := range b.SkillDamage {
+		out[i] = combat.SkillDamageBonus{Skill: d.Skill, Percent: d.Percent}
+	}
+	return out
+}

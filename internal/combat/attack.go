@@ -179,6 +179,9 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 		}
 	}
 	e := ctx.Effect
+	if bonus := ctx.Stats.SkillDamageFor(e.SkillID); bonus > 0 && e.Damage > 0 {
+		e.Damage += bonus
+	}
 	lines := e.Lines(ctx.Kind)
 	if ctx.Stats.ShadowPartner > 0 && (ctx.Kind == Shoot || ctx.Kind == Melee) {
 		lines *= 2

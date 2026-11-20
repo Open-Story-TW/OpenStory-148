@@ -250,6 +250,24 @@ type PlayerStats struct {
 	DodgeRate, ASR, TER, CritDamageMin                       int     // Effective view; no new probabilistic gate is implied.
 	PotentialAvoidPercent                                    int     // Native incEVAr contribution to the effective EVA values.
 	PotentialDamageMultiplier, PotentialBossDamageMultiplier float64 // zero means identity; each option multiplies once.
+	// SkillDamage is the percent a learned passive adds to one skill's WZ
+	// damage (Elemental Boost 5920001 for 5911004/5911005: v148 0x712C51
+	// adds its damage to the skill's percent before the line is scaled).
+	SkillDamage [4]SkillDamageBonus
+}
+
+// SkillDamageBonus is one passive's percent for one skill.
+type SkillDamageBonus struct{ Skill, Percent int }
+
+// SkillDamageFor is the passive percent added to skill's WZ damage.
+func (p PlayerStats) SkillDamageFor(skill int) int {
+	total := 0
+	for _, b := range p.SkillDamage {
+		if b.Skill == skill {
+			total += b.Percent
+		}
+	}
+	return total
 }
 
 // CriticalRateAgainst includes the skill's rate and the target's boss bonus.
