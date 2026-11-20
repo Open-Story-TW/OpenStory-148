@@ -33,3 +33,25 @@ func TestMihileEchoOriginalV148Alias(t *testing.T) {
 		t.Fatalf("bad original Echo plan %+v buff%+v", p, p.Self)
 	}
 }
+
+func TestMihileKnightsWatchV148(t *testing.T) {
+	def, err := content.ConfiguredSkillDefinition(50001214)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := def.Values(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, ok := skills.Lookup(50001214)
+	if !ok || h.Cast == nil {
+		t.Fatal("Mihile Knight's Watch 50001214 missing")
+	}
+	p, err := h.Cast(&skills.CastContext{Skill: def, Values: v, Level: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Self == nil || p.Party != nil || p.Cooldown != 180*time.Second || p.Self.Duration != 90*time.Second || stats(p.Self)["STANCE"] != 100 {
+		t.Fatalf("bad Knight's Watch plan %+v buff%+v", p, p.Self)
+	}
+}

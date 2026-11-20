@@ -2,6 +2,7 @@ package world
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -467,6 +468,43 @@ func TestFactorySubSpawnsChildrenAndMinesAttackOnce(t *testing.T) {
 	s.gameplay.mu.Unlock()
 	if mob.hp != 991 || still {
 		t.Fatalf("mine attack hp%d still=%v", mob.hp, still)
+	}
+}
+
+func TestFreshSummonAdmitsImmediateFirstSubSummon(t *testing.T) {
+	s, lives, sinks, _, _ := summonFixture(t)
+	var firstLastSub time.Time
+	var calls int
+	const testFirstSub = 9990041
+	skills.Register(skills.Handler{ID: testFirstSub, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Effect: combat.Effect{SkillID: testFirstSub},
+		Summon: &combat.SummonSpec{AssistType: 2, Duration: time.Minute, Sub: func(c combat.SubSummonContext) (combat.SubSummonResult, error) {
+			calls++
+			if calls == 1 {
+				firstLastSub = c.LastSub
+			}
+			if !c.LastSub.IsZero() && c.Now.Before(c.LastSub.Add(10*time.Minute)) {
+				return combat.SubSummonResult{}, errors.New("sub not ready")
+			}
+			return combat.SubSummonResult{Action: 8}, nil
+		}}}})
+	lives[0].session.Character.Skills = append(lives[0].session.Character.Skills, domain.SkillState{ID: testFirstSub, Level: 1})
+	oid, err := s.SpawnSummon(1, lives[0], testFirstSub, 1, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := sinks[0].count(protocol.SendSummonSkill)
+	if err = s.summonSub(1, lives[0], sinks[0], protocol.SubSummonInput{ObjectID: oid, SkillID: testFirstSub}); err != nil {
+		t.Fatal(err)
+	}
+	if calls != 1 || !firstLastSub.IsZero() || sinks[0].count(protocol.SendSummonSkill) != before+1 {
+		t.Fatalf("first sub rejected on fresh summon: calls=%d firstLastSub=%v skillPkts=%d", calls, firstLastSub, sinks[0].count(protocol.SendSummonSkill)-before)
+	}
+	// Immediate second sub inside the 10-minute interval must be rejected.
+	if err = s.summonSub(1, lives[0], sinks[0], protocol.SubSummonInput{ObjectID: oid, SkillID: testFirstSub}); err != nil {
+		t.Fatal(err)
+	}
+	if sinks[0].count(protocol.SendSummonSkill) != before+1 {
+		t.Fatal("second sub inside interval was not throttled")
 	}
 }
 

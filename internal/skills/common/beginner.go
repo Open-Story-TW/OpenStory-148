@@ -24,6 +24,8 @@ func init() {
 	each(1005, skills.Handler{Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
 	// Original v148 0x4C7E2D explicitly maps Mihile 50001215 to suffix1005.
 	skills.Register(skills.Handler{ID: 50001215, Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
+	// Mihile 50001214 (騎士的監視 Knight's Watch, v148 0x93B056/0x6AA0FC): STANCE = prop.
+	skills.Register(skills.Handler{ID: 50001214, Kind: skills.KindBuff, Cast: buff(0, key("STANCE", "prop"))})
 	for _, id := range []int{10001075, 50001075} { // 女皇的祈禱 Empress's Prayer
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindBuff, Cast: buff(0, key("ECHO_OF_HERO", "x"))})
 	}

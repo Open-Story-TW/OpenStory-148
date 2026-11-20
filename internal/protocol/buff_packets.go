@@ -101,6 +101,8 @@ func temporaryStatSetIndie(source int, remaining time.Duration, stats []BuffStat
 			case buffstat.ValueU8:
 				if s.Name == "BLUE_AURA" && blueAuraOwner {
 					w.U8(1) // v148 0x71F0DD/0x92B6F7: native owner toggle.
+				} else if s.Name == "COMBO" && values[s.Bit] > 0 {
+					w.U8(1) // v148 0x71F1BB/0x9D35D1: gates Combo Attack icon registration.
 				} else {
 					w.U8(0)
 				}

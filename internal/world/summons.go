@@ -222,7 +222,10 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 		g.mu.Unlock()
 		return 0, fmt.Errorf("object ID space exhausted")
 	}
-	m := &roomSummon{objectID: oid, ownerID: c.ID, ownerSession: session.SessionID, ownerGeneration: session.Generation, ownerEntry: room.members[c.ID], ownerLevel: c.Level, skillID: skillID, source: skillID, level: level, x: c.X, y: c.Y, spec: spec.Summon, expiresAt: now.Add(d), deathEffect: deathEffect, deathWindow: deathWindow, hp: hp, lastHeal: now}
+	// Leave lastHeal zero until the first RecvSubSummon fires so summons whose
+	// first assistance runs shortly after spawn (Angel Rings 86/88/91/180, Beholder)
+	// are not rejected for a full interval on spawn.
+	m := &roomSummon{objectID: oid, ownerID: c.ID, ownerSession: session.SessionID, ownerGeneration: session.Generation, ownerEntry: room.members[c.ID], ownerLevel: c.Level, skillID: skillID, source: skillID, level: level, x: c.X, y: c.Y, spec: spec.Summon, expiresAt: now.Add(d), deathEffect: deathEffect, deathWindow: deathWindow, hp: hp}
 	if skillID == af11Skill {
 		m.amplifier, m.amplifierAreaActive = amplifier, true
 	}

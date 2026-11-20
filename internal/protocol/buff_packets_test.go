@@ -205,6 +205,21 @@ func TestSummonBuffCarriesV148TailByte(t *testing.T) {
 	}
 }
 
+func TestV148ComboBuffSetsIconGateTailByte(t *testing.T) {
+	for _, skill := range []int{1111002, 1111001} {
+		p, err := TemporaryStatSet(skill, 200*time.Second, []BuffStat{{Stat: "COMBO", Value: 1}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		r := NewReader(p)
+		r.U16()
+		r.Skip(32 + 2 + 4 + 4 + 3)
+		if tail := r.U8(); tail != 1 || r.Err() != nil {
+			t.Fatalf("skill %d COMBO tail = %d err=%v", skill, tail, r.Err())
+		}
+	}
+}
+
 // v148 OnTemporaryStatSet reads the movement byte for ENERGY_CHARGE too
 // (move mask 0x6F9246); the login Energy Charge packet hit EOF without it.
 func TestEnergyChargeCarriesV148MovementByte(t *testing.T) {
