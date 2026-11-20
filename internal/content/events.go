@@ -206,6 +206,9 @@ func eventDefinitions() map[string]Event {
 			}
 		}
 	}
+	for room := 0; room < DojoRooms; room++ {
+		definitions[DojoEventName(room)] = dojoEvent(room)
+	}
 	return definitions
 }
 
