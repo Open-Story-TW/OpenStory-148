@@ -1,5 +1,7 @@
 package domain
 
+import "os"
+
 // QAWarpMaps is the reviewed QA !warp allowlist (Raymond approved QA warps
 // for skill acceptance): job-advancement towns and one training field per
 // level band, each with a WZ spawn portal. Levels are the fields' mob levels
@@ -14,4 +16,20 @@ var QAWarpMaps = map[int]string{
 	222010000: "mobs 55", 220020600: "mobs 61-63", 230020000: "mobs 64", 260020000: "mobs 76",
 	250010300: "mobs 81", 541010010: "mobs 93", 220060000: "mobs 95-97", 240010200: "mobs 101-105",
 	240020100: "mobs 118", 270010100: "mobs 136-142", 240040600: "mobs 153",
+}
+
+// QAWarpDojoEnv adds the Mu Lung Dojo hall (925020001, So Gong) to the QA
+// !warp targets when set to 1. It is off by default: the reviewed list above
+// stays as approved, and an isolated QA world turns the hall on to test the
+// dojo without walking from Mu Lung.
+const QAWarpDojoEnv = "MAPLEGO_QA_WARP_DOJO"
+
+const qaWarpDojoHall = 925020001
+
+// QAWarpAllowed reports whether QA !warp may target mapID.
+func QAWarpAllowed(mapID int) bool {
+	if QAWarpMaps[mapID] != "" {
+		return true
+	}
+	return mapID == qaWarpDojoHall && os.Getenv(QAWarpDojoEnv) == "1"
 }

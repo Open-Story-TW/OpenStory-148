@@ -332,7 +332,7 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 	}
 	// Raymond approved QA warps to the reviewed test fields only. The store
 	// authorizes and audits; the fenced field transition runs afterwards.
-	if name == "warp" && domain.QAWarpMaps[int(args[0])] == "" {
+	if name == "warp" && !domain.QAWarpAllowed(int(args[0])) {
 		return true, gmFeedback(sink, "!warp is not enabled for that map: QA test fields only.")
 	}
 	repo, ok := s.repo.(domain.GMRepository)

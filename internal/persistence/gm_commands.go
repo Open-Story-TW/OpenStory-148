@@ -679,7 +679,7 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 		}
 		return false, 0, false, nil
 	case "warp":
-		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 999999998 || domain.QAWarpMaps[int(r.Args[0])] == "" {
+		if len(r.Args) != 1 || r.Args[0] < 0 || r.Args[0] > 999999998 || !domain.QAWarpAllowed(int(r.Args[0])) {
 			return invalid()
 		}
 		catalog, e := content.DefaultCatalog()
