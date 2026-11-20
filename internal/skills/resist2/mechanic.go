@@ -278,6 +278,8 @@ func mechCritical(id int) func(*skills.PassiveContext) skills.Bonus {
 
 // mechanicMastery (35100000): Java adds padX attack for 3510–3512 and, with
 // a gun, the CalcPassive_Mastery mastery, x accuracy and cr critical rate.
+// The v148 gun mastery getter (0x6D8DDE) takes Extreme Mech's mastery when
+// 35120000 is learned and this one only otherwise, so it gives none then.
 // Java also adds x to attack there (watk += x for 35100000), which reads like
 // a slip and is left out.
 func mechanicMastery(c *skills.PassiveContext) skills.Bonus {
@@ -287,6 +289,9 @@ func mechanicMastery(c *skills.PassiveContext) skills.Bonus {
 	}
 	if weaponType(c.Character) == gun {
 		b.Mastery, b.ACC, b.Critical = c.Values["mastery"], c.Values["x"], c.Values["cr"]
+		if learned(c.Character, extremeMech) > 0 {
+			b.Mastery = 0
+		}
 	}
 	return b
 }

@@ -342,6 +342,14 @@ func TestPassives(t *testing.T) {
 	if b := bonus(c, 35100000, 20); b.WATK != 20 || b.Mastery != 50 || b.ACC != 120 || b.Critical != 10 {
 		t.Errorf("mechanic mastery %+v", b)
 	}
+	extreme := c
+	extreme.Skills = []domain.SkillState{{ID: extremeMech, Level: 30}}
+	if b := bonus(extreme, 35100000, 20); b.Mastery != 0 || b.ACC != 120 || b.Critical != 10 {
+		t.Errorf("mechanic mastery with Extreme Mech %+v", b)
+	}
+	if b := bonus(extreme, extremeMech, 30); b.Mastery != 70 {
+		t.Errorf("extreme mech mastery %+v", b)
+	}
 	c.Equipment = []domain.Equipment{{Slot: -11, ItemID: 1462000}}
 	if b := bonus(c, 33100000, 20); b.Mastery != 50 || b.ACC != 120 {
 		t.Errorf("crossbow mastery %+v", b)
