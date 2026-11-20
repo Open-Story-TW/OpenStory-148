@@ -50,6 +50,10 @@ func beginnerPassives() {
 			return skills.Bonus{Critical: c.Values["cr"]}
 		}})
 	}
+	// 高洞察力 (Phantom 20030206): permanent DEX (dexX=40) and dodge rate (er=20) from v148 WZ.
+	skills.Register(skills.Handler{ID: 20030206, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
+		return skills.Bonus{DEX: c.Values["dexX"], AvoidRate: c.Values["er"]}
+	}})
 	skills.Register(skills.Handler{ID: 80000016, Kind: skills.KindPassive, Passive: func(c *skills.PassiveContext) skills.Bonus {
 		v := c.Values
 		return skills.Bonus{STR: v["strX"], DEX: v["dexX"], INT: v["intX"], LUK: v["lukX"],

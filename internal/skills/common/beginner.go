@@ -16,6 +16,8 @@ func init() {
 	// 嫩寶丟擲術／水晶投擲 Three Snails: fixdamage magic-family input.
 	each(1000, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.AttackMagic}})
 	each(1001, skills.Handler{Kind: skills.KindBuff, Cast: recovery})            // 治癒／潛入
+	// 鬼鬼祟祟的移動 (Phantom 20031211): v148 0x931C46 checks INFILTRATE alongside 30001001; WZ carries x=1, speed=20, time=10.
+	skills.Register(skills.Handler{ID: 20031211, Kind: skills.KindBuff, Cast: recovery})
 	each(1002, skills.Handler{Kind: skills.KindBuff, Cast: skills.StandardBuff}) // 疾風之步 Nimble Feet: speed
 
 	// 英雄的回響 Echo of Hero: ECHO_OF_HERO x. Legacy's WZ has no lt/rb, so
@@ -123,7 +125,7 @@ func recovery(c *skills.CastContext) (skills.CastPlan, error) {
 		return p, fmt.Errorf("skill%d: invalid values", c.Skill.ID)
 	}
 	b := &skills.Buff{Duration: time.Duration(c.Value("time")) * time.Second}
-	if f := c.Skill.ID / 10000; f == 3000 || f == 3001 {
+	if f := c.Skill.ID / 10000; f == 3000 || f == 3001 || c.Skill.ID == 20031211 {
 		b.Stats = []skills.StatValue{{Stat: "INFILTRATE", Value: c.Value("x")}}
 	} else {
 		b.Tick = 5 * time.Second

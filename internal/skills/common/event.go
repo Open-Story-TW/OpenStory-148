@@ -75,6 +75,8 @@ func init() {
 	// Mr.Dragon: SUMMON 1 for time, a following summon that attacks
 	// (Java getSummonMovementType FOLLOW, isMultiAttack).
 	skills.Register(skills.Handler{ID: 80001129, Kind: skills.KindSummon, Cast: buff(0, fixed("SUMMON", 1)), Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: 1, AssistType: 1}}})
+	// Event stationary puppet summon (v148 0x6AA54D stationary summon table, time=8).
+	skills.Register(skills.Handler{ID: 80001141, Kind: skills.KindSummon, Cast: buff(0, fixed("PUPPET", 1)), Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: 0, AssistType: 0}}})
 }
 
 // mercedesCase is Java PlayerStats' `case 2001: case 2300..2312:` (Legacy
