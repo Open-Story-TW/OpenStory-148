@@ -66,7 +66,8 @@ func nightShoot() *combat.AttackSpec {
 }
 
 // nightShadowStars consumes the v148 WZ bulletConsume once and grants
-// SPIRIT_CLAW for the WZ duration. Use the first eligible physical USE slot.
+// SPIRIT_CLAW for the WZ duration. v148 CUserLocal::FindAmmo (0x8EF0AA..0x8EF0F6)
+// ignores SPIRIT_CLAW <= 0 and resolves the star ID as SPIRIT_CLAW + 2069999.
 func nightShadowStars(c *skills.CastContext) (skills.CastPlan, error) {
 	p := skills.StandardCost(c)
 	base, err := combat.BaseStats(c.Caster, c.Now)
@@ -87,7 +88,7 @@ func nightShadowStars(c *skills.CastContext) (skills.CastPlan, error) {
 	if itemID == 0 {
 		return p, fmt.Errorf("skill%d: requires %d throwing stars", c.Skill.ID, quantity)
 	}
-	p, err = buff(c, stat("SPIRIT_CLAW", 0))
+	p, err = buff(c, stat("SPIRIT_CLAW", max(1, itemID-2069999)))
 	if err != nil {
 		return p, err
 	}

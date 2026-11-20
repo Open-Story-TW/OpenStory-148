@@ -668,7 +668,7 @@ func TestNightWalkerShadowStarsCostAndSplit(t *testing.T) {
 	p := castAs(t, skillID, 1, ch)
 	if p.MPCost != 6 || p.Self == nil || p.Self.Duration != 108*time.Second ||
 		!reflect.DeepEqual(p.Items, []skills.ItemCost{{ItemID: 2070000, Quantity: 190}}) ||
-		!reflect.DeepEqual(stats(p.Self), map[buffstat.Stat]int{"SPIRIT_CLAW": 0}) {
+		!reflect.DeepEqual(stats(p.Self), map[buffstat.Stat]int{"SPIRIT_CLAW": 1}) {
 		t.Fatalf("unexpected Shadow Stars cast: %+v", p)
 	}
 	ch.Items = ch.Items[1:]
