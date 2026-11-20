@@ -140,7 +140,7 @@ func TestBuffPlans(t *testing.T) {
 		{4121000, 30, mapleWarrior, 70, 0, 900 * time.Second, true, buff(stat("MAPLE_WARRIOR", 15))},
 		{4221000, 30, mapleWarrior, 70, 0, 900 * time.Second, true, buff(stat("MAPLE_WARRIOR", 15))},
 		{4341000, 30, mapleWarrior, 70, 0, 900 * time.Second, true, buff(stat("MAPLE_WARRIOR", 15))},
-		{4121006, 30, shadowStars, 46, 0, 180 * time.Second, false, buff(stat("SPIRIT_CLAW", 0))},
+		{4121006, 30, shadowStars, 46, 0, 180 * time.Second, false, buff(stat("SPIRIT_CLAW", 1))},
 		{4211003, 10, pickpocket, 50, 0, 150 * time.Second, false, buff(stat("PICKPOCKET", 200))},
 		{4211005, 10, mesoGuard, 37, 0, 180 * time.Second, false, buff(stat("MESOGUARD", 61))},
 		{4341007, 30, thorns, 90, 0, 210 * time.Second, false, buff(stat("ENHANCED_WATK", 30))},

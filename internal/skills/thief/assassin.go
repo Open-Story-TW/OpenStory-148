@@ -90,8 +90,20 @@ func mapleWarrior(c *skills.CastContext) (skills.CastPlan, error) {
 	return partyBuff(c, stat("MAPLE_WARRIOR", c.Value("x")))
 }
 
-// shadowStars (4121006) is SPIRIT_CLAW 0: shoot attacks consume no star while
-// it lasts. Legacy does not consume bulletConsume at cast.
+// shadowStars (4111009, 4121006) sets SPIRIT_CLAW to the throwing-star index:
+// v148 CUserLocal::FindAmmo (0x8EF0AA..0x8EF0F6) requires SPIRIT_CLAW > 0 and
+// resolves the star item ID as SPIRIT_CLAW + 2069999 (so 2070000 encodes as 1).
+// Legacy does not consume bulletConsume at cast.
 func shadowStars(c *skills.CastContext) (skills.CastPlan, error) {
-	return selfBuff(c, stat("SPIRIT_CLAW", 0))
+	val := 1
+	bestSlot := 0
+	for _, item := range c.Caster.Items {
+		if item.InvType == 2 && item.Slot > 0 && item.Quantity > 0 &&
+			combat.AmmoOf(item.TemplateID) == combat.AmmoStar && item.TemplateID > 2069999 &&
+			(bestSlot == 0 || item.Slot < bestSlot) {
+			bestSlot = item.Slot
+			val = item.TemplateID - 2069999
+		}
+	}
+	return selfBuff(c, stat("SPIRIT_CLAW", val))
 }

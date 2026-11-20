@@ -193,14 +193,25 @@ func attackBuff(padKey, accKey string) func(*skills.CastContext) (skills.CastPla
 	}
 }
 
-// infiniteBullets (5201008) is the gun's Shadow Stars: SPIRIT_CLAW 0 for the
-// WZ time, and shots use no bullet while it lasts.
+// infiniteBullets (5201008) is the gun's Shadow Stars: v148 CUserLocal::FindAmmo
+// (0x8EF0AA..0x8EF0E5) requires SPIRIT_CLAW > 0 and resolves the ammo item ID as
+// SPIRIT_CLAW + 2329999 (so bullet 2330000 encodes as 1).
 func infiniteBullets(c *skills.CastContext) (skills.CastPlan, error) {
 	p := skills.StandardCost(c)
 	d, e := buffTime(c)
 	if e != nil {
 		return p, e
 	}
-	p.Self = &skills.Buff{Duration: d, Stats: []skills.StatValue{{Stat: "SPIRIT_CLAW", Value: 0}}}
+	val := 1
+	bestSlot := 0
+	for _, item := range c.Caster.Items {
+		if item.InvType == 2 && item.Slot > 0 && item.Quantity > 0 &&
+			combat.AmmoOf(item.TemplateID) == combat.AmmoBullet && item.TemplateID > 2329999 &&
+			(bestSlot == 0 || item.Slot < bestSlot) {
+			bestSlot = item.Slot
+			val = item.TemplateID - 2329999
+		}
+	}
+	p.Self = &skills.Buff{Duration: d, Stats: []skills.StatValue{{Stat: "SPIRIT_CLAW", Value: val}}}
 	return p, nil
 }

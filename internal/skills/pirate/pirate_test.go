@@ -1010,4 +1010,14 @@ func TestPirateAndZenWireAndGrenadeFixes(t *testing.T) {
 	if err != nil || a.SkillID != 5711002 || len(a.Targets) != 1 || a.Targets[0].ObjectID != 1000016 || a.Targets[0].Lines[0].Claimed() != 485 || a.X != 312 || a.Y != 215 {
 		t.Fatalf("5711002 live frame decode: err=%v attack=%+v", err, a)
 	}
+	// 5201008 Infinite Bullets encodes bullet itemID - 2329999 (min 1) into SPIRIT_CLAW.
+	if p := cast(t, 5201008, 10); p.Self == nil || stats(p.Self)["SPIRIT_CLAW"] != 1 {
+		t.Fatalf("5201008 default SPIRIT_CLAW: %+v", p.Self)
+	}
+	h5208, _ := skills.Lookup(5201008)
+	def5208, v5208 := values(t, 5201008, 10)
+	bulletChar := domain.Character{Job: 520, MP: 1000, Items: []domain.InventoryItem{{InvType: 2, Slot: 2, TemplateID: 2330005, Quantity: 200}}}
+	if p, err := h5208.Cast(&skills.CastContext{Skill: def5208, Level: 10, Values: v5208, Caster: bulletChar}); err != nil || stats(p.Self)["SPIRIT_CLAW"] != 6 {
+		t.Fatalf("5201008 bullet index SPIRIT_CLAW: err=%v self=%+v", err, p.Self)
+	}
 }
