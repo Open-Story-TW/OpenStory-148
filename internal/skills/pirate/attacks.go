@@ -72,7 +72,7 @@ var attacks = []attack{
 	{id: 5221008, kind: combat.Shoot, noAmmo: true},           // 海盜魚雷 Battleship Torpedo
 	// 重砲指揮官 501／530–532
 	{id: 5011000, kind: combat.Shoot, noAmmo: true},                            // 加農砲爆彈 Cannon Blaster
-	{id: 5011001, kind: combat.Melee},                                          // 加農砲衝擊 Cannon Strike
+	{id: 5011001, kind: combat.Shoot, noAmmo: true},                            // 加農砲衝擊 Cannon Strike: a 0x56 ranged attack in v148
 	{id: 5011002, kind: combat.Shoot, noAmmo: true, onHit: slow},               // 迴避砲擊 Blast Back
 	{id: 5301000, kind: combat.Shoot, noAmmo: true},                            // 炸裂彈 Scatter Shot
 	{id: 5301001, kind: combat.Melee, onHit: stun, prepare: barrelRoll},        // 火藥桶破壞 Barrel Bomb

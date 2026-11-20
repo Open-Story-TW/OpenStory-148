@@ -872,8 +872,10 @@ func TestGunExpertBurstShotAttacks(t *testing.T) {
 
 // v148 sends Cannon Spike as a 0x56 ranged attack without ammunition.
 func TestCannonSpikeIsRanged(t *testing.T) {
-	h, ok := skills.Lookup(5311000)
-	if !ok || h.Attack == nil || h.Attack.Kind != combat.Shoot || h.Attack.Ammo != combat.AmmoNone {
-		t.Fatalf("5311000 handler %+v", h)
+	for _, id := range []int{5311000, 5011001} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Attack == nil || h.Attack.Kind != combat.Shoot || h.Attack.Ammo != combat.AmmoNone {
+			t.Fatalf("%d handler %+v", id, h)
+		}
 	}
 }
