@@ -52,10 +52,26 @@ func summonBuff(c *skills.CastContext) (skills.CastPlan, error) {
 	return selfBuff(c, stat("SUMMON", 1))
 }
 
-// darkFlare (4111007, 4211007) is a stationary summon that attacks what hits
-// its owner (Java SummonMovementType.STATIONARY, getSummonType 7).
+// darkFlare (4111007, 4211007) is a stationary summon that reflects x% of
+// monster contact damage back at the attacker (capped at half the mob's max HP
+// in v148; Java SummonMovementType.STATIONARY, getSummonType 7).
 func darkFlare() *combat.AttackSpec {
-	return &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: 0, AssistType: 7}}
+	return &combat.AttackSpec{
+		Kind:      combat.Summoned,
+		MaxDamage: darkFlareCeiling,
+		Summon:    &combat.SummonSpec{MoveAbility: 0, AssistType: 7},
+	}
+}
+
+func darkFlareCeiling(c combat.DamageContext) int {
+	if c.Mob.Invincible || c.Mob.OnlyNormalAttack {
+		return 0
+	}
+	if c.Mob.HasFixedDamage || c.Mob.FixedDamage > 0 {
+		return max(0, c.Mob.FixedDamage)
+	}
+	halfHP := int(min(c.Mob.HP/2, int64(combat.MaxLineDamage())))
+	return min(max(halfHP, combat.SummonCeiling(c)), combat.MaxLineDamage())
 }
 
 // mirroredTargetSummon (4341006) is a stationary decoy (Java isPuppet,

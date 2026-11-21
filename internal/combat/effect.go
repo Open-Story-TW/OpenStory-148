@@ -78,6 +78,9 @@ func SummonEffect(s content.Skill, level int) (Effect, error) {
 	if err != nil {
 		return e, err
 	}
+	if values, verr := s.Values(level); verr == nil && values["damage"] == 0 && values["selfDestruction"] > 0 {
+		e.Damage = values["selfDestruction"]
+	}
 	e.AttackCount = max(1, s.SummonAttack["attackCount"])
 	if e.AttackCount > 15 {
 		return Effect{}, fmt.Errorf("skill%d level%d summon attack count out of range", s.ID, level)
