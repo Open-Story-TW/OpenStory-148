@@ -37,9 +37,10 @@ func init() {
 	}}) // Combat Orders
 
 	// Paladin
-	skills.Register(skills.Handler{ID: 1220005, Kind: skills.KindPassive, Passive: achilles})                            // Achilles
-	skills.Register(skills.Handler{ID: 1220006, Kind: skills.KindPassive, Passive: guardian})                            // Guardian: shield block (prop, stun) needs the S0a damage path
-	skills.Register(skills.Handler{ID: 1220010, Kind: skills.KindPassive, Passive: elementalForce})                      // Elemental Force
+	skills.Register(skills.Handler{ID: 1220005, Kind: skills.KindPassive, Passive: achilles}) // Achilles
+	skills.Register(skills.Handler{ID: 1220006, Kind: skills.KindPassive, Passive: guardian, OnDamaged: guardianBlock,
+		Attack: &combat.AttackSpec{MobCast: &combat.MobCastSpec{Statuses: []combat.MobStatusApply{{Stat: combat.MobStun, Value: 1, Prop: 100}}}}}) // Guardian
+	skills.Register(skills.Handler{ID: 1220010, Kind: skills.KindPassive, Passive: elementalForce}) // Elemental Force
 	skills.Register(skills.Handler{ID: 1220013, Kind: skills.KindPassive | skills.KindBuff, OnDamaged: divineShieldHit}) // Divine Shield
 	skills.Register(skills.Handler{ID: 1221000, Kind: skills.KindPartyBuff, Cast: mapleWarrior})                         // Maple Warrior
 	skills.Register(skills.Handler{ID: 1221002, Kind: skills.KindBuff, Cast: value("STANCE", "prop")})                   // Power Stance
@@ -108,6 +109,20 @@ func achilles(c *skills.PassiveContext) skills.Bonus {
 // guardian (1220006) is Java ASR += asrR, TER += terR.
 func guardian(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{ASR: c.Values["asrR"], TER: c.Values["terR"]}
+}
+
+var guardianRoll = func(prop int) bool { return rand.IntN(100) < prop }
+
+// guardianBlock (1220006) rolls prop% when a monster hits the Paladin and
+// stuns the attacker for WZ time via MobCast.
+func guardianBlock(c *skills.TriggerContext) *skills.BuffChange {
+	if c.Mob == 0 || (c.Damage <= 0 && c.DefType != 1) || c.Value("prop") < 1 {
+		return nil
+	}
+	if !guardianRoll(c.Value("prop")) {
+		return nil
+	}
+	return &skills.BuffChange{MobCast: []int32{c.Mob}}
 }
 
 // restoration (1211010) is Java hpR = x/100: heal x% of max HP.
