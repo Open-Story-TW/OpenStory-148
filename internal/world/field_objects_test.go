@@ -255,3 +255,58 @@ func TestRecoveryAuraRestoresMPInside(t *testing.T) {
 		t.Fatalf("ticked early: %d", mp)
 	}
 }
+
+func TestQAClearMobsRemovesOwnedAffectedAreas(t *testing.T) {
+	s, lives, sinks, _ := sharedWorldFixture(t)
+	now := time.Now()
+	ownOID, err := s.SpawnFieldObject(1, lives[0], testMistSkill, 1, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherOID, err := s.SpawnFieldObject(1, lives[1], testMistSkill, 1, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reservedOID, err := s.SpawnFieldObject(1, lives[0], testMistSkill, 1, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	key := mapKey{channel: 1, mapID: lives[0].session.Character.MapID}
+	s.gameplay.mu.Lock()
+	room := s.gameplay.rooms[key]
+	room.areas[reservedOID].reservation = &combatTicket{}
+	req := domain.GMCommandRequest{
+		Session:     lives[0].session,
+		Name:        "clearmobs",
+		OperationID: "qa-clear-areas-test",
+	}
+	_, out, err := s.gameplay.applyQAMobsLocked(key, req, now.Add(time.Minute), lives[0], sinks[0], content.Mob{}, nil, now)
+	if err != nil {
+		s.gameplay.mu.Unlock()
+		t.Fatal(err)
+	}
+	_, ownStill := room.areas[ownOID]
+	_, otherStill := room.areas[otherOID]
+	_, reservedStill := room.areas[reservedOID]
+	s.gameplay.mu.Unlock()
+	if ownStill {
+		t.Fatalf("caller's unreserved area %d was not removed by clearmobs", ownOID)
+	}
+	if !otherStill {
+		t.Fatalf("another player's area %d was removed by clearmobs", otherOID)
+	}
+	if !reservedStill {
+		t.Fatalf("reserved area %d was removed by clearmobs", reservedOID)
+	}
+	removedSent := 0
+	for _, d := range out {
+		for _, pkt := range d.packets {
+			if len(pkt) >= 2 && binary.LittleEndian.Uint16(pkt[:2]) == protocol.SendAffectedAreaRemoved {
+				removedSent++
+			}
+		}
+	}
+	if removedSent != len(lives) {
+		t.Fatalf("expected %d AffectedAreaRemoved broadcasts, got %d", len(lives), removedSent)
+	}
+}

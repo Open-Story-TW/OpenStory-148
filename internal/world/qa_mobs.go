@@ -347,6 +347,13 @@ func (g *gameplaySpace) applyQAMobsLocked(key mapKey, req domain.GMCommandReques
 			}
 			delete(r.mobs, oid)
 		}
+		for oid, area := range r.areas {
+			if area.ownerID != req.Session.CharacterID || area.ownerSession != req.Session.SessionID || area.ownerGeneration != req.Session.Generation || area.reservation != nil {
+				continue
+			}
+			delete(r.areas, oid)
+			appendPacket(protocol.AffectedAreaRemoved(area.objectID, area.skillID, false))
+		}
 	}
 	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
 	owner := req.Session
