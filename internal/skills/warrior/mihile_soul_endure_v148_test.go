@@ -1,7 +1,9 @@
 package warrior
 
 import (
+	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
+	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
 	"maple-go-server/internal/skills"
 	"os"
@@ -80,5 +82,40 @@ func TestMihileRighteousIndignationAndSoulRageV148(t *testing.T) {
 	}
 	if _, err := protocol.TemporaryStatSet(51121006, p.Self.Duration, wire); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestMihileRighteousIndignationCeiling(t *testing.T) {
+	mihile := domain.Character{
+		Job:    5112,
+		Skills: []domain.SkillState{{ID: 51110002, Level: 20}},
+	}
+	base := 100000
+	if combat.MaxLineDamage() > 10_000_000_000 {
+		base = 9_117_426_557
+	}
+	// Active Stun, Freeze, or Darkness scales physical ceiling by (100+x)% = 120% at max level 20.
+	for _, st := range []combat.MobStat{combat.MobStun, combat.MobFreeze, combat.MobDarkness} {
+		dc := combat.DamageContext{
+			Attacker: mihile,
+			Statuses: combat.MobStatuses{st: {Stat: st, Value: 1}},
+		}
+		got := righteousIndignationCeiling(dc, base)
+		want := int(min(int64(base)*120/100, int64(combat.MaxLineDamage())))
+		if got != want {
+			t.Fatalf("status %v: got=%d want=%d", st, got, want)
+		}
+	}
+	// No qualifying status, magic attack, or non-Mihile job leaves ceiling unchanged.
+	for name, dc := range map[string]combat.DamageContext{
+		"clean":      {Attacker: mihile},
+		"poison":     {Attacker: mihile, Statuses: combat.MobStatuses{combat.MobPoison: {Stat: combat.MobPoison, Value: 1}}},
+		"magic":      {Attacker: mihile, Magic: true, Statuses: combat.MobStatuses{combat.MobStun: {Stat: combat.MobStun, Value: 1}}},
+		"non_mihile": {Attacker: domain.Character{Job: 112, Skills: mihile.Skills}, Statuses: combat.MobStatuses{combat.MobStun: {Stat: combat.MobStun, Value: 1}}},
+		"unlearned":  {Attacker: domain.Character{Job: 5112}, Statuses: combat.MobStatuses{combat.MobStun: {Stat: combat.MobStun, Value: 1}}},
+	} {
+		if got := righteousIndignationCeiling(dc, base); got != base {
+			t.Fatalf("%s: got=%d want=%d", name, got, base)
+		}
 	}
 }

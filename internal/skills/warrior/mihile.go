@@ -24,8 +24,10 @@ func init() {
 	skills.Register(skills.Handler{ID: 51101006, Kind: skills.KindAttack, Attack: melee(nil)})
 	skills.Register(skills.Handler{ID: 51110000, Kind: skills.KindPassive, Passive: mpRecovery, OnTick: skills.ReviewedRecoveryTick, TickEvery: 4 * time.Second})
 	skills.Register(skills.Handler{ID: 51110001, Kind: skills.KindPassive, Passive: mihileStrength})
-	// Righteous Indignation (51110002): v148 0x713106 adds x/y only against status-afflicted targets.
+	// Righteous Indignation (51110002): v148 0x7130B0..0x71318D multiplies physical
+	// damage by (100+x)% when the target suffers Stun, Freeze, or Darkness.
 	skills.Register(skills.Handler{ID: 51110002, Kind: skills.KindPassive})
+	combat.ScaleCeiling(righteousIndignationCeiling)
 	skills.Register(skills.Handler{ID: 51111003, Kind: skills.KindBuff, Cast: radiantBurst})
 	skills.Register(skills.Handler{ID: 51111004, Kind: skills.KindBuff, Cast: soulEndure})
 	skills.Register(skills.Handler{ID: 51111005, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: magicCrash()})
@@ -122,4 +124,29 @@ func soulRage(c *skills.CastContext) (skills.CastPlan, error) {
 		mobCount = 1
 	}
 	return buff(c, stat("ENRAGE", c.Value("x")*100+mobCount), stat("SHARP_EYES", c.Value("z")<<8|c.Value("y")))
+}
+
+// righteousIndignationCeiling applies Mihile's Righteous Indignation (51110002)
+// physical damage multiplier (100+x)% against targets afflicted with Stun,
+// Freeze, or Darkness (v148 CalcDamage::PDamage 0x7130B0..0x71318D, job check
+// 0x46A297: job == 5000 || job/100 == 51).
+func righteousIndignationCeiling(dc combat.DamageContext, ceiling int) int {
+	if dc.Magic || ceiling <= 0 {
+		return ceiling
+	}
+	if j := dc.Attacker.Job; j != 5000 && j/100 != 51 {
+		return ceiling
+	}
+	if dc.Statuses[combat.MobStun] == nil && dc.Statuses[combat.MobFreeze] == nil && dc.Statuses[combat.MobDarkness] == nil {
+		return ceiling
+	}
+	lv := learnedLevel(dc.Attacker, 51110002)
+	if lv < 1 {
+		return ceiling
+	}
+	v, err := skillValues(51110002, lv)
+	if err != nil || v["x"] <= 0 {
+		return ceiling
+	}
+	return int(min(int64(ceiling)*int64(100+v["x"])/100, int64(combat.MaxLineDamage())))
 }
