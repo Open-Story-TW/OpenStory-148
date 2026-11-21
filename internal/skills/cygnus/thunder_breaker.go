@@ -38,8 +38,9 @@ func init() {
 	skills.Register(skills.Handler{ID: 15111004, Kind: skills.KindAttack, Attack: thunderMelee()})                         // 閃．連殺
 	skills.Register(skills.Handler{ID: 15111005, Kind: skills.KindPartyBuff, Cast: party(value("SPEED_INFUSION", "x"))})   // 最終極速: hpCon and mpCon
 	// 閃光擊: SPARK x on the caster only (Java sends no foreign buff); the
-	// client then sends the spark hits as lightning attacks of the skill.
-	skills.Register(skills.Handler{ID: 15111006, Kind: skills.KindBuff | skills.KindAttack, Cast: value("SPARK", "x"), Attack: melee(element(combat.Lightning))})
+	// v148 client fires the spark bounce hits on RecvShootAttack (0x56) without
+	// consuming ammo, while legacy paths may send melee frames.
+	skills.Register(skills.Handler{ID: 15111006, Kind: skills.KindBuff | skills.KindAttack, Cast: value("SPARK", "x"), Attack: attack(combat.Melee|combat.Shoot, noAmmo, element(combat.Lightning))})
 	skills.Register(skills.Handler{ID: 15111007, Kind: skills.KindAttack, Attack: attack(combat.Shoot, noAmmo, prepare(thunderCharged))}) // 鯨噬: Java ranged AOE
 	skills.Register(skills.Handler{ID: 15111011, Kind: skills.KindBuff, Cast: dice})                                                      // 幸運骰子
 }
