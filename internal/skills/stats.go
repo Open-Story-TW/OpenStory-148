@@ -147,6 +147,7 @@ func (b Bonus) Add(o Bonus) Bonus {
 	b.Range += o.Range
 	b.EXP += o.EXP
 	b.DamageReduce += o.DamageReduce
+	b.BuffDurationPercent += o.BuffDurationPercent
 	return b
 }
 

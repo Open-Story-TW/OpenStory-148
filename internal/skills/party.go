@@ -52,6 +52,7 @@ func PartyCast(root string, actor domain.Character, skillID, level int, now time
 	if e != nil {
 		return CastPlan{}, e
 	}
+	ScaleBuffDuration(actor, p.Party, now)
 	if p.Party != nil && p.Area == nil {
 		if r, ok := template.RangeAt(level); ok {
 			p.Area = &Rect{Left: r.LT[0], Top: r.LT[1], Right: r.RB[0], Bottom: r.RB[1]}

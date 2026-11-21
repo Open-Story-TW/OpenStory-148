@@ -293,10 +293,10 @@ func summonTER(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{TER: c.Values["terR"]}
 }
 
-// buffMastery (2121009, 2221009, 2321010) adds madX magic attack; Java uses
-// nothing else of it.
+// buffMastery (2121009, 2221009, 2321010) adds madX magic attack and extends
+// non-permanent cast buff durations by x percent.
 func buffMastery(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{MATK: c.Values["madX"]}
+	return skills.Bonus{MATK: c.Values["madX"], BuffDurationPercent: c.Values["x"]}
 }
 
 // passive registers a passive skill. A nil bonus means its effect lives

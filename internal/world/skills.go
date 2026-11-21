@@ -483,19 +483,19 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 		return sink.WritePacket(protocol.UpdateHPMP(c.HP, c.MP))
 	}
 	live.mu.Lock()
-	hpLoss, mpLoss := skills.TakenDamage(live.session.Character, q.Damage, now)
+	hpLoss, mpLoss, mesoLoss := skills.TakenDamageWithMesos(live.session.Character, q.Damage, now)
 	if _, shielded := skills.ActiveStat(live.session.Character, "DIVINE_SHIELD", now); shielded {
 		// Java: an active Divine Shield blocks the whole hit; the owning
 		// skill's OnDamaged counts the block and breaks the shield.
-		hpLoss, mpLoss = 0, 0
+		hpLoss, mpLoss, mesoLoss = 0, 0, 0
 	}
 	if _, invincible := skills.ActiveStat(live.session.Character, "DIVINE_BODY", now); invincible {
 		// 金剛不壞 x1010 (Mu Lung Dojo) makes the character invincible.
-		hpLoss, mpLoss = 0, 0
+		hpLoss, mpLoss, mesoLoss = 0, 0, 0
 	}
 	if live.god {
 		// GM !god: the hit is reported and answered, never applied.
-		hpLoss, mpLoss = 0, 0
+		hpLoss, mpLoss, mesoLoss = 0, 0, 0
 	}
 	live.mu.Unlock()
 	var shared blueAuraDamage
@@ -505,6 +505,15 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 		live.mu.Lock()
 		live.session.Character.HP = max(0, live.session.Character.HP-hpLoss)
 		live.session.Character.MP = max(0, live.session.Character.MP-mpLoss)
+		if mesoLoss > 0 {
+			live.session.Character.Mesos = max(0, live.session.Character.Mesos-mesoLoss)
+		}
+		live.dirty = true
+		c = live.session.Character
+		live.mu.Unlock()
+	} else if mesoLoss > 0 {
+		live.mu.Lock()
+		live.session.Character.Mesos = max(0, live.session.Character.Mesos-mesoLoss)
 		live.dirty = true
 		c = live.session.Character
 		live.mu.Unlock()
@@ -523,6 +532,9 @@ func (s *Server) takeDamage(ctx context.Context, live *liveCharacter, sink packe
 	}
 	s.refreshParty(live)
 	_ = sink.WritePacket(protocol.UpdateHPMP(c.HP, c.MP))
+	if mesoLoss > 0 {
+		_ = sink.WritePacket(protocol.UpdateMesos(c.Mesos, false))
+	}
 	if q.Type != protocol.FieldObstacleDamage {
 		if c.HP > 0 {
 			go s.runSkillTriggers(expectedMember, nil, q.Damage, q.ObjectID, q.DefType)

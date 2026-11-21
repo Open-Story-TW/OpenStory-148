@@ -289,6 +289,7 @@ func (s *Store) CastSkill(ctx context.Context, req domain.SkillCastRequest) (dom
 	if e != nil || plan.Party != nil {
 		return r, domain.ErrInvalidInput
 	}
+	skills.ScaleBuffDuration(c, plan.Self, now)
 	r.Effect = true
 	r.Dice = plan.Dice
 	applied, appliedLevel := req.SkillID, state.Level

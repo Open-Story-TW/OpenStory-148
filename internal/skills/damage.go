@@ -11,8 +11,16 @@ import (
 // MapleCharacter damage handling: MAGIC_GUARD moves x percent onto MP, and
 // whatever MP cannot pay falls back to HP.
 func TakenDamage(c domain.Character, damage int, now time.Time) (hp, mp int) {
+	hp, mp, _ = TakenDamageWithMesos(c, damage, now)
+	return hp, mp
+}
+
+// TakenDamageWithMesos computes HP, MP and meso loss from a monster hit,
+// applying Combo Barrier, Magic Shield, DamageReduce, Power Guard, Meso Guard
+// (50% HP absorption paid at x% in mesos) and Magic Guard.
+func TakenDamageWithMesos(c domain.Character, damage int, now time.Time) (hp, mp int, mesos int64) {
 	if damage <= 0 {
-		return 0, 0
+		return 0, 0, 0
 	}
 	// Combo Barrier and Magic Shield keep value/1000 of the hit (Java).
 	for _, stat := range []buffstat.Stat{"COMBO_BARRIER", "MAGIC_SHIELD"} {
@@ -21,7 +29,7 @@ func TakenDamage(c domain.Character, damage int, now time.Time) (hp, mp int) {
 		}
 	}
 	// Damage reduction: passive Bonus.DamageReduce plus DAMAGE_TAKEN_BUFF,
-	// Satellite Safe's absorb percent (35121006) and WATER_SHIELD.
+	// Satellite Safe's absorb percent (35121006), WATER_SHIELD and POWERGUARD.
 	reduce := Bonuses(c, now).DamageReduce
 	if v, ok := ActiveStat(c, "DAMAGE_TAKEN_BUFF", now); ok {
 		reduce += v
@@ -37,12 +45,27 @@ func TakenDamage(c domain.Character, damage int, now time.Time) (hp, mp int) {
 	if v, ok := ActiveStat(c, "WATER_SHIELD", now); ok {
 		reduce += v // Mercedes Water Shield absorbs x percent.
 	}
+	if v, ok := ActiveStat(c, "POWERGUARD", now); ok && v > 0 {
+		reduce += v // Power Guard (1101007/1201007/11101006) absorbs x percent.
+	}
 	if reduce > 0 {
 		damage -= damage * min(reduce, 100) / 100
 	}
+	if rate, ok := ActiveStat(c, "MESOGUARD", now); ok && rate > 0 && damage > 1 && c.Mesos > 0 {
+		absorbed := damage / 2
+		cost := int64(absorbed) * int64(rate) / 100
+		if cost > c.Mesos {
+			absorbed = int(c.Mesos * 100 / int64(rate))
+			cost = int64(absorbed) * int64(rate) / 100
+		}
+		if absorbed > 0 {
+			damage -= absorbed
+			mesos = cost
+		}
+	}
 	guard, ok := ActiveStat(c, "MAGIC_GUARD", now)
 	if !ok || guard <= 0 {
-		return damage, 0
+		return damage, 0, mesos
 	}
 	mp = damage * min(guard, 100) / 100
 	hp = damage - mp
@@ -50,7 +73,29 @@ func TakenDamage(c domain.Character, damage int, now time.Time) (hp, mp int) {
 		hp += mp - c.MP
 		mp = c.MP
 	}
-	return hp, mp
+	return hp, mp, mesos
+}
+
+// PowerGuardReflect is the OnDamaged reflection handler for Power Guard
+// (1101007, 1201007, 11101006): reflects x% * y% of raw contact damage back
+// to the attacking monster, capped at 10% of the monster's MaxHP.
+func PowerGuardReflect(c *TriggerContext) *BuffChange {
+	pg, ok := c.Stat("POWERGUARD")
+	if !ok || pg <= 0 || c.Damage <= 0 || c.Mob == 0 {
+		return nil
+	}
+	y := c.Value("y")
+	if y <= 0 {
+		y = 100
+	}
+	bounce := int(int64(c.Damage) * int64(pg) * int64(y) / 10000)
+	if m, ok := c.Attacker(); ok && m.MaxHP > 0 {
+		bounce = int(min(int64(bounce), max(1, m.MaxHP/10)))
+	}
+	if bounce < 1 {
+		return nil
+	}
+	return &BuffChange{MobHits: []combat.ServerHit{{ObjectID: c.Mob, Damage: bounce}}}
 }
 
 // NormalAttack is the ordinary-attack spec: no projectile is consumed while

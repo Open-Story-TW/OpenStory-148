@@ -381,8 +381,24 @@ type Bonus struct {
 	PotionPercent  int // Potion effect bonus.
 	MesoRate       int // Meso drop rate percent.
 	Range          int // Extra shoot range.
-	EXP            int // Extra experience percent.
-	DamageReduce   int // Percent of received damage absorbed.
+	EXP                 int // Extra experience percent.
+	DamageReduce        int // Percent of received damage absorbed.
+	BuffDurationPercent int // Percent extension applied to non-permanent cast buffs (Buff Mastery).
+}
+
+// ScaleBuffDuration extends a non-permanent buff's duration by the caster's
+// BuffDurationPercent passive bonus (Magician Buff Mastery 2121009/2221009/2321010).
+func ScaleBuffDuration(c domain.Character, b *Buff, now time.Time) {
+	if b == nil || b.Duration <= 0 || b.Duration >= Permanent {
+		return
+	}
+	if pct := Bonuses(c, now).BuffDurationPercent; pct > 0 {
+		scaled := b.Duration * time.Duration(100+pct) / 100
+		if scaled > Permanent {
+			scaled = Permanent
+		}
+		b.Duration = scaled
+	}
 }
 
 // SkillDamagePercents converts the per-skill damage bonuses for combat.

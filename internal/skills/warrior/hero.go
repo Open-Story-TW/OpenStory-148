@@ -16,7 +16,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 1100009, Kind: skills.KindPassive, Passive: physicalTraining})                                                                                    // Physical Training
 	skills.Register(skills.Handler{ID: 1101004, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                                                                                     // Weapon Booster
 	skills.Register(skills.Handler{ID: 1101006, Kind: skills.KindPartyBuff, Cast: skills.StandardPartyBuff})                                                                             // Rage: pad
-	skills.Register(skills.Handler{ID: 1101007, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x")})                                                                                  // Power Guard
+	skills.Register(skills.Handler{ID: 1101007, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x"), OnDamaged: skills.PowerGuardReflect})                                                                         // Power Guard
 	skills.Register(skills.Handler{ID: 1101008, Kind: skills.KindAttack, Attack: melee(nil)})                                                                                            // Ground Smash
 	skills.Register(skills.Handler{ID: 1101010, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                                                                        // Rush (movement)
 

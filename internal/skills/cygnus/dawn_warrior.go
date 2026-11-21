@@ -23,7 +23,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 11101003, Kind: skills.KindPartyBuff, Cast: party(generic)})                                  // 憤怒: pad
 	skills.Register(skills.Handler{ID: 11101004, Kind: skills.KindAttack, Attack: shoot(noAmmo, prepare(soulCharged))})              // 靈魂之刃: ranged AOE without ammo
 	skills.Register(skills.Handler{ID: 11101005, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                   // 靈魂迅移 (movement)
-	skills.Register(skills.Handler{ID: 11101006, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x")})                             // 反射之盾
+	skills.Register(skills.Handler{ID: 11101006, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x"), OnDamaged: skills.PowerGuardReflect})                     // 反射之盾
 
 	skills.Register(skills.Handler{ID: 11110000, Kind: skills.KindPassive, Passive: recovery, OnTick: skills.ReviewedRecoveryTick, TickEvery: 4 * time.Second}) // 魔力恢復
 	skills.Register(skills.Handler{ID: 11110005, Kind: skills.KindPassive})                                                                                     // 進階鬥氣: read by the combo counter

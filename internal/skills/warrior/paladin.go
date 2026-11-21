@@ -18,7 +18,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 1200009, Kind: skills.KindPassive, Passive: physicalTraining})                 // Physical Training
 	skills.Register(skills.Handler{ID: 1201004, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                  // Weapon Booster
 	skills.Register(skills.Handler{ID: 1201006, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: threaten}) // Threaten
-	skills.Register(skills.Handler{ID: 1201007, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x")})               // Power Guard
+	skills.Register(skills.Handler{ID: 1201007, Kind: skills.KindBuff, Cast: value("POWERGUARD", "x"), OnDamaged: skills.PowerGuardReflect}) // Power Guard
 	skills.Register(skills.Handler{ID: 1201008, Kind: skills.KindAttack, Attack: melee(nil, charged)})                // Ground Smash
 	skills.Register(skills.Handler{ID: 1201010, Kind: skills.KindSpecial, Cast: skills.CostOnly})                     // Rush (movement)
 

@@ -210,7 +210,7 @@ func TestPassiveBonuses(t *testing.T) {
 		}
 	}
 	for _, id := range []int{2121009, 2221009, 2321010} {
-		if b := bonus(id, 10, 0); b != (skills.Bonus{MATK: 30}) {
+		if b := bonus(id, 10, 0); b != (skills.Bonus{MATK: 30, BuffDurationPercent: 50}) {
 			t.Errorf("buff mastery %d: %+v", id, b)
 		}
 	}
