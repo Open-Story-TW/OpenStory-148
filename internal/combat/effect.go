@@ -149,7 +149,7 @@ func BaseStats(c domain.Character, _ time.Time) (PlayerStats, error) {
 // Aran's Snow Charge.
 var chargeElements = map[int]Element{
 	1211004: Fire, 1211006: Ice, 1211008: Lightning, 15101006: Lightning,
-	1221004: Holy, 11111007: Holy, 21111005: Ice,
+	1221004: Holy, 11111007: Holy, 21101006: Ice, 21111005: Ice,
 }
 
 // ChargeElement returns the element of the attacker's active WK_CHARGE buff.

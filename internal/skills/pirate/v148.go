@@ -27,7 +27,7 @@ var v148Attacks = []attack{
 	{id: 5211008, kind: combat.Shoot},                              // 雙重槍閃: bulletConsume 2
 	{id: 5211010, kind: combat.Shoot},                              // 彈丸潰擊
 	{id: 5221013, kind: combat.Melee | combat.Shoot, noAmmo: true}, // 戰艦鯨魚號
-	{id: 5221015, kind: combat.Shoot},                              // 繼續瞄準
+	{id: 5221015, kind: combat.Shoot, onAttack: homingBeacon},      // 繼續瞄準
 	{id: 5221016, kind: combat.Shoot},                              // 爆頭射擊
 	{id: 5221017, kind: combat.Shoot},                              // 霸王章魚砲台: bulletConsume 4
 }
@@ -38,7 +38,7 @@ var crewVariants = []int{summonCrew, 5211015, 5211016}
 
 func init() {
 	for _, a := range v148Attacks {
-		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a)})
+		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a), OnAttack: a.onAttack})
 	}
 	skills.Register(skills.Handler{ID: summonCrew, Kind: skills.KindSummon, Cast: valueOne("SUMMON"), Attack: crewSpec(crewVariants)})
 	for _, id := range crewVariants[1:] {

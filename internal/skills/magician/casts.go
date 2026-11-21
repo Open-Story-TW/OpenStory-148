@@ -79,7 +79,9 @@ func summon(id int, hits ...hit) {
 	spec := attackSpec(id, combat.Summoned, hits...)
 	spec.Summon = &combat.SummonSpec{MoveAbility: 1, AssistType: 1}
 	h := skills.Handler{ID: id, Kind: skills.KindSummon, Cast: buff("SUMMON", "one"), Attack: spec}
-	if id != 2321003 {
+	if id == 2321003 {
+		h.Passive = summonASR
+	} else {
 		h.Passive = summonTER
 	}
 	skills.Register(h)

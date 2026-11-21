@@ -287,10 +287,16 @@ func elementalDrainIL(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{DOTPercent: c.Values["z"]}
 }
 
-// summonTER is the terR elemental resistance Java grants while Elquines or
-// Ifrit is learned.
+// summonTER is the terR elemental resistance granted while Elquines (2121005)
+// or Ifrit (2221005) is learned.
 func summonTER(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{TER: c.Values["terR"]}
+}
+
+// summonASR is the asrR abnormal-status resistance granted while Bahamut
+// (2321003) is learned (v148 Skill.wz asrR = 10 + x).
+func summonASR(c *skills.PassiveContext) skills.Bonus {
+	return skills.Bonus{ASR: c.Values["asrR"]}
 }
 
 // buffMastery (2121009, 2221009, 2321010) adds madX magic attack and extends
