@@ -321,6 +321,9 @@ func applyItemBuff(ctx context.Context, tx *sql.Tx, c *domain.Character, templat
 	if templateID == content.HorntailDisguiseItem && buff.Values["morph"] == 4 {
 		stats = append(stats, skills.StatValue{Stat: "MORPH", Value: 4})
 	}
+	if v := buff.Values["inflation"]; v > 0 {
+		stats = append(stats, skills.StatValue{Stat: "GIANT_POTION", Value: v})
+	}
 	if len(stats) == 0 {
 		return nil, nil, domain.ErrInvalidInput
 	}

@@ -905,6 +905,10 @@ func TestV148ZenAttacks(t *testing.T) {
 	if got := dragonSoulLine(combat.DamageContext{Mob: content.Mob{HP: 100}}); got != combat.MaxLineDamage() {
 		t.Errorf("dragon soul non-boss line %d", got)
 	}
+	if h, ok := skills.Lookup(5221016); !ok || h.Attack == nil || h.Attack.MaxDamage == nil ||
+		h.Attack.MaxDamage(combat.DamageContext{Mob: content.Mob{HP: 100}}) != combat.MaxLineDamage() {
+		t.Errorf("headshot 5221016 non-boss cap ceiling missing: %+v", h.Attack)
+	}
 }
 
 func TestV148ZenBuffs(t *testing.T) {

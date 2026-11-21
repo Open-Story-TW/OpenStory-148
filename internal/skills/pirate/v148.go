@@ -28,7 +28,7 @@ var v148Attacks = []attack{
 	{id: 5211010, kind: combat.Shoot},                              // 彈丸潰擊
 	{id: 5221013, kind: combat.Melee | combat.Shoot, noAmmo: true}, // 戰艦鯨魚號
 	{id: 5221015, kind: combat.Shoot, onAttack: homingBeacon},      // 繼續瞄準
-	{id: 5221016, kind: combat.Shoot},                              // 爆頭射擊
+	{id: 5221016, kind: combat.Shoot, maxDamage: dragonSoulLine}, // 爆頭射擊
 	{id: 5221017, kind: combat.Shoot},                              // 霸王章魚砲台: bulletConsume 4
 }
 

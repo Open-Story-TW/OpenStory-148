@@ -64,6 +64,17 @@ func TestConsumableDefinitionReadsTimedStats(t *testing.T) {
 	if err != nil || r.HP != 300 || buff == nil || buff.Values["pad"] != 5 || buff.Values["speed"] != 10 || buff.Duration.Seconds() != 60 {
 		t.Fatalf("hp+buff %+v %+v %v", r, buff, err)
 	}
+	// Giant Potion (inflation + speed + jump) is accepted in embedded and WZ XML forms.
+	if r, buff, err = ConsumableDefinition("", 2003516); err != nil || r != (Recovery{}) || buff == nil || buff.Values["inflation"] != 300 || buff.Duration.Seconds() != 60 {
+		t.Fatalf("embedded giant potion %+v %+v %v", r, buff, err)
+	}
+	giantXML := `<imgdir name="0200.img"><imgdir name="02003516"><imgdir name="spec"><int name="inflation" value="300"/><int name="speed" value="20"/><int name="jump" value="20"/><int name="time" value="60000"/></imgdir></imgdir></imgdir>`
+	if err = os.WriteFile(filepath.Join(dir, "0200.img.xml"), []byte(giantXML), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if r, buff, err = ConsumableDefinition(root, 2003516); err != nil || r != (Recovery{}) || buff == nil || buff.Values["inflation"] != 300 || buff.Values["speed"] != 20 || buff.Values["jump"] != 20 || buff.Duration.Seconds() != 60 {
+		t.Fatalf("wz giant potion %+v %+v %v", r, buff, err)
+	}
 	// No time, an unsupported key, or a time without a stat stays rejected.
 	for _, id := range []int{2020001, 2020002, 2020003} {
 		if _, _, err = ConsumableDefinition(root, id); err == nil {

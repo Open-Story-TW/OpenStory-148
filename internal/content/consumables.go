@@ -19,7 +19,7 @@ type ItemBuff struct {
 
 // itemBuffKeys are the stat keys a consumable buff may carry. Any other key
 // (morph, drop rate, map limits, ...) keeps the item rejected.
-var itemBuffKeys = map[string]bool{"pad": true, "mad": true, "pdd": true, "mdd": true, "acc": true, "eva": true, "speed": true, "jump": true}
+var itemBuffKeys = map[string]bool{"pad": true, "mad": true, "pdd": true, "mdd": true, "acc": true, "eva": true, "speed": true, "jump": true, "inflation": true}
 
 // RecoveryDefinition is the immediate HP/MP restoration of an item without a
 // timed effect. An item with a buff is rejected; ConsumableDefinition reads both.
@@ -47,6 +47,8 @@ func ConsumableDefinition(root string, id int) (Recovery, *ItemBuff, error) {
 			return Recovery{MP: 30}, nil, nil
 		case 2002000: // Dexterity Pill: avoidability +100 for 180 s.
 			return Recovery{}, &ItemBuff{Duration: 180 * time.Second, Values: map[string]int{"eva": 100}}, nil
+		case 2003516: // Giant Potion: inflation 300, speed +20, jump +20 for 60 s.
+			return Recovery{}, &ItemBuff{Duration: 60 * time.Second, Values: map[string]int{"inflation": 300, "speed": 20, "jump": 20}}, nil
 		default:
 			return Recovery{}, nil, fmt.Errorf("recovery item %d is absent from embedded content", id)
 		}
