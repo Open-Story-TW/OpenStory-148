@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"maple-go-server/internal/buffstat"
+	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 )
 
@@ -41,5 +42,20 @@ func TestQAUseItemParseAndPublishGiantPotion(t *testing.T) {
 	s.publishQAItemBuff(sess, &liveCharacter{session: sess}, sink, c, 2003516)
 	if sink.count(0x2d) != 1 {
 		t.Fatalf("expected 1 TemporaryStatSet (0x2d) packet, got %d (total %d)", sink.count(0x2d), len(sink.packets))
+	}
+}
+
+func TestQAPharaohMapGMAllowsEntry(t *testing.T) {
+	s := &Server{events: newEventSpace()}
+	gm := domain.CharacterSession{CharacterID: 101, ChannelID: 1, Character: domain.Character{ID: 101, GM: 1}}
+	player := domain.CharacterSession{CharacterID: 102, ChannelID: 1, Character: domain.Character{ID: 102, GM: 0}}
+	if !s.eventAllowsEntry(gm, domain.QAPharaohMap) {
+		t.Fatalf("GM should be allowed to stay on QAPharaohMap %d", domain.QAPharaohMap)
+	}
+	if s.eventAllowsEntry(player, domain.QAPharaohMap) {
+		t.Fatalf("non-GM should not enter QAPharaohMap %d without an active Nett event", domain.QAPharaohMap)
+	}
+	if s.eventAllowsEntry(gm, content.NettHardBase) {
+		t.Fatalf("GM should not bypass Nett event gate on non-QA stage %d", content.NettHardBase)
 	}
 }

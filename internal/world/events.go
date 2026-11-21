@@ -632,7 +632,7 @@ func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bo
 	defer s.events.mu.Unlock()
 	inst := s.events.running[eventKey{session.ChannelID, e.Name}]
 	if inst == nil {
-		return e.ExpeditionType == 0 && !content.NettEvent(e.Name) && session.Character.GM > 0 && e.Name != battleSquareEvent
+		return e.ExpeditionType == 0 && (!content.NettEvent(e.Name) || mapID == domain.QAPharaohMap) && session.Character.GM > 0 && e.Name != battleSquareEvent
 	}
 	return !inst.ended && s.events.byMember[session.CharacterID] == inst
 }
@@ -799,7 +799,7 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 		s.eventSettle(inst)
 		return
 	}
-	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || content.NettEvent(e.Name) || c.GM == 0 || e.Name == battleSquareEvent) {
+	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || (content.NettEvent(e.Name) && !(c.GM > 0 && c.MapID == domain.QAPharaohMap)) || c.GM == 0 || e.Name == battleSquareEvent) {
 		go s.eventExit(channel, e, live, sink)
 	}
 }
