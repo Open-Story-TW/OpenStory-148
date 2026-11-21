@@ -460,3 +460,15 @@ func TestQAMobSnapshotNoSceneOrMapLockAcrossHTTPWrite(t *testing.T) {
 		t.Fatal("scene gate retained during HTTP write")
 	}
 }
+
+func TestQAMobSnapshotAcceptsPharaohMap(t *testing.T) {
+	_, _, _, q := qaSnapshotFixture(t)
+	q.MapID = domain.QAPharaohMap
+	if !q.valid() {
+		t.Fatal("qaMobSnapshotRequest rejected QAPharaohMap")
+	}
+	q.MapID = 100000000
+	if q.valid() {
+		t.Fatal("qaMobSnapshotRequest accepted non-QA map 100000000")
+	}
+}

@@ -825,3 +825,58 @@ func TestQAMobRemovalStopsAfterRevocationWriteFailure(t *testing.T) {
 		t.Fatal("failed stop fell through to leave", err, sink.packets)
 	}
 }
+
+func TestQAMobsPharaohMapSpawnAndClear(t *testing.T) {
+	root := t.TempDir()
+	files := map[string]string{
+		"Map.wz/Map/Map9/926010200.img.xml": `<imgdir name="926010200.img"><imgdir name="info"><int name="town" value="0"/><int name="returnMap" value="926010000"/><int name="forcedReturn" value="926010000"/></imgdir><imgdir name="foothold"><imgdir name="1"><imgdir name="1"><imgdir name="1"><int name="x1" value="-400"/><int name="y1" value="215"/><int name="x2" value="400"/><int name="y2" value="215"/><int name="prev" value="0"/><int name="next" value="0"/></imgdir></imgdir></imgdir></imgdir><imgdir name="portal"><imgdir name="0"><string name="pn" value="sp"/><int name="pt" value="0"/><int name="x" value="0"/><int name="y" value="215"/><int name="tm" value="999999999"/><string name="tn" value=""/></imgdir></imgdir></imgdir>`,
+		"Mob.wz/7654321.img.xml":            `<imgdir name="7654321.img"><imgdir name="info"><int name="level" value="10"/><int name="maxHP" value="1000"/><int name="exp" value="15"/><int name="bodyAttack" value="1"/><int name="PADamage" value="20"/></imgdir><imgdir name="stand"><canvas name="0" width="40" height="50"><vector name="origin" x="20" y="50"/><vector name="lt" x="-20" y="-50"/><vector name="rb" x="20" y="0"/></canvas></imgdir></imgdir>`,
+	}
+	for path, raw := range files {
+		full := filepath.Join(root, filepath.FromSlash(path))
+		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(raw), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	catalog, err := content.NewCatalog(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, live, sink, repo := gmWorldFixture(t)
+	live.session.Character.MapID = domain.QAPharaohMap
+	live.session.Character.X = 0
+	live.session.Character.Y = 215
+	s.online[live.session.CharacterID] = live.session
+	seedBoundScene(t, s, live, sink)
+	if err = s.enterSkills(context.Background(), live.session.ChannelID, live, sink); err != nil {
+		t.Fatal(err)
+	}
+	s.gameplay = &gameplaySpace{catalog: catalog, rooms: map[mapKey]*gameplayRoom{}, nextID: 1000000, bootID: strings.Repeat("a", 32)}
+	if err = s.enterGameplay(live.session.ChannelID, live, sink); err != nil {
+		t.Fatal(err)
+	}
+	repo.execute = func(req domain.GMCommandRequest) (domain.GMCommandResult, error) {
+		return domain.GMCommandResult{
+			Name:      req.Name,
+			Args:      append([]int64(nil), req.Args...),
+			Character: req.Session.Character,
+			QAMobs:    &domain.QAMobAuthorization{RuntimeID: req.RuntimeID, ExpiresAt: time.Now().Add(time.Minute), GrantRevision: 1},
+		}, nil
+	}
+	if _, err := s.handleGMChat(context.Background(), live, sink, "!spawn 7654321 2"); err != nil {
+		t.Fatalf("pharaoh !spawn failed: %v", err)
+	}
+	key := mapKey{live.session.ChannelID, domain.QAPharaohMap}
+	if got := len(s.gameplay.rooms[key].mobs); got != 2 {
+		t.Fatalf("pharaoh room mobs = %d, want 2", got)
+	}
+	if _, err := s.handleGMChat(context.Background(), live, sink, "!clearmobs"); err != nil {
+		t.Fatalf("pharaoh !clearmobs failed: %v", err)
+	}
+	if got := len(s.gameplay.rooms[key].mobs); got != 0 {
+		t.Fatalf("pharaoh room mobs after clear = %d, want 0", got)
+	}
+}

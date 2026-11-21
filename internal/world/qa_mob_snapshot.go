@@ -93,7 +93,7 @@ func validQASnapshotToken(value string) bool {
 }
 
 func (q qaMobSnapshotRequest) valid() bool {
-	if q.WorldID < 0 || q.WorldID > 254 || q.WorldEpoch <= 0 || q.ChannelID < 1 || q.ChannelID > 20 || q.MapID != domain.QAMobMap || q.OwnerCharacterID <= 0 || len(q.Batch) < 16 || len(q.Batch) > 256 || len(q.ObjectIDs) < 1 || len(q.ObjectIDs) > domain.QAMobMaxBatch {
+	if q.WorldID < 0 || q.WorldID > 254 || q.WorldEpoch <= 0 || q.ChannelID < 1 || q.ChannelID > 20 || !domain.IsQAMobField(q.MapID) || q.OwnerCharacterID <= 0 || len(q.Batch) < 16 || len(q.Batch) > 256 || len(q.ObjectIDs) < 1 || len(q.ObjectIDs) > domain.QAMobMaxBatch {
 		return false
 	}
 	ids := make(map[int32]bool, len(q.ObjectIDs))
