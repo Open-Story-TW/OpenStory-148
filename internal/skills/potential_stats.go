@@ -150,6 +150,8 @@ func playerStatsCheckedForMode(c domain.Character, now time.Time, battleSquare b
 	p.IgnoreDefense += pot.IgnoreDefense + passive.IgnoreDefense + buff.IgnoreDefense
 	p.FullDefenseIgnore = passive.FullDefenseIgnore
 	p.ElementAmp += passive.ElementAmp + buff.ElementAmp
+	p.DOTTime = passive.DOTTime + buff.DOTTime
+	p.DOTPercent = passive.DOTPercent + buff.DOTPercent
 	p.ShadowPartner = shadowPartner(c, now)
 	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
 	p.BerserkFuryPercent, _ = ActiveStat(c, "BERSERK_FURY", now)

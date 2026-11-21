@@ -35,11 +35,11 @@ func init() {
 	passive(2321010, buffMastery)                                                                                     // Buff Mastery
 }
 
-// holyFocus (2310008) adds cr critical rate. With a wand or staff its mastery
-// replaces Spell Mastery's: the original v148 cleric mastery lookup
-// (sub_6D9733) returns Holy Focus's mastery whenever it is learned.
+// holyFocus (2310008) adds cr critical rate and ar accuracy percent. With a
+// wand or staff its mastery replaces Spell Mastery's: the original v148 cleric
+// mastery lookup (sub_6D9733) returns Holy Focus's mastery whenever it is learned.
 func holyFocus(c *skills.PassiveContext) skills.Bonus {
-	b := skills.Bonus{Critical: c.Values["cr"]}
+	b := skills.Bonus{Critical: c.Values["cr"], ACCPercent: c.Values["ar"]}
 	if wandOrStaff(c) {
 		b.Mastery = c.Values["mastery"]
 	}

@@ -99,9 +99,9 @@ func evasionBoost(c *skills.PassiveContext) skills.Bonus {
 }
 
 // marksmanship (3120011, 3220009) ignores ignoreMobpdpR percent of monster
-// defense (Java ignoreTargetDEF; its percent_hp reads mhpR, absent in v145).
+// defense and adds ar accuracy percent.
 func marksmanship(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{IgnoreDefense: c.Values["ignoreMobpdpR"]}
+	return skills.Bonus{IgnoreDefense: c.Values["ignoreMobpdpR"], ACCPercent: c.Values["ar"]}
 }
 
 // sharpEyes (3121002, 3221002) packs critical rate x in the high byte and

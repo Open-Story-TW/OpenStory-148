@@ -214,10 +214,10 @@ func TestPassiveBonuses(t *testing.T) {
 			t.Errorf("buff mastery %d: %+v", id, b)
 		}
 	}
-	if b := bonus(2310008, 20, 0); b != (skills.Bonus{Critical: 40}) {
+	if b := bonus(2310008, 20, 0); b != (skills.Bonus{Critical: 40, ACCPercent: 15}) {
 		t.Errorf("holy focus: %+v", b)
 	}
-	if b := bonus(2310008, 20, 1372000); b != (skills.Bonus{Critical: 40, Mastery: 65}) {
+	if b := bonus(2310008, 20, 1372000); b != (skills.Bonus{Critical: 40, ACCPercent: 15, Mastery: 65}) {
 		t.Errorf("holy focus with a wand: %+v", b)
 	}
 	// The original cleric mastery lookup prefers a learned Holy Focus.

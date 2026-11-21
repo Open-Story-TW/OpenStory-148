@@ -183,7 +183,7 @@ func TestPassives(t *testing.T) {
 		}
 	}
 	for _, id := range []int{3120011, 3220009} {
-		if b := passive(t, id, 10, archer(0)); b != (skills.Bonus{IgnoreDefense: 25}) {
+		if b := passive(t, id, 10, archer(0)); b != (skills.Bonus{IgnoreDefense: 25, ACCPercent: 10}) {
 			t.Errorf("marksmanship %d %+v", id, b)
 		}
 	}

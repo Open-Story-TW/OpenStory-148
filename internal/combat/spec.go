@@ -247,6 +247,7 @@ type PlayerStats struct {
 	IgnoreDefense                                            int     // Percent of monster PDRate/MDRate ignored.
 	FullDefenseIgnore                                        bool    // A physical hit can proc full defense ignore.
 	ElementAmp                                               int     // Percent bonus for magic element amplification.
+	DOTTime, DOTPercent                                      int     // Extra DoT duration seconds and extra DoT damage percent (Elemental Drain).
 	ShadowPartner                                            int     // Percent of an extra mirrored line set (0 = none).
 	WDEF, MDEF, Avoid, MagicAvoid, Speed, Jump               int     // Effective values for defense, avoidance and movement.
 	DodgeRate, ASR, TER, CritDamageMin                       int     // Effective view; no new probabilistic gate is implied.

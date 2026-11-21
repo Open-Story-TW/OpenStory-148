@@ -602,7 +602,7 @@ func TestPassives(t *testing.T) {
 		{1200000, 1, wielding(1422000), skills.Bonus{Mastery: 12, ACC: 6}},
 		{1300000, 20, wielding(1442000), skills.Bonus{Mastery: 50, ACC: 120}},
 		{1300000, 20, wielding(1302000), skills.Bonus{}},
-		{1120013, 30, domain.Character{}, skills.Bonus{WATK: 30}},
+		{1120013, 30, domain.Character{}, skills.Bonus{WATK: 30, ACCPercent: 10}},
 		{1220010, 10, domain.Character{}, skills.Bonus{}},
 		{1220010, 10, chargedPaladin(wielding(1302000), 1200000), skills.Bonus{Mastery: 70}},
 		{1220010, 10, chargedPaladin(wielding(1432000), 1200000), skills.Bonus{}},

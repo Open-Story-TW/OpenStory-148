@@ -329,7 +329,16 @@ func PlanAttack(spec *AttackSpec, ctx AttackContext, roll func(int) bool) (Plan,
 					// level's time is the summon's own lifetime.
 					a.Duration = summonStatusDuration
 				}
-				if st, ok := ResolveOn(a, e, ctx.Character.ID, maxBase, t.Mob, ctx.Now, roll); ok {
+				eff := e
+				if a.Poison {
+					if ctx.Stats.DOTTime > 0 && eff.DOTTime > 0 {
+						eff.DOTTime += time.Duration(ctx.Stats.DOTTime) * time.Second
+					}
+					if ctx.Stats.DOTPercent > 0 && eff.DOT > 0 {
+						eff.DOT += ctx.Stats.DOTPercent
+					}
+				}
+				if st, ok := ResolveOn(a, eff, ctx.Character.ID, maxBase, t.Mob, ctx.Now, roll); ok {
 					tp.Statuses = append(tp.Statuses, st)
 				}
 			}

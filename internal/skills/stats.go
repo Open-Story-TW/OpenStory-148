@@ -359,6 +359,8 @@ func legacyPlayerStatsForMode(c domain.Character, now time.Time, battleSquare bo
 	p.IgnoreDefense += b.IgnoreDefense
 	p.FullDefenseIgnore = b.FullDefenseIgnore
 	p.ElementAmp += b.ElementAmp
+	p.DOTTime = b.DOTTime
+	p.DOTPercent = b.DOTPercent
 	p.ShadowPartner = shadowPartner(c, now)
 	p.FinalCutPercent, _ = ActiveStat(c, "FINAL_CUT", now)
 	p.BerserkFuryPercent, _ = ActiveStat(c, "BERSERK_FURY", now)

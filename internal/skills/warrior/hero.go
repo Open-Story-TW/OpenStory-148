@@ -33,7 +33,7 @@ func init() {
 	// Hero
 	skills.Register(skills.Handler{ID: 1120003, Kind: skills.KindPassive})                                                           // Advanced Combo: max orbs and double-orb prop, read by the combo counter
 	skills.Register(skills.Handler{ID: 1120012, Kind: skills.KindPassive, Passive: combatMastery})                                   // Combat Mastery
-	skills.Register(skills.Handler{ID: 1120013, Kind: skills.KindAttack | skills.KindPassive, Attack: melee(nil), Passive: attackX}) // Advanced Final Attack
+	skills.Register(skills.Handler{ID: 1120013, Kind: skills.KindAttack | skills.KindPassive, Attack: melee(nil), Passive: advancedFinalAttack}) // Advanced Final Attack
 	skills.Register(skills.Handler{ID: 1121000, Kind: skills.KindPartyBuff, Cast: mapleWarrior})
 	skills.Register(skills.Handler{ID: 1121001, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(stun)}) // Monster Magnet: STUN
 	skills.Register(skills.Handler{ID: 1121002, Kind: skills.KindBuff, Cast: value("STANCE", "prop")})                // Power Stance
@@ -117,6 +117,11 @@ func mpRecovery(c *skills.PassiveContext) skills.Bonus {
 // every target, not only stunned/dark/frozen ones.
 func chanceAttack(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{DamagePercent: c.Values["damage"] - 100}
+}
+
+// advancedFinalAttack (1120013) adds padX weapon attack and ar accuracy percent.
+func advancedFinalAttack(c *skills.PassiveContext) skills.Bonus {
+	return skills.Bonus{WATK: c.Values["padX"], ACCPercent: c.Values["ar"]}
 }
 
 // combatMastery (1120012) is Java ignoreTargetDEF += ignoreMobpdpR.
