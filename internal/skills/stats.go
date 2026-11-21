@@ -223,6 +223,32 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			b.TER += v
 		case "INDIE_DAMAGE":
 			b.DamagePercent += v
+		case "HOLY_SYMBOL":
+			b.EXP += v
+		case "BLESS":
+			if row.ID != 2301004 {
+				continue
+			}
+			if def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), row.ID); err == nil {
+				if values, err := def.Values(min(max(v, 1), def.MaxLevel)); err == nil {
+					b.WATK += values["x"]
+					b.MATK += values["y"]
+					b.WDEF += values["z"]
+					b.MDEF += values["u"]
+					b.ACC += values["v"]
+					b.AVOID += values["w"]
+				}
+			}
+		case "YELLOW_AURA":
+			skillID := row.ID
+			if skillID == 32101003 && EffectiveLevel(c, 32120001, now) > 0 {
+				skillID = 32120001
+			}
+			if def, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), skillID); err == nil {
+				if values, err := def.Values(min(max(v, 1), def.MaxLevel)); err == nil {
+					b.Speed += values["x"]
+				}
+			}
 		case "BLUE_AURA":
 			// v148 uses z of the active advanced source and its actual rank.
 			if row.ID != AdvancedBlueAuraSkill && row.ID != 32110008 {

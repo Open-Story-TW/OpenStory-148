@@ -294,8 +294,11 @@ func summonTER(c *skills.PassiveContext) skills.Bonus {
 }
 
 // buffMastery (2121009, 2221009, 2321010) adds madX magic attack and extends
-// non-permanent cast buff durations by x percent.
+// non-permanent cast buff durations by x percent for its owning 4th-job mage.
 func buffMastery(c *skills.PassiveContext) skills.Bonus {
+	if c.Character.Job != 0 && c.Character.Job != c.Skill.ID/10000 {
+		return skills.Bonus{}
+	}
 	return skills.Bonus{MATK: c.Values["madX"], BuffDurationPercent: c.Values["x"]}
 }
 

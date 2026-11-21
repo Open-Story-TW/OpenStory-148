@@ -48,6 +48,12 @@ func TakenDamageWithMesos(c domain.Character, damage int, now time.Time) (hp, mp
 	if v, ok := ActiveStat(c, "POWERGUARD", now); ok && v > 0 {
 		reduce += v // Power Guard (1101007/1201007/11101006) absorbs x percent.
 	}
+	for _, row := range c.SkillBuffs {
+		if row.Stat == "INVINCIBLE" && row.ID != 5111010 && row.Value > 0 && row.ExpiresAt.After(now) {
+			reduce += row.Value // Cleric Invincible (2301003) absorbs x percent (5111010 uses Bonus.DamageReduce).
+			break
+		}
+	}
 	if reduce > 0 {
 		damage -= damage * min(reduce, 100) / 100
 	}

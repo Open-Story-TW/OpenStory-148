@@ -37,6 +37,25 @@ func TestBuffMasteryDurationExtension(t *testing.T) {
 			t.Fatalf("skill %d altered permanent duration to %v", tc.skill, perm.Duration)
 		}
 	}
+
+	// Cross-job isolation: learning all three Buff Masteries must only apply the
+	// skill belonging to the character's active 4th-job branch, and never leak to
+	// non-4th-job-mage branches.
+	allThree := []domain.SkillState{
+		{ID: 2121009, Level: 10},
+		{ID: 2221009, Level: 10},
+		{ID: 2321010, Level: 10},
+	}
+	fp := domain.Character{Job: 212, Level: 200, Skills: allThree}
+	if got := skills.Bonuses(fp, now).BuffDurationPercent; got != 50 {
+		t.Fatalf("job 212 with all 3 Buff Masteries: BuffDurationPercent = %d, want 50", got)
+	}
+	for _, otherJob := range []int{211, 2218, 3212, 3311} {
+		other := domain.Character{Job: otherJob, Level: 200, Skills: allThree}
+		if got := skills.Bonuses(other, now).BuffDurationPercent; got != 0 {
+			t.Fatalf("job %d with mage Buff Masteries: BuffDurationPercent = %d, want 0", otherJob, got)
+		}
+	}
 }
 
 func TestMesoGuardTakenDamageWithMesos(t *testing.T) {

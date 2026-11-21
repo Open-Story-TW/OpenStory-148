@@ -386,7 +386,8 @@ func (s *Store) ApplyCombatAttack(ctx context.Context, q domain.CombatAttackRequ
 		for i := range frozen.Grants {
 			grant := &frozen.Grants[i]
 			c := chars[grant.CharacterID]
-			grant.Experience = bonusExperience(domain.RateExperience(grant.Experience), skills.Bonuses(c, now).EXP)
+			buffBonus, _ := skills.BuffBonus(c, now)
+			grant.Experience = bonusExperience(domain.RateExperience(grant.Experience), skills.Bonuses(c, now).EXP+buffBonus.EXP)
 			if e = applyQuestExperience(&c, grant.Experience, target.SpawnOperationID); e != nil {
 				return result, e
 			}
