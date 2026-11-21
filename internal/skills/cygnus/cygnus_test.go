@@ -250,7 +250,7 @@ func spec(t *testing.T, id int) *combat.AttackSpec {
 // Java DamageParse/PlayerHandler decide the packet of each attack.
 func TestAttackPackets(t *testing.T) {
 	kinds := map[combat.AttackKind][]int{
-		combat.Melee: {11001002, 11001003, 11101002, 11111002, 11111003, 11111004, 11111006, 14001002, 14111006,
+		combat.Melee: {11001002, 11001003, 11101002, 11111002, 11111003, 11111004, 11111006, 14001002, 14111001, 14111006,
 			15001001, 15001002, 15001007, 15101003, 15101005, 15101010, 15111001, 15111003, 15111004, 15111012},
 		combat.Shoot: {11101004, 13001003, 13101002, 13101005, 13101007, 13111000, 13111002, 13111006, 13111007,
 			14001004, 14101008, 14101009, 14111002, 14111005, 14111008, 15111007, 15111008},
@@ -393,15 +393,21 @@ func TestMonsterStatuses(t *testing.T) {
 	if got := spec(t, 14001002).OnHit; len(got) != 2 || got[0].Stat != combat.MobPAD || got[0].ValueFrom != "x" || got[1].Stat != combat.MobPDR || got[1].ValueFrom != "y" {
 		t.Errorf("disorder %+v", got)
 	}
+	if got := spec(t, 14111001).OnHit; !reflect.DeepEqual(got, []combat.MobStatusApply{shadowWeb}) {
+		t.Errorf("shadow web 14111001 %+v", got)
+	}
 	casts := map[int]combat.MobStatusApply{
+		11111008: {Stat: combat.MobMagicCrash, Value: 1},
 		12101001: {Stat: combat.MobSpeed, ValueFrom: "x"},
 		12111002: {Stat: combat.MobSeal, Value: 1},
-		14111001: shadowWeb,
 	}
 	for id, want := range casts {
 		s := spec(t, id)
 		if s.Kind != 0 || s.MobCast == nil || !s.MobCast.UseBox || !reflect.DeepEqual(s.MobCast.Statuses, []combat.MobStatusApply{want}) {
 			t.Errorf("%d %+v", id, s.MobCast)
+		}
+		if id == 11111008 && !s.MobCast.Dispel {
+			t.Errorf("11111008 magic crash missing dispel")
 		}
 		if p := cast(t, id, 1); p.Self != nil || p.MPCost < 1 {
 			t.Errorf("%d cast %+v", id, p)

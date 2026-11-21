@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"maple-go-server/internal/combat"
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/skills"
@@ -59,8 +60,12 @@ func TestNewlyRegisteredCommonGMAndMihileIceKnightSkills(t *testing.T) {
 		t.Fatal("80000023 not registered")
 	}
 	for _, id := range []int{80001128, 80001130} {
-		if h, ok := skills.Lookup(id); !ok || h.Attack == nil {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Attack == nil {
 			t.Fatalf("attack skill %d not registered", id)
+		}
+		if id == 80001130 && h.Attack.Kind != combat.Melee|combat.Magic {
+			t.Fatalf("80001130 kind=%v, want Melee|Magic", h.Attack.Kind)
 		}
 	}
 	h80001140, ok := skills.Lookup(80001140)

@@ -67,7 +67,8 @@ func init() {
 	skills.Register(skills.Handler{ID: 80001126, Kind: skills.KindHeal | skills.KindPartyBuff, Cast: partyHeal})           // 勝利者的祝福
 	skills.Register(skills.Handler{ID: 80001125, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee}}) // 勝利者的旋風
 	skills.Register(skills.Handler{ID: 80001128, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee | combat.Shoot | combat.Magic, Ammo: combat.AmmoNone}})
-	skills.Register(skills.Handler{ID: 80001130, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee}}) // 神龍擺尾
+	// 神龍擺尾: native v148 dispatches 0x57 RecvMagicAttack.
+	skills.Register(skills.Handler{ID: 80001130, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee | combat.Magic}})
 	// 光之守護 (Knight's Watch link skill 80001140): STANCE = prop for time (matches Mihile 50001214).
 	skills.Register(skills.Handler{ID: 80001140, Kind: skills.KindBuff, Cast: buff(0, key("STANCE", "prop"))})
 	skills.Register(skills.Handler{ID: 80000023, Kind: skills.KindPassive}) // 寵物達人 Pet Mastery

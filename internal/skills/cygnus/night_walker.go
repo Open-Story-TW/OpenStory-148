@@ -40,7 +40,8 @@ func init() {
 	passive(14110003, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{PotionPercent: c.Values["x"] - 100} })   // 藥劑精通: Java RecoveryUP
 	skills.Register(skills.Handler{ID: 14110004, Kind: skills.KindPassive | skills.KindMobStatus})                               // 飛毒殺: POISON on venom attacks
 	skills.Register(skills.Handler{ID: 14111000, Kind: skills.KindBuff, Cast: value("SHADOWPARTNER", "x")})                      // 影分身: itemCon 4006001
-	skills.Register(skills.Handler{ID: 14111001, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: mobCast(shadowWeb)}) // 影網術
+	// 影網術: native v148 sends 0x55 RecvMeleeAttack (same as Night Lord 4111003).
+	skills.Register(skills.Handler{ID: 14111001, Kind: skills.KindAttack | skills.KindMobStatus, Cast: skills.CostOnly, Attack: melee(hit(shadowWeb))})
 	skills.Register(skills.Handler{ID: 14111002, Kind: skills.KindAttack, Attack: nightShoot()})                                 // 風魔手裏劍: bulletConsume 3
 	skills.Register(skills.Handler{ID: 14111005, Kind: skills.KindAttack, Attack: nightShoot()})                                 // 三飛閃: ignoreMobpdpR
 	// 毒炸彈: Legacy parses it as a charged close-range attack and leaves a

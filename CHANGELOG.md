@@ -4,6 +4,24 @@
 `## vX.Y.Z - YYYY-MM-DD`，底下三個小節 `### 新增`、`### 修復`、`### 優化` 都要有，
 沒有內容的小節寫「本版無」。同一份內容連同截圖貼到 Discord 的「服務器更新」頻道。
 
+## v0.1.64 - 2026-11-22
+
+### 新增
+
+- 本版無
+
+### 修復
+
+- 修復聖魂劍士「魔力無效」（`11111008`）於 `internal/skills/cygnus/dawn_warrior.go` 缺漏 `KindMobStatus` 與 `MobCast`（`Dispel: true, UseBox: true, MobMagicCrash`）處理的問題，對齊原版 v148 魔消技能實作。
+- 修復暗夜行者「影網」（`14111001`）於 `internal/skills/cygnus/night_walker.go` 使用 `mobCast` 而非原生 TWMS v148 `0x55 RecvMeleeAttack`（`melee(hit(shadowWeb))`），導致施放觸發 `attack family not allowed for skill` 被拒的問題。
+- 修復共通活動技能「神龍擺尾」（`80001130`）於 `internal/skills/common/event.go` 未放行原生 TWMS v148 `0x57 RecvMagicAttack`（`combat.Melee | combat.Magic`）的問題；補齊對應單元測試。
+
+### 優化
+
+- 本版無
+
+相容登入器 v0.1.1 以上（完整技能驗收自動化與 Harness R85 請搭配登入器 v0.1.562 以上）。
+
 ## v0.1.63 - 2026-11-22
 
 ### 新增

@@ -35,7 +35,9 @@ func init() {
 	skills.Register(skills.Handler{ID: 11111007, Kind: skills.KindBuff, Cast: soulCharge})                                                                      // 靈魂屬性
 	// 魔防消除: Legacy gives it no monster status (not in the MAGIC_CRASH
 	// list) and lists it with the hidden skills; the cast only pays.
-	skills.Register(skills.Handler{ID: 11111008, Kind: skills.KindSpecial, Cast: skills.CostOnly})
+	skills.Register(skills.Handler{ID: 11111008, Kind: skills.KindMobStatus, Cast: skills.CostOnly, Attack: &combat.AttackSpec{
+		MobCast: &combat.MobCastSpec{Dispel: true, UseBox: true, Statuses: []combat.MobStatusApply{{Stat: combat.MobMagicCrash, Value: 1}}},
+	}})
 }
 
 // dawnMelee is a Dawn Warrior close-range attack; Soul Charge makes it holy.
