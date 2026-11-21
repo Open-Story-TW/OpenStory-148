@@ -168,6 +168,34 @@ func TestReadMesoExplosionLiveTargets(t *testing.T) {
 	}
 }
 
+// Meso Explosion (4211006) live TWMS v148 frame: 16-byte target header
+// (ObjectID + 16B) followed by U8 line count, U32 lines (including LDMG
+// token 0x7f000002), 8B trailer, attacker X/Y, U8 drop count + 6B drops, 2B tail.
+func TestReadMesoExplosionV148LiveFrame(t *testing.T) {
+	raw, err := hex.DecodeString(
+		"02133e41400014ad6818fa004e0078cb8650010426e189000000000000000000" +
+			"ad420f00" + "070100706f98000119ffd70019ffd700" +
+			"03" + "c5844a6a0200007f1ff54541" + "5d2b923e75972ebc" +
+			"19ffd700" + "03" + "76d49a3b010077d49a3b010078d49a3b0100" + "6302",
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err := ReadAttack(RecvMeleeAttack, NewReader(raw))
+	if err != nil {
+		t.Fatalf("ReadAttack v148 4211006 failed: %v", err)
+	}
+	if a.SkillID != 4211006 || len(a.Targets) != 1 || a.Targets[0].ObjectID != 1000109 || len(a.Targets[0].Lines) != 3 {
+		t.Fatalf("decoded = %+v", a)
+	}
+	if a.Targets[0].Lines[1].Raw != 0x7f000002 {
+		t.Fatalf("line[1].Raw = 0x%x, want 0x7f000002", a.Targets[0].Lines[1].Raw)
+	}
+	if len(a.MesoDrops) != 3 || a.MesoDrops[0] != 1000002678 || a.X != -231 || a.Y != 215 {
+		t.Fatalf("drops/pos = %v (%d,%d)", a.MesoDrops, a.X, a.Y)
+	}
+}
+
 // GainForce (0xF7, 0x51EF91): v148 CField::OnForceAtomCreate reads
 // U8(bFromMob=1), I32(mobOID), I32(forceType=0), then while U8==1 five I32s
 // (key, inc, firstImpact, secondImpact, angle), terminated by U8(0).

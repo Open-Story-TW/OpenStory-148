@@ -335,7 +335,8 @@ func readAttackTargets(r *Reader, a *Attack) error {
 }
 
 // readMesoExplosion follows DamageParse.parseMesoExplosion: each target has
-// 12 opaque bytes, a U8 line count and I64 lines; drops follow the position.
+// 16 opaque header bytes in TWMS v148 (12 in v145 + 4-byte template/extra),
+// a U8 line count and U32 lines (or long-damage tokens); drops follow X,Y.
 func readMesoExplosion(r *Reader, a *Attack, start int) error {
 	if a.LineCount() == 0 {
 		r.Skip(4)
@@ -348,9 +349,10 @@ func readMesoExplosion(r *Reader, a *Attack, start int) error {
 	} else {
 		for i := 0; i < a.TargetCount(); i++ {
 			t := AttackTarget{ObjectID: r.I32()}
-			r.Skip(12)
-			// v145 (live 4211006, 2026-11-02): U8 line count, I32 lines and the
-			// usual 8-byte trailer; Java's I64 lines do not apply.
+			r.Skip(16)
+			// TWMS v148 (live 4211006): 16-byte target header, U8 line count,
+			// U32 lines (with LDMG tokens when long damage is enabled), and
+			// the 8-byte trailer.
 			n := int(r.U8())
 			if n > 15 {
 				return ErrMalformed

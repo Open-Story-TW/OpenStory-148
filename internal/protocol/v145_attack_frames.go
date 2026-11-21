@@ -54,6 +54,15 @@ func UpgradeV145AttackBody(op uint16, body []byte) []byte {
 			out = append(out, 0, 0, 0, 0)
 		}
 		if q.MesoExplode {
+			if tbyte&15 != 0 {
+				for i := 0; i < int(tbyte>>4) && len(in) >= 4+12+1; i++ {
+					copyN(4 + 3)
+					out = append(out, 0, 0, 0, 0)
+					copyN(9)
+					n := int(in[0])
+					copyN(1 + 4*n + 8)
+				}
+			}
 			return append(out, in...)
 		}
 		copyN(q.PreTargets)
