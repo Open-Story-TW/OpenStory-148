@@ -233,6 +233,12 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			b.DamagePercent += v
 		case "HOLY_SYMBOL":
 			b.EXP += v
+		case "MESOUP":
+			if v > 100 {
+				b.MesoRate += v - 100
+			} else if v > 0 {
+				b.MesoRate += v
+			}
 		case "BLESS":
 			if row.ID != 2301004 {
 				continue

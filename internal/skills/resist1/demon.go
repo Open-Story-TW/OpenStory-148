@@ -124,7 +124,13 @@ func init() {
 	passive(31120008, func(c *skills.PassiveContext) skills.Bonus {                                                              // 進階武器精通
 		return skills.Bonus{WATK: c.Values["padX"], Mastery: c.Values["mastery"], CriticalDamageMin: c.Values["criticaldamageMin"]}
 	})
-	passive(31120009, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{WDEFPercent: c.Values["t"]} }) // 堅硬肌膚: Java percent_wdef += t
+	passive(31120009, func(c *skills.PassiveContext) skills.Bonus { // 堅硬肌膚 Hard Skin: WDEF percent t + (1000-x)/10 damage reduction
+		b := skills.Bonus{WDEFPercent: c.Values["t"]}
+		if x := c.Values["x"]; x > 0 && x < 1000 {
+			b.DamageReduce = (1000 - x) / 10
+		}
+		return b
+	})
 	// Demon Lash enhancements, read by lashBonus; 守護拳套防具 is PvP only.
 	for _, id := range []int{31100007, 31110010, 31120011, 31000005} {
 		skills.Register(skills.Handler{ID: id, Kind: skills.KindPassive})

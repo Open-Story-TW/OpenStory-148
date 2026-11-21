@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
+	"maple-go-server/internal/skills"
 )
 
 var _ domain.CombatLootRepository = (*Store)(nil)
@@ -82,6 +84,11 @@ func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.Charact
 	plannedQuestItems := map[[2]int]int{}
 	var questPartyID int64
 	questDropType := -1
+	now := time.Now()
+	mesoBonus := skills.Bonuses(value, now).MesoRate
+	if buffBonus, _ := skills.BuffBonus(value, now); buffBonus.MesoRate > 0 {
+		mesoBonus += buffBonus.MesoRate
+	}
 	mesoDropped := false
 	for _, row := range rows {
 		if row.Chance <= 0 || row.QuestID > 0 && !active[row.QuestID] {
@@ -101,6 +108,9 @@ func enqueueCombatLootTx(ctx context.Context, tx *sql.Tx, session domain.Charact
 			}
 			amount := int64(row.Minimum) + int64(lootRoll(operationID, row.ID, 1, uint64(row.Maximum-row.Minimum+1)))
 			amount = min(amount*domain.MesoRate(), maxMesos)
+			if mesoBonus > 0 && amount > 0 {
+				amount = min(amount+amount*int64(mesoBonus)/100, maxMesos)
+			}
 			if amount > 0 && amount <= maxMesos {
 				plan.Items = append(plan.Items, domain.ItemDrop{WorldID: value.WorldID, ChannelID: session.ChannelID, MapID: value.MapID,
 					OwnerID: value.ID, X: x, Y: y, Quantity: 1, Mesos: amount})

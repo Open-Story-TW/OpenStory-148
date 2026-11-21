@@ -95,10 +95,14 @@ func shieldMastery(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{WDEFPercent: c.Values["x"], MDEFPercent: c.Values["x"]}
 }
 
-// achilles (1220005) is Java percent_wdef += t; Legacy does not apply the
-// x/1000 received-damage factor.
+// achilles (1220005) adds WDEF percent t and (1000-x)/10 received-damage
+// reduction (v148 WZ x=950-5*lv -> 800 = 20% reduction at lv30).
 func achilles(c *skills.PassiveContext) skills.Bonus {
-	return skills.Bonus{WDEFPercent: c.Values["t"]}
+	b := skills.Bonus{WDEFPercent: c.Values["t"]}
+	if x := c.Values["x"]; x > 0 && x < 1000 {
+		b.DamageReduce = (1000 - x) / 10
+	}
+	return b
 }
 
 // guardian (1220006) is Java ASR += asrR, TER += terR.

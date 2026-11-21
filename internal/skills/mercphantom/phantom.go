@@ -41,7 +41,7 @@ func init() {
 	passive(24000004, nil)                                                                                            // invisible link skill: no PvE effect
 	passive(24100004, weaponMastery(cane, 24120006))                                                                  // 手杖精通 Cane Mastery
 	passive(24100006, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{LUK: c.Values["lukX"]} })     // 幸運獨佔 Luck Monopoly
-	passive(24110004, nil)                                                                                            // 閃光逃脫 Flash and Flee: Legacy no effect
+	passive(24110004, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["prop"]} }) // 閃光逃脫 Flash and Flee: dodge prop%
 	passive(24110007, func(c *skills.PassiveContext) skills.Bonus {                                                   // 敏銳直覺 Acute Sense
 		return skills.Bonus{Critical: c.Values["cr"], CriticalDamageMin: c.Values["criticaldamageMin"]}
 	})

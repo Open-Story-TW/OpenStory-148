@@ -618,7 +618,7 @@ func TestPassives(t *testing.T) {
 		{1110009, 20, domain.Character{}, skills.Bonus{DamagePercent: 25}},
 		{1120012, 10, domain.Character{}, skills.Bonus{IgnoreDefense: 40}},
 		{1210001, 20, domain.Character{}, skills.Bonus{WDEFPercent: 200, MDEFPercent: 200}},
-		{1220005, 30, domain.Character{}, skills.Bonus{WDEFPercent: 20}},
+		{1220005, 30, domain.Character{}, skills.Bonus{WDEFPercent: 20, DamageReduce: 20}},
 		{1220006, 30, domain.Character{}, skills.Bonus{ASR: 30, TER: 30}},
 		{1310000, 20, domain.Character{}, skills.Bonus{TER: 50}},
 		{1320006, 30, domain.Character{HP: 199, MaxHP: 1000}, skills.Bonus{}},
