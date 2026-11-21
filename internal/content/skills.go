@@ -154,9 +154,9 @@ func SkillDefinition(root string, id int) (Skill, error) {
 		}
 		var ok bool
 		s, ok = skillSeeds[id]
-		if !ok || id == 5121010 || id == 4341002 || id == 35121003 || id == 35121010 || id == 35121011 {
+		if !ok || id == 5121010 || id == 4341002 || id == 33101008 || id == 35121003 || id == 35121010 || id == 35121011 {
 			// The v148 books also provide Final Cut's duration and the Mechanic
-			// summons' separate attack/death geometry.
+			// and Wild Hunter summons' separate attack/death geometry.
 			found, _ := skillNode(readV148Skills(fmt.Sprintf("%03d.img.xml", id/10000)))(id)
 			if found == nil {
 				return s, fmt.Errorf("unknown skill%d", id)
@@ -346,7 +346,15 @@ func skillFromNode(id int, n *wzNode) Skill {
 	if d := n.child("summon").child("die").child("info"); d != nil {
 		if area := d.child("range"); area.child("lt") != nil && area.child("rb") != nil {
 			if bounds, ok := vectors(area); ok {
-				s.SummonDeath = &SummonDeath{MobCount: d.intValue("mobCount", 0), AttackAfter: d.intValue("attackAfter", 0), Range: bounds}
+				attackAfter := d.intValue("attackAfter", 0)
+				if attackAfter == 0 {
+					for _, frame := range n.child("summon").child("die").Children {
+						if frame.XMLName.Local == "canvas" {
+							attackAfter += frame.intValue("delay", 0)
+						}
+					}
+				}
+				s.SummonDeath = &SummonDeath{MobCount: d.intValue("mobCount", 0), AttackAfter: attackAfter, Range: bounds}
 			}
 		}
 	}

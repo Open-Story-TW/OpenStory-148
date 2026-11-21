@@ -4,6 +4,23 @@
 `## vX.Y.Z - YYYY-MM-DD`，底下三個小節 `### 新增`、`### 修復`、`### 優化` 都要有，
 沒有內容的小節寫「本版無」。同一份內容連同截圖貼到 Discord 的「服務器更新」頻道。
 
+## v0.1.63 - 2026-11-22
+
+### 新增
+
+- 本版無
+
+### 修復
+
+- 修復幻影俠盜「卡牌風暴」（`24121005`）按住旋轉攻擊（每 `180ms` 觸發）在 `5` 秒按鍵視窗內被冷卻檢查誤拒的問題：將 `24121005` 納入 `rapidAttacks` 並整合 `world.attackOngoing` 與 `combat.OngoingResourceCast` 放行進行中的 `5` 秒旋轉攻擊視窗（結束後維持原本 `7–10` 秒冷卻強制檢核）；新增單元測試 `TestTempestOfCardKeydownSpinOngoingWindow`。
+- 修復狂豹獵人「地雷」（`33101008`）到期自爆無法結算的問題：於 `internal/content/skills.go` 補齊 `33101008` v148 技能書載入與 `summon/die` `630ms` 延遲回退，並於 `internal/skills/resist2/wildhunter.go` 補齊 `ExpiryAction: 0x11`；新增單元測試 `TestWildHunterMineExpirySelfDestruction`。
+
+### 優化
+
+- 本版無
+
+相容登入器 v0.1.1 以上（完整技能驗收自動化與 Harness R84 請搭配登入器 v0.1.555 以上）。
+
 ## v0.1.62 - 2026-11-22
 
 ### 新增

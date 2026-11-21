@@ -79,6 +79,15 @@ func PrepareResourceCost(spec *AttackSpec, ctx AttackContext) (content.ResourceC
 	return PreparedResourceCost(spec, ctx)
 }
 
+// tempestOfCard is Phantom's keydown spin (24121005): WZ cooltime is 12..15s
+// while the held spin fires melee ticks every ~180ms for up to 5s without a
+// separate self buff. Cooldown starts on the first tick; ticks inside the 5s
+// spin window belong to that cast and do not restart or fail on cooldown.
+const (
+	tempestOfCard        = 24121005
+	tempestKeydownWindow = 5 * time.Second
+)
+
 // OngoingResourceCast verifies that cooldown belongs to an already-paid cast.
 func OngoingResourceCast(ctx AttackContext) bool {
 	if ctx.Effect.SkillID == 0 {
@@ -90,6 +99,16 @@ func OngoingResourceCast(ctx AttackContext) bool {
 	for _, row := range ctx.Character.SkillBuffs {
 		if row.ID == ctx.Effect.SkillID && row.ExpiresAt.After(ctx.Now) {
 			return true
+		}
+	}
+	if ctx.Effect.SkillID == tempestOfCard {
+		effectiveCD := max(time.Duration(0), ctx.Effect.Cooltime-time.Duration(ctx.Stats.ResourceCosts.CooldownReductionSeconds)*time.Second)
+		if effectiveCD > tempestKeydownWindow {
+			for _, cd := range ctx.Character.SkillCooldowns {
+				if cd.ID == tempestOfCard && cd.ExpiresAt.After(ctx.Now) && cd.ExpiresAt.Sub(ctx.Now) > effectiveCD-tempestKeydownWindow {
+					return true
+				}
+			}
 		}
 	}
 	return false

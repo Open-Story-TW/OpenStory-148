@@ -149,23 +149,27 @@ func resolveAttackEffect(c domain.Character, a *protocol.Attack, now time.Time) 
 		}
 	}
 	level := skills.LinkedLevel(c, levelSource(a.SkillID, spec), a.SkillID, now)
-	if level < 1 || attackOnCooldown(c, a.SkillID, now) && !attackOngoing(c, *a, now) {
+	if level < 1 {
 		return nil, combat.Effect{}, 0, false
 	}
+	var e combat.Effect
 	if spec.Effect.SkillID != 0 {
-		e := spec.Effect
+		e = spec.Effect
 		e.Level = level
-		return spec, e, level, true
+	} else {
+		template, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), a.SkillID)
+		if err != nil {
+			return nil, combat.Effect{}, 0, false
+		}
+		if level > template.TrueMax() {
+			return nil, combat.Effect{}, 0, false
+		}
+		e, err = combat.FromSkill(template, level)
+		if err != nil {
+			return nil, combat.Effect{}, 0, false
+		}
 	}
-	template, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), a.SkillID)
-	if err != nil {
-		return nil, combat.Effect{}, 0, false
-	}
-	if level > template.TrueMax() {
-		return nil, combat.Effect{}, 0, false
-	}
-	e, err := combat.FromSkill(template, level)
-	if err != nil {
+	if attackOnCooldown(c, a.SkillID, now) && !attackOngoing(c, *a, e, now) {
 		return nil, combat.Effect{}, 0, false
 	}
 	return spec, e, level, true
@@ -342,7 +346,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 		return reject("plan", err)
 	}
 	cost := &domain.CombatCost{Opcode: a.Opcode, MP: plan.Cost.MP, HP: plan.Cost.HP, Level: level, CooldownMS: int(plan.Cooldown.Milliseconds()), HPGain: plan.Heal, MPGain: plan.MPGain, Meso: plan.Cost.Money}
-	if attackOngoing(c, a, now) {
+	if combat.OngoingResourceCast(actx) {
 		cost.CooldownMS, cost.Ongoing = 0, true // The cast already started it.
 	}
 	gen := &genericAttack{attack: a, level: level, bulletItem: -1, then: then, eruptAreas: eruptAreas}
@@ -449,7 +453,7 @@ func (s *Server) genericAttackGameplayThen(ctx context.Context, channel int, liv
 // held (Java GameConstants.getAttackDelay 99): Hurricane, Ishtar's Ring,
 // Rapid Fire, Wild Hunter and Mechanic machine guns, Mille Aiguilles; the v148
 // rush 5101012 lands its hits as separate frames the same way.
-var rapidAttacks = map[int]bool{5101012: true, 3121004: true, 13111002: true, 23121000: true, 33121009: true, 5221004: true, 5721001: true, 5201006: true, 5311002: true, 5711002: true, 35001001: true, 35101009: true, 35111004: true, 35121005: true, 35121013: true, 24121000: true, 14111005: true, 4121007: true, 5221007: true, 5921004: true, 5921007: true}
+var rapidAttacks = map[int]bool{5101012: true, 3121004: true, 13111002: true, 23121000: true, 33121009: true, 5221004: true, 5721001: true, 5201006: true, 5311002: true, 5711002: true, 35001001: true, 35101009: true, 35111004: true, 35121005: true, 35121013: true, 24121000: true, 24121005: true, 14111005: true, 4121007: true, 5221007: true, 5921004: true, 5921007: true}
 
 // attackInterval is the least server-side gap between two attacks of the
 // same skill by one character.
@@ -866,22 +870,12 @@ func liveCharacterID(live *liveCharacter) int64 {
 }
 
 // attackOngoing reports attacks that belong to an active cast: keydown body
-// attacks (0x4E, Hurricane 32121003 every 0.5s) and attacks of a skill whose
-// own buff is running. Their cooldown was started by the cast, so it neither
+// attacks (0x4E, Hurricane 32121003 every 0.5s), attacks of a skill whose own
+// buff is running, and Phantom Tempest of Card (24121005) spin ticks inside
+// its 5s keydown window. Their cooldown was started by the cast, so it neither
 // blocks them nor restarts.
-func attackOngoing(c domain.Character, a protocol.Attack, now time.Time) bool {
-	if a.SkillID == 0 {
-		return false
-	}
-	if a.Opcode == protocol.RecvBodyAttack {
-		return true
-	}
-	for _, b := range c.SkillBuffs {
-		if b.ID == a.SkillID && b.ExpiresAt.After(now) {
-			return true
-		}
-	}
-	return false
+func attackOngoing(c domain.Character, a protocol.Attack, e combat.Effect, now time.Time) bool {
+	return combat.OngoingResourceCast(combat.AttackContext{Character: c, Kind: combat.KindForOpcode(a.Opcode), Effect: e, Attack: a, Now: now})
 }
 
 // teleportMastery attacks are sent from the teleport destination before the

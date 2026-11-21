@@ -62,6 +62,52 @@ func TestMechanicSiegeAndMissileTankSettlementLines(t *testing.T) {
 	}
 }
 
+func TestTempestOfCardKeydownSpinOngoingWindow(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	start := time.Unix(100, 0)
+	ch := domain.Character{Job: 2412, HP: 5000, MP: 5000,
+		Skills: []domain.SkillState{{ID: 24121005, Level: 30}}}
+	// Frame 1: starts 12s cooldown (15-d(30/10)=12) and pays MP=30 (25+d(30/6)=30).
+	res, ongoing, err := skills.AttackResourceCost(ch, 24121005, 30, protocol.RecvMeleeAttack, start)
+	if err != nil || ongoing || res.MP != 30 || res.Cooldown != 12*time.Second {
+		t.Fatalf("frame 1 AttackResourceCost: res=%+v ongoing=%v err=%v", res, ongoing, err)
+	}
+	q1 := domain.CombatAttackRequest{Family: domain.CombatSkill, SkillID: 24121005,
+		Targets: make([]domain.CombatTarget, 1), LinesPerTarget: 1,
+		Cost: &domain.CombatCost{Level: 30, MP: res.MP, CooldownMS: int(res.Cooldown.Milliseconds()), Ongoing: false, Opcode: protocol.RecvMeleeAttack}}
+	if mp, err := genericCombatCost(ch, q1, start); err != nil || mp != 30 {
+		t.Fatalf("frame 1 genericCombatCost: mp=%d err=%v", mp, err)
+	}
+	// Active 12s cooldown set by frame 1.
+	ch.SkillCooldowns = []domain.SkillCooldown{{ID: 24121005, ExpiresAt: start.Add(12 * time.Second)}}
+	// Frame 2 (+180ms) and mid-spin (+4s): inside 5s keydown window -> ongoing=true, CooldownMS=0.
+	for _, delta := range []time.Duration{180 * time.Millisecond, 4 * time.Second} {
+		at := start.Add(delta)
+		res, ongoing, err := skills.AttackResourceCost(ch, 24121005, 30, protocol.RecvMeleeAttack, at)
+		if err != nil || !ongoing || res.MP != 30 || res.Cooldown != 0 {
+			t.Fatalf("+%s AttackResourceCost: res=%+v ongoing=%v err=%v", delta, res, ongoing, err)
+		}
+		q := domain.CombatAttackRequest{Family: domain.CombatSkill, SkillID: 24121005,
+			Targets: make([]domain.CombatTarget, 1), LinesPerTarget: 1,
+			Cost: &domain.CombatCost{Level: 30, MP: res.MP, CooldownMS: 0, Ongoing: true, Opcode: protocol.RecvMeleeAttack}}
+		if mp, err := genericCombatCost(ch, q, at); err != nil || mp != 30 {
+			t.Fatalf("+%s genericCombatCost: mp=%d err=%v", delta, mp, err)
+		}
+	}
+	// After 5s window (+6s): remaining cooldown (6s) blocks new cast.
+	at := start.Add(6 * time.Second)
+	res, ongoing, err = skills.AttackResourceCost(ch, 24121005, 30, protocol.RecvMeleeAttack, at)
+	if err != nil || ongoing || res.Cooldown != 12*time.Second {
+		t.Fatalf("+6s AttackResourceCost: res=%+v ongoing=%v err=%v", res, ongoing, err)
+	}
+	qLate := domain.CombatAttackRequest{Family: domain.CombatSkill, SkillID: 24121005,
+		Targets: make([]domain.CombatTarget, 1), LinesPerTarget: 1,
+		Cost: &domain.CombatCost{Level: 30, MP: res.MP, CooldownMS: int(res.Cooldown.Milliseconds()), Ongoing: false, Opcode: protocol.RecvMeleeAttack}}
+	if _, err := genericCombatCost(ch, qLate, at); !errors.Is(err, domain.ErrAlreadyExists) {
+		t.Fatalf("+6s should be blocked by remaining cooldown: err=%v", err)
+	}
+}
+
 func TestCombatCommandDoesNotRejectAlreadyAdmittedHistoryByCount(t *testing.T) {
 	q := domain.CombatAttackRequest{OperationID: "combat-historical-generations", Family: domain.CombatNormal,
 		Targets: []domain.CombatTarget{{ObjectID: 1, MobID: 9300018, SpawnOperationID: "mob-historical-generations", BeforeHP: 1, Damage: 1, Defeated: true}}}

@@ -156,7 +156,8 @@ func init() {
 	})
 
 	// Summons.
-	skills.Register(skills.Handler{ID: 33101008, LevelFrom: 33101004, Kind: skills.KindSummon, Cast: mine, Attack: &combat.AttackSpec{Kind: combat.Summoned, MaxDamage: selfDestructCeiling, Summon: &combat.SummonSpec{MoveAbility: stationary, Multi: true, SingleAttack: true}}})
+	// v148 33101008 Mine self-destructs at expiry (2s) via summon/die action 0x11.
+	skills.Register(skills.Handler{ID: 33101008, LevelFrom: 33101004, Kind: skills.KindSummon, Cast: mine, Attack: &combat.AttackSpec{Kind: combat.Summoned, MaxDamage: selfDestructCeiling, Summon: &combat.SummonSpec{MoveAbility: stationary, Multi: true, SingleAttack: true, ExpiryAction: 0x11}}})
 	skills.Register(skills.Handler{ID: 33111003, Kind: skills.KindSummon, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Puppet: true}}})
 	skills.Register(skills.Handler{ID: 33111005, Kind: skills.KindSummon | skills.KindMobStatus, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{Kind: combat.Summoned, OnHit: stun, Summon: &combat.SummonSpec{MoveAbility: circleFollow, AssistType: 1}}})
 }
