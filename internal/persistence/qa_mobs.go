@@ -11,7 +11,7 @@ import (
 func authorizeQAMobs(c domain.Character, r domain.GMCommandRequest, grant domain.QAGMGrant, now time.Time) (*domain.QAMobAuthorization, error) {
 	// A standing grant spawns on any map, a timed one on the QA field only.
 	standing := !grant.ExpiresAt.Before(domain.QAGMPermanentExpiry)
-	if !domain.ValidGMMobCommand(r.Name, r.Args) || !standing && c.MapID != domain.QAMobMap || c.HP <= 0 || len(r.RuntimeID) != 32 {
+	if !domain.ValidGMMobCommand(r.Name, r.Args) || !standing && !domain.IsQAMobField(c.MapID) || c.HP <= 0 || len(r.RuntimeID) != 32 {
 		return nil, domain.ErrInvalidInput
 	}
 	for _, b := range r.RuntimeID {

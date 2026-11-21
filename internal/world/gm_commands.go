@@ -37,7 +37,7 @@ func parseGMChat(text string) (string, []int64, bool) {
 		if want > 1 {
 			want = -1
 		}
-	case "level", "job", "warp", "buffreset", "hp", "ap", "sp", "map", "npc", "cash", "points", "hair", "face", "skin", "fame", "hide", "god":
+	case "level", "job", "warp", "buffreset", "useitem", "hp", "ap", "sp", "map", "npc", "cash", "points", "hair", "face", "skin", "fame", "hide", "god":
 		want = 1
 	case "petfood", "mesos", "alliance", "mobhold": // !mobhold <0|1>
 		want = 1
@@ -187,6 +187,7 @@ var gmHelpPages = []gmHelpPage{
 	}},
 	{"物品", []gmHelpEntry{
 		{"!item <道具代碼> [數量]", "取得道具"},
+		{"!useitem <道具代碼>", "套用消耗道具增益"},
 		{"!mesos <金額>", "取得楓幣"},
 		{"!cash <數量>", "取得 Gash"},
 		{"!points <數量>", "取得楓葉點數"},
@@ -459,6 +460,8 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 		}
 	} else if result.Changed && name == "debuff" {
 		s.publishQADebuff(session, live, sink, next.Character, int(args[0]))
+	} else if result.Changed && name == "useitem" {
+		s.publishQAItemBuff(session, live, sink, next.Character, int(args[0]))
 	} else if result.Changed {
 		if name == "level" || name == "job" {
 			if err = sink.WritePacket(protocol.JobAdvancementStats(next.Character)); err != nil {
@@ -729,6 +732,39 @@ func (s *Server) publishQADebuff(session domain.CharacterSession, live *liveChar
 	foreign := protocol.ForeignSkillBuffs(session.CharacterID, rows)
 	if foreign == nil {
 		return // POISON's remote layout is not reviewed: local only.
+	}
+	for _, target := range s.skillPeers(session.CharacterID, session.ChannelID, session.Character.MapID) {
+		if s.skillVisible(source, target) {
+			_ = target.sink.WritePacket(foreign)
+		}
+	}
+}
+
+// publishQAItemBuff sends the !useitem consumable buff rows (source = -itemID)
+// to the caller and visible peers. Requires publication.
+func (s *Server) publishQAItemBuff(session domain.CharacterSession, live *liveCharacter, sink packetSink, c domain.Character, itemID int) {
+	if itemID <= 0 {
+		return
+	}
+	sourceID := -itemID
+	now := time.Now()
+	var rows []domain.SkillBuff
+	for _, b := range c.SkillBuffs {
+		if b.ID == sourceID && b.ExpiresAt.After(now) {
+			rows = append(rows, b)
+		}
+	}
+	if len(rows) == 0 {
+		return
+	}
+	_ = sink.WritePacket(protocol.SkillBuffsAmong(rows, c.SkillBuffs, now))
+	source := s.skillMemberFor(session, live, sink)
+	if source == nil {
+		return
+	}
+	foreign := protocol.ForeignSkillBuffs(session.CharacterID, rows)
+	if foreign == nil {
+		return
 	}
 	for _, target := range s.skillPeers(session.CharacterID, session.ChannelID, session.Character.MapID) {
 		if s.skillVisible(source, target) {

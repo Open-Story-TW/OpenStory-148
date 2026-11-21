@@ -4,9 +4,15 @@ import "time"
 
 const (
 	QAMobMap      = 180000001
+	QAPharaohMap  = 926010200 // Nett's Pyramid normal stage 1 (fieldType 38, Pharaoh's Wrath x1020)
 	QAMobMaxBatch = 12
 	QAMobLifetime = 15 * time.Minute
 )
+
+// IsQAMobField reports whether timed QA mob commands (!spawn/!clearmobs) may run on mapID.
+func IsQAMobField(mapID int) bool {
+	return mapID == QAMobMap || mapID == QAPharaohMap
+}
 
 // QAMobAuthorization is an audited, short-lived runtime capability. Monsters
 // remain ordinary field objects: this is not an inventory or monster DB row.
@@ -18,7 +24,7 @@ type QAMobAuthorization struct {
 }
 
 func ValidQAMobCommand(name string, args []int64, mapID int) bool {
-	return mapID == QAMobMap && ValidGMMobCommand(name, args)
+	return IsQAMobField(mapID) && ValidGMMobCommand(name, args)
 }
 
 // ValidGMMobCommand checks the arguments alone. A standing GM may spawn on any

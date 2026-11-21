@@ -241,6 +241,31 @@ func (s *Store) ExecuteGMCommand(ctx context.Context, r domain.GMCommandRequest)
 		result.Changed = true
 		return finish("")
 	}
+	if r.Name == "useitem" {
+		// QA consumable buff trigger (e.g. !useitem 2003516 for Giant Potion):
+		// looks up the real v148 consumable definition and commits its buff rows
+		// with source = -templateID, matching ApplyItemUse.
+		if len(r.Args) != 1 || r.Args[0] < 2000000 || r.Args[0] > 2999999 {
+			return finish("unsupported_or_invalid_command")
+		}
+		templateID := int(r.Args[0])
+		_, itemBuff, err := content.ConsumableDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), templateID)
+		if err != nil || itemBuff == nil {
+			return finish("unsupported_or_invalid_command")
+		}
+		if _, _, e := applyItemBuff(ctx, tx, &c, templateID, itemBuff, now); e != nil {
+			if errors.Is(e, domain.ErrInvalidInput) {
+				return finish("unsupported_or_invalid_command")
+			}
+			return result, e
+		}
+		if e := commitInventoryState(ctx, tx, &c); e != nil {
+			return result, e
+		}
+		result.Character = c
+		result.Changed = true
+		return finish("")
+	}
 	if r.Name == "buffreset" {
 		// QA recovery for a client stuck in a buff state: remove every row of
 		// the stat; the world then sends its reset whether or not one existed.

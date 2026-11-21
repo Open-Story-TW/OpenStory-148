@@ -52,7 +52,7 @@ func qaMobPositions(m content.Map, body content.MobBodyBounds, n, nearX, nearY i
 // mobPositions is qaMobPositions with the field policy optional: anyMap lets a
 // standing GM spawn on an ordinary map, beside its own monsters.
 func mobPositions(m content.Map, body content.MobBodyBounds, n, nearX, nearY int, anyMap bool) ([]content.Life, error) {
-	if !anyMap && m.ID != domain.QAMobMap || n < 1 || n > domain.QAMobMaxBatch || !body.Envelope.Nonempty() || body.FrameCount < 1 {
+	if !anyMap && !domain.IsQAMobField(m.ID) || n < 1 || n > domain.QAMobMaxBatch || !body.Envelope.Nonempty() || body.FrameCount < 1 {
 		return nil, domain.ErrInvalidInput
 	}
 	for _, l := range m.Life {
