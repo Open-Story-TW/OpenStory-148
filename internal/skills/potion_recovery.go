@@ -23,8 +23,8 @@ func PotionRecoveryModifiersChecked(c domain.Character, now time.Time) (content.
 	percent := int64(effects.Values["RecoveryUP"])
 	seen := map[int]bool{}
 	for _, row := range c.Skills {
-		eligible := row.ID == 4110000 && (c.Job == 411 || c.Job == 412) ||
-			row.ID == 14110003 && (c.Job == 1400 || c.Job == 1410 || c.Job == 1411 || c.Job == 1412) ||
+		eligible := (row.ID == 4110000 || row.ID == 4110014) && (c.Job == 411 || c.Job == 412) ||
+			(row.ID == 14110003 || row.ID == 14110011) && (c.Job == 1400 || c.Job == 1410 || c.Job == 1411 || c.Job == 1412) ||
 			row.ID == 30000002 && domain.IsResistanceJob(c.Job)
 		if !eligible || row.Level < 1 || !row.ExpiresAt.IsZero() && !row.ExpiresAt.After(now) {
 			continue

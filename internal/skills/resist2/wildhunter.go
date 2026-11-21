@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/skills"
+	"time"
 )
 
 // 狂豹獵人 3300／3310／3311／3312. Swallow itself (33101005) needs the core
@@ -66,6 +67,26 @@ func hunterSpec(a hunterAttack) *combat.AttackSpec {
 	s.Prepare = func(ctx *combat.AttackContext) error {
 		if _, ok := skills.ActiveStat(ctx.Character, "SOULARROW", ctx.Now); ok {
 			ctx.NoAmmo = true
+		}
+		if buffSource(ctx.Character, "BLIND", ctx.Now) == 33111004 {
+			lv := learned(ctx.Character, 33111004)
+			if lv < 1 {
+				for _, row := range ctx.Character.SkillBuffs {
+					if row.ID == 33111004 && row.Stat == "BLIND" && row.ExpiresAt.After(ctx.Now) && row.Level > 0 {
+						lv = row.Level
+						break
+					}
+				}
+			}
+			if v := skillValues(33111004, lv); v != nil && v["x"] > 0 && v["y"] > 0 && v["prop"] > 0 {
+				ctx.Effect.MonsterStatus = append(ctx.Effect.MonsterStatus, combat.MobStatusApply{
+					Stat:        combat.MobACC,
+					Value:       -v["x"],
+					Prop:        v["prop"],
+					Duration:    time.Duration(v["y"]) * time.Second,
+					SourceSkill: 33111004,
+				})
+			}
 		}
 		return nil
 	}

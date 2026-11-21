@@ -219,6 +219,14 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			b.ASR += v
 		case "ONYX_SHROUD":
 			b.AvoidRate += v
+		case "HAMSTRING":
+			if row.ID == 3121007 {
+				b.AvoidRate += v
+			}
+		case "BLIND":
+			if row.ID == 3221006 {
+				b.AvoidRate += v
+			}
 		case "ELEMENTAL_STATUS_R":
 			b.TER += v
 		case "INDIE_DAMAGE":
