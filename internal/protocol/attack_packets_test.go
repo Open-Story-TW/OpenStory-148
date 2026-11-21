@@ -167,3 +167,35 @@ func TestReadMesoExplosionLiveTargets(t *testing.T) {
 		t.Fatalf("lines %+v", a.Targets)
 	}
 }
+
+// GainForce (0xF7, 0x51EF91): v148 CField::OnForceAtomCreate reads
+// U8(bFromMob=1), I32(mobOID), I32(forceType=0), then while U8==1 five I32s
+// (key, inc, firstImpact, secondImpact, angle), terminated by U8(0).
+func TestGainForceV148Layout(t *testing.T) {
+	p := GainForce(1000009, []ForceGain{{Count: 4, Color: 1}, {Count: 2, Color: 2}})
+	if len(p) == 0 {
+		t.Fatal("empty packet")
+	}
+	r := NewReader(p)
+	if op := r.U16(); op != SendGainForce {
+		t.Fatalf("opcode = 0x%x, want 0x%x", op, SendGainForce)
+	}
+	if fromMob, oid, forceType := r.U8(), r.I32(), r.I32(); fromMob != 1 || oid != 1000009 || forceType != 0 {
+		t.Fatalf("header = (%d, %d, %d)", fromMob, oid, forceType)
+	}
+	for i, want := range []ForceGain{{Count: 4, Color: 1}, {Count: 2, Color: 2}} {
+		if has := r.U8(); has != 1 {
+			t.Fatalf("entry %d has = %d, want 1", i, has)
+		}
+		key, inc, f1, f2, ang := r.I32(), r.I32(), r.I32(), r.I32(), r.I32()
+		if key != want.Color || inc != want.Count || f1 <= 0 || f2 <= 0 || ang < 0 || ang >= 360 {
+			t.Fatalf("entry %d = (%d,%d,%d,%d,%d)", i, key, inc, f1, f2, ang)
+		}
+	}
+	if term := r.U8(); term != 0 {
+		t.Fatalf("terminator = %d, want 0", term)
+	}
+	if r.Remaining() != 0 {
+		t.Fatalf("trailing bytes: %d", r.Remaining())
+	}
+}

@@ -473,9 +473,10 @@ type ForceGain struct {
 	Count, Color int32
 }
 
-// GainForce is CField case 226 (0x50C125): U8 flag, I32 monster oid, then
-// per entry U8 1, I32 count, I32 color, terminated by U8 0 (Demon Slayer
-// force absorption orbs, Java CField.gainForce).
+// GainForce is CField::OnForceAtomCreate (0xF7, 0x51EF91) for monster-to-player
+// Demon Force absorption orbs: U8 bFromMob=1, I32 monster oid, I32 forceType=0
+// (skips target/skill fields), then per entry U8 1 + 5x I32 (key, inc/tier,
+// firstImpact, secondImpact, angle), terminated by U8 0.
 func GainForce(objectID int32, entries []ForceGain) []byte {
 	if objectID <= 0 || len(entries) == 0 || len(entries) > 16 {
 		return nil
@@ -483,10 +484,14 @@ func GainForce(objectID int32, entries []ForceGain) []byte {
 	w := NewWriter(SendGainForce)
 	w.U8(1)
 	w.I32(objectID)
+	w.I32(0)
 	for _, e := range entries {
 		w.U8(1)
-		w.I32(e.Count)
 		w.I32(e.Color)
+		w.I32(e.Count)
+		w.I32(22)
+		w.I32(9)
+		w.I32(5)
 	}
 	w.U8(0)
 	return w.Packet()
