@@ -7,6 +7,7 @@ import (
 
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
+	"maple-go-server/internal/skills"
 )
 
 func TestChargedBlowSettlementUsesLearnedWZTargetLimit(t *testing.T) {
@@ -28,6 +29,36 @@ func TestChargedBlowSettlementUsesLearnedWZTargetLimit(t *testing.T) {
 	ch.Skills = ch.Skills[:1]
 	if _, err := genericCombatCost(ch, q, now); !errors.Is(err, domain.ErrInvalidInput) {
 		t.Fatalf("6 targets accepted before learning Elemental Force: %v", err)
+	}
+}
+
+func TestMechanicSiegeAndMissileTankSettlementLines(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", t.TempDir())
+	now := time.Unix(30, 0)
+	for _, tc := range []struct {
+		id, level int
+	}{
+		{35111004, 20}, // Heavy Machine Gun (Siege Mode)
+		{35121005, 30}, // Missile Tank
+		{35121013, 20}, // Siege Mode 2 (linked from 35111004)
+	} {
+		ch := domain.Character{Job: 3512, HP: 5000, MP: 5000,
+			Skills:     []domain.SkillState{{ID: 35111004, Level: 20}, {ID: 35121005, Level: 30}},
+			SkillBuffs: []domain.SkillBuff{{ID: tc.id, Level: tc.level, Stat: "MECH_CHANGE", Value: tc.level, ExpiresAt: now.Add(time.Hour)}}}
+		res, ongoing, err := skills.AttackResourceCost(ch, tc.id, tc.level, protocol.RecvShootAttack, now)
+		if err != nil {
+			t.Fatalf("mech mode %d AttackResourceCost: %v", tc.id, err)
+		}
+		q := domain.CombatAttackRequest{Family: domain.CombatSkill, SkillID: tc.id,
+			Targets: make([]domain.CombatTarget, 6), LinesPerTarget: 6,
+			Cost: &domain.CombatCost{Level: tc.level, MP: res.MP, CooldownMS: int(res.Cooldown.Milliseconds()), Ongoing: ongoing, Opcode: protocol.RecvShootAttack}}
+		if mp, err := genericCombatCost(ch, q, now); err != nil || mp != res.MP {
+			t.Fatalf("mech mode %d rejected native 6x6 attack: mp %d, %v", tc.id, mp, err)
+		}
+		q.Targets = append(q.Targets, domain.CombatTarget{})
+		if _, err := genericCombatCost(ch, q, now); !errors.Is(err, domain.ErrInvalidInput) {
+			t.Fatalf("mech mode %d accepted 7 targets: %v", tc.id, err)
+		}
 	}
 }
 

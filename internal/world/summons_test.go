@@ -224,6 +224,59 @@ func TestAF11ExpiryAttackUsesOriginalActionBoundsAndObjectOnce(t *testing.T) {
 	}
 }
 
+func TestBotsNTotsMiniBotExpirySelfDestruction(t *testing.T) {
+	t.Setenv("MAPLEGO_WZ_ROOT", "")
+	for _, action := range []byte{0x11, 0x91} {
+		s, lives, sinks, mob := sharedWorldFixture(t)
+		s.repo = &sharedCombatRepo{apply: func(q domain.CombatAttackRequest) (domain.CombatAttackResult, error) { return fakeSharedResult(q), nil }}
+		c := &lives[0].session.Character
+		c.Job, c.Equipment[0].ItemID = 3512, 1492004
+		c.Skills = append(c.Skills, domain.SkillState{ID: 35121009, Level: 30})
+		mob.hp = 1000
+		stamp := time.Now()
+		oid, err := s.SpawnSummon(1, lives[0], 35121011, 30, stamp)
+		if err != nil {
+			t.Fatalf("action 0x%x: SpawnSummon(35121011): %v", action, err)
+		}
+		room := s.gameplay.rooms[mapKey{channel: 1, mapID: c.MapID}]
+		m := room.summons[oid]
+		if m.expiresAt != stamp.Add(5*time.Second) || m.deathWindow != 720*time.Millisecond || m.deathEffect.Damage != 350 || m.deathEffect.MobCount != 4 || m.deathEffect.AttackCount != 1 {
+			t.Fatalf("action 0x%x: 35121011 v148 data: duration %s, deathWindow %s, effect %+v", action, m.expiresAt.Sub(stamp), m.deathWindow, m.deathEffect)
+		}
+		// Mini-bot walks 40px right and hits a mob 95px away (within 2x rangeSlack of +-80 box).
+		botX := m.x + 40
+		mob.life.X, mob.life.Y = botX-95, m.y
+		in := protocol.SummonAttackInput{ObjectID: oid, Tick: 9, Action: action, X: int16(botX), Y: int16(m.y),
+			Targets: []protocol.AttackTarget{{ObjectID: mob.objectID, Lines: []protocol.AttackLine{{Raw: 12, Damage: 12}}}}}
+		if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], in); err != nil {
+			t.Fatal(err)
+		}
+		if mob.hp != 1000 {
+			t.Fatalf("action 0x%x: early 35121011 attack should be ignored", action)
+		}
+		// Enter expiry death window (50ms past 5s expiry, matching live 5.02-5.07s wire captures).
+		m.expiresAt = time.Now().Add(-50 * time.Millisecond)
+		s.gameplay.tickSummons(time.Now())
+		if room.summons[oid] != m {
+			t.Fatalf("action 0x%x: world discarded 35121011 during its death window", action)
+		}
+		bad := in
+		bad.Action = 0x04
+		if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], bad); err != nil {
+			t.Fatal(err)
+		}
+		if mob.hp != 1000 {
+			t.Fatalf("action 0x%x: non-expiry action 0x04 should be rejected", action)
+		}
+		if err := s.summonAttackGameplay(context.Background(), 1, lives[0], sinks[0], in); err != nil {
+			t.Fatal(err)
+		}
+		if mob.hp != 988 || sinks[1].count(protocol.SendSummonAttack) != 1 || room.summons[oid] != nil {
+			t.Fatalf("action 0x%x: 35121011 self-destruction failed: hp=%d peer0x1a4=%d stillInRoom=%v", action, mob.hp, sinks[1].count(protocol.SendSummonAttack), room.summons[oid] != nil)
+		}
+	}
+}
+
 func TestAF11AffectedAreaAdmitsOnlyTheExactOwnerOrAnInRangePartyMember(t *testing.T) {
 	t.Setenv("MAPLEGO_WZ_ROOT", "")
 	s, lives, sinks, _ := sharedWorldFixture(t)

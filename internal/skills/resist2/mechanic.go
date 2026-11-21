@@ -85,13 +85,19 @@ func flamePoison(ctx *combat.AttackContext) error {
 	return nil
 }
 
-// siegeLines is Java's mech mode attack: MapleStatEffect sets attackCount 6
+// siegeEffect is Java's mech mode attack: MapleStatEffect sets attackCount 6
 // and isNoDelaySkill mobCount 6; rangedAttack allows 15 bullets (AOE).
-func siegeLines(ctx *combat.AttackContext) error {
-	ctx.Effect.MobCount = max(ctx.Effect.MobCount, 6)
-	ctx.Effect.AttackCount = max(ctx.Effect.AttackCount, 6)
-	ctx.Effect.BulletCount = max(ctx.Effect.BulletCount, 15)
+// Applied via LearnedEffect so both combat planning and persistence combat
+// policy see the same 6-line / 6-target bounds for 35111004, 35121005 and 35121013.
+func siegeEffect(_ domain.Character, _ time.Time, e *combat.Effect) error {
+	e.MobCount = max(e.MobCount, 6)
+	e.AttackCount = max(e.AttackCount, 6)
+	e.BulletCount = max(e.BulletCount, 15)
 	return nil
+}
+
+func siegeLines(ctx *combat.AttackContext) error {
+	return siegeEffect(ctx.Character, ctx.Now, &ctx.Effect)
 }
 
 // sg88Body handles the operator's automatic hits; the robot's separate 0x120
@@ -160,6 +166,7 @@ func init() {
 			h.Kind |= skills.KindBuff | skills.KindMorph
 			h.Cast = mechMode
 			h.Passive = mechCritical(a.id)
+			spec.LearnedEffect = siegeEffect
 		}
 		if a.id == siege2 {
 			h.OnEnd = siege2End
@@ -230,7 +237,9 @@ func init() {
 	// v148 CSummoned passes death mode 1 at 0x73914D, which 0x72C068 maps
 	// to the terminal 0x120 action 0x11. Other attacks from AF-11 are invalid.
 	skills.Register(skills.Handler{ID: 35121010, Kind: skills.KindSummon | skills.KindBuff, Cast: amplifier, Attack: &combat.AttackSpec{Kind: combat.Summoned, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, ExpiryAction: 0x11}}})
-	skills.Register(skills.Handler{ID: 35121011, LevelFrom: 35121009, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Kind: combat.Summoned, LevelFrom: 35121009, MaxDamage: boostedSummon(robotMastery, "x"), Summon: &combat.SummonSpec{MoveAbility: walkStationary, Multi: true, SingleAttack: true}}}) // Bots 'n Tots bots (spawned by 35121009)
+	// v148 CSummoned fires 35121011 self-destruction at expiry (5s) with terminal
+	// 0x120 action 0x11 (or 0x91 = 0x80|0x11 when facing left).
+	skills.Register(skills.Handler{ID: 35121011, LevelFrom: 35121009, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Kind: combat.Summoned, LevelFrom: 35121009, MaxDamage: boostedSummon(robotMastery, "x"), Summon: &combat.SummonSpec{MoveAbility: walkStationary, Multi: true, SingleAttack: true, ExpiryAction: 0x11}}}) // Bots 'n Tots bots (spawned by 35121009)
 }
 
 // permanent is a self buff of the given stats for skills.Permanent (Java

@@ -4,6 +4,23 @@
 `## vX.Y.Z - YYYY-MM-DD`，底下三個小節 `### 新增`、`### 修復`、`### 優化` 都要有，
 沒有內容的小節寫「本版無」。同一份內容連同截圖貼到 Discord 的「服務器更新」頻道。
 
+## v0.1.62 - 2026-11-22
+
+### 新增
+
+- 本版無
+
+### 修復
+
+- 修復機甲戰神「重機槍」（`35111004`）、「導彈戰車」（`35121005`）與「重機槍：型態 2」（`35121013`）於 `internal/skills/resist2/mechanic.go` 未在 `LearnedEffect` 註冊 6 段／6 目標／15 彈數上限（`siegeEffect`），導致 `persistence/combat_policy.go` 回退使用 WZ 原始 `BulletCount=2` 並在實機 6 段攻擊時觸發 `combat_settlement_rejected: invalid input` 的問題；新增單元測試 `TestMechanicSiegeAndMissileTankSettlementLines`。
+- 修復機甲戰神「機器人工廠：RM1」（`35121009`）生成之小型機器人（`35121011`）於到期自爆時觸發 `0x120` 動作 `0x11`／`0x91`（含面向位元 `0x80`）遭到 `summon_attack_guard_rejected` 拒絕的問題：於 `internal/content/skills.go` 與 `internal/skills/resist2/mechanic.go` 補齊 `ExpiryAction: 0x11`，並於 `internal/world/summons.go` 遮罩面向位元（`action&0x7f`）及為移動型到期召喚採用行走自爆座標（維持固定型 AF-11 `35121010` 嚴格座標檢核）；新增單元測試 `TestBotsNTotsMiniBotExpirySelfDestruction` 與 `TestAF11ExpiryAttackUsesOriginalActionBoundsAndObjectOnce`。
+
+### 優化
+
+- 本版無
+
+相容登入器 v0.1.1 以上（完整技能驗收自動化與 Harness R82 請搭配登入器 v0.1.540 以上）。
+
 ## v0.1.61 - 2026-11-22
 
 ### 新增

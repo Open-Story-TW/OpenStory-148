@@ -54,7 +54,8 @@ func (m *roomSummon) attackInLifetime(now time.Time, action byte) bool {
 	// The native animation clock and the world expiry are sampled on separate
 	// loops. Accept a small frame lead and retain the exact object until the
 	// WZ death animation interval ends, without accepting another action.
-	return action == m.spec.ExpiryAction && !m.attacked &&
+	// Bit 7 of action is the facing-left flag (e.g. 0x91 for 35121011 facing left).
+	return action&0x7f == m.spec.ExpiryAction && !m.attacked &&
 		!now.Before(m.expiresAt.Add(-150*time.Millisecond)) && now.Before(m.expiresAt.Add(m.deathWindow))
 }
 
@@ -554,9 +555,10 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 		return nil
 	}
 	// The summon moves client-side between 0xFF updates; accept its reported
-	// attack position when it is near the server-tracked one.
+	// attack position when it is near the server-tracked one. Stationary
+	// expiry summons (AF-11 35121010) keep their exact spawn position.
 	ax, ay := m.x, m.y
-	if m.spec.ExpiryAction == 0 && within(m.x, m.y, int(in.X), int(in.Y), 300) {
+	if (m.spec.ExpiryAction == 0 || m.spec.MoveAbility != 0) && within(m.x, m.y, int(in.X), int(in.Y), 300) {
 		ax, ay = int(in.X), int(in.Y)
 	}
 	a := protocol.Attack{Opcode: protocol.RecvSummonAttack, SkillID: m.source, TByte: byte(len(in.Targets)<<4 | lineCount), Tick: in.Tick, X: int16(ax), Y: int16(ay), Targets: in.Targets, Wire: append([]byte(nil), in.Wire...)}
@@ -565,7 +567,8 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 	}
 	actx := combat.AttackContext{Kind: combat.Summoned, Character: c, Stats: stats, Effect: effect, Attack: a, Now: now, SummonSkillID: m.skillID}
 	var deathLT, deathRB combat.Point
-	if m.spec.ExpiryAction != 0 {
+	stationaryExpiry := m.spec.ExpiryAction != 0 && m.spec.MoveAbility == 0
+	if stationaryExpiry {
 		deathLT, deathRB = effect.Box.At(combat.Point{X: m.x, Y: m.y}, false)
 	}
 	var mobs []*gameplayMob
@@ -576,7 +579,7 @@ func (s *Server) summonAttackGameplay(ctx context.Context, channel int, live *li
 			slog.Warn("summon_attack_rejected", "character", c.ID, "skill", m.source, "reason", "target_missing", "target", t.ObjectID)
 			return nil
 		}
-		if m.spec.ExpiryAction != 0 && !combat.Inside(deathLT, deathRB, combat.Point{X: mob.life.X, Y: mob.life.Y}) {
+		if stationaryExpiry && !combat.Inside(deathLT, deathRB, combat.Point{X: mob.life.X, Y: mob.life.Y}) {
 			g.mu.Unlock()
 			slog.Warn("summon_attack_rejected", "character", c.ID, "skill", m.source, "reason", "expiry_target_outside", "target", t.ObjectID)
 			return nil

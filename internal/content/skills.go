@@ -154,9 +154,9 @@ func SkillDefinition(root string, id int) (Skill, error) {
 		}
 		var ok bool
 		s, ok = skillSeeds[id]
-		if !ok || id == 5121010 || id == 4341002 || id == 35121003 || id == 35121010 {
-			// The v148 books also provide Final Cut's duration and the two
-			// Mechanic summons' separate attack geometry.
+		if !ok || id == 5121010 || id == 4341002 || id == 35121003 || id == 35121010 || id == 35121011 {
+			// The v148 books also provide Final Cut's duration and the Mechanic
+			// summons' separate attack/death geometry.
 			found, _ := skillNode(readV148Skills(fmt.Sprintf("%03d.img.xml", id/10000)))(id)
 			if found == nil {
 				return s, fmt.Errorf("unknown skill%d", id)
