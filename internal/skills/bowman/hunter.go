@@ -3,6 +3,7 @@ package bowman
 import (
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/skills"
+	"time"
 )
 
 // 獵人 (310), 遊俠 (311), 箭神 (312). Summons are in summons.go; Mortal Blow
@@ -18,7 +19,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 3101005, Kind: skills.KindAttack | skills.KindMobStatus, Attack: shoot(rule{onHit: stun, prepare: arrowBomb})})
 
 	// Ranger.
-	skills.Register(skills.Handler{ID: 3110007, Kind: skills.KindPassive, Passive: evasionBoost})
+	skills.Register(skills.Handler{ID: 3110007, Kind: skills.KindPassive, Passive: evasionBoost, OnDamaged: evasionBoostDodge})
 	skills.Register(skills.Handler{ID: 3111000, Kind: skills.KindBuff, Cast: buff(0, key("ENHANCED_WATK", "epad"), key("CONCENTRATE", "x"))})
 	skills.Register(skills.Handler{ID: 3111003, Kind: skills.KindAttack | skills.KindMobStatus, Attack: shoot(rule{prepare: inferno})})
 	skills.Register(skills.Handler{ID: 3111004, Kind: skills.KindAttack | skills.KindMobStatus, Attack: shoot(rule{noAmmo: true, onHit: stun})}) // Arrow Rain
@@ -96,6 +97,21 @@ func physicalTraining(c *skills.PassiveContext) skills.Bonus {
 // evasionBoost (3110007, 3210007) is Java dodgeChance += er.
 func evasionBoost(c *skills.PassiveContext) skills.Bonus {
 	return skills.Bonus{AvoidRate: c.Values["er"]}
+}
+
+// evasionBoostDodge (3110007, 3210007) grants 100% critical rate for WZ time
+// seconds after dodging a monster hit (Damage == 0 with a monster attacker).
+func evasionBoostDodge(c *skills.TriggerContext) *skills.BuffChange {
+	if c.Damage != 0 || c.Mob == 0 {
+		return nil
+	}
+	secs := max(1, c.Value("time"))
+	return &skills.BuffChange{
+		Buff: &skills.Buff{
+			Duration: time.Duration(secs) * time.Second,
+			Stats:    []skills.StatValue{{Stat: "CRITICAL_RATE", Value: 100}},
+		},
+	}
 }
 
 // marksmanship (3120011, 3220009) ignores ignoreMobpdpR percent of monster

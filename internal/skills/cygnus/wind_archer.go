@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"maple-go-server/internal/combat"
 	"maple-go-server/internal/skills"
+	"time"
 )
 
 // Wind Archer 1300, 1310, 1311.
@@ -41,7 +42,10 @@ func init() {
 		}
 		return b
 	})
-	passive(13110008, func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} })                   // 躲避: Java dodgeChance
+	skills.Register(skills.Handler{ID: 13110008, Kind: skills.KindPassive,
+		Passive:   func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} },
+		OnDamaged: windEvasionDodge,
+	}) // 躲避: dodgeChance + 1s guaranteed critical on dodge
 	pvpOnly(13110009)                                                                                                                   // 致命箭: hidden, Legacy never applies it
 	skills.Register(skills.Handler{ID: 13111000, Kind: skills.KindAttack | skills.KindMobStatus, Attack: windShoot(noAmmo, hit(stun))}) // 箭雨: v148 WZ prop and time
 	skills.Register(skills.Handler{ID: 13111001, Kind: skills.KindBuff, Cast: value("CONCENTRATE", "x")})                               // 集中: CONCENTRATE x, epad
@@ -50,6 +54,21 @@ func init() {
 	skills.Register(skills.Handler{ID: 13111005, Kind: skills.KindBuff | skills.KindMorph, Cast: morph(1003)})                          // 阿爾法 (Eagle Eye)
 	skills.Register(skills.Handler{ID: 13111006, Kind: skills.KindAttack, Attack: windShoot()})                                         // 疾風光速神弩: Legacy has no drain for it
 	skills.Register(skills.Handler{ID: 13111007, Kind: skills.KindAttack, Attack: windShoot(noAmmo)})                                   // 疾風掃射: Java AOE
+}
+
+// windEvasionDodge (13110008) grants 100% critical rate for WZ time seconds
+// after dodging a monster hit.
+func windEvasionDodge(c *skills.TriggerContext) *skills.BuffChange {
+	if c.Damage != 0 || c.Mob == 0 {
+		return nil
+	}
+	secs := max(1, c.Value("time"))
+	return &skills.BuffChange{
+		Buff: &skills.Buff{
+			Duration: time.Duration(secs) * time.Second,
+			Stats:    []skills.StatValue{{Stat: "CRITICAL_RATE", Value: 100}},
+		},
+	}
 }
 
 // windShoot is a Wind Archer shoot attack; Soul Arrow shoots without arrows

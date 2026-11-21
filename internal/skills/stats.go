@@ -212,6 +212,8 @@ func BuffBonus(c domain.Character, now time.Time) (b Bonus, mapleWarrior int) {
 			// Java packs (x << 8) + criticaldamageMax.
 			b.Critical += v >> 8
 			b.CriticalDamage += v & 0xFF
+		case "CRITICAL_RATE":
+			b.Critical += v
 		case "ECHO_OF_HERO":
 			b.WATKPercent += v
 			b.MATKPercent += v

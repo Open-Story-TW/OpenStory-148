@@ -18,8 +18,10 @@ func TestShadowEvasionDodgeBoost(t *testing.T) {
 		Mob:    55,
 		Now:    time.Unix(100, 0),
 	})
-	if ch == nil || ch.Buff == nil || ch.Buff.Duration != time.Second || len(ch.Buff.Stats) != 1 || ch.Buff.Stats[0].Stat != "ANGEL_ATK" || ch.Buff.Stats[0].Value != 15 {
-		t.Fatalf("4330009 Shadow Evasion dodge change = %+v, want ANGEL_ATK=15 for 1s", ch)
+	if ch == nil || ch.Buff == nil || ch.Buff.Duration != time.Second || len(ch.Buff.Stats) != 2 ||
+		ch.Buff.Stats[0].Stat != "ANGEL_ATK" || ch.Buff.Stats[0].Value != 15 ||
+		ch.Buff.Stats[1].Stat != "CRITICAL_RATE" || ch.Buff.Stats[1].Value != 100 {
+		t.Fatalf("4330009 Shadow Evasion dodge change = %+v, want ANGEL_ATK=15 + CRITICAL_RATE=100 for 1s", ch)
 	}
 
 	if got := h.OnDamaged(&skills.TriggerContext{Values: map[string]int{"indiePad": 15, "time": 1}, Damage: 50, Mob: 55}); got != nil {

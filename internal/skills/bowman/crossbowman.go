@@ -24,7 +24,7 @@ func init() {
 	skills.Register(skills.Handler{ID: 3201005, Kind: skills.KindAttack, Attack: shoot(rule{})}) // Iron Arrow: pierces 6 mobs
 
 	// Sniper.
-	skills.Register(skills.Handler{ID: 3210007, Kind: skills.KindPassive, Passive: evasionBoost})
+	skills.Register(skills.Handler{ID: 3210007, Kind: skills.KindPassive, Passive: evasionBoost, OnDamaged: evasionBoostDodge})
 	// Sniper Concentrate (3211000) shares 3111000's WZ epad + x (MP cost
 	// reduction) and v148 client handling (0x6AE422), requiring CONCENTRATE.
 	skills.Register(skills.Handler{ID: 3211000, Kind: skills.KindBuff, Cast: buff(0, key("ENHANCED_WATK", "epad"), key("CONCENTRATE", "x"))})

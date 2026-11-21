@@ -23,8 +23,9 @@ func init() {
 	skills.Register(skills.Handler{ID: 4341011, Kind: skills.KindAttack | skills.KindMobStatus, Attack: melee(prepare(suddenRaid))})
 }
 
-// shadowEvasionDodge (4330009) grants ANGEL_ATK = indiePad for WZ time seconds
-// after dodging a monster hit (Damage == 0 with a monster attacker).
+// shadowEvasionDodge (4330009) grants ANGEL_ATK = indiePad and 100% critical
+// rate for WZ time seconds after dodging a monster hit (Damage == 0 with a
+// monster attacker).
 func shadowEvasionDodge(c *skills.TriggerContext) *skills.BuffChange {
 	if c.Damage != 0 || c.Mob == 0 || c.Value("indiePad") < 1 {
 		return nil
@@ -33,7 +34,10 @@ func shadowEvasionDodge(c *skills.TriggerContext) *skills.BuffChange {
 	return &skills.BuffChange{
 		Buff: &skills.Buff{
 			Duration: time.Duration(secs) * time.Second,
-			Stats:    []skills.StatValue{{Stat: "ANGEL_ATK", Value: c.Value("indiePad")}},
+			Stats: []skills.StatValue{
+				{Stat: "ANGEL_ATK", Value: c.Value("indiePad")},
+				{Stat: "CRITICAL_RATE", Value: 100},
+			},
 		},
 	}
 }
