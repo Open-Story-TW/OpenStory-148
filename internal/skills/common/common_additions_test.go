@@ -77,17 +77,35 @@ func TestNewlyRegisteredCommonGMAndMihileIceKnightSkills(t *testing.T) {
 		t.Fatalf("80001140: got plan=%+v err=%v", pStance, err)
 	}
 
-	// 4) GM skills 8001000, 9001005, 9001009 enforce gmOnly
+	// 4) GM skills 8001000, 9001005, 9001009 enforce gmOnly, and 9001005 revives dead party members in range.
 	for _, id := range []int{8001000, 9001005, 9001009} {
 		h, ok := skills.Lookup(id)
 		if !ok || h.Cast == nil {
 			t.Fatalf("GM skill %d not registered", id)
 		}
-		if _, err := h.Cast(&skills.CastContext{Skill: content.Skill{ID: id}, Level: 1, Caster: domain.Character{GM: 0}, Now: now}); err == nil {
+		def, err := content.SkillDefinition("", id)
+		if err != nil {
+			t.Fatalf("GM skill %d WZ: %v", id, err)
+		}
+		if _, err := h.Cast(&skills.CastContext{Skill: def, Level: 1, Caster: domain.Character{GM: 0}, Now: now}); err == nil {
 			t.Fatalf("GM skill %d allowed non-GM caster", id)
 		}
-		if _, err := h.Cast(&skills.CastContext{Skill: content.Skill{ID: id}, Level: 1, Caster: domain.Character{GM: 1}, Now: now}); err != nil {
+		plan, err := h.Cast(&skills.CastContext{Skill: def, Level: 1, Caster: domain.Character{GM: 1}, Now: now})
+		if err != nil {
 			t.Fatalf("GM skill %d rejected GM caster: %v", id, err)
+		}
+		if id == 9001005 {
+			if h.Kind&(skills.KindPartyBuff|skills.KindHeal) != (skills.KindPartyBuff | skills.KindHeal) {
+				t.Fatalf("9001005 kind = %v, want KindPartyBuff|KindHeal", h.Kind)
+			}
+			if !plan.Revive || plan.Party == nil || plan.Area == nil || plan.Area.Left != -400 || plan.Area.Right != 400 {
+				t.Fatalf("9001005 revive plan = %+v, want Revive=true Party!=nil Area=[-400..400]", plan)
+			}
+			dead := domain.Character{ID: 2, HP: 0, X: 100, Y: 0}
+			alive := domain.Character{ID: 3, HP: 50, X: 100, Y: 0}
+			if !skills.PartyRecipient(plan, domain.Character{ID: 1, X: 0, Y: 0}, dead) || skills.PartyRecipient(plan, domain.Character{ID: 1, X: 0, Y: 0}, alive) {
+				t.Fatalf("9001005 PartyRecipient must target only dead party members in range")
+			}
 		}
 	}
 

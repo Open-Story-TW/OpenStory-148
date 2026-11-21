@@ -12,7 +12,7 @@ import (
 func init() {
 	skills.Register(skills.Handler{ID: 8001000, Kind: skills.KindSpecial, Cast: gmOnly(skills.CostOnly)})                    // 測謊機 Lie Detector
 	skills.Register(skills.Handler{ID: 8001001, Kind: skills.KindSpecial, Cast: skills.CostOnly})                            // 瞬間移動 Teleport
-	skills.Register(skills.Handler{ID: 9001005, Kind: skills.KindSpecial, Cast: gmOnly(skills.CostOnly)})                    // 復活 GM Resurrection
+	skills.Register(skills.Handler{ID: 9001005, Kind: skills.KindPartyBuff | skills.KindHeal, Cast: gmOnly(gmResurrection)}) // 復活 GM Resurrection
 	skills.Register(skills.Handler{ID: 9001007, Kind: skills.KindSpecial, Cast: skills.CostOnly})                            // 終極瞬移 GM Teleport
 	skills.Register(skills.Handler{ID: 9001009, Kind: skills.KindSpecial, Cast: gmOnly(skills.CostOnly)})                    // 測謊機 GM Lie Detector
 	skills.Register(skills.Handler{ID: 9001000, Kind: skills.KindHeal, Cast: gmOnly(skills.HerosWill)})                      // 終極祝福: Java isDispel, prop 100
@@ -22,6 +22,14 @@ func init() {
 	skills.Register(skills.Handler{ID: 9001008, Kind: skills.KindBuff, Cast: buff(0, key("MAXHP", "x"), key("MAXMP", "x"))}) // Hyper Body: Java uses x for both
 	skills.Register(skills.Handler{ID: 9001006, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee}})    // 終極龍咆哮
 	skills.Register(skills.Handler{ID: 9001004, Kind: skills.KindBuff, Cast: gmOnly(hide)})                                  // 終極隱藏 GM Hide
+}
+
+// gmResurrection (9001005) revives dead party members in its WZ lt/rb range
+// with full HP, matching Bishop Resurrection (2321006).
+func gmResurrection(c *skills.CastContext) (skills.CastPlan, error) {
+	p := skills.StandardCost(c)
+	p.Revive = true
+	return skills.PartyPlan(c, &skills.Buff{}, p)
 }
 
 // hide is GM Hide: Java toggleHide for 2 hours (duration 60*120*1000); the

@@ -453,6 +453,10 @@ func (s *Server) handleGMChat(ctx context.Context, live *liveCharacter, sink pac
 		}
 	} else if result.Changed && name == "buffreset" {
 		s.publishQABuffReset(session, live, sink, int(args[0]), lostStats(session.Character, next.Character)...)
+		if args[0] == 21 || args[0] == 29 {
+			// Also despawn live field summons so QA summon resets do not leave CSummoned active.
+			s.RemoveSummons(next.ChannelID, next.Character.MapID, next.Character.ID, 0, next)
+		}
 	} else if result.Changed && name == "debuff" {
 		s.publishQADebuff(session, live, sink, next.Character, int(args[0]))
 	} else if result.Changed {
