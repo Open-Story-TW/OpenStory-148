@@ -179,6 +179,26 @@ func TestTwoStateAndIndieLayouts(t *testing.T) {
 	if p, _ = ForeignTemporaryStatSet(9, 2301004, []BuffStat{{Stat: "HP_BOOST", Value: 200}}); len(p) != 2+4+32+3+2 {
 		t.Fatalf("remote indie must carry no payload: %d", len(p))
 	}
+	// HOMING_BEACON (bit 253, TwoStateGuided): value, source, time(5), dwMobID, dwUserID.
+	p, err = TemporaryStatSet(22151002, time.Hour, []BuffStat{{Stat: "HOMING_BEACON", Value: 1001630}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	r = NewReader(p)
+	r.U16()
+	r.Skip(32 + 3)
+	if v, src := r.I32(), r.I32(); v != 1001630 || src != 22151002 {
+		t.Fatalf("homing beacon base %d %d", v, src)
+	}
+	r.Skip(5)
+	if mobID, userID := r.I32(), r.I32(); mobID != 1001630 || userID != 0 {
+		t.Fatalf("homing beacon guided fields %d %d", mobID, userID)
+	}
+	r.U16()
+	r.U8()
+	if r.Err() != nil || r.Remaining() != 0 {
+		t.Fatalf("homing beacon layout %v %d", r.Err(), r.Remaining())
+	}
 }
 
 func TestTailFieldsAreZeroFilledInNativeOrder(t *testing.T) {

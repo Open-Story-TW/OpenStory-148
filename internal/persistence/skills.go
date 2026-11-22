@@ -9,6 +9,7 @@ import (
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/skills"
 	_ "maple-go-server/internal/skills/all"
+	"math"
 	"os"
 	"slices"
 	"time"
@@ -358,7 +359,11 @@ func skillBuffRows(id, level int, buff *skills.Buff, now time.Time) ([]domain.Sk
 	recovery := false
 	rows := make([]domain.SkillBuff, len(buff.Stats))
 	for i, v := range buff.Stats {
-		if v.Value < -32768 || v.Value > 32767 && !buffstat.IntValues(specs) {
+		if specs[i].Order > 0 && !buffstat.IntValues(specs) {
+			if v.Value < -32768 || v.Value > 32767 {
+				return nil, false
+			}
+		} else if v.Value < math.MinInt32 || v.Value > math.MaxInt32 {
 			return nil, false
 		}
 		rows[i] = domain.SkillBuff{ID: id, Level: level, Stat: string(specs[i].Name), Value: v.Value, ExpiresAt: now.Add(buff.Duration), Counter: buff.Counter}

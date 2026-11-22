@@ -158,8 +158,7 @@ func statPacketSource(source int, sources map[int]int, bit int) int32 {
 }
 
 // writeTwoStates encodes the TwoStateTemporaryStat elements (bits 248..255):
-// value, reason, last-updated "now", then the class-specific fields. Homing
-// Beacon's two extra I32 carry no reviewed meaning yet and are sent as zero.
+// value, reason, last-updated "now", then the class-specific fields.
 func writeTwoStates(w *Writer, specs []buffstat.Spec, values map[int]int, source int, remaining time.Duration) {
 	// The term is whole seconds rounded up: a 1 s buff (Tornado Spin) is
 	// published a few ms after its commit and must not become term 0.
@@ -177,7 +176,10 @@ func writeTwoStates(w *Writer, specs []buffstat.Spec, values map[int]int, source
 			w.I32(0)
 			w.U16(term)
 		case buffstat.TwoStateGuided:
-			w.I32(0)
+			// v148 TemporaryStat_GuidedBullet::Decode (0x6F4235) reads dwMobID
+			// into this[9] (sub_5EF972, checked by sub_6F312E for marked-target
+			// damage bonus) and a trailing I32 into this[10].
+			w.I32(int32(values[s.Bit]))
 			w.I32(0)
 		}
 	}
