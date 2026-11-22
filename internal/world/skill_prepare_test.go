@@ -84,3 +84,44 @@ func TestFlashbangThrowLeavesSettlementToItsAttack(t *testing.T) {
 		t.Fatalf("Flashbang throw settled %d times", calls)
 	}
 }
+
+func TestSwallowMobBroadcastsDeadType4AndSkipsBosses(t *testing.T) {
+	s, lives, sinks, mob := sharedWorldFixture(t)
+	lives[0].session.Character.Skills = append(lives[0].session.Character.Skills, domain.SkillState{ID: wildHunterSwallow, Level: 10})
+
+	// Boss mob must not be swallowed.
+	mob.stats.Boss = true
+	w := protocol.NewWriter(0)
+	w.I32(wildHunterSwallow)
+	w.U8(10)
+	w.U16(261)
+	w.U8(4)
+	w.I32(mob.objectID)
+	s.skillPrepare(1, lives[0], w.Packet()[2:])
+	s.swallowMob(1, lives[0])
+	if mob.hp <= 0 || sinks[0].count(protocol.SendKillMonster) != 0 || sinks[1].count(protocol.SendKillMonster) != 0 {
+		t.Fatalf("boss mob swallowed: hp=%d self=%d peer=%d", mob.hp, sinks[0].count(protocol.SendKillMonster), sinks[1].count(protocol.SendKillMonster))
+	}
+
+	// Non-boss mob is swallowed with OnMobLeaveField deadType=4 + swallower charID.
+	mob.stats.Boss = false
+	s.skillPrepare(1, lives[0], w.Packet()[2:])
+	s.swallowMob(1, lives[0])
+	if mob.hp != 0 || sinks[0].count(protocol.SendKillMonster) != 1 || sinks[1].count(protocol.SendKillMonster) != 1 {
+		t.Fatalf("non-boss swallow failed: hp=%d self=%d peer=%d", mob.hp, sinks[0].count(protocol.SendKillMonster), sinks[1].count(protocol.SendKillMonster))
+	}
+	want := protocol.SwallowMonster(mob.objectID, lives[0].session.Character.ID)
+	if len(want) != 11 || want[6] != 4 {
+		t.Fatalf("SwallowMonster wire layout unexpected: %x", want)
+	}
+	found := false
+	for _, p := range sinks[0].packets {
+		if hex.EncodeToString(p) == hex.EncodeToString(want) {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("caster did not receive SwallowMonster packet %x", want)
+	}
+}

@@ -76,6 +76,31 @@ func formTeslaTriangleLocked(room *gameplayRoom, m *roomSummon) []roomDelivery {
 	return out
 }
 
+// teslaTrianglePacketLocked returns the 0x110 CUser::OnTeslaTriangle packet
+// linking the leader coil m (coils[0]) with its two corner coils after m's
+// SpawnSummon packet has been emitted.
+func teslaTrianglePacketLocked(room *gameplayRoom, m *roomSummon) []byte {
+	if m == nil || m.source != teslaCoil || m.teslaState != 1 {
+		return nil
+	}
+	var ids [3]int32
+	ids[0] = m.objectID
+	n := 1
+	for _, c := range ownerCoilsLocked(room, m) {
+		if c == m {
+			continue
+		}
+		if n < 3 {
+			ids[n] = c.objectID
+			n++
+		}
+	}
+	if n != 3 {
+		return nil
+	}
+	return protocol.TeslaTriangle(m.ownerID, ids)
+}
+
 // breakTeslaTriangleLocked ends the rest of a triangle when one of its coils
 // leaves: the triangle coil would keep attacking an area with a missing corner.
 func breakTeslaTriangleLocked(room *gameplayRoom, gone *roomSummon) []roomDelivery {

@@ -85,6 +85,7 @@ type gameplayMember struct {
 	// keydownSkill is the charging skill from 0x97, started at keydownAt.
 	keydownSkill  int
 	keydownAt     time.Time
+	keydownTarget int32 // Swallow (33101005) mob object ID from 0xA5 SkillPrepare.
 	attacked      bool
 	barrelRelease *barrelReleaseTicket // Exact visit's last native CGrenade release.
 }

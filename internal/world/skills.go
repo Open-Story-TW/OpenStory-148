@@ -238,6 +238,9 @@ func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packet
 		s.dojoSpendSkill(snapshot.ChannelID, snapshot.Character, sink, dojo, q.SkillID)
 	}
 	s.castCombatObjects(snapshot, live, sink, q)
+	if q.SkillID == wildHunterSwallow {
+		s.swallowMob(snapshot.ChannelID, live)
+	}
 	if phantomJudgment(q.SkillID) {
 		s.phantomDraw(source, snapshot.Character, q.SkillID, time.Now())
 	}
@@ -291,7 +294,11 @@ func (s *Server) castCombatObjects(snapshot domain.CharacterSession, live *liveC
 	}
 	now := time.Now()
 	if spec.Summon != nil && !spec.Summon.NoCastSpawn {
-		if _, err := s.SpawnSummon(snapshot.ChannelID, live, q.SkillID, q.Level, now); err != nil {
+		var pos *combat.Point
+		if q.HasPosition {
+			pos = &combat.Point{X: int(q.X), Y: int(q.Y)}
+		}
+		if _, err := s.SpawnSummonAt(snapshot.ChannelID, live, q.SkillID, q.Level, pos, now); err != nil {
 			slog.Warn("skill_summon_failed", "character", snapshot.CharacterID, "skill", q.SkillID, "error", err)
 		}
 	}

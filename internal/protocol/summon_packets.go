@@ -19,8 +19,9 @@ const (
 	SendSummonAttack uint16 = 0x1a4
 	// 0x188 is the owner/oid/U8-action handler (0x6D9EFB); Legacy's
 	// SUMMON_SKILL=0x187 reaches a position/I32 reader instead.
-	SendSummonSkill  uint16 = 0x1a7
-	SendDamageSummon uint16 = 0x1aa
+	SendSummonSkill   uint16 = 0x1a7
+	SendDamageSummon  uint16 = 0x1aa
+	SendTeslaTriangle uint16 = 0x110 // CUserPool::OnUserCommonPacket 0x94014d -> CUser::OnTeslaTriangle 0x8cf92c
 )
 
 // Summon remove reasons (CSummoned leave types used by Legacy).
@@ -95,6 +96,20 @@ func RemoveSummon(ownerID int64, objectID int32, reason byte) []byte {
 	w.I32(int32(ownerID))
 	w.I32(objectID)
 	w.U8(reason)
+	return w.Packet()
+}
+
+// TeslaTriangle links three Mechanic Magnetic Field (35111002) coils into an
+// active attacking triangle (v148 CUser::OnTeslaTriangle 0x8cf92c ->
+// CSummoned::SetTeslaTriangle 0x7370af). coils[0] becomes the triangle leader
+// (state=1) with m_aTeslaCoilID populated so TryDoingTeslaTriangleAttack
+// (0x731e23) fires 0x120 attacks.
+func TeslaTriangle(ownerID int64, coils [3]int32) []byte {
+	w := NewWriter(SendTeslaTriangle)
+	w.I32(int32(ownerID))
+	for _, id := range coils {
+		w.I32(id)
+	}
 	return w.Packet()
 }
 
@@ -189,6 +204,7 @@ type SummonAttackInput struct {
 	ObjectID    int32
 	Tick        uint32
 	Action      byte
+	TeslaCoils  [3]int32       // Magnetic Field (35111002) triangle coil IDs (leader first).
 	X, Y        int16          // Client summon position at attack time.
 	ChargeGauge uint32         // SG-88's original v148 sender writes its charge here.
 	Targets     []AttackTarget // Each mob appears once, with its ordered damage lines.
@@ -206,6 +222,11 @@ func ReadSummonAttack(r *Reader) (SummonAttackInput, error) {
 	a.Tick = r.U32()
 	a.Action = r.U8()
 	n := int(r.U8())
+	if n <= 15 && r.Remaining() == 24+34*n {
+		// v148 CSummoned::TryDoingTeslaTriangleAttack (0x731e23) prepends the
+		// three Tesla Coil object IDs (leader first) ahead of summon/owner pos.
+		a.TeslaCoils = [3]int32{r.I32(), r.I32(), r.I32()}
+	}
 	a.X, a.Y = r.I16(), r.I16()
 	r.Skip(4) // Second position pair.
 	a.ChargeGauge = r.U32()

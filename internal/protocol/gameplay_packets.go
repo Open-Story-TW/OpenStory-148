@@ -216,6 +216,19 @@ func KillMonster(objectID int32) []byte {
 	return w.Packet()
 }
 
+// SwallowMonster removes a mob via Wild Hunter Swallow (33101005). v148
+// CMobPool::OnMobLeaveField (0x611c9c) reads deadType == 4 followed by the
+// swallower's character ID, which triggers CMob::OnDie (0x5fce08) ->
+// CUserLocal::SetSwallowMob (0x5f6c00) so the caster can auto-buff (33101006)
+// or spit (33101007).
+func SwallowMonster(objectID int32, characterID int64) []byte {
+	w := NewWriter(SendKillMonster)
+	w.I32(objectID)
+	w.U8(4)
+	w.I32(int32(characterID))
+	return w.Packet()
+}
+
 // RemoveMonster takes a mob out of the field with no death animation
 // (Java MobPacket.killMonster animation 0), for a mob re-seated after its
 // controller reported it below the field.

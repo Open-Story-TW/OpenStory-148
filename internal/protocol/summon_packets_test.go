@@ -126,3 +126,31 @@ func TestSpawnSummonMirroredTargetLook(t *testing.T) {
 		t.Fatalf("mirror layout % x", p)
 	}
 }
+
+func TestReadSummonAttackTeslaTriangleLiveCapture(t *testing.T) {
+	// Live TWMS v148 35111002 Magnetic Field 0x120 body (68 bytes = 10 hdr + 12 coil IDs + 12 pos/charge + 34 target).
+	rawHex := "bf420f00558179020701bf420f00bd420f00be420f00b6fed700b6fed70000000000bc420f00706f9800070100706f98000115ffd70015ffd7001b00e930af2fea89baf1"
+	body := make([]byte, len(rawHex)/2)
+	for i := range body {
+		var b byte
+		for _, ch := range rawHex[2*i : 2*i+2] {
+			b <<= 4
+			if ch >= 'a' {
+				b |= byte(ch-'a') + 10
+			} else {
+				b |= byte(ch - '0')
+			}
+		}
+		body[i] = b
+	}
+	in, err := ReadSummonAttack(NewReader(body))
+	if err != nil {
+		t.Fatalf("ReadSummonAttack tesla failed: %v", err)
+	}
+	if in.ObjectID != 1000127 || in.Action != 7 || in.TeslaCoils != [3]int32{1000127, 1000125, 1000126} || in.X != -330 || in.Y != 215 {
+		t.Fatalf("unexpected tesla header: %+v", in)
+	}
+	if len(in.Targets) != 1 || in.Targets[0].ObjectID != 1000124 || len(in.Targets[0].Lines) != 1 || in.Targets[0].Lines[0].Raw != 0x2faf30e9 {
+		t.Fatalf("unexpected tesla target: %+v", in.Targets)
+	}
+}

@@ -144,6 +144,12 @@ func (s *Server) SpawnSummon(channel int, live *liveCharacter, skillID, level in
 	return s.spawnSummonAt(channel, live, skillID, level, nil, now, time.Time{})
 }
 
+// SpawnSummonAt creates the summon at pos (when non-nil, e.g. client-placed
+// coordinates from 0xA3 SkillUse) or at the owner's current position.
+func (s *Server) SpawnSummonAt(channel int, live *liveCharacter, skillID, level int, pos *combat.Point, now time.Time) (int32, error) {
+	return s.spawnSummonAt(channel, live, skillID, level, pos, now, time.Time{})
+}
+
 // spawnSummonAt spawns at pos (a parent summon's position) or the owner's.
 // A non-zero until shortens the summon's life to end then (a summon restored
 // with the time its buff has left).
@@ -250,6 +256,9 @@ func (s *Server) spawnSummonAt(channel int, live *liveCharacter, skillID, level 
 	spawn := protocol.SpawnSummon(m.view(true))
 	summonDiag("summon_spawned", c.ID, spawn)
 	out = append(out, roomBroadcast(room, spawn, -1)...)
+	if skillID == teslaCoil {
+		out = append(out, roomBroadcast(room, teslaTrianglePacketLocked(room, m), -1)...)
+	}
 	out = append(out, roomBroadcast(room, m.amplifierAreaPacket(now), -1)...)
 	for _, twin := range spec.Summon.Twins {
 		tid := g.alloc()

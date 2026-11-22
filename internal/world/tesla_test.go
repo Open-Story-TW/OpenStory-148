@@ -37,6 +37,12 @@ func TestTeslaTriangleFormsOnTheThirdCoilAndBreaksTogether(t *testing.T) {
 	if watcher.count(protocol.SendRemoveSummon) != 2 || watcher.count(protocol.SendSpawnSummon) != 2 {
 		t.Fatalf("corner re-creation remove=%d create=%d", watcher.count(protocol.SendRemoveSummon), watcher.count(protocol.SendSpawnSummon))
 	}
+	// The 0x110 OnTeslaTriangle packet carries ownerID + [leader, corner1, corner2].
+	tri := teslaTrianglePacketLocked(room, c)
+	want := protocol.TeslaTriangle(1, [3]int32{3, 1, 2})
+	if len(tri) != 18 || string(tri) != string(want) {
+		t.Fatalf("tesla triangle packet = %x, want %x", tri, want)
+	}
 	// One corner leaving ends the triangle.
 	delete(room.summons, a.objectID)
 	if out := breakTeslaTriangleLocked(room, a); len(out) == 0 || len(room.summons) != 0 {

@@ -40,7 +40,7 @@ func (s *Server) skillPrepare(channel int, live *liveCharacter, body []byte) {
 		return
 	}
 	m := room.members[c.ID]
-	m.keydownSkill, m.keydownAt = p.SkillID, time.Now()
+	m.keydownSkill, m.keydownAt, m.keydownTarget = p.SkillID, time.Now(), p.Target
 	out := roomBroadcast(room, protocol.SkillPreparePacket(c.ID, p), c.ID)
 	g.mu.Unlock()
 	deliver(out)
@@ -62,7 +62,51 @@ func (s *Server) endSkillPrepare(channel int, live *liveCharacter, skillID int) 
 	if room != nil {
 		if m := room.members[c.ID]; m != nil && m.live == live && m.keydownSkill == skillID && skillID != 0 {
 			m.keydownSkill = 0
+			m.keydownTarget = 0
 			out = roomBroadcast(room, protocol.SkillPrepareCancel(c.ID, skillID), c.ID)
+		}
+	}
+	g.mu.Unlock()
+	deliver(out)
+}
+
+const wildHunterSwallow = 33101005
+
+// swallowMob completes a Wild Hunter Swallow (33101005) cast after the client
+// held 0xA5 SkillPrepare (carrying target mob object ID) and released with 0xA3
+// SkillUse. Non-boss living mobs are removed with OnMobLeaveField deadType=4
+// (0x611c9c -> 0x5fce08 -> 0x5f6c00), arming 33101006 buff / 33101007 spit.
+func (s *Server) swallowMob(channel int, live *liveCharacter) {
+	g := s.gameplay
+	if g == nil {
+		return
+	}
+	live.mu.Lock()
+	c := live.session.Character
+	live.mu.Unlock()
+	now := time.Now()
+	key := mapKey{channel: channel, mapID: c.MapID}
+	g.mu.Lock()
+	room := g.rooms[key]
+	var out []roomDelivery
+	if room != nil {
+		if m := room.members[c.ID]; m != nil && m.live == live && m.keydownSkill == wildHunterSwallow {
+			targetID := m.keydownTarget
+			m.keydownSkill = 0
+			m.keydownTarget = 0
+			out = append(out, roomBroadcast(room, protocol.SkillPrepareCancel(c.ID, wildHunterSwallow), c.ID)...)
+			if mob := room.mobs[targetID]; targetID != 0 && mob != nil && mob.hp > 0 && !mob.claiming && !mob.stats.Boss && !mob.stats.Invincible {
+				mob.hp = 0
+				mob.statuses = nil
+				mob.burns = nil
+				mob.controller = 0
+				if mob.qaOwner != nil {
+					delete(room.mobs, targetID)
+				} else {
+					mob.respawnAt = mob.respawnTime(key.mapID, now)
+				}
+				out = append(out, roomBroadcast(room, protocol.SwallowMonster(targetID, c.ID), -1)...)
+			}
 		}
 	}
 	g.mu.Unlock()
