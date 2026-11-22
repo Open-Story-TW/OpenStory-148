@@ -149,11 +149,15 @@ func bodyPressure() *combat.AttackSpec {
 }
 
 // tempest (21120006) freezes for twice the WZ time; Java lets it deal up to
-// the monster's HP (500000 on bosses) instead of the normal ceiling.
+// the monster's HP (500000 on bosses in standard mode, or MaxLineDamage in
+// LongDamage mode where v148 client boss hits exceed 500000).
 func tempest() *combat.AttackSpec {
 	s := ranged(nil, freeze)
 	s.MaxDamage = func(dc combat.DamageContext) int {
 		if dc.Mob.Boss {
+			if cap := combat.MaxLineDamage(); cap > 999_999 {
+				return cap
+			}
 			return 500000
 		}
 		return int(min(max(dc.HP, 1), int64(combat.MaxLineDamage())))

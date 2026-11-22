@@ -145,9 +145,10 @@ type Attack struct {
 	Action        byte
 	Speed         byte
 	Tick          uint32
-	Slot, CSStar  int16 // Shoot ammo slot / cash star slot.
-	AOE           byte
-	Targets       []AttackTarget
+	Slot, CSStar   int16 // Shoot ammo slot / cash star slot.
+	AOE            byte
+	SpiritClawItem int32 // Shoot with SPIRIT_CLAW (0x90F170): active star/bullet item ID.
+	Targets        []AttackTarget
 	MesoDrops     []int32 // Meso Explosion drop object IDs.
 	EruptionAreas []int32 // 2121003 only: explicit Poison Mist object IDs after the magic tail.
 	X, Y          int16
@@ -215,18 +216,31 @@ func ReadAttack(op uint16, r *Reader) (Attack, error) {
 		}
 		r.Skip(q.PreTargets)
 	case RecvShootAttack:
-		r.Skip(6)
+		// v148 0x90B36D: skillLevel (u8), skillCRC (i32), optional keydown (i32),
+		// flags (u8: bit 6 = SPIRIT_CLAW 0x90EF5A), then direction (u8).
+		r.Skip(5)
 		if q.KeyDown {
 			a.Charge = r.I32()
 		}
+		shootFlags := r.U8()
 		a.Direction = r.U8()
 		a.Display = r.U16()
 		r.Skip(5)
 		r.Skip(4 * q.PreSpeed)
+		rest := shootRest(q, a.TByte)
+		extra := r.Remaining() - rest
+		// When SPIRIT_CLAW (bit 6) is active and the skill consumes ammo
+		// (0x90F15C..0x90F170, !sub_6B6507), v148 writes the active star/bullet
+		// item ID (i32) immediately after AOE.
+		spiritClawItem := shootFlags&0x40 != 0 && !noSpiritClawItem(a.SkillID) && (extra == 4 || extra == 12)
+		if spiritClawItem {
+			rest += 4
+			extra -= 4
+		}
 		// v148's main shoot sender (0x90B36D) puts two more i32 before the
 		// speed; the other sender (0x921FC8) does not. Tell them apart by
 		// the frame length the rest of the layout must have.
-		if extra := r.Remaining() - shootRest(q, a.TByte); extra == 8 || extra == 12 {
+		if extra == 8 || extra == 12 {
 			r.Skip(8)
 		}
 		a.Speed = r.U8()
@@ -235,6 +249,9 @@ func ReadAttack(op uint16, r *Reader) (Attack, error) {
 		a.Slot = r.I16()
 		a.CSStar = r.I16()
 		a.AOE = r.U8()
+		if spiritClawItem {
+			a.SpiritClawItem = r.I32()
+		}
 	case RecvMagicAttack:
 		// v148 (0x90FD33): u8, i32, then the keydown charge, then direction.
 		r.Skip(5)
@@ -313,6 +330,16 @@ func shootRest(q AttackQuirk, tbyte byte) int {
 	targets := int(tbyte >> 4)
 	lines := int(tbyte & 15)
 	return 1 + 4 + 4 + 2 + 2 + 1 + targets*(4+18+4*lines+8) + 4 + 4
+}
+
+// noSpiritClawItem mirrors v148 sub_6B6507 (0x6B6540..0x6B6558): shoot skills
+// that omit the trailing SPIRIT_CLAW item ID even when bit 6 is set.
+func noSpiritClawItem(skillID int) bool {
+	switch skillID {
+	case 1078, 5081010, 14101006, 33101002:
+		return true
+	}
+	return false
 }
 
 func readAttackTargets(r *Reader, a *Attack) error {

@@ -486,8 +486,12 @@ func TestAranAttackRules(t *testing.T) {
 		t.Fatalf("tempest freeze %+v", ctx.Effect.MonsterStatus)
 	}
 	md := spec(t, 21120006).MaxDamage
-	if md(combat.DamageContext{HP: 12345}) != 12345 || md(combat.DamageContext{Mob: content.Mob{Boss: true}, HP: 9_000_000}) != 500000 {
-		t.Fatal("tempest ceiling")
+	wantBoss := 500000
+	if cap := combat.MaxLineDamage(); cap > 999_999 {
+		wantBoss = cap
+	}
+	if md(combat.DamageContext{HP: 12345}) != 12345 || md(combat.DamageContext{Mob: content.Mob{Boss: true}, HP: 9_000_000}) != wantBoss {
+		t.Fatalf("tempest ceiling: got %d want %d", md(combat.DamageContext{Mob: content.Mob{Boss: true}, HP: 9_000_000}), wantBoss)
 	}
 	// Body Pressure's body attack needs the buff.
 	s := spec(t, 21101003)

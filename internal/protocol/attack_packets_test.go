@@ -50,10 +50,11 @@ func shootBody(skill int, hits int, ids ...int32) []byte {
 	w.U8(0)
 	w.U8(byte(len(ids)<<4) | byte(hits))
 	w.I32(int32(skill))
-	w.Zero(6)
+	w.Zero(5)
 	if QuirkFor(skill).KeyDown {
 		w.I32(900)
 	}
+	w.U8(0)
 	w.U8(0)
 	w.U16(0x8021)
 	w.Zero(5)
@@ -225,5 +226,27 @@ func TestGainForceV148Layout(t *testing.T) {
 	}
 	if r.Remaining() != 0 {
 		t.Fatalf("trailing bytes: %d", r.Remaining())
+	}
+}
+
+// TestReadShootAttackSpiritClawItem replays captured v148 0x56 ordinary shoot
+// frames without and with SPIRIT_CLAW (14111007): bit 6 of the flags byte
+// (0x90EF5A) appends the active star/bullet item ID (i32, 0x90F170) after AOE.
+func TestReadShootAttackSpiritClawItem(t *testing.T) {
+	withoutSC, err := hex.DecodeString("0111000000000000000000000026003afe99de0704085f59020000000005000000416b430f00070100706f980001b5ffd700b5ffd70005026a0000005d2b923e0042bb9324ffd70065ffbb00")
+	if err != nil {
+		t.Fatal(err)
+	}
+	a0, err := ReadAttack(RecvShootAttack, NewReader(withoutSC))
+	if err != nil || a0.Slot != 5 || a0.AOE != 0x41 || a0.SpiritClawItem != 0 || len(a0.Targets) != 1 || a0.Targets[0].ObjectID != 1000299 || a0.X != -220 || a0.Y != 215 {
+		t.Fatalf("without SPIRIT_CLAW: %+v err=%v", a0, err)
+	}
+	withSC, err := hex.DecodeString("0111000000000000000000400027003afe99de0704706f5902000000000500000041f0951f006b430f00078100706f980001b5ffd700b5ffd700e401560000005d2b923ed6c7549a34ffd70075ffbb00")
+	if err != nil {
+		t.Fatal(err)
+	}
+	a1, err := ReadAttack(RecvShootAttack, NewReader(withSC))
+	if err != nil || a1.Slot != 5 || a1.AOE != 0x41 || a1.SpiritClawItem != 2070000 || len(a1.Targets) != 1 || a1.Targets[0].ObjectID != 1000299 || a1.Targets[0].Lines[0].Damage != 86 || a1.X != -204 || a1.Y != 215 {
+		t.Fatalf("with SPIRIT_CLAW: %+v err=%v", a1, err)
 	}
 }
