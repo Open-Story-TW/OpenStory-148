@@ -226,6 +226,14 @@ func TestAttackSpecs(t *testing.T) {
 			t.Fatalf("smoke screen box %+v, WZ %+v", b, r)
 		}
 	}
+	if s := spec(t, 4121015); s.Kind != 0 || s.Field == nil || s.Field.Kind != combat.FieldArea || s.Field.AreaType != protocol.AreaPlayer || len(s.Field.MobStatus) != 3 {
+		t.Fatalf("frailty curse %+v", s.Field)
+	} else if def, _ := content.SkillDefinition("", 4121015); true {
+		r, ok := def.RangeAt(1)
+		if b := s.Field.Box; !ok || !b.Set || b.LT != (combat.Point{X: r.LT[0], Y: r.LT[1]}) || b.RB != (combat.Point{X: r.RB[0], Y: r.RB[1]}) {
+			t.Fatalf("frailty curse box %+v, WZ %+v", b, r)
+		}
+	}
 	if s := spec(t, 4101005); s.Drain == nil || s.Kind != combat.Shoot || s.Ammo != combat.AmmoNone {
 		t.Fatalf("drain %+v", s)
 	}

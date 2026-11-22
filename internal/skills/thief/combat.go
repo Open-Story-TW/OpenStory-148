@@ -96,6 +96,20 @@ func mirroredTarget(c *skills.CastContext) (skills.CastPlan, error) {
 var smokeScreen = &combat.AttackSpec{Kind: noAttackPacket, Field: &combat.FieldSpec{Kind: combat.FieldArea, AreaType: protocol.AreaInvincible, PlayersInvincible: true,
 	Box: combat.Box{LT: combat.Point{X: -250, Y: -150}, RB: combat.Point{X: 250, Y: 150}, Set: true}}}
 
+// frailtyCurse (4121015 絕對領域): v148 0x92C445 sends 0xA3 (RecvSkillUse) with
+// cast position and renders WZ tile/0 on 0x1E7 AreaPlayer; debuffs monsters
+// inside WZ common lt/rb (-250,-200)..(250,100) with x (PAD), z (PDR), y (Speed).
+var frailtyCurse = &combat.AttackSpec{Kind: noAttackPacket, Field: &combat.FieldSpec{
+	Kind:     combat.FieldArea,
+	AreaType: protocol.AreaPlayer,
+	Box:      combat.Box{LT: combat.Point{X: -250, Y: -200}, RB: combat.Point{X: 250, Y: 100}, Set: true},
+	MobStatus: []combat.MobStatusApply{
+		{Stat: combat.MobPAD, ValueFrom: "x"},
+		{Stat: combat.MobPDR, ValueFrom: "z"},
+		{Stat: combat.MobSpeed, ValueFrom: "y"},
+	},
+}}
+
 // mesoExplosionCeiling (4211006): Legacy DamageParse skips the damage check
 // for Meso Explosion; the consumed ground mesos bound the attack instead.
 func mesoExplosionCeiling(c combat.DamageContext) int {

@@ -50,7 +50,7 @@ func init() {
 		Cast: func(c *skills.CastContext) (skills.CastPlan, error) {
 			return selfBuff(c, stat("ANGEL_ATK", c.Value("indiePad")))
 		}, Passive: learnedDefenseIgnore}) // 黑暗能量
-	skills.Register(skills.Handler{ID: 4121015, Kind: skills.KindSpecial, Cast: skills.CostOnly}) // 絕對領域: cost only (area debuff)
+	skills.Register(skills.Handler{ID: 4121015, Kind: skills.KindFieldObject, Cast: skills.CostOnly, Attack: frailtyCurse}) // 絕對領域: affected area debuff (0x1E7)
 	strike(4121016, either(noAmmo, prepare(suddenRaid)))                                          // 穢土轉生.改
 
 	// 俠盜 420, 神偷 421, 暗影神偷 422
