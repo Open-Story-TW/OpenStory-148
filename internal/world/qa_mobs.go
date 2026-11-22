@@ -56,7 +56,7 @@ func mobPositions(m content.Map, body content.MobBodyBounds, n, nearX, nearY int
 		return nil, domain.ErrInvalidInput
 	}
 	for _, l := range m.Life {
-		if l.Kind == "m" && !anyMap {
+		if l.Kind == "m" && !anyMap && m.ID != domain.QAPharaohMap {
 			return nil, domain.ErrForbidden
 		}
 	}

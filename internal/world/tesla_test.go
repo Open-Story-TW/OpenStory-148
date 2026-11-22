@@ -56,3 +56,19 @@ func TestTeslaSpawnPacketCarriesTheTriangle(t *testing.T) {
 		t.Fatalf("tesla tails lone % x full % x", lone[len(lone)-3:], full[len(lone)-3:])
 	}
 }
+
+func TestLiveOwnerSummonCountForTeslaCooldown(t *testing.T) {
+	now := time.Now()
+	s := &Server{gameplay: &gameplaySpace{rooms: map[mapKey]*gameplayRoom{
+		{channel: 1, mapID: 180000001}: {summons: map[int32]*roomSummon{
+			1: {ownerID: 10, source: teslaCoil, expiresAt: now.Add(time.Minute)},
+			2: {ownerID: 10, source: teslaCoil, expiresAt: now.Add(time.Minute)},
+			3: {ownerID: 10, source: teslaCoil, expiresAt: now.Add(-time.Second)}, // expired
+			4: {ownerID: 20, source: teslaCoil, expiresAt: now.Add(time.Minute)},  // other owner
+			5: {ownerID: 10, source: 35121009, expiresAt: now.Add(time.Minute)},   // other skill
+		}},
+	}}}
+	if got := s.liveOwnerSummonCount(1, 180000001, 10, teslaCoil, now); got != 2 {
+		t.Fatalf("liveOwnerSummonCount = %d, want 2", got)
+	}
+}

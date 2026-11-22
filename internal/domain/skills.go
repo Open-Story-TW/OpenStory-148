@@ -40,6 +40,7 @@ type SkillCastRequest struct {
 	Session              CharacterSession
 	SkillID, ClientLevel int
 	OperationID          string
+	ExistingSummons      int
 }
 type SkillDiceRoll struct {
 	First, Second int

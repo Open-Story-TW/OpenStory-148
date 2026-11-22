@@ -2,9 +2,31 @@ package world
 
 import (
 	"sort"
+	"time"
 
 	"maple-go-server/internal/protocol"
 )
+
+// liveOwnerSummonCount returns the number of active non-expired summons of
+// skillID currently owned by charID in (channel, mapID).
+func (s *Server) liveOwnerSummonCount(channel, mapID int, charID int64, skillID int, now time.Time) int {
+	if s.gameplay == nil {
+		return 0
+	}
+	s.gameplay.mu.Lock()
+	defer s.gameplay.mu.Unlock()
+	room := s.gameplay.rooms[mapKey{channel: channel, mapID: mapID}]
+	if room == nil {
+		return 0
+	}
+	count := 0
+	for _, m := range room.summons {
+		if m.source == skillID && m.ownerID == charID && m.expiresAt.After(now) {
+			count++
+		}
+	}
+	return count
+}
 
 // teslaCoil is Magnetic Field (35111002). Three coils of one owner form a
 // triangle. The v148 client reads the triangle only when a coil is created

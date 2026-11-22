@@ -286,7 +286,7 @@ func (s *Store) CastSkill(ctx context.Context, req domain.SkillCastRequest) (dom
 			return r, domain.ErrAlreadyExists
 		}
 	}
-	plan, e := handler.Cast(&skills.CastContext{Skill: template, Level: state.Level, Values: values, Caster: c, Now: now})
+	plan, e := handler.Cast(&skills.CastContext{Skill: template, Level: state.Level, Values: values, Caster: c, Now: now, ExistingSummons: req.ExistingSummons})
 	if e != nil || plan.Party != nil {
 		return r, domain.ErrInvalidInput
 	}

@@ -708,3 +708,23 @@ func TestSonicRoarIsMeleeNoAmmo(t *testing.T) {
 		t.Fatalf("33121002 handler: %+v", h.Attack)
 	}
 }
+
+// Magnetic Field (35111002): v148 0x92e506 only starts the skill cooldown when
+// placing the 3rd coil (2 existing live coils); coils #1 and #2 start no cooldown.
+func TestTeslaCoilCooldownStartsOnThirdCoil(t *testing.T) {
+	h, ok := skills.Lookup(35111002)
+	if !ok || h.Cast == nil {
+		t.Fatal("35111002 handler missing")
+	}
+	def, v := values(t, 35111002, 20)
+	for _, existing := range []int{0, 1} {
+		p, err := h.Cast(&skills.CastContext{Skill: def, Level: 20, Values: v, Caster: caster(), Now: now, ExistingSummons: existing})
+		if err != nil || p.Cooldown != 0 || p.Self == nil {
+			t.Fatalf("coil with existing=%d: plan=%+v err=%v, want Cooldown=0", existing, p, err)
+		}
+	}
+	p3, err := h.Cast(&skills.CastContext{Skill: def, Level: 20, Values: v, Caster: caster(), Now: now, ExistingSummons: 2})
+	if err != nil || p3.Cooldown <= 0 || p3.Self == nil {
+		t.Fatalf("3rd coil (existing=2): plan=%+v err=%v, want Cooldown>0", p3, err)
+	}
+}

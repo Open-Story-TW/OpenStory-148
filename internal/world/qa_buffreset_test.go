@@ -58,4 +58,14 @@ func TestQAPharaohMapGMAllowsEntry(t *testing.T) {
 	if s.eventAllowsEntry(gm, content.NettHardBase) {
 		t.Fatalf("GM should not bypass Nett event gate on non-QA stage %d", content.NettHardBase)
 	}
+	// Entering QAPharaohMap (926010400, fieldType 23 CField_Massacre) must send
+	// opcode 0xE5 Clock(type 2) so CField_Massacre::Update (0x532090) never hits
+	// a nil CTimerboard_Massacre pointer.
+	sink := &gameplayTestSink{}
+	live := &liveCharacter{session: gm}
+	live.session.Character.MapID = domain.QAPharaohMap
+	s.eventEntered(1, live, sink)
+	if sink.count(0xE5) != 1 {
+		t.Fatalf("QAPharaohMap entry sent %d Clock (0xE5) packets, want 1", sink.count(0xE5))
+	}
 }

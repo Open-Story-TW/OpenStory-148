@@ -4,7 +4,7 @@ import "time"
 
 const (
 	QAMobMap      = 180000001
-	QAPharaohMap  = 926010200 // Nett's Pyramid normal stage 1 (fieldType 38, Pharaoh's Wrath x1020)
+	QAPharaohMap  = 926010400 // Nett's Pyramid massacre stage (fieldType 23, Pharaoh's Wrath x1020)
 	QAMobMaxBatch = 12
 	QAMobLifetime = 15 * time.Minute
 )

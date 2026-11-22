@@ -219,7 +219,11 @@ func (s *Server) castSkill(ctx context.Context, live *liveCharacter, sink packet
 		}
 	}
 	castPeers := s.skillCastAudience(source)
-	r, e := repo.CastSkill(ctx, domain.SkillCastRequest{Session: session, SkillID: q.SkillID, ClientLevel: q.Level, OperationID: fmt.Sprintf("cast-%s-%d-%d", session.SessionID, session.Generation, q.Tick)})
+	existingSummons := 0
+	if q.SkillID == teslaCoil {
+		existingSummons = s.liveOwnerSummonCount(session.ChannelID, session.Character.MapID, session.Character.ID, teslaCoil, time.Now())
+	}
+	r, e := repo.CastSkill(ctx, domain.SkillCastRequest{Session: session, SkillID: q.SkillID, ClientLevel: q.Level, OperationID: fmt.Sprintf("cast-%s-%d-%d", session.SessionID, session.Generation, q.Tick), ExistingSummons: existingSummons})
 	if e != nil {
 		slog.Info("skill_cast_rejected", "character", session.CharacterID, "skill", q.SkillID, "level", q.Level, "hp", session.Character.HP, "mp", session.Character.MP, "error", e)
 		return sink.WritePacket(protocol.EnableActions())

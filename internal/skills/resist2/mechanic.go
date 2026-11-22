@@ -218,7 +218,8 @@ func init() {
 	// 磁場 Magnetic Field (Tesla Coil): up to three stationary coils; the third
 	// forms the triangle (world tesla.go). The client picks the targets inside
 	// its own triangle, so the line range is not checked against a box.
-	skills.Register(skills.Handler{ID: 35111002, Kind: skills.KindSummon, Cast: summonBuff("SUMMON", false), Attack: &combat.AttackSpec{
+	// v148 0x92e506 only starts the cooldown on the 3rd coil (2 existing coils).
+	skills.Register(skills.Handler{ID: 35111002, Kind: skills.KindSummon, Cast: teslaCast, Attack: &combat.AttackSpec{
 		Kind: combat.Summoned, IgnoreRange: true, Summon: &combat.SummonSpec{MoveAbility: stationary, AssistType: 1, Multi: true}}})
 	skills.Register(satellite(35111001, 0)) // 賽特拉特 Satellite
 	skills.Register(satellite(35111009, 35111001))
@@ -240,6 +241,17 @@ func init() {
 	// v148 CSummoned fires 35121011 self-destruction at expiry (5s) with terminal
 	// 0x120 action 0x11 (or 0x91 = 0x80|0x11 when facing left).
 	skills.Register(skills.Handler{ID: 35121011, LevelFrom: 35121009, Kind: skills.KindSummon, Attack: &combat.AttackSpec{Kind: combat.Summoned, LevelFrom: 35121009, MaxDamage: boostedSummon(robotMastery, "x"), Summon: &combat.SummonSpec{MoveAbility: walkStationary, Multi: true, SingleAttack: true, ExpiryAction: 0x11}}}) // Bots 'n Tots bots (spawned by 35121009)
+}
+
+// teslaCast (35111002 Magnetic Field): v148 0x92e506..0x92e5ba only starts the
+// skill cooldown when placing the 3rd coil (2 existing live coils on the map)
+// to form the Tesla triangle; coils #1 and #2 start no cooldown.
+func teslaCast(c *skills.CastContext) (skills.CastPlan, error) {
+	p, err := summonBuff("SUMMON", false)(c)
+	if err == nil && c.ExistingSummons < 2 {
+		p.Cooldown = 0
+	}
+	return p, err
 }
 
 // permanent is a self buff of the given stats for skills.Permanent (Java

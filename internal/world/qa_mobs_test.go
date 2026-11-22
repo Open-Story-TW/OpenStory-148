@@ -829,7 +829,7 @@ func TestQAMobRemovalStopsAfterRevocationWriteFailure(t *testing.T) {
 func TestQAMobsPharaohMapSpawnAndClear(t *testing.T) {
 	root := t.TempDir()
 	files := map[string]string{
-		"Map.wz/Map/Map9/926010200.img.xml": `<imgdir name="926010200.img"><imgdir name="info"><int name="town" value="0"/><int name="returnMap" value="926010000"/><int name="forcedReturn" value="926010000"/></imgdir><imgdir name="foothold"><imgdir name="1"><imgdir name="1"><imgdir name="1"><int name="x1" value="-400"/><int name="y1" value="215"/><int name="x2" value="400"/><int name="y2" value="215"/><int name="prev" value="0"/><int name="next" value="0"/></imgdir></imgdir></imgdir></imgdir><imgdir name="portal"><imgdir name="0"><string name="pn" value="sp"/><int name="pt" value="0"/><int name="x" value="0"/><int name="y" value="215"/><int name="tm" value="999999999"/><string name="tn" value=""/></imgdir></imgdir></imgdir>`,
+		"Map.wz/Map/Map9/926010400.img.xml": `<imgdir name="926010400.img"><imgdir name="info"><int name="town" value="0"/><int name="returnMap" value="926010000"/><int name="forcedReturn" value="926010000"/></imgdir><imgdir name="foothold"><imgdir name="1"><imgdir name="1"><imgdir name="1"><int name="x1" value="-400"/><int name="y1" value="215"/><int name="x2" value="400"/><int name="y2" value="215"/><int name="prev" value="0"/><int name="next" value="0"/></imgdir></imgdir></imgdir></imgdir><imgdir name="portal"><imgdir name="0"><string name="pn" value="sp"/><int name="pt" value="0"/><int name="x" value="0"/><int name="y" value="215"/><int name="tm" value="999999999"/><string name="tn" value=""/></imgdir></imgdir><imgdir name="life"><imgdir name="0"><string name="type" value="m"/><string name="id" value="7654321"/><int name="x" value="0"/><int name="y" value="215"/><int name="fh" value="1"/><int name="rx0" value="-200"/><int name="rx1" value="200"/></imgdir></imgdir></imgdir>`,
 		"Mob.wz/7654321.img.xml":            `<imgdir name="7654321.img"><imgdir name="info"><int name="level" value="10"/><int name="maxHP" value="1000"/><int name="exp" value="15"/><int name="bodyAttack" value="1"/><int name="PADamage" value="20"/></imgdir><imgdir name="stand"><canvas name="0" width="40" height="50"><vector name="origin" x="20" y="50"/><vector name="lt" x="-20" y="-50"/><vector name="rb" x="20" y="0"/></canvas></imgdir></imgdir>`,
 	}
 	for path, raw := range files {
@@ -858,6 +858,10 @@ func TestQAMobsPharaohMapSpawnAndClear(t *testing.T) {
 	if err = s.enterGameplay(live.session.ChannelID, live, sink); err != nil {
 		t.Fatal(err)
 	}
+	key := mapKey{live.session.ChannelID, domain.QAPharaohMap}
+	if got := len(s.gameplay.rooms[key].mobs); got != 0 {
+		t.Fatalf("pharaoh room auto-spawned %d native mobs, want 0", got)
+	}
 	repo.execute = func(req domain.GMCommandRequest) (domain.GMCommandResult, error) {
 		return domain.GMCommandResult{
 			Name:      req.Name,
@@ -869,7 +873,6 @@ func TestQAMobsPharaohMapSpawnAndClear(t *testing.T) {
 	if _, err := s.handleGMChat(context.Background(), live, sink, "!spawn 7654321 2"); err != nil {
 		t.Fatalf("pharaoh !spawn failed: %v", err)
 	}
-	key := mapKey{live.session.ChannelID, domain.QAPharaohMap}
 	if got := len(s.gameplay.rooms[key].mobs); got != 2 {
 		t.Fatalf("pharaoh room mobs = %d, want 2", got)
 	}

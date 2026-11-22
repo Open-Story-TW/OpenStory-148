@@ -166,11 +166,12 @@ func callerPackage() string {
 // CastContext is the authoritative input of a Cast. Fields may be added.
 // Caster carries the current buffs (Caster.SkillBuffs) and cooldowns.
 type CastContext struct {
-	Skill  content.Skill
-	Level  int
-	Values map[string]int // Skill.Values(Level)
-	Caster domain.Character
-	Now    time.Time
+	Skill           content.Skill
+	Level           int
+	Values          map[string]int // Skill.Values(Level)
+	Caster          domain.Character
+	Now             time.Time
+	ExistingSummons int // Live non-expired summons of this skill currently owned by Caster in the room.
 }
 
 // Value returns a WZ level value, zero when absent.

@@ -624,6 +624,9 @@ func (s *Server) eventAllowsEntry(session domain.CharacterSession, mapID int) bo
 	if content.JudgementRoom(mapID) || !s.treasureAllowsEntry(session, mapID) || !s.obstacleAllowsEntry(session, mapID) {
 		return false
 	}
+	if mapID == domain.QAPharaohMap {
+		return session.Character.GM > 0
+	}
 	e, stage := content.EventByMap(mapID)
 	if !stage || s.events == nil {
 		return true
@@ -797,6 +800,13 @@ func (s *Server) eventEntered(channel int, live *liveCharacter, sink packetSink)
 		}
 		s.eventUnregister(inst, c.ID)
 		s.eventSettle(inst)
+		return
+	}
+	if c.MapID == domain.QAPharaohMap && c.GM > 0 {
+		// v148 CField_Massacre::Update (0x532090) dereferences this[1253]
+		// (CTimerboard_Massacre*), allocated only on CField_Massacre::OnClock
+		// (0x531a8d, opcode 0xE5 type 2). Send a QA clock immediately on entry.
+		_ = sink.WritePacket(protocol.Clock(1800))
 		return
 	}
 	if e, ok := content.EventByMap(c.MapID); ok && (e.ExpeditionType != 0 || (content.NettEvent(e.Name) && !(c.GM > 0 && c.MapID == domain.QAPharaohMap)) || c.GM == 0 || e.Name == battleSquareEvent) {

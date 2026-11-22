@@ -181,7 +181,7 @@ func (g *gameplaySpace) room(key mapKey) (*gameplayRoom, error) {
 			r.npcs[oid] = life
 			continue
 		}
-		if life.Kind != "m" {
+		if life.Kind != "m" || key.mapID == domain.QAPharaohMap {
 			continue
 		}
 		stats, err := g.catalog.Mob(life.TemplateID)
