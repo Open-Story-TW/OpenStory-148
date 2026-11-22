@@ -508,8 +508,9 @@ func applyQAGMPolicy(c *domain.Character, r domain.GMCommandRequest, now time.Ti
 		template, e := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), id)
 		// Registered invisible skills (Maple Warrior, Hero's Will) are learned
 		// from books or quests in play; QA may grant them like any other.
+		handler, hasHandler := skills.Lookup(id)
 		switch {
-		case e != nil || template.Disabled:
+		case e != nil || (template.Disabled && !(hasHandler && handler.AllowDisabledCast)):
 			return deny(fmt.Sprintf("skill %d is not a usable WZ skill", id))
 		case !template.CanLearnBy(*c):
 			return deny(fmt.Sprintf("job %d cannot learn skill %d", c.Job, id))

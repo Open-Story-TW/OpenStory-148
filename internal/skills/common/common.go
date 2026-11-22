@@ -24,6 +24,28 @@ func each(suffix int, h skills.Handler) {
 	}
 }
 
+// eachAllowDisabled registers h with AllowDisabledCast=true for every beginner
+// family whose Skill.wz defines the suffix (even when marked disabled, such as
+// potential-granted Decent Skills *8000..*8006, v148 0x93694C / 0x6D447A).
+func eachAllowDisabled(suffix int, h skills.Handler) {
+	h.AllowDisabledCast = true
+	for _, f := range families {
+		id := f*10000 + suffix
+		if f == 5000 {
+			switch suffix {
+			case 8000, 8001, 8002, 8003, 8004, 8005, 8006:
+				h.ID = id
+				skills.Register(h)
+			}
+			continue
+		}
+		if _, err := content.SkillDefinition("", id); err == nil {
+			h.ID = id
+			skills.Register(h)
+		}
+	}
+}
+
 // enabled checks the embedded seed and the Mihile entries whose original v148
 // WZ level and behavior definitions match these shared beginner handlers.
 func enabled(id int) bool {

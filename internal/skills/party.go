@@ -34,7 +34,7 @@ func PartyCast(root string, actor domain.Character, skillID, level int, now time
 	}
 	template, e := content.SkillDefinition(root, skillID)
 	stolen := actor.ChosenStolenLevel(skillID, now) > 0
-	if e != nil || template.Disabled || (!template.CanLearnBy(actor) && !stolen) || actor.Level < template.ReqLevel {
+	if e != nil || (template.Disabled && !h.AllowDisabledCast) || (!template.CanLearnBy(actor) && !stolen) || actor.Level < template.ReqLevel {
 		return CastPlan{}, fmt.Errorf("skill%d: unavailable for job %d", skillID, actor.Job)
 	}
 	if !stolen {

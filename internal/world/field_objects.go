@@ -11,6 +11,7 @@ import (
 	"maple-go-server/internal/content"
 	"maple-go-server/internal/domain"
 	"maple-go-server/internal/protocol"
+	"maple-go-server/internal/skills"
 )
 
 // roomArea is an affected area (mist/smoke/aura) in one room.
@@ -83,6 +84,9 @@ func fieldSkillEffect(skillID, level int, spec *combat.AttackSpec) (combat.Effec
 		template, err := content.SkillDefinition(os.Getenv("MAPLEGO_WZ_ROOT"), skillID)
 		if err != nil {
 			return e, 0, err
+		}
+		if h, ok := skills.Lookup(skillID); ok && h.AllowDisabledCast {
+			template.Disabled = false
 		}
 		if e, err = combat.FromSkill(template, level); err != nil {
 			return e, 0, err

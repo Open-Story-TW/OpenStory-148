@@ -565,3 +565,63 @@ func TestBambooRainPlansTheClientLines(t *testing.T) {
 		t.Fatal("planned outside the dojo")
 	}
 }
+
+func TestDecentSkillsRegisteredAndCastable(t *testing.T) {
+	// All 9 beginner families x 7 Decent Skill suffixes (*8000..*8006) are registered
+	// with AllowDisabledCast=true, matching v148 CUserLocal::DoActiveSkill (0x93694C).
+	for _, fam := range []int{0, 1000, 2000, 2001, 2002, 2003, 3000, 3001, 5000} {
+		for _, suf := range []int{8000, 8001, 8002, 8003, 8004, 8005, 8006} {
+			id := fam*10000 + suf
+			h, ok := skills.Lookup(id)
+			if !ok || !h.AllowDisabledCast || h.Cast == nil {
+				t.Fatalf("decent skill %d: ok=%v allowDisabled=%v cast=%v", id, ok, h.AllowDisabledCast, h.Cast != nil)
+			}
+		}
+	}
+
+	// Verify exact buff stats & party plan on representative Explorer (0), Cygnus (1000), and Resistance (3000) books.
+	for _, base := range []int{0, 10000000, 30000000} {
+		haste := mustCast(t, base+8000, 1, domain.Character{})
+		if st := stats(haste.Party); st["SPEED"] != 20 || st["JUMP"] != 10 || haste.Area == nil {
+			t.Fatalf("%d haste unexpected: party=%v area=%v", base+8000, st, haste.Area)
+		}
+		door := mustCast(t, base+8001, 1, domain.Character{})
+		if len(door.Items) != 1 || door.Items[0].ItemID != 4006000 || stats(door.Self)["SOULARROW"] != 0 {
+			t.Fatalf("%d mystic door unexpected: %+v", base+8001, door)
+		}
+		hDoor, _ := skills.Lookup(base + 8001)
+		if hDoor.Attack == nil || hDoor.Attack.Field == nil || hDoor.Attack.Field.Kind != combat.FieldTownPortal {
+			t.Fatalf("%d mystic door missing FieldTownPortal", base+8001)
+		}
+		se := mustCast(t, base+8002, 1, domain.Character{})
+		if st := stats(se.Party); st["SHARP_EYES"] != (10<<8|15) || se.Area == nil {
+			t.Fatalf("%d sharp eyes unexpected: %v", base+8002, st)
+		}
+		hb := mustCast(t, base+8003, 1, domain.Character{})
+		if st := stats(hb.Party); st["MAXHP"] != 40 || st["MAXMP"] != 40 || hb.Area == nil {
+			t.Fatalf("%d hyper body unexpected: %v", base+8003, st)
+		}
+		co := mustCast(t, base+8004, 1, domain.Character{})
+		if st := stats(co.Party); st["COMBAT_ORDERS"] != 1 || co.Area == nil {
+			t.Fatalf("%d combat orders unexpected: %v", base+8004, st)
+		}
+		ab := mustCast(t, base+8005, 1, domain.Character{})
+		if st := stats(ab.Party); st["HOLY_SHIELD"] != 20 || st["HP_BOOST"] != 475 || st["MP_BOOST"] != 475 || ab.Area == nil {
+			t.Fatalf("%d advanced blessing unexpected: %v", base+8005, st)
+		}
+		si := mustCast(t, base+8006, 1, domain.Character{})
+		if st := stats(si.Party); st["SPEED_INFUSION"] != -1 || si.Area == nil {
+			t.Fatalf("%d speed infusion unexpected: %v", base+8006, st)
+		}
+	}
+
+	// Verify skills.PartyCast accepts AllowDisabledCast Decent Skills.
+	actor := domain.Character{
+		ID: 1, Job: 0, Level: 200,
+		Skills: []domain.SkillState{{ID: 8002, Level: 1}},
+	}
+	plan, err := skills.PartyCast("", actor, 8002, 1, time.Unix(100, 0))
+	if err != nil || plan.Party == nil || stats(plan.Party)["SHARP_EYES"] != (10<<8|15) {
+		t.Fatalf("PartyCast(8002): plan=%+v err=%v", plan, err)
+	}
+}

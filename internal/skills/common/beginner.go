@@ -113,6 +113,18 @@ func init() {
 	// (S0b settles at most 15 targets per packet).
 	each(1188, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Magic}})
 
+	// Potential-granted Decent Skills (*8000..*8006 across all beginner books):
+	// v148 CUserLocal::DoActiveSkill (0x93694C) dispatches *8000/*8002..*8006
+	// via DoActiveSkill_StatChange (0x931C46) and *8001 via DoActiveSkill_TownPortal (0x92DB2F).
+	eachAllowDisabled(8000, skills.Handler{Kind: skills.KindPartyBuff, Cast: skills.StandardPartyBuff})
+	eachAllowDisabled(8001, skills.Handler{Kind: skills.KindFieldObject, Cast: decentMysticDoor,
+		Attack: &combat.AttackSpec{Field: &combat.FieldSpec{Kind: combat.FieldTownPortal}}})
+	eachAllowDisabled(8002, skills.Handler{Kind: skills.KindPartyBuff, Cast: party(buff(0, stat{"SHARP_EYES", func(v map[string]int) int { return v["x"]<<8 | v["y"]&0xff }}))})
+	eachAllowDisabled(8003, skills.Handler{Kind: skills.KindPartyBuff, Cast: party(buff(0, key("MAXHP", "x"), key("MAXMP", "y")))})
+	eachAllowDisabled(8004, skills.Handler{Kind: skills.KindPartyBuff, Cast: party(buff(0, key("COMBAT_ORDERS", "x")))})
+	eachAllowDisabled(8005, skills.Handler{Kind: skills.KindPartyBuff, Cast: party(decentAdvancedBlessing)})
+	eachAllowDisabled(8006, skills.Handler{Kind: skills.KindPartyBuff, Cast: party(buff(0, key("SPEED_INFUSION", "x")))})
+
 	beginnerPassives()
 }
 
@@ -196,6 +208,38 @@ func equippedMount(c domain.Character) int {
 		return 0
 	}
 	return mob
+}
+
+// party wraps a self-buff Cast so the same buff is distributed to party members in range.
+func party(cast func(*skills.CastContext) (skills.CastPlan, error)) func(*skills.CastContext) (skills.CastPlan, error) {
+	return func(c *skills.CastContext) (skills.CastPlan, error) {
+		p, e := cast(c)
+		if e != nil {
+			return p, e
+		}
+		return skills.PartyPlan(c, p.Self, p)
+	}
+}
+
+// decentMysticDoor (*8001) pays Magic Rock (4006000) and shows SOULARROW 0 for
+// time while the core opens the town portal, matching Bishop 2311002.
+func decentMysticDoor(c *skills.CastContext) (skills.CastPlan, error) {
+	p := skills.StandardCost(c)
+	if c.Value("time") < 1 || len(p.Items) != 1 {
+		return p, fmt.Errorf("skill%d: invalid values", c.Skill.ID)
+	}
+	p.Self = &skills.Buff{Duration: time.Duration(c.Value("time")) * time.Second, Stats: []skills.StatValue{{Stat: "SOULARROW", Value: 0}}}
+	return p, nil
+}
+
+// decentAdvancedBlessing (*8005) sets HOLY_SHIELD x plus HP_BOOST (indieMhp)
+// and MP_BOOST (indieMmp), matching Bishop 2321005.
+func decentAdvancedBlessing(c *skills.CastContext) (skills.CastPlan, error) {
+	p, e := buff(0, key("HOLY_SHIELD", "x"), key("HP_BOOST", "indieMhp"), key("MP_BOOST", "indieMmp"))(c)
+	if e == nil {
+		p.Self.Stats = append(p.Self.Stats, skills.StandardStats(c.Values)...)
+	}
+	return p, e
 }
 
 // partyHeal heals every party member in range by 3–5 × hp% of the caster's
