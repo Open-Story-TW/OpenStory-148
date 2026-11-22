@@ -4,6 +4,22 @@
 `## vX.Y.Z - YYYY-MM-DD`，底下三個小節 `### 新增`、`### 修復`、`### 優化` 都要有，
 沒有內容的小節寫「本版無」。同一份內容連同截圖貼到 Discord 的「服務器更新」頻道。
 
+## v0.1.65 - 2026-11-22
+
+### 新增
+
+- 本版無
+
+### 修復
+
+- 修復聖魂劍士「終極攻擊」（`11101002`）於 `internal/skills/cygnus/dawn_warrior.go` 誤送 `FINAL_SHOOT_ATTACK`（bit 62，破風使者 `13101002` 專用）而非原版 TWMS v148 客戶端（IDA `0x8ec8e6`）實際檢核之 `FINAL_MELEE_ATTACK`（bit 61）的問題；同步更新單元測試 `internal/skills/cygnus/cygnus_test.go`。
+
+### 優化
+
+- 本版無
+
+相容登入器 v0.1.1 以上（完整技能驗收自動化與 Harness R87 請搭配登入器 v0.1.571 以上）。
+
 ## v0.1.64 - 2026-11-22
 
 ### 新增

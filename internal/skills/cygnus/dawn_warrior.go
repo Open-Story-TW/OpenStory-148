@@ -19,7 +19,7 @@ func init() {
 	passive(11100000, mastery("acc", oneHandedSword, oneHandedAxe, oneHandedBlunt, twoHandedSword, twoHandedAxe, twoHandedBlunt)) // 精準之劍
 	passive(11100007, physicalTraining)
 	skills.Register(skills.Handler{ID: 11101001, Kind: skills.KindBuff, Cast: value("BOOSTER", "x")})                                // 快速之劍
-	skills.Register(skills.Handler{ID: 11101002, Kind: skills.KindBuff | skills.KindAttack, Cast: finalAttack, Attack: dawnMelee()}) // 終極攻擊
+	skills.Register(skills.Handler{ID: 11101002, Kind: skills.KindBuff | skills.KindAttack, Cast: finalMeleeAttack, Attack: dawnMelee()}) // 終極攻擊
 	skills.Register(skills.Handler{ID: 11101003, Kind: skills.KindPartyBuff, Cast: party(generic)})                                  // 憤怒: pad
 	skills.Register(skills.Handler{ID: 11101004, Kind: skills.KindAttack, Attack: shoot(noAmmo, prepare(soulCharged))})              // 靈魂之刃: ranged AOE without ammo
 	skills.Register(skills.Handler{ID: 11101005, Kind: skills.KindSpecial, Cast: skills.CostOnly})                                   // 靈魂迅移 (movement)
@@ -60,8 +60,13 @@ func soulCharge(c *skills.CastContext) (skills.CastPlan, error) {
 	return buff(c, stat("WK_CHARGE", c.Value("x")))
 }
 
-// finalAttack (11101002, 13101002) is FINAL_SHOOT_ATTACK x for the WZ time;
-// the client then sends the final-attack hits as attacks of the skill.
+// finalMeleeAttack (11101002) sets FINAL_MELEE_ATTACK (bit 61, v148 0x8EC8E6 ->
+// sub_6ED6D9); Wind Archer finalAttack (13101002) sets FINAL_SHOOT_ATTACK (bit
+// 62, sub_6ED718). The client then sends final-attack hits as attacks of the skill.
+func finalMeleeAttack(c *skills.CastContext) (skills.CastPlan, error) {
+	return buff(c, stat("FINAL_MELEE_ATTACK", c.Value("x")))
+}
+
 func finalAttack(c *skills.CastContext) (skills.CastPlan, error) {
 	return buff(c, stat("FINAL_SHOOT_ATTACK", c.Value("x")))
 }

@@ -144,7 +144,7 @@ func TestBuffValues(t *testing.T) {
 	}{
 		{11001001, 10, map[buffstat.Stat]int{"WDEF": 200}, 200 * time.Second, 14},
 		{11101001, 20, map[buffstat.Stat]int{"BOOSTER": -2}, 200 * time.Second, 11},
-		{11101002, 20, map[buffstat.Stat]int{"FINAL_SHOOT_ATTACK": 1}, 650 * time.Second, 25},
+		{11101002, 20, map[buffstat.Stat]int{"FINAL_MELEE_ATTACK": 1}, 650 * time.Second, 25},
 		{11101006, 20, map[buffstat.Stat]int{"POWERGUARD": 30}, 180 * time.Second, 20},
 		{11111001, 20, map[buffstat.Stat]int{"COMBO": 1}, 200 * time.Second, 32},
 		{11111007, 10, map[buffstat.Stat]int{"WK_CHARGE": 1, "MATK": 40}, 300 * time.Second, 40},
