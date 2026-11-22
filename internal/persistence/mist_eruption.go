@@ -15,7 +15,7 @@ func validateMistEruptionWire(q domain.CombatAttackRequest) error {
 	if len(q.Wire) == 0 {
 		return nil
 	}
-	if q.SkillID != 2121003 || q.Cost == nil || q.Cost.Opcode != protocol.RecvMagicAttack || q.Cost.Summon != 0 || q.Cost.Ongoing || q.LinesPerTarget != 5 {
+	if q.SkillID != 2121003 || q.Cost == nil || q.Cost.Opcode != protocol.RecvMagicAttack || q.Cost.Summon != 0 || q.Cost.Ongoing || q.LinesPerTarget < 5 || q.LinesPerTarget > 10 {
 		return domain.ErrInvalidInput
 	}
 	a, err := protocol.ReadAttack(protocol.RecvMagicAttack, protocol.NewReader(q.Wire))

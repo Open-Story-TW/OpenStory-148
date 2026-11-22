@@ -46,7 +46,7 @@ func init() {
 		Passive:   func(c *skills.PassiveContext) skills.Bonus { return skills.Bonus{AvoidRate: c.Values["er"]} },
 		OnDamaged: windEvasionDodge,
 	}) // 躲避: dodgeChance + 1s guaranteed critical on dodge
-	pvpOnly(13110009)                                                                                                                   // 致命箭: hidden, Legacy never applies it
+	skills.Register(skills.Handler{ID: 13110009, Kind: skills.KindPassive})                                                              // 致命箭 Mortal Blow (v148 0x60b6cd alongside 3110001/3210001)
 	skills.Register(skills.Handler{ID: 13111000, Kind: skills.KindAttack | skills.KindMobStatus, Attack: windShoot(noAmmo, hit(stun))}) // 箭雨: v148 WZ prop and time
 	skills.Register(skills.Handler{ID: 13111001, Kind: skills.KindBuff, Cast: value("CONCENTRATE", "x")})                               // 集中: CONCENTRATE x, epad
 	skills.Register(skills.Handler{ID: 13111002, Kind: skills.KindAttack, Attack: windShoot()})                                         // 暴風神射: keydown quirk is built into S0b

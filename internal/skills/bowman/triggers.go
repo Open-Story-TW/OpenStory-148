@@ -15,7 +15,8 @@ func init() {
 }
 
 // mortal returns the WZ values of the attacker's Mortal Blow (3110001 for
-// 311/312, 3210001 for 321/322), nil when not learned (Java DamageParse).
+// 311/312, 3210001 for 321/322, 13110009 for Wind Archer 1311/1312 per v148
+// 0x60b6cd), nil when not learned.
 func mortal(c domain.Character) map[string]int {
 	id := 0
 	switch c.Job {
@@ -23,6 +24,8 @@ func mortal(c domain.Character) map[string]int {
 		id = 3110001
 	case 321, 322:
 		id = 3210001
+	case 1311, 1312:
+		id = 13110009
 	}
 	lv := learned(c, id)
 	if lv < 1 {

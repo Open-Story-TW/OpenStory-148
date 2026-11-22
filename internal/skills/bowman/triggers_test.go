@@ -30,6 +30,15 @@ func TestMortalBlow(t *testing.T) {
 	if hp, mp := mortalHeal(ctx, 0); hp != 1000 || mp != 0 {
 		t.Errorf("heal %d/%d, want 2 targets × 5%% of 10000", hp, mp)
 	}
+	// Wind Archer 13110009 Mortal Blow (v148 0x60b6cd alongside 3110001/3210001).
+	wa := domain.Character{Job: 1311, MaxHP: 10000, Skills: []domain.SkillState{{ID: 13110009, Level: 15}}}
+	dcWA := combat.DamageContext{Attacker: wa, Mob: content.Mob{HP: 100000}, HP: 20000}
+	if got := mortalCeiling(dcWA, 1000); got != 20000 {
+		t.Errorf("wind archer 13110009 below x%%: %d, want 20000", got)
+	}
+	if hp, mp := mortalHeal(&combat.AttackContext{Character: wa, Targets: ctx.Targets}, 0); hp < 1 || mp != 0 {
+		t.Errorf("wind archer 13110009 heal %d/%d, want >0 HP", hp, mp)
+	}
 }
 
 func TestSpiritLinkPassiveFollowsTheSummonBuff(t *testing.T) {

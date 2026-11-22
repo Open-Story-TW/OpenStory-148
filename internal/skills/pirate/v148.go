@@ -13,9 +13,10 @@ import (
 // "cost only" pay their cost and show the cast, and their effect is not
 // applied yet.
 var v148Attacks = []attack{
-	// 海盜 500 (the two hidden ids are what the client sends for the basic attacks)
-	{id: 5001008, kind: combat.Melee | combat.Shoot}, // hidden ranged basic: bulletCount 3
-	{id: 5001009, kind: combat.Melee | combat.Shoot}, // hidden close basic: mobCount 6
+	// 海盜 500 (the two hidden ids are what the client sends for Dash basic attacks;
+	// v148 GetSkillLevel 0x6D4886 reads 5001008's level from Triple Fire 5200010)
+	{id: 5001008, kind: combat.Melee | combat.Shoot, levelFrom: 5200010}, // hidden ranged basic: bulletCount 3
+	{id: 5001009, kind: combat.Melee | combat.Shoot},                     // hidden close basic: mobCount 6
 	// 打手 510, 格鬥家 511, 拳霸 512
 	{id: 5101012, kind: combat.Melee, prepare: barrelRoll},         // 颶風拳: the caster rushes x px, so the box reaches that far (see barrelRoll)
 	{id: 5111009, kind: combat.Melee},                              // 雙重螺旋
@@ -38,7 +39,7 @@ var crewVariants = []int{summonCrew, 5211015, 5211016}
 
 func init() {
 	for _, a := range v148Attacks {
-		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, Attack: spec(a), OnAttack: a.onAttack})
+		skills.Register(skills.Handler{ID: a.id, Kind: skills.KindAttack, LevelFrom: a.levelFrom, Attack: spec(a), OnAttack: a.onAttack})
 	}
 	skills.Register(skills.Handler{ID: summonCrew, Kind: skills.KindSummon, Cast: valueOne("SUMMON"), Attack: crewSpec(crewVariants)})
 	for _, id := range crewVariants[1:] {

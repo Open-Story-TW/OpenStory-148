@@ -192,4 +192,12 @@ func TestV148RemainingCommonPhantomMihileAndEventRegistrations(t *testing.T) {
 	if err != nil || pSum.Self == nil || pSum.Self.Duration != 8*time.Second || len(pSum.Self.Stats) != 1 || pSum.Self.Stats[0].Stat != "PUPPET" || pSum.Self.Stats[0].Value != 1 {
 		t.Fatalf("80001141 cast plan=%+v err=%v", pSum, err)
 	}
+
+	// 5) Victor's Whirlwind (80001125 and *1188) sends RecvMagicAttack (0x57) in v148.
+	for _, id := range []int{1188, 10001188, 20001188, 20011188, 30001188, 80001125} {
+		h, ok := skills.Lookup(id)
+		if !ok || h.Attack == nil || h.Attack.Kind != combat.Magic {
+			t.Fatalf("Victor's Whirlwind %d handler=%+v, want combat.Magic", id, h)
+		}
+	}
 }

@@ -1035,4 +1035,9 @@ func TestPirateAndZenWireAndGrenadeFixes(t *testing.T) {
 	if b := h522.Passive(&skills.PassiveContext{Values: v522, Character: crewChar, Now: now}); b.WATK != 30 || b.Critical != 10 {
 		t.Fatalf("5220019 active bonus: %+v", b)
 	}
+	// 5001008 (Dash Double Shot -> Triple Fire) reads its skill level from 5200010 (v148 0x6D4886).
+	h5008, ok := skills.Lookup(5001008)
+	if !ok || h5008.LevelFrom != 5200010 || h5008.Attack == nil || h5008.Attack.LevelFrom != 5200010 {
+		t.Fatalf("5001008 must be linked to 5200010: %+v", h5008)
+	}
 }

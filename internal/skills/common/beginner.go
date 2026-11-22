@@ -109,9 +109,9 @@ func init() {
 	// 勝利者的祝福 Victor's Blessing: party heal of 3–5 × hp% of the caster's
 	// magic attack (Java makeHealHP for a skill with hp).
 	each(1189, skills.Handler{Kind: skills.KindHeal | skills.KindPartyBuff, Cast: partyHeal})
-	// 勝利者的旋風 Victor's Whirlwind: area melee, mobCount 20 (S0b settles at
-	// most 15 targets per packet).
-	each(1188, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee}})
+	// 勝利者的旋風 Victor's Whirlwind: area magic attack (0x57 in v148), mobCount 20
+	// (S0b settles at most 15 targets per packet).
+	each(1188, skills.Handler{Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Magic}})
 
 	beginnerPassives()
 }

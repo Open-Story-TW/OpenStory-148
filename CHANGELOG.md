@@ -4,6 +4,25 @@
 `## vX.Y.Z - YYYY-MM-DD`，底下三個小節 `### 新增`、`### 修復`、`### 優化` 都要有，
 沒有內容的小節寫「本版無」。同一份內容連同截圖貼到 Discord 的「服務器更新」頻道。
 
+## v0.1.66 - 2026-11-22
+
+### 新增
+
+- 本版無
+
+### 修復
+
+- 修復火毒大魔導士「致命毒霧引爆」（`2121003`）於 `internal/persistence/mist_eruption.go` 寫死 v145 5 段上限（`q.LinesPerTarget != 5`），導致原版 TWMS v148 實際 6 段攻擊遭到結算拒絕的問題；調整為 `5–10` 段並維持嚴格原始逐行綁定與單元測試驗證。
+- 修復共通與初心者旋風技能（`80001125` 與 `*1188` 系列）於 `internal/skills/common/event.go`、`beginner.go` 僅接受 `combat.Melee` 而未放行實機 `0x57` `combat.Magic` 封包的問題。
+- 修復破風使者「致命箭」（`13110009`，IDA `0x60b6cd`）於 `internal/skills/cygnus/wind_archer.go` 與 `internal/skills/bowman/triggers.go` 缺漏 `KindPassive` 與職業分支（`case 1311, 1312`）的問題。
+- 修復海盜衝刺連射（`5001008`，IDA `0x6D4886`）於 `internal/skills/pirate/v148.go` 缺漏 `LevelFrom: 5200010` 連結的問題；以上四項皆補齊單元測試。
+
+### 優化
+
+- 本版無
+
+相容登入器 v0.1.1 以上（完整技能驗收自動化與 Harness R88 請搭配登入器 v0.1.576 以上）。
+
 ## v0.1.65 - 2026-11-22
 
 ### 新增

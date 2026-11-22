@@ -95,6 +95,19 @@ func TestMistEruptionStoreWireBindsRawLinesAndOnlyReviewedFamily(t *testing.T) {
 	if e := validateCombatCommand(q); e != nil {
 		t.Fatalf("sorted target binding: %v", e)
 	}
+	// Live v148 Mist Eruption sends 6 lines per target (attackCount=5 + 1);
+	// bounds allow 5..10 lines while still binding every raw line to Wire.
+	six := append([]byte(nil), body[:70]...)
+	six = append(six, body[66:70]...) // duplicate 5th 4-byte line as 6th line
+	six = append(six, body[70:]...)
+	six[1] = 0x16
+	qSix := eruptionCommandForWire(t, six)
+	if qSix.LinesPerTarget != 6 {
+		t.Fatalf("six-line command LinesPerTarget = %d, want 6", qSix.LinesPerTarget)
+	}
+	if e := validateCombatCommand(qSix); e != nil {
+		t.Fatalf("v148 6-line Mist Eruption rejected: %v", e)
+	}
 	// Historical generic commands without raw attribution remain readable.
 	q.Wire = nil
 	if e := validateCombatCommand(q); e != nil {

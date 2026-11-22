@@ -64,8 +64,9 @@ func init() {
 	// 萬聖節南瓜: a one-target event attack; the input family is not
 	// observed yet, so any is accepted without ammunition.
 	skills.Register(skills.Handler{ID: 80001122, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee | combat.Shoot | combat.Magic, Ammo: combat.AmmoNone}})
-	skills.Register(skills.Handler{ID: 80001126, Kind: skills.KindHeal | skills.KindPartyBuff, Cast: partyHeal})           // 勝利者的祝福
-	skills.Register(skills.Handler{ID: 80001125, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee}}) // 勝利者的旋風
+	skills.Register(skills.Handler{ID: 80001126, Kind: skills.KindHeal | skills.KindPartyBuff, Cast: partyHeal}) // 勝利者的祝福
+	// 勝利者的旋風 Victor's Whirlwind: v148 client sends RecvMagicAttack (0x57).
+	skills.Register(skills.Handler{ID: 80001125, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Magic}}) // 勝利者的旋風
 	skills.Register(skills.Handler{ID: 80001128, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee | combat.Shoot | combat.Magic, Ammo: combat.AmmoNone}})
 	// 神龍擺尾: native v148 dispatches 0x57 RecvMagicAttack.
 	skills.Register(skills.Handler{ID: 80001130, Kind: skills.KindAttack, Attack: &combat.AttackSpec{Kind: combat.Melee | combat.Magic}})
